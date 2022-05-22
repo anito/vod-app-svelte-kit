@@ -1,0 +1,683 @@
+/*
+-----------------------------------------------
+	vars – css custom-properties
+
+	NOTE
+	- some vars change inside media-queries!
+	- under normal conditions, there's no need to touch these
+-----------------------------------------------
+*/
+:root {
+  --nav-h: 3.75rem;
+  --main-h: calc(100vh - var(--nav-h));
+  --top-offset: 3.75rem;
+  --sidebar-w: 18.35rem;
+  --ad-w: var(--sidebar-w);
+  --sidebar-mid-w: 22.5rem;
+  --sidebar-large-w: 30rem;
+  --main-width: 50rem;
+  --side-nav: 2rem;
+  --side-page: var(--side-nav);
+  --player-m-x: 1rem;
+  --player-w: calc(100vw - var(--player-m-x));
+  --footer-h: 3rem;
+  --toolbar-h: 3rem;
+  --pagebar-h: 3rem;
+  --grid-gap: 0.1rem;
+  --xs-h: 50px;
+  --sm-h: 80px;
+  --md-h: 100px;
+  --lg-h: 130px;
+  --xl-h: 150px;
+  /* easings */
+  --out-back: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@media screen and (min-width: 768px) {
+  :root {
+    --side-page: 14vw;
+    --top-offset: 6.25rem;
+    --side-nav: 3rem;
+    --player-w: 19rem;
+    --poster-w: 260px;
+  }
+}
+/*	theme vars */
+.theme-default {
+  --back-light: #f6fafd;
+  --back-white: #fff;
+  --back-dark: #868585;
+  --back-api: #eff8ff;
+  --back-grid-item: #eeeeee;
+  --second-unused: #676778;
+  --alt: #787867;
+  --flash: #40b3ff;
+  --warning: #ff3e00;
+  --warning-500: #ff622d;
+  --warning-400: #ff8056;
+  --warning-300: #ff9e7e;
+  --warning-200: #ffbfa9;
+  --warning-100: #ffd1c2;
+  --info: #536b86;
+  --success: var(--prime);
+  --heading: var(--second);
+  --text: #444;
+  --text-light: #ebebeb;
+  --text-grey: #a5a5a5;
+  --text-light-grey: #c7c7c7;
+  --sidebar-text: rgba(255, 255, 255, 0.75);
+
+  --border-w: 0.1875rem; /* border-width  */
+  --border-r: 0.25rem; /* border-radius */
+
+  --font: "BellGothic", sans-serif;
+  --caption-font: "Material Icons Outlined", sans-serif;
+  --font-mono: "Fira Mono", monospace;
+
+  --mdc-typography-font-family: var(--font);
+
+  --mdc-theme-primary: var(--prime);
+  --mdc-theme-secondary: var(--second);
+  --mdc-theme-on-secondary: var(--surface);
+  --mdc-theme-error: var(--error);
+  --mdc-theme-background: var(--back);
+  --mdc-theme-surface: var(--back-white);
+
+  --drp-theme-primary: var(--prime);
+  --drp-theme-selection: #c98fbd;
+  --drp-theme-readout-bg: var(--prime);
+  --drp-theme-readout-c: var(--text-light);
+  --drp-theme-border-c: none;
+  --drp-theme-border-r: 0;
+  --drp-theme-label-c: var(--back-white);
+  --drp-theme-label-bg: var(--back-white);
+}
+/*	typo vars */
+.typo-default {
+  --caption-fs: 0.95em;
+  --code-fs: 0.8125rem;
+  --h6: 0.875rem;
+  --h5: 1rem;
+  --h4: 1.125rem; /* default font-size */
+  --h3: 1.625rem;
+  --h2: 1.875rem;
+  --h1: 2rem;
+  --linemax: 26.25em; /* max line-length */
+  --lh: 1.5; /* base line-height */
+
+  /*	fonts ---------------------------------- */
+  /* --font: 'Overpass', sans-serif; */
+  --font: "BellGothic", sans-serif;
+  --font-mono: "Fira Mono", monospace;
+  --caption-font: "Material Icons Outlined", sans-serif;
+}
+/* overpass-300normal - latin */
+@font-face {
+  font-family: "Overpass";
+  font-style: normal;
+  font-weight: 300;
+  src: local("Overpass Light "), local("Overpass-Light"),
+    url("/fonts/overpass/overpass-latin-300.woff2") format("woff2");
+}
+/* overpass-600normal - latin */
+@font-face {
+  font-family: "Overpass";
+  font-style: normal;
+  font-weight: 600;
+  src: local("Overpass Bold "), local("Overpass-Bold"),
+    url("/fonts/overpass/overpass-latin-600.woff2") format("woff2");
+}
+/* bell-gothic-300normal - latin */
+@font-face {
+  font-family: "BellGothic";
+  font-style: normal;
+  font-weight: 300;
+  src: local("BellGothic Light "), local("BellGothic Light"),
+    url("/fonts/bell-gothic/BellGothicStd-Light.woff2") format("woff2");
+}
+/* overpass-600normal - latin */
+@font-face {
+  font-family: "BellGothic";
+  font-style: normal;
+  font-weight: 600;
+  src: local("BellGothic Bold "), local("BellGothic Bold"),
+    url("/fonts/bell-gothic/BellGothicStd-Bold.woff2") format("woff2");
+}
+/* overpass-600normal - latin */
+@font-face {
+  font-family: "BellGothic";
+  font-style: normal;
+  font-weight: 600;
+  src: local("BellGothic Black "), local("BellGothic Black"),
+    url("/fonts/bell-gothic/BellGothicStd-Black.woff2") format("woff2");
+}
+/* fira-mono-400normal - latin */
+@font-face {
+  font-family: "Fira Mono";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Fira Mono Regular "), local("Fira Mono-Regular"),
+    url("/fonts/fira-mono/fira-mono-latin-400.woff2") format("woff2");
+}
+/* Material Icons */
+@font-face {
+  font-family: "Material Icons";
+  font-style: normal;
+  font-weight: 400;
+  src: url(/fonts/material-icons/material-icons.woff2) format("woff2");
+}
+.material-icons {
+  font-family: "Material Icons";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
+/* Material Icons Outlined */
+@font-face {
+  font-family: "Material Icons Outlined";
+  font-style: normal;
+  font-weight: 400;
+  src: url(/fonts/material-icons/material-icons-outlined.woff2) format("woff2");
+}
+.material-icons-outlined {
+  font-family: "Material Icons Outlined";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+/*	base reset ----------------------------- */
+html {
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+  box-sizing: border-box;
+  border-collapse: collapse;
+}
+html,
+body,
+#sapper {
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+* {
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
+  border-style: inherit;
+}
+/*	link reset ----------------------------- */
+a {
+  text-decoration: none;
+  cursor: inherit;
+  color: inherit;
+}
+a[href] {
+  cursor: pointer;
+}
+a:hover,
+a:active {
+  color: var(--flash);
+}
+
+/*
+-----------------------------------------------
+	global styles
+-----------------------------------------------
+*/
+
+/*	typography ----------------------------- */
+body {
+  font: 300 var(--h4) / var(--lh) var(--font);
+  background-color: var(--back);
+  color: var(--text);
+
+  /* default spacing of Overpass is a bit too airy */
+  /* letter-spacing: -.013em; */
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+blockquote {
+  position: relative;
+  margin: 0;
+}
+/* h1, h2, h3, h4, h5, h6 { font-weight: 600 } */
+h6 {
+  font-size: var(--h6);
+}
+h5 {
+  font-size: var(--h5);
+}
+h4 {
+  font-size: var(--h4);
+}
+h3 {
+  font-size: var(--h3);
+}
+h2 {
+  font-size: var(--h2);
+}
+h1 {
+  font-size: var(--h1);
+}
+
+h1,
+h2 {
+  font-family: var(--font);
+  line-height: 1.25;
+}
+h3 {
+  font-weight: 300;
+}
+
+p,
+ol,
+ul {
+  margin: 0 0 1em 0;
+}
+.b,
+b,
+strong {
+  font-weight: 600;
+}
+
+tt,
+code,
+kbd,
+samp {
+  font: 400 var(--code-fs) / 1.7 var(--font-mono);
+}
+*:focus {
+  outline: none !important;
+}
+.frozen *,
+input.frozen,
+a.frozen,
+button.frozen {
+  pointer-events: none;
+  cursor: not-allowed;
+}
+code {
+  position: relative;
+  border-radius: 0.3em;
+  white-space: nowrap;
+  color: #444;
+  -webkit-font-smoothing: initial;
+}
+pre code {
+  top: 0;
+  white-space: inherit;
+  background-color: none;
+}
+details summary {
+  cursor: pointer;
+  text-decoration: underline;
+}
+/* sync CodeMirror with prism  */
+.CodeMirror {
+  font-size: var(--code-fs) !important;
+}
+::selection {
+  background: var(--error);
+  color: white;
+}
+/*	opinionated styles --------------------- */
+
+li:not(.white) > h2 {
+  color: var(--second);
+}
+blockquote {
+  position: relative;
+  margin: 1.6rem 0 2.4rem;
+  padding: 2rem 2.4rem 1.8rem 2.4rem;
+  border-radius: var(--border-r);
+  font-family: var(--font);
+  max-width: var(--linemax);
+}
+blockquote p {
+  font-size: var(--h5);
+}
+blockquote :last-child {
+  margin: 0;
+}
+/*  buttons -------------------------------- */
+button {
+  font-family: inherit;
+  font-size: inherit;
+  background-color: transparent;
+  border: none;
+  color: currentColor;
+  cursor: pointer;
+}
+button[disabled],
+.btn[disabled],
+.btn:hover[disabled] {
+  opacity: 0.55;
+  pointer-events: none;
+}
+/*  reset ------- */
+.btn {
+  --btn-h: 4rem;
+  --btn-outline: 0.2rem;
+  --btn-font: var(--font);
+  --btn-calc-h: calc(var(--btn-h) - var(--btn-outline) * 2);
+  --btn-hover: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.07),
+    rgba(0, 0, 0, 0.07)
+  );
+
+  position: relative;
+  margin: 0 0.8rem 0.8rem 0;
+  vertical-align: middle;
+  white-space: nowrap;
+  display: inline-block;
+  zoom: 1;
+  border: none transparent;
+  font: var(--h4) var(--btn-font);
+  border-radius: var(--border-r);
+  color: currentColor;
+  cursor: pointer;
+}
+/*  default */
+.btn {
+  line-height: var(--btn-h);
+  height: var(--btn-h);
+  padding: 0 1.6rem;
+  transition: all 0.1s;
+}
+.btn:hover {
+  transform: scale(0.98);
+  mix-blend-mode: multiply;
+  background-image: var(--btn-hover);
+}
+/*  optional */
+.btn[outline] {
+  line-height: var(--btn-calc-h);
+  height: var(--btn-calc-h);
+  border: var(--btn-outline) solid currentColor;
+  background-color: white;
+  color: currentColor;
+}
+/*  links ------------------------------------- */
+a {
+  position: relative;
+  padding: 0 0 1px 0;
+  border-bottom: 1px solid currentColor;
+  user-select: none;
+  color: var(--prime);
+  transition: color 0.2s, border 0.2s, padding 0.2s;
+}
+a:hover {
+  color: var(--flash);
+}
+a.no-underline {
+  border-bottom: none;
+  padding: 0;
+}
+/* a:hover:not(.disabled) > .icon { stroke: var(--flash) } */
+
+/*  lists ---------------------------------- */
+.listify ol,
+.listify ul {
+  --list-padding: 1.8125rem;
+
+  list-style: none;
+  color: currentColor;
+  margin-left: var(--list-padding);
+}
+.listify ol > li,
+.listify ul > li {
+  max-width: calc(var(--linemax) - var(--list-padding));
+  line-height: 1.5;
+  margin: 0 0 0.25rem 0;
+}
+.listify ul > li:before {
+  content: "";
+  position: absolute;
+  margin-top: 0.6875rem;
+  margin-left: -1.125rem;
+  background-color: var(--second);
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 2px;
+  opacity: 0.7;
+}
+.listify ol {
+  list-style: decimal;
+}
+
+/*  tables --------------------------------- */
+table {
+  width: 100%;
+  font-size: var(--h5);
+}
+td,
+th {
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  padding: 0.25rem 0.5rem 0.25rem 0;
+}
+table code,
+table span {
+  white-space: pre;
+}
+/*	material ----------------------------------- */
+.mdc-fab.floating-fab {
+  bottom: 32px;
+  margin: 0;
+  position: fixed;
+  right: 32px;
+  z-index: 1;
+}
+.mdc-drawer--modal.top-left {
+  position: fixed;
+  top: var(--nav-h, 0);
+  left: 0;
+}
+.mdc-drawer--modal.top-right {
+  position: fixed;
+  top: var(--nav-h, 0);
+  right: 0;
+}
+/*	misc ----------------------------------- */
+.text-inherit > * {
+  font-size: inherit;
+}
+.inline > .inline-item:not(:first-child) {
+  margin-left: 15px;
+}
+.inline-item {
+  display: inline-block;
+}
+[class*="-primary"] h1,
+[class*="-primary"] h2,
+[class*="-primary"] h3,
+[class*="-primary"] h4,
+[class*="-primary"] h5,
+[class*="-primary"] h6,
+[class*="-secondary"] h1,
+[class*="-secondary"] h2,
+[class*="-secondary"] h3,
+[class*="-secondary"] h4,
+[class*="-secondary"] h5,
+[class*="-secondary"] h6,
+[class*="-primary"] a,
+[class*="-secondary"] a {
+  color: var(--text-light);
+}
+/*	grid ----------------------------------- */
+/* .grid,
+.grid.half {
+  display: grid;
+  grid-gap: 1.5rem;
+  grid-template-columns: 1fr;
+  align-items: center;
+}
+.grid.stretch {
+  align-items: stretch;
+}
+
+.grid > .cols-2,
+.grid > .cols-3 {
+  grid-column: span 1;
+}
+@media screen and (min-width: 840px) {
+  .grid.half,
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .grid > .cols-2,
+  .grid > .cols-3 {
+    grid-column: span 2;
+  }
+}
+@media screen and (min-width: 1100px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .grid > .cols-2 {
+    grid-column: span 2;
+  }
+  .grid > .cols-3 {
+    grid-column: span 3;
+  }
+} */
+/*	helper styles -------------------------- */
+.flex-auto {
+  flex: 1 0 auto;
+}
+
+.py0 {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+.legend,
+figcaption,
+.post aside {
+  max-width: none;
+  margin: 0 auto;
+  padding: 1rem 0 0 0.5rem;
+  font: 0.75rem/1.6 var(--font-mono);
+}
+.filename {
+  display: inline-block;
+  padding: 1rem 0 0 0.625rem;
+  font: var(--h6) var(--font-mono);
+}
+.box {
+  padding: 1.5rem 2rem;
+  border-radius: var(--border-r);
+}
+/*	theme colors --------------------------- */
+.prime {
+  color: var(--prime);
+}
+.second {
+  color: var(--second);
+}
+.flash {
+  color: var(--flash);
+}
+.black {
+  color: black;
+}
+.white {
+  color: white;
+}
+
+.back {
+  background-color: var(--back);
+}
+.back-light {
+  background-color: var(--back-light);
+}
+.bg-prime {
+  background-color: var(--prime);
+}
+.bg-second {
+  background-color: var(--second);
+}
+.bg-alt {
+  background-color: var(--alt);
+}
+.bg-flash {
+  background-color: var(--flash);
+}
+i.material-icons.leading ~ * {
+  display: inline;
+}
+.material-icons.leading {
+  display: inline-block;
+  vertical-align: top;
+}
+i.button {
+  background: aliceblue;
+  padding: 8px;
+  padding-bottom: 6px;
+  font-style: inherit;
+  font-size: 0.7em;
+  font-weight: 600;
+  text-transform: uppercase;
+  border: 1px solid #dddddd;
+  border-radius: 5px;
+  vertical-align: baseline;
+}
+.breadcrumb-container {
+  color: var(--back);
+}
+[slot="footer"] {
+  color: var(--text-light-grey);
+  font-size: 0.8em;
+}
+
+/**
+ * Emphasize swopes two elements and emphasizes the primary element
+*/
+.v-emph [class*="v-emph-"],
+.v-emph.v-emph-active [class*="v-emph-"] {
+  transition: all 0.4s ease-in;
+}
+.v-emph.v-emph-active .v-emph-primary,
+.v-emph .v-emph-secondary {
+  font-size: 0.7rem;
+}
+.v-emph.v-emph-active .v-emph-secondary,
+.v-emph .v-emph-primary {
+  font-size: 0.44rem;
+}
+.v-emph.v-emph-active .v-emph-down,
+.v-emph .v-emph-up {
+  transform: translateY(13px);
+}
+.v-emph.v-emph-active .v-emph-up,
+.v-emph .v-emph-down {
+  transform: translateY(-13px);
+}
+.v-emph.v-emph-bounce [class*="v-emph-"],
+.v-emph.v-emph-bounce.v-emph-active [class*="v-emph-"] {
+  transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}

@@ -1,0 +1,34 @@
+@import '@material/textfield';
+
+/*
+ *  Choose one of:
+ *  primary, secondary, background, surface, error,
+ *  on-primary, on-secondary, on-surface, on-error,
+ *  text-primary-on-background, text-secondary-on-background,
+ *  text-hint-on-background, text-disabled-on-background, text-icon-on-background,
+ *  text-primary-on-light, text-secondary-on-light, text-hint-on-light, text-disabled-on-light,
+ *  text-icon-on-light, text-primary-on-dark, text-secondary-on-dark, text-hint-on-dark,
+ *  text-disabled-on-dark, text-icon-on-dark
+ */
+
+.templates {
+  .mdc-text-field__input {
+    font-family: 'Courier New', Courier, monospace;
+    line-height: 1.25rem;
+    padding-top: 10px;
+  }
+
+  .banner {
+    .mdc-text-field {
+      @include ink-color(surface);
+      @include bottom-line-color(surface);
+      @include hover-bottom-line-color(surface);
+      @include label-color(surface);
+      @include caret-color(surface);
+    }
+
+    .mdc-text-field__input {
+      font-size: 1em;
+    }
+  }
+}

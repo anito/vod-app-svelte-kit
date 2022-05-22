@@ -1,0 +1,5 @@
+@import '@material/list';
+
+.meta-warning {
+  @include deprecated-item-meta-ink-color(error);
+}

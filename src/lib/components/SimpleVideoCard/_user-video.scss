@@ -1,0 +1,65 @@
+@use '@material/theme/color-palette';
+
+@import '@material/typography/index';
+@import '@material/chips/index';
+@import '@material/chips/deprecated/index';
+@import '@material/list/index';
+
+
+$active: color-palette.$light-green-500;
+$on-active: color-palette.$light-green-50;
+.video-list .user-video {
+
+  .mdc-deprecated-list-item__primary-text {
+    @include baseline-top(23px);
+    @include baseline-bottom(20px);
+  }
+  .mdc-deprecated-list-item__secondary-text {
+    @include baseline(12px);
+  }
+
+  .time-chip-set {
+    margin-top: 4px;
+    margin-left: -4px;
+
+    .mdc-chip {
+      @include height(26px);
+      @include icon-size(16px);
+
+      font-size: 0.775rem;
+      line-height: 1.7rem;
+      margin: 2px;
+
+      /*
+      *  Choose one of: primary, secondary, background, surface, error,
+      *  on-primary, on-secondary, on-surface, on-error,
+      *  text-primary-on-background, text-secondary-on-background,
+      *  text-hint-on-background, text-disabled-on-background, text-icon-on-background,
+      *  text-primary-on-light, text-secondary-on-light, text-hint-on-light, text-disabled-on-light,
+      *  text-icon-on-light, text-primary-on-dark, text-secondary-on-dark, text-hint-on-dark,
+      *  text-disabled-on-dark, text-icon-on-dark
+      */
+      &.pending {
+        @include leading-icon-color(on-secondary); // deprecated
+        @include icon-color(on-secondary);
+        @include ink-color(on-secondary); // deprecated
+        @include text-label-color(on-secondary);
+        @include container-color(secondary);
+      }
+      &.custom {
+        @include leading-icon-color(on-error); // deprecated
+        @include icon-color(on-error);
+        @include ink-color(on-error); // deprecated
+        @include text-label-color(on-error);
+        @include container-color(error);
+      }
+      &.active {
+        @include leading-icon-color($on-active); // deprecated
+        @include icon-color($on-active);
+        @include ink-color($on-active); // deprecated
+        @include text-label-color($on-active);
+        @include container-color($active);
+      }
+    }
+  }
+}

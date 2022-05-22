@@ -1,0 +1,21 @@
+@import '@material/theme/variables';
+@import '@material/feature-targeting';
+@import '@material/button';
+@import '@material/drawer';
+@import '@material/list';
+
+.drawer-container {
+  .mdc-drawer {
+    @include width(280px);
+    @include z-index(6);
+    --mdc-typography-caption-font-family: var(--caption-font);
+    --mdc-typography-caption-font-size: var(--caption-fs);
+  }
+
+  .mdc-button {
+    &.white {
+      @include container-fill-color(surface);
+      @include ink-color(primary);
+    }
+  }
+}

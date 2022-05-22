@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" class="theme-default typo-default">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="%svelte.assets%/favicon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#333333" />
+
+		<!-- Material Icons -->
+		<link
+		rel="stylesheet"
+		href="https://fonts.googleapis.com/icon?family=Material+Icons"
+		/>
+		<!-- Roboto -->
+		<link
+		rel="stylesheet"
+		href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,600,700"
+		/>
+		<!-- Roboto Mono -->
+		<link
+		rel="stylesheet"
+		href="https://fonts.googleapis.com/css?family=Roboto+Mono"
+		/>
+
+		<!-- Google SignIn API -->
+		<script id="gapi" src="https://accounts.google.com/gsi/client" async defer></script>
+
+		<!-- CookiePro Cookie-Einwilligungshinweis – Anfang für doojoo.de -->
+		<script
+			src="https://cookie-cdn.cookiepro.com/scripttemplates/otSDKStub.js"
+			data-document-language="true"
+			type="text/javascript"
+			charset="UTF-8"
+			data-domain-script="96d83ad7-4e38-4648-a464-21b40633c4d3-test"
+		></script>
+		<script type="text/javascript">
+			function OptanonWrapper() {}
+		</script>
+		<!-- CookiePro-Cookie-Einwilligungshinweis – Ende für doojoo.de -->
+
+		<link rel="stylesheet" href="/consent-pro/styles.css" />
+		<link rel="stylesheet" href="/smui.css" />
+		<link rel="stylesheet" href="/base.css" />
+
+		%svelte.head%
+	</head>
+	<body>
+		<div>%svelte.body%</div>
+	</body>
+</html>

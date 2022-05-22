@@ -1,0 +1,71 @@
+@import '@material/chips';
+@import '@material/chips/deprecated';
+
+/*
+ *  Choose one of:
+ *  primary, secondary, background, surface, error,
+ *  on-primary, on-secondary, on-surface, on-error,
+ *  text-primary-on-background, text-secondary-on-background,
+ *  text-hint-on-background, text-disabled-on-background, text-icon-on-background,
+ *  text-primary-on-light, text-secondary-on-light, text-hint-on-light, text-disabled-on-light,
+ *  text-icon-on-light, text-primary-on-dark, text-secondary-on-dark, text-hint-on-dark,
+ *  text-disabled-on-dark, text-icon-on-dark
+ */
+.mdc-chip-set {
+  &.info {
+    align-items: center;
+    .mdc-chip {
+      &.sm {
+        @include icon-size(17px);
+        @include height(26px);
+      }
+      &.primary {
+        @include leading-icon-color(on-primary); // deprecated
+        @include icon-color(on-primary);
+        @include ink-color(on-primary); // deprecated
+        @include text-label-color(on-primary);
+        @include container-color(primary);
+      }
+      &.secondary {
+        @include leading-icon-color(on-secondary); // deprecated
+        @include icon-color(on-secondary);
+        @include ink-color(on-secondary); // deprecated
+        @include text-label-color(on-secondary);
+        @include container-color(secondary);
+      }
+      &.flash {
+        @include leading-icon-color(on-secondary); // deprecated
+        @include icon-color(on-secondary);
+        @include ink-color(on-secondary); // deprecated
+        @include text-label-color(on-secondary);
+        @include container-color(secondary);
+      }
+      &.error {
+        @include leading-icon-color(on-error); // deprecated
+        @include icon-color(on-error);
+        @include ink-color(on-error); // deprecated
+        @include text-label-color(on-error);
+        @include container-color(error);
+      }
+      &.warning {
+        @include leading-icon-color(on-error); // deprecated
+        @include icon-color(on-error);
+        @include ink-color(on-error); // deprecated
+        @include text-label-color(on-error);
+        @include container-color(error);
+      }
+      &.info {
+        @include leading-icon-color(on-surface); // deprecated
+        @include icon-color(on-surface);
+        @include ink-color(on-surface); // deprecated
+        @include text-label-color(on-surface);
+        @include container-color(var(--info));
+      }
+      &.transparent {
+        @include text-label-color(rgb(190, 190, 190));
+        @include container-color(transparent);
+      }
+    }
+  }
+
+}

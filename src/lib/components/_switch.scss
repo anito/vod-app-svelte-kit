@@ -1,0 +1,29 @@
+@use '@material/switch';
+@use '@material/theme/color-palette';
+
+/*
+ *  Choose one of: primary, secondary, background, surface, error,
+ *  on-primary, on-secondary, on-surface, on-error,
+ *  text-primary-on-background, text-secondary-on-background,
+ *  text-hint-on-background, text-disabled-on-background, text-icon-on-background,
+ *  text-primary-on-light, text-secondary-on-light, text-hint-on-light, text-disabled-on-light,
+ *  text-icon-on-light, text-primary-on-dark, text-secondary-on-dark, text-hint-on-dark,
+ *  text-disabled-on-dark, text-icon-on-dark
+ */
+.mdc-switch {
+  
+  &.user-activation {
+    @include switch.theme((
+      //
+    ));
+
+    &.mdc-switch--unselected {
+      @include switch.theme-styles((
+        unselected-handle-color: color-palette.$deep-orange-500,
+        unselected-track-color: color-palette.$deep-orange-300,
+        unselected-hover-handle-color: color-palette.$deep-orange-500,
+        unselected-hover-track-color: color-palette.$deep-orange-300,
+      ));
+    }
+  }
+}

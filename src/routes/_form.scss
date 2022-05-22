@@ -1,0 +1,71 @@
+@use '@material/select/select-theme';
+@use '@material/theme/theme-color';
+
+@import '@material/select/index';
+@import '@material/select/select-theme';
+@import '@material/button/index';
+@import '@material/textfield/index';
+
+/*
+ *  Choose one of:
+ *  primary, secondary, background, surface, error,
+ *  on-primary, on-secondary, on-surface, on-error,
+ *  text-primary-on-background, text-secondary-on-background,
+ *  text-hint-on-background, text-disabled-on-background, text-icon-on-background,
+ *  text-primary-on-light, text-secondary-on-light, text-hint-on-light, text-disabled-on-light,
+ *  text-icon-on-light, text-primary-on-dark, text-secondary-on-dark, text-hint-on-dark,
+ *  text-disabled-on-dark, text-icon-on-dark
+ */
+.user-info-form {
+  .mdc-select {
+    &.info-select {
+      @include select-theme.ink-color(on-secondary);
+      @include select-theme.outline-color(on-secondary);
+      @include select-theme.bottom-line-color(
+        (
+          default: on-secondary,
+          focus: on-secondary,
+        )
+      );
+      @include label-color(on-secondary);
+      @include dropdown-icon-color(on-secondary);
+
+      margin-top: 1em;
+    }
+  }
+
+  .mdc-button {
+    &.submit {
+      @include container-fill-color(transparent);
+      @include ink-color(surface);
+      @include icon-color(surface);
+      @include disabled-icon-color(surface);
+    }
+  }
+}
+
+.mdc-text-field {
+  &.user-message {
+    @include ink-color(surface);
+    @include bottom-line-color(surface);
+    @include label-color(surface);
+    @include caret-color(surface);
+    @include hover-bottom-line-color(surface);
+    @include outline-color(surface);
+    @include hover-outline-color(surface);
+    @include focused-outline-color(surface);
+  }
+}
+
+.user-info {
+  .mdc-text-field {
+    @include ink-color(surface);
+    @include label-color(surface);
+    @include disabled-ink-color(rgba(theme-color.$surface, 0.38));
+    @include disabled-label-color(rgba(theme-color.$surface, 0.38));
+    @include bottom-line-color(surface);
+    @include hover-bottom-line-color(surface);
+    @include caret-color(surface);
+    @include line-ripple-color(surface);
+  }
+}

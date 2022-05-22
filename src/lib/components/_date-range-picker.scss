@@ -1,0 +1,28 @@
+form.date-range-picker.custom-header-height:not(.has-label) {
+  grid-template-rows: 1fr auto auto;
+}
+form.date-range-picker.custom-header-height.has-label {
+  &.xs-header {
+    grid-template-rows: var(--xs-h) 1fr auto auto;
+  }
+  &.sm-header {
+    grid-template-rows: var(--sm-h) 1fr auto auto;
+  }
+  &.md-header {
+    grid-template-rows: var(--md-h) 1fr auto auto;
+  }
+  &.lg-header {
+    grid-template-rows: var(--lg-h) 1fr auto auto;
+  }
+  &.xl-header {
+    grid-template-rows: var(--xl-h) 1fr auto auto;
+  }
+
+  & > label.readout {
+    padding-left: 25px;
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+}
