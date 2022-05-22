@@ -1130,22 +1130,13 @@
     "@sveltejs/adapter-netlify" "1.0.0-next.57"
     "@sveltejs/adapter-vercel" "1.0.0-next.51"
 
-"@sveltejs/adapter-cloudflare@1.0.0-next.19":
+"@sveltejs/adapter-cloudflare@^1.0.0-next.19", "@sveltejs/adapter-cloudflare@1.0.0-next.19":
   "integrity" "sha512-LET3DUYpl+deoKhkWCzhHUT7iipYkgVkOcRIJX7qT4m23A+MAbzcAC3npgwEYSe9RokOSWMVBr3tVujeES5EeA=="
   "resolved" "https://registry.npmjs.org/@sveltejs/adapter-cloudflare/-/adapter-cloudflare-1.0.0-next.19.tgz"
   "version" "1.0.0-next.19"
   dependencies:
     "esbuild" "^0.14.21"
     "worktop" "0.8.0-next.13"
-
-"@sveltejs/adapter-netlify@^1.0.0-next.58":
-  "integrity" "sha512-ZkL9mop/oTLfSj3tPCnTjQw7cKfoYLiptDzTypv7l+HDfE7SCFzJuK7YenjTMPoKTakFVfYAEEVIdJEySZt5MQ=="
-  "resolved" "https://registry.npmjs.org/@sveltejs/adapter-netlify/-/adapter-netlify-1.0.0-next.58.tgz"
-  "version" "1.0.0-next.58"
-  dependencies:
-    "@iarna/toml" "^2.2.5"
-    "esbuild" "^0.14.21"
-    "tiny-glob" "^0.2.9"
 
 "@sveltejs/adapter-netlify@1.0.0-next.57":
   "integrity" "sha512-rqvOr488+7NGkEHw/D6v1Y8Fg0MbiUP/YI1uSYjKy+tA8/4FOdBgU8Nk8daPTxWEU+CpsgzvA4X8IVonuML9SA=="
@@ -1154,13 +1145,6 @@
   dependencies:
     "@iarna/toml" "^2.2.5"
     "esbuild" "^0.14.21"
-    "tiny-glob" "^0.2.9"
-
-"@sveltejs/adapter-node@^1.0.0-next.73":
-  "integrity" "sha512-eidd7u1dPHIaBKMjRePrxazUt+Mm/JpnaiKLzZJBdamhBiiYIb+epkPLLqfG5Oo346/0HLKwFRAM/FXn3u3BHQ=="
-  "resolved" "https://registry.npmjs.org/@sveltejs/adapter-node/-/adapter-node-1.0.0-next.73.tgz"
-  "version" "1.0.0-next.73"
-  dependencies:
     "tiny-glob" "^0.2.9"
 
 "@sveltejs/adapter-vercel@1.0.0-next.51":

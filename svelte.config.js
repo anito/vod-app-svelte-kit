@@ -1,5 +1,4 @@
-// import adapter from '@sveltejs/adapter-node';
-import adapter from '@sveltejs/adapter-netlify';
+import adapter from '@sveltejs/adapter-cloudflare';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
