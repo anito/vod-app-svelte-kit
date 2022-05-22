@@ -1138,6 +1138,15 @@
     "esbuild" "^0.14.21"
     "worktop" "0.8.0-next.13"
 
+"@sveltejs/adapter-netlify@^1.0.0-next.58":
+  "integrity" "sha512-ZkL9mop/oTLfSj3tPCnTjQw7cKfoYLiptDzTypv7l+HDfE7SCFzJuK7YenjTMPoKTakFVfYAEEVIdJEySZt5MQ=="
+  "resolved" "https://registry.npmjs.org/@sveltejs/adapter-netlify/-/adapter-netlify-1.0.0-next.58.tgz"
+  "version" "1.0.0-next.58"
+  dependencies:
+    "@iarna/toml" "^2.2.5"
+    "esbuild" "^0.14.21"
+    "tiny-glob" "^0.2.9"
+
 "@sveltejs/adapter-netlify@1.0.0-next.57":
   "integrity" "sha512-rqvOr488+7NGkEHw/D6v1Y8Fg0MbiUP/YI1uSYjKy+tA8/4FOdBgU8Nk8daPTxWEU+CpsgzvA4X8IVonuML9SA=="
   "resolved" "https://registry.npmjs.org/@sveltejs/adapter-netlify/-/adapter-netlify-1.0.0-next.57.tgz"
