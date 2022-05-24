@@ -1,16 +1,16 @@
 import { get } from 'svelte/store';
 import {
-  addDays,
-  differenceInCalendarWeeks,
-  endOfMonth,
-  eachWeekOfInterval,
-  getWeek,
-  addWeeks,
-  subMonths,
-  startOfWeek
-} from "date-fns";
-import { dayOffset } from "./day-offset";
-import { getDayMetaData } from "./get-day-meta-data";
+	addDays,
+	differenceInCalendarWeeks,
+	endOfMonth,
+	eachWeekOfInterval,
+	getWeek,
+	addWeeks,
+	subMonths,
+	startOfWeek
+} from 'date-fns';
+import { dayOffset } from './day-offset';
+import { getDayMetaData } from './get-day-meta-data';
 import { __locale__ } from '../stores/localeStore';
 
 /**
@@ -39,9 +39,9 @@ import { __locale__ } from '../stores/localeStore';
  */
 
 const buildWeek = (start, getDayMetaDataParams) =>
-  [0, 1, 2, 3, 4, 5, 6].map((_, i) =>
-    getDayMetaData({ ...getDayMetaDataParams, date: addDays(start, i) })
-  )
+	[0, 1, 2, 3, 4, 5, 6].map((_, i) =>
+		getDayMetaData({ ...getDayMetaDataParams, date: addDays(start, i) })
+	);
 
 /**
  *
@@ -49,23 +49,23 @@ const buildWeek = (start, getDayMetaDataParams) =>
  *
  * @returns {Object[]}
  */
-export const getCalendarWeeks = getDayMetaDataParams => {
-  const { month, firstDayOfWeek, today } = getDayMetaDataParams
-  const weekStartsOn = dayOffset(firstDayOfWeek)
-  const start = startOfWeek(endOfMonth(subMonths(month, 1)))
+export const getCalendarWeeks = (getDayMetaDataParams) => {
+	const { month, firstDayOfWeek, today } = getDayMetaDataParams;
+	const weekStartsOn = dayOffset(firstDayOfWeek);
+	const start = startOfWeek(endOfMonth(subMonths(month, 1)));
 
-  return eachWeekOfInterval(
-    {
-      start,
-      end: addWeeks(start, 5)
-    },
-    { weekStartsOn, locale: get(__locale__) }
-  ).map(date => ({
-    weeksFromToday: differenceInCalendarWeeks(date, today, {
-      weekStartsOn,
-      locale: get(__locale__)
-    }),
-    weekNumber: getWeek(date, { weekStartsOn }),
-    daysInWeek: buildWeek(date, getDayMetaDataParams)
-  }))
-}
+	return eachWeekOfInterval(
+		{
+			start,
+			end: addWeeks(start, 5)
+		},
+		{ weekStartsOn, locale: get(__locale__) }
+	).map((date) => ({
+		weeksFromToday: differenceInCalendarWeeks(date, today, {
+			weekStartsOn,
+			locale: get(__locale__)
+		}),
+		weekNumber: getWeek(date, { weekStartsOn }),
+		daysInWeek: buildWeek(date, getDayMetaDataParams)
+	}));
+};

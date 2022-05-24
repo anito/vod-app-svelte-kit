@@ -9,11 +9,9 @@ export async function post({ locals, request }) {
 	if (token) data = {}; // reset data if token has been received
 
 	return await api.post('users/login', data, token).then(async (response) => {
-		console.log('SESSION.DATA', locals.session.data());
+		console.log('SESSION.DATA', await locals.session.data());
 
-		if (locals.session.data()) {
-			await locals.session.destroy();
-		}
+		await locals.session.destroy();
 		await locals.session.data({
 			user: response.data.user,
 			groups: response.data.groups,

@@ -1,5 +1,6 @@
-import { addDays, startOfWeek } from "date-fns"
-import { dayOffset } from "./day-offset"
+// @ts-nocheck
+import { addDays, startOfWeek } from 'date-fns';
+import { dayOffset } from './day-offset';
 
 /**
  * @todo Allow changing of week length
@@ -8,12 +9,12 @@ import { dayOffset } from "./day-offset"
  *
  * @returns {Date[]}
  */
-export const getDaysOfWeek = firstDayOfWeek =>
-  [0, 1, 2, 3, 4, 5, 6].map((_, i) =>
-    addDays(
-      startOfWeek(new Date(), {
-        weekStartsOn: dayOffset(firstDayOfWeek)
-      }),
-      i
-    )
-  )
+export const getDaysOfWeek = (firstDayOfWeek) =>
+	[0, 1, 2, 3, 4, 5, 6].map((_, i) =>
+		addDays(
+			startOfWeek(new Date(), {
+				weekStartsOn: dayOffset(firstDayOfWeek)
+			}),
+			i
+		)
+	);

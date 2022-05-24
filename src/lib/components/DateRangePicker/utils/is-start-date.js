@@ -1,4 +1,5 @@
-import { isSameDay, isBefore } from "date-fns"
+// @ts-nocheck
+import { isSameDay, isBefore } from 'date-fns';
 
 /**
  *
@@ -9,15 +10,10 @@ import { isSameDay, isBefore } from "date-fns"
  *
  * @returns {boolean}
  */
-export const isStartDate = ({
-  hasSelection,
-  date,
-  tempEndDate,
-  tempStartDate
-}) => {
-  if (!hasSelection && isBefore(tempEndDate, tempStartDate)) {
-    return isSameDay(date, tempEndDate)
-  }
+export const isStartDate = ({ hasSelection, date, tempEndDate, tempStartDate }) => {
+	if (!hasSelection && isBefore(tempEndDate, tempStartDate)) {
+		return isSameDay(date, tempEndDate);
+	}
 
-  return isSameDay(date, tempStartDate)
-}
+	return isSameDay(date, tempStartDate);
+};

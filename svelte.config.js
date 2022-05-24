@@ -6,8 +6,8 @@ const config = {
 		adapter: adapter(),
 		vite: {
 			optimizeDeps: {
-				allowNodeBuiltins: ['crypto'],
-				exclude: ['svelte-kit-cookie-session']
+				exclude: ['svelte-kit-cookie-session'],
+				allowNodeBuiltins: ['crypto']
 			}
 		}
 	}

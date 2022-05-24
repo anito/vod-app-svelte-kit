@@ -1,10 +1,10 @@
-import { isSameDay, isWeekend, isWithinInterval } from "date-fns"
-import { isDisabled } from "./is-disabled"
-import { isEndDate } from "./is-end-date"
-import { isNextMonth } from "./is-next-month"
-import { isPrevMonth } from "./is-prev-month"
-import { isStartDate } from "./is-start-date"
-import { toRange } from "./to-range"
+import { isSameDay, isWeekend, isWithinInterval } from 'date-fns';
+import { isDisabled } from './is-disabled';
+import { isEndDate } from './is-end-date';
+import { isNextMonth } from './is-next-month';
+import { isPrevMonth } from './is-prev-month';
+import { isStartDate } from './is-start-date';
+import { toRange } from './to-range';
 
 /**
  *
@@ -37,36 +37,34 @@ import { toRange } from "./to-range"
  *
  * @returns {Day}
  */
-export const getDayMetaData = params => {
-  const {
-    date,
-    tempEndDate,
-    events,
-    month,
-    singlePicker,
-    tempStartDate,
-    today,
-    maxDate,
-    minDate,
-    disabledDates
-  } = params
+export const getDayMetaData = (params) => {
+	const {
+		date,
+		tempEndDate,
+		events,
+		month,
+		singlePicker,
+		tempStartDate,
+		today,
+		maxDate,
+		minDate,
+		disabledDates
+	} = params;
 
-  // Sort the range asc for `isWithinInterval` function.
-  const { start, end } = toRange(tempStartDate, tempEndDate)
+	// Sort the range asc for `isWithinInterval` function.
+	const { start, end } = toRange(tempStartDate, tempEndDate);
 
-  return {
-    date,
-    events,
-    isToday: isSameDay(date, today),
-    isWeekend: isWeekend(date),
-    isPrevMonth: isPrevMonth(month, date),
-    isNextMonth: isNextMonth(month, date),
-    isStartDate: isStartDate(params),
-    isDisabled: isDisabled({ date, maxDate, minDate, disabledDates }),
-    // Used only in range mode
-    isEndDate: isEndDate(params),
-    isWithinSelection: !singlePicker
-      ? isWithinInterval(date, { start, end })
-      : false
-  }
-}
+	return {
+		date,
+		events,
+		isToday: isSameDay(date, today),
+		isWeekend: isWeekend(date),
+		isPrevMonth: isPrevMonth(month, date),
+		isNextMonth: isNextMonth(month, date),
+		isStartDate: isStartDate(params),
+		isDisabled: isDisabled({ date, maxDate, minDate, disabledDates }),
+		// Used only in range mode
+		isEndDate: isEndDate(params),
+		isWithinSelection: !singlePicker ? isWithinInterval(date, { start, end }) : false
+	};
+};
