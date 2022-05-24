@@ -1,8 +1,7 @@
 // @ts-nocheck
 import { dev } from '$app/env';
 
-// export const base = dev ? 'http://localhost:8765/api' : 'https://vod.webpremiere.de/api';
-export const base = 'http://localhost:8765/api';
+export const base = dev ? 'http://localhost:8765/api' : 'https://vod.webpremiere.de/api';
 
 async function send({ method, path, data, token }) {
 	const fullpath = path.startsWith('http') ? path : `${base}/${path}`;
