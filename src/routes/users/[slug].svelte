@@ -33,7 +33,7 @@
 		magicLink = tokenVal && `http://${$page.host}/login?token=${tokenVal}`;
 	})(currentUser);
 	$: hidden =
-		$session.role !== 'Administrator' ? true : selectionUserId == $session.user.id ? true : false;
+		$session.role !== 'Administrator' ? true : selectionUserId == $session.user?.id ? true : false;
 
 	onMount(() => {});
 </script>

@@ -46,6 +46,7 @@
 	import List from '@smui/list';
 	import Dialog, { Title as DialogTitle, Content, Actions, InitialFocus } from '@smui/dialog';
 	import { _, locale } from 'svelte-i18n';
+	import { goto } from '$app/navigation';
 
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
 	const TAB = 'time';
@@ -112,7 +113,7 @@
 		snackbar = getSnackbar();
 
 		let renewed;
-		if ((renewed = localStorage.getItem('renewed')) && renewed == $session.user.id) {
+		if ((renewed = localStorage.getItem('renewed')) && renewed == $session.user?.id) {
 			renewedTokenDialog.setOpen(true);
 		}
 
@@ -252,8 +253,9 @@
 			/^(https?|ftp|torrent|image|irc):\/\/(-\.)?([^\s\/?\.#-]+\.?)+(\/[^\s]*)?$/i.test(
 				e.detail.action
 			)
-		)
-			location.href = e.detail.action;
+		) {
+			goto(e.detail.action);
+		}
 	}
 
 	function chipInteractionHandler(e) {

@@ -1,4 +1,6 @@
 <script>
+	// @ts-nocheck
+
 	import './_chip.scss';
 	import { proxyEvent } from '$lib/utils';
 	import { infos } from '$lib/stores';

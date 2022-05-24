@@ -31,7 +31,7 @@
 	export let type;
 	export let muted = true;
 	export let controls = false; // use native controls if true
-	export let paused = false;
+	export let paused = true;
 	export let preload = 'none';
 	export let playhead = 0;
 	export let curtain = false;
@@ -52,10 +52,8 @@
 	onMount(() => {});
 
 	function setSource(src) {
-		if (!videoElement) return;
-
-		let oldSrc = videoElement.getAttribute('src');
-		if (oldSrc !== src) {
+		let oldSrc = videoElement?.getAttribute('src');
+		if (oldSrc && oldSrc !== src) {
 			videoElement.setAttribute('src', src);
 		}
 	}
@@ -112,14 +110,15 @@
 			videoElement.load();
 		}
 
-		if (!videoElement.promise || paused) {
+		if (paused) {
 			playhead && (videoElement.currentTime = playhead);
 			videoElement.promise = videoElement.play();
 		} else {
 			videoElement.promise
 				.then((_) => videoElement.pause()) // playback started so we can safely pause
 				.catch((_) => {
-					console.log('Auto-play was prevented');
+					videoElement.src = '';
+					console.log('Auto-play was prevented', video.title);
 				});
 		}
 	}

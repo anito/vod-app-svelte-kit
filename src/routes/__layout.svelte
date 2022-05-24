@@ -336,7 +336,7 @@
 				{/if}
 
 				{#if $session.user}
-					<NavItem title="Avatar" href="/users/{$session.user.id}?tab=user">
+					<NavItem title="Avatar" href="/users/{$session.user?.id}?tab=user">
 						<UserGraphic
 							borderSize="3"
 							borderColor="--prime"

@@ -1,16 +1,21 @@
 <script context="module">
-	import * as api from '$lib/api';
+	import { browser } from '$app/env';
+	import { post } from '$lib/utils';
 
 	export async function load({ url }) {
 		let token = url.searchParams.get('token');
-		if (token) {
-			const props = await api.get(`login/?token=${token}`);
-
-			if (props) {
-				return {
-					props
-				};
-			}
+		if (browser && token) {
+			console.log('LOGIN_LOAD::token', { token });
+			// const props = await api.get(`login/?token=${token}`);
+			return await post(`/auth/login`, { token }).then((response) => {
+				console.log('LOGIN_LOAD::response', response);
+				if (response)
+					return {
+						props: {
+							data: { ...response }
+						}
+					};
+			});
 		}
 		return {};
 	}
@@ -34,7 +39,6 @@
 	 * For token logins:
 	 * load function has received data from backend server
 	 */
-	export let success = false;
 	export let data;
 
 	const transitionParams = {
@@ -71,26 +75,22 @@
 		 * a default message (on first appearance)
 		 */
 		if (!data) {
-			/**
-			 * Form login
-			 */
+			// Form login
 			flash.update({ message: message.text, timeout: -5 });
 		} else {
-			/**
-			 * Token login
-			 */
-			if (success) {
+			// Token login
+			if (data.success) {
 				flash.update({ type: 'success', ...data });
-				setTimeout(scheduleSession, 100, 'start', data);
+				setTimeout(sessionTicker, 100, 'start', data);
 			} else {
-				setTimeout(scheduleSession, 100, 'end', { path: '/login' });
+				setTimeout(sessionTicker, 100, 'end', { path: '/login' });
 				flash.update({ type: 'warning', ...data, timeout: 5000 });
 			}
 		}
 	});
 
-	function scheduleSession(type, data) {
-		proxyEvent(`ticker:${type}`, { data });
+	function sessionTicker(type, data) {
+		proxyEvent(`ticker:${type}`, { ...data });
 	}
 
 	function redirectAfterIntroEnd(e) {

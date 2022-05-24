@@ -655,7 +655,7 @@
 												{@html $_('summary.test-magic-link.text', {
 													values: {
 														currentUserName: currentUser.name,
-														sessionUserName: $session.user.name
+														sessionUserName: $session.user?.name
 													}
 												})}
 											</p>

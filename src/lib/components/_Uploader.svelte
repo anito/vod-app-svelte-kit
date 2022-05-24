@@ -1,4 +1,6 @@
 <script>
+	// @ts-nocheck
+
 	import { session } from '$app/stores';
 	import { onMount, createEventDispatcher, getContext } from 'svelte';
 	import PreviewTemplate from './_PreviewTemplate.svelte';
@@ -76,7 +78,7 @@
 
 	onMount(async () => {
 		options = {
-			url: `${base}/${path}?token=${$session.user.token}`,
+			url: `${base}/${path}?token=${$session.user?.token}`,
 			timeout,
 			paramName: 'Files',
 			uploadMultiple,

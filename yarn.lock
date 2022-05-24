@@ -1403,11 +1403,6 @@
   "resolved" "https://registry.npmjs.org/concat-map/-/concat-map-0.0.1.tgz"
   "version" "0.0.1"
 
-"cookie@^0.5.0":
-  "integrity" "sha512-YZ3GUyn/o8gfKJlnlX7g7xq4gyO6OSuhGPKaaGssGB2qgDUS0gPgtTvoyZLTt9Ab6dC4hfc9dV5arkvc/OCmrw=="
-  "resolved" "https://registry.npmjs.org/cookie/-/cookie-0.5.0.tgz"
-  "version" "0.5.0"
-
 "cross-spawn@^7.0.2":
   "integrity" "sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w=="
   "resolved" "https://registry.npmjs.org/cross-spawn/-/cross-spawn-7.0.3.tgz"
@@ -2438,10 +2433,10 @@
     "sade" "^1.7.4"
     "tiny-glob" "^0.2.6"
 
-"svelte-kit-cookie-session@^2.1.4":
-  "integrity" "sha512-z/ckxHWguYyy66UqfId4Lu+A77ft/3mV5oozbRTI9bnQY0tyJfns/SM0ikdkj7OV5GiI8kq7GSOGvajWwyGeZw=="
-  "resolved" "https://registry.npmjs.org/svelte-kit-cookie-session/-/svelte-kit-cookie-session-2.1.4.tgz"
-  "version" "2.1.4"
+"svelte-kit-cookie-session@^3.0.0-next.3":
+  "integrity" "sha512-LlwCOlLFcAcBcTav/JGuA5FWkwYZyLQ9xnwzTLs8V4gfp5UYqxWFQkg0Xd58jR7kieMEVe46LP/l8DAQhbep7w=="
+  "resolved" "https://registry.npmjs.org/svelte-kit-cookie-session/-/svelte-kit-cookie-session-3.0.0-next.3.tgz"
+  "version" "3.0.0-next.3"
 
 "svelte-kit@^1.0.0":
   "integrity" "sha512-pIY5PHrdpqt5Py4nkv3BCqbrTyYH61pgCVykPf3JuCeryvn/pO88ltDGFZq0cRkrSmfKHlpC+uM018SZ8I2h4A=="

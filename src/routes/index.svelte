@@ -61,7 +61,7 @@
 			subject: options.find((option) => option.key === selected).label,
 			content
 		};
-		res = await api.post(`sents/add?lang=${$locale}`, data, isAdmin && $session.user.token);
+		res = await api.post(`sents/add?lang=${$locale}`, data, isAdmin && $session.user?.token);
 		if (res?.success) {
 			configSnackbar($_('text.thank-you-for-your-message'));
 			reset();

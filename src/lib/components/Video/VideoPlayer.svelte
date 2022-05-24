@@ -30,7 +30,7 @@
 
 	export { className as class };
 
-	onMount((_) => {
+	onMount(() => {
 		let timestamp = now;
 		item = {
 			videoElement,

@@ -1,4 +1,6 @@
 <script>
+	// @ts-nocheck
+
 	import { setContext } from 'svelte';
 	import { writable } from 'svelte/store';
 

@@ -25,7 +25,7 @@
 	let canPlay = false;
 	let timeoutId;
 
-	$: currentUser = $users.find((user) => user.id == $session.user.id);
+	$: currentUser = $users.find((user) => user.id == $session.user?.id);
 	$: isAdmin = $session.role === 'Administrator';
 	$: token = currentUser?.token.token;
 	$: joinData =

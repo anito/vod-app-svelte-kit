@@ -19,8 +19,8 @@ export const handle = handleSession(
 	}
 );
 
-export const getSession = ({ locals }) => {
-	return locals.session.data || {};
+export const getSession = async ({ locals }) => {
+	return (await locals.session.data()) || {};
 };
 
 export async function handleError({ error, event }) {

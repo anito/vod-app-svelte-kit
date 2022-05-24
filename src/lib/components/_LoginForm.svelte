@@ -9,7 +9,7 @@
 	import { onMount, getContext } from 'svelte';
 	import { session } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { get, post, proxyEvent } from '$lib/utils';
+	import { post, proxyEvent } from '$lib/utils';
 	import { flash, formGuard as frozen } from '$lib/stores';
 	import Button from '@smui/button';
 	import Textfield from '@smui/textfield';
@@ -47,7 +47,7 @@
 	});
 
 	async function submit() {
-		// freeze();
+		freeze();
 		flash.update({ message: $_('text.one-moment'), wait: -1 });
 
 		const res = await post(`/auth/login?lang=${$locale}`, { email, password });
@@ -55,12 +55,12 @@
 		// TODO handle network errors
 		if (res) {
 			let type, wait;
-			let message = res.message || res.data.message || res.statusText;
+			let message = res.message;
 
 			defreeze();
 
 			if (res.success) {
-				console.log(res);
+				console.log('LOGINFORM::res', res);
 				type = 'success';
 				proxyEvent('ticker:start', { ...res });
 			} else {

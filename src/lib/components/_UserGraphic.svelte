@@ -38,24 +38,25 @@
 		: 'transparent';
 
 	$: (async (user) => {
-		if (!user?.avatar) {
-			src = fallbackImage || placeholderDotComAvatar(user?.name);
-			return;
+		if (!user || !user?.avatar) {
+			await Promise.resolve(fallbackImage || placeholderDotComAvatar(user?.name)).then(
+				(val) => (src = val)
+			);
 		}
 
 		let avatar = user.avatar;
-		if (avatar.src && avatar.src.startsWith('http')) {
-			src = avatar.src;
-			return;
+		if (avatar?.src) {
+			if (avatar.src.startsWith('http')) {
+				await Promise.resolve(avatar.src).then((val) => (src = val));
+			} else {
+				await getMediaAvatar(avatar.id, $session.user, {
+					width,
+					height,
+					square: 1,
+					quality: 100
+				}).then((val) => (src = val));
+			}
 		}
-
-		let res = await getMediaAvatar(avatar.id, $session.user, {
-			width,
-			height,
-			square: 1,
-			quality: 100
-		});
-		if (res) src = res;
 	})(user);
 </script>
 

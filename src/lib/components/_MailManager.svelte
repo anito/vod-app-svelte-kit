@@ -144,7 +144,7 @@
 					data: { ...templateData, href: validateData(currentTemplate) || '' }
 				}
 			},
-			$session.user.token
+			$session.user?.token
 		);
 		if (res.success) {
 			configSnackbar($_('text.message-sent-success'));
@@ -158,7 +158,7 @@
 	async function getInbox(user) {
 		let items = [],
 			_users;
-		const res = await api.get(`inboxes/get/${user.id}`, $session.user.token);
+		const res = await api.get(`inboxes/get/${user.id}`, $session.user?.token);
 		if (res.success) {
 			res.data.map((mail) => {
 				let message = JSON.parse(mail.message);
@@ -182,7 +182,7 @@
 	async function getSent(user) {
 		let items = [],
 			_users;
-		const res = await api.get(`sents/get/${user.id}`, $session.user.token);
+		const res = await api.get(`sents/get/${user.id}`, $session.user?.token);
 		if (res.success) {
 			let _to;
 			res.data.map((mail) => {
@@ -219,7 +219,7 @@
 		let _selected, _read;
 		_selected = e && e.detail.selected;
 		_read = e && e.detail.read != void 0 ? e.detail.read : !_selected.read;
-		const res = await api.put(`inboxes/${_selected.id}`, { _read }, $session.user.token);
+		const res = await api.put(`inboxes/${_selected.id}`, { _read }, $session.user?.token);
 		if (res.success) {
 			selected = { ..._selected, read: _read };
 			inboxes.put(selected);
@@ -228,7 +228,7 @@
 
 	async function deleteMail(e) {
 		let _selected = e.detail.selected;
-		const res = await api.del(`${activeMailbox}/${_selected.id}`, $session.user.token);
+		const res = await api.del(`${activeMailbox}/${_selected.id}`, $session.user?.token);
 		if (res.success) {
 			currentStore.del(_selected.id);
 		}
@@ -243,7 +243,7 @@
 	}
 
 	async function getTemplates() {
-		const res = await api.get('templates', $session.user.token);
+		const res = await api.get('templates', $session.user?.token);
 		if (res.success) {
 			templates.update(res.data);
 		}
@@ -266,7 +266,7 @@
 			});
 		});
 		let newTemplate = { name, slug, items };
-		const res = await api.post('templates', { ...newTemplate }, $session.user.token);
+		const res = await api.post('templates', { ...newTemplate }, $session.user?.token);
 		configSnackbar(res.message);
 		if (res.success) {
 			templates.add({ ...newTemplate, id: res.data.id, items: res.data.items });
@@ -282,7 +282,7 @@
 			item.content = content;
 			items.push({ id: item.id, content });
 		});
-		const res = await api.put(`templates/${currentTemplate.id}`, { items }, $session.user.token);
+		const res = await api.put(`templates/${currentTemplate.id}`, { items }, $session.user?.token);
 		configSnackbar(res.message);
 		if (res.success) {
 			templates.put({ ...currentTemplate });
@@ -302,7 +302,7 @@
 			});
 		});
 		let newTemplate = { name, slug, items };
-		const res = await api.post('templates', { ...newTemplate }, $session.user.token);
+		const res = await api.post('templates', { ...newTemplate }, $session.user?.token);
 		configSnackbar(res.message);
 		if (res.success) {
 			templates.add({ ...newTemplate, id: res.data.id, items: res.data.items });
@@ -312,7 +312,7 @@
 	}
 
 	async function removeTemplate() {
-		const res = await api.del(`templates/${currentTemplate.id}`, $session.user.token);
+		const res = await api.del(`templates/${currentTemplate.id}`, $session.user?.token);
 		configSnackbar(res.message);
 		if (res.success) {
 			templates.del(currentTemplate.id);
@@ -420,7 +420,7 @@
 		let template = $templates.find((tmpl) => tmpl.id === id);
 		if (!template) return;
 		let slug = generateSlug(name);
-		const res = await api.put(`templates/${id}`, { name, slug }, $session.user.token);
+		const res = await api.put(`templates/${id}`, { name, slug }, $session.user?.token);
 		if (res.success) {
 			templates.put({ ...template, name, slug });
 			configSnackbar($_('text.template-renamed'));
@@ -480,7 +480,7 @@
 	function validatePath(path) {
 		if (currentUser) return path;
 		const regex = /(\/users\/)([\w-]+)/g;
-		const subst = `$1${$session.user.id}`;
+		const subst = `$1${$session.user?.id}`;
 		return path.replace(regex, subst);
 	}
 

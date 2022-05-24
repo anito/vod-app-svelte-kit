@@ -1,7 +1,3 @@
-<script context="module">
-	let zIndex = 5;
-</script>
-
 <script>
 	// @ts-nocheck
 
@@ -22,6 +18,7 @@
 	let userItems = [];
 	let created = '';
 	let className = '';
+	let zIndex = 10;
 
 	$: unread = !mail.read;
 	$: dateFormat =
@@ -65,13 +62,13 @@
 	class="{className} {mail.read ? 'read' : 'unread'}"
 	selected={selected && selected.id === mail.id}
 	><div class="staggered">
-		{#each userItems as user}
+		{#each userItems as user, i}
 			<UserGraphic
 				width="40"
 				height="40"
 				user={typeof user === 'object' ? user : null}
 				borderSize
-				style={`z-index: ${(zIndex -= 1)};`}
+				style={`z-index: ${10 - i};`}
 			/>
 		{/each}
 	</div>

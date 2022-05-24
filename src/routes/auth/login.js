@@ -2,17 +2,26 @@
 import * as api from '$lib/api';
 
 export async function post({ locals, request }) {
-	const { email, password } = await request.json();
+	let data = await request.json();
+	const { token } = data;
+	console.log('AUTH:POST:data', data);
 
-	return await api.post('users/login', { email, password }).then((response) => {
-		locals.session.data = {
+	if (token) data = {}; // reset data if token has been received
+
+	return await api.post('users/login', data, token).then(async (response) => {
+		console.log('SESSION.DATA', locals.session.data());
+
+		if (locals.session.data()) {
+			await locals.session.destroy();
+		}
+		await locals.session.data({
 			user: response.data.user,
 			groups: response.data.groups,
 			role: response.data.user.group.name
-		};
+		});
 
 		return {
-			body: { ...locals.session.data, success: response.success, message: response.data.message }
+			body: { ...response.data, success: response.success }
 		};
 	});
 }
