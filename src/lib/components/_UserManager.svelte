@@ -6,7 +6,7 @@
 	import { page, session } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { getContext, onMount } from 'svelte';
-	import Header from './Header.svelte';
+	import Header from './_Header.svelte';
 	import { fly } from 'svelte/transition';
 	import { users, flash, theme } from '$lib/stores';
 	import { post, createRedirectSlug, proxyEvent, svg } from '$lib/utils';

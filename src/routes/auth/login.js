@@ -10,7 +10,7 @@ export async function post({ locals, request }) {
 
 	return await api.post('users/login', data, token).then(async (response) => {
 		console.log('SESSION.DATA', await locals.session.data());
-
+		console.log('AUTH:POST:RESPONSE', response);
 		await locals.session.destroy();
 		await locals.session.data({
 			user: response.data.user,

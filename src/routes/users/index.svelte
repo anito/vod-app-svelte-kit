@@ -13,7 +13,7 @@
 		let max = $users.length - 1;
 		preSelectedIndex = preSelectedIndex < 0 || preSelectedIndex > max ? 0 : preSelectedIndex;
 
-		// goto(`users/${$users[preSelectedIndex].id}`);
+		// goto(`users/${$users[preSelectedIndex].id}`); // commented to prevent to automatically change to first user
 	});
 </script>
 

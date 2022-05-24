@@ -1,7 +1,7 @@
 <script>
 	import { onMount, getContext } from 'svelte';
 	import Uploader from './_Uploader.svelte';
-	import Header from './Header.svelte';
+	import Header from './_Header.svelte';
 	import { _ } from 'svelte-i18n';
 
 	export { className as class };

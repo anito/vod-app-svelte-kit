@@ -14,7 +14,7 @@
 	import { videos, users, flash, infos } from '$lib/stores';
 	import SimpleVideoCard from './SimpleVideoCard';
 	import DateRangePicker from './DateRangePicker';
-	import Header from './Header.svelte';
+	import Header from './_Header.svelte';
 	import Component from './_Component.svelte';
 	import {
 		startOfDay,

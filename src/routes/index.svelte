@@ -83,11 +83,11 @@
 	<title>{$sitename} | Home</title>
 </svelte:head>
 
-<Layout {segment} slot="main">
+<Layout {segment}>
 	<Hero title="Immersive Studio" tagline="" outline={src} logotype="logo-type-vod.svg" />
 
 	<Blurb>
-		<a href="." class="" slot="one">
+		<a href="/" class="" slot="one">
 			<h2>{$_('blocks.p1.header')}</h2>
 			<p>
 				{$_('blocks.p1.text1')}
