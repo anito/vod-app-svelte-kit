@@ -1139,12 +1139,13 @@
     "worktop" "0.8.0-next.13"
 
 "@sveltejs/adapter-netlify@^1.0.0-next.58":
-  "integrity" "sha512-ZkL9mop/oTLfSj3tPCnTjQw7cKfoYLiptDzTypv7l+HDfE7SCFzJuK7YenjTMPoKTakFVfYAEEVIdJEySZt5MQ=="
-  "resolved" "https://registry.npmjs.org/@sveltejs/adapter-netlify/-/adapter-netlify-1.0.0-next.58.tgz"
-  "version" "1.0.0-next.58"
+  "integrity" "sha512-oX5Q0I57eI2bvd5FYtRFArevcY90Aza0OywtmuO/USoE4f+Z96idktaKOdyMhjlIQkc2GTablJSA88UIycwwMA=="
+  "resolved" "https://registry.npmjs.org/@sveltejs/adapter-netlify/-/adapter-netlify-1.0.0-next.62.tgz"
+  "version" "1.0.0-next.62"
   dependencies:
     "@iarna/toml" "^2.2.5"
-    "esbuild" "^0.14.21"
+    "esbuild" "^0.14.29"
+    "set-cookie-parser" "^2.4.8"
     "tiny-glob" "^0.2.9"
 
 "@sveltejs/adapter-netlify@1.0.0-next.57":
@@ -1520,7 +1521,7 @@
   "resolved" "https://registry.npmjs.org/esbuild-darwin-64/-/esbuild-darwin-64-0.14.39.tgz"
   "version" "0.14.39"
 
-"esbuild@^0.14.21", "esbuild@^0.14.27":
+"esbuild@^0.14.21", "esbuild@^0.14.27", "esbuild@^0.14.29":
   "integrity" "sha512-2kKujuzvRWYtwvNjYDY444LQIA3TyJhJIX3Yo4+qkFlDDtGlSicWgeHVJqMUP/2sSfH10PGwfsj+O2ro1m10xQ=="
   "resolved" "https://registry.npmjs.org/esbuild/-/esbuild-0.14.39.tgz"
   "version" "0.14.39"
@@ -2323,6 +2324,11 @@
     "chokidar" ">=3.0.0 <4.0.0"
     "immutable" "^4.0.0"
     "source-map-js" ">=0.6.2 <2.0.0"
+
+"set-cookie-parser@^2.4.8":
+  "integrity" "sha512-edRH8mBKEWNVIVMKejNnuJxleqYE/ZSdcT8/Nem9/mmosx12pctd80s2Oy00KNZzrogMZS5mauK2/ymL1bvlvg=="
+  "resolved" "https://registry.npmjs.org/set-cookie-parser/-/set-cookie-parser-2.4.8.tgz"
+  "version" "2.4.8"
 
 "shebang-command@^2.0.0":
   "integrity" "sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA=="
