@@ -137,7 +137,7 @@
 	});
 
 	async function addUser() {
-		await goto('users/add');
+		await goto('/users/add');
 	}
 
 	async function generateToken(config = {}) {
