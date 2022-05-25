@@ -4,7 +4,7 @@
 		getLocaleFromNavigator,
 		getLocaleFromQueryString,
 		waitLocale,
-		init
+		init as init_i18n
 	} from 'svelte-i18n';
 	import { browser } from '$app/env';
 
@@ -14,7 +14,7 @@
 	if (browser) {
 		// init on client side only
 		// don't put this inside `load`, otherwise it will gets executed every time you changed route on client side
-		init({
+		init_i18n({
 			fallbackLocale: 'en-US',
 			initialLocale: getLocaleFromNavigator()
 		});
@@ -23,7 +23,7 @@
 	export async function load() {
 		if (!browser) {
 			// init on server side only, need to get query from `page.query.get("lang")`
-			init({
+			init_i18n({
 				fallbackLocale: 'en-US',
 				initialLocale: getLocaleFromQueryString('lang')
 			});
@@ -70,6 +70,7 @@
 	let loggedInButtonTextSecondLine;
 	let unsubscribeTicker;
 	let unsubscribeVideoEmitter;
+	let unsubscribeSettings;
 	let emphasize;
 
 	// load configuration from server
@@ -85,7 +86,6 @@
 		restoreFab: () => fabs.restore()
 	});
 
-	// $: console.log('TICKER', $session);
 	$: console.log('SETTINGS', $settings);
 	$: $settings && proxyEvent('ticker:recover');
 	$: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
@@ -107,45 +107,82 @@
 	$: searchParams = $page.url.searchParams.toString();
 	$: location = searchParams && `?${searchParams}`;
 
-	onMount(() => {
+	onMount(async () => {
 		console.log('MOUNTING');
 		root = document.documentElement;
 
-		window.addEventListener('ticker:start', sessionStartHandler);
-		window.addEventListener('ticker:started', sessionStartedHandler);
-		window.addEventListener('ticker:extend', sessionExtendHandler);
-		window.addEventListener('ticker:extended', sessionExtendedHandler);
-		window.addEventListener('ticker:end', sessionEndHandler);
-		window.addEventListener('ticker:ended', sessionEndedHandler);
-		window.addEventListener('ticker:recover', sessionRecoverHandler);
-		isMobileDevice && root.classList.add('ismobile');
+		initListener();
+		initClasses();
+		initStyles();
+		initSubscribers();
 
+		return () => {
+			console.log('DESTROYING');
+			removeListener();
+			removeSubscribers();
+			removeClasses();
+		};
+	});
+
+	function initListener() {
+		window.addEventListener('ticker:start', tickerStartHandler);
+		window.addEventListener('ticker:started', tickerStartedHandler);
+		window.addEventListener('ticker:extend', tickerExtendHandler);
+		window.addEventListener('ticker:extended', tickerExtendedHandler);
+		window.addEventListener('ticker:end', tickerEndHandler);
+		window.addEventListener('ticker:ended', tickerEndedHandler);
+		window.addEventListener('ticker:recover', tickerRecoverHandler);
+	}
+
+	function initClasses() {
+		isMobileDevice && root.classList.add('ismobile');
+	}
+
+	function initStyles() {
 		let styles = window.getComputedStyle(root);
 		theme.set({
 			primary: styles.getPropertyValue('--prime'),
 			secondary: styles.getPropertyValue('--second')
 		});
+	}
 
-		return () => {
-			console.log('DESTROYING');
-			unsubscribeVideoEmitter();
-			root.classList.remove('ismobile');
-			window.removeEventListener('ticker:start', sessionStartHandler);
-			window.removeEventListener('ticker:started', sessionStartedHandler);
-			window.removeEventListener('ticker:extend', sessionExtendHandler);
-			window.removeEventListener('ticker:extended', sessionExtendedHandler);
-			window.removeEventListener('ticker:end', sessionEndHandler);
-			window.removeEventListener('ticker:ended', sessionEndedHandler);
-			window.removeEventListener('ticker:recover', sessionRecoverHandler);
-		};
-	});
+	function initSubscribers() {
+		unsubscribeSettings = settings.subscribe((val) => proxyEvent('ticker:extend'));
+
+		unsubscribeVideoEmitter = videoEmitter.subscribe((t) => {
+			if ('put' === t.method) {
+				put(t);
+			}
+			if ('del' === t.method) {
+				del(t);
+			}
+		});
+	}
+
+	function removeListener() {
+		window.removeEventListener('ticker:start', tickerStartHandler);
+		window.removeEventListener('ticker:started', tickerStartedHandler);
+		window.removeEventListener('ticker:extend', tickerExtendHandler);
+		window.removeEventListener('ticker:extended', tickerExtendedHandler);
+		window.removeEventListener('ticker:end', tickerEndHandler);
+		window.removeEventListener('ticker:ended', tickerEndedHandler);
+		window.removeEventListener('ticker:recover', tickerRecoverHandler);
+	}
+
+	function removeSubscribers() {
+		unsubscribeSettings();
+		unsubscribeVideoEmitter();
+	}
+
+	function removeClasses() {
+		root.classList.remove('ismobile');
+	}
 
 	/**
 	 * Saves changes on video
 	 * @param item
 	 */
 	async function put({ data, show }) {
-		console.log('PUT');
 		const res = await api.put(`videos/${data.id}?lang=${$locale}`, data, user?.token);
 		if (show) {
 			let message = res.message || res.data.message;
@@ -170,15 +207,6 @@
 			videos.del(data.id);
 		}
 	}
-
-	unsubscribeVideoEmitter = videoEmitter.subscribe((t) => {
-		if ('put' === t.method) {
-			put(t);
-		}
-		if ('del' === t.method) {
-			del(t);
-		}
-	});
 
 	function submit(e) {
 		if ($session.user) {
@@ -213,15 +241,12 @@
 
 	function handleClosed() {}
 
-	async function sessionStartHandler(e) {
+	async function tickerStartHandler(e) {
 		const { user, groups, renewed } = { ...e.detail };
-
-		const expires = new Date(Date.now() + parseInt($settings.Session?.lifetime));
 
 		$session.user = user;
 		$session.role = user.group.name;
 		$session.groups = groups;
-		$session.expires = expires;
 
 		renewed && localStorage.setItem('renewed', renewed);
 		proxyEvent('ticker:started');
@@ -234,7 +259,7 @@
 		snackbar.open();
 	}
 
-	function sessionStartedHandler() {
+	function tickerStartedHandler() {
 		if (__ticker__.started) return;
 
 		unsubscribeTicker = ticker.subscribe((val) => {
@@ -245,14 +270,15 @@
 	}
 
 	// TODO
-	async function sessionExtendHandler() {
-		// let res = await get('session');
+	async function tickerExtendHandler() {
+		const expires = new Date(Date.now() + parseInt($settings.Session?.lifetime));
+		$session.expires = expires;
 	}
 
 	// TODO
-	function sessionExtendedHandler(e) {}
+	function tickerExtendedHandler(e) {}
 
-	async function sessionEndHandler(e) {
+	async function tickerEndHandler(e) {
 		if (!$session.user) return;
 		// logout from backend
 		const res = await logout(`/auth/logout?lang=${$locale}`);
@@ -265,7 +291,7 @@
 		}
 	}
 
-	function sessionEndedHandler(e) {
+	function tickerEndedHandler(e) {
 		unsubscribeTicker && unsubscribeTicker();
 
 		$session.user = null;
@@ -282,13 +308,10 @@
 		);
 	}
 
-	function sessionRecoverHandler() {
-		console.log('SESSION_RECOVER');
+	function tickerRecoverHandler() {
 		const expires = new Date(Date.now() + parseInt($settings.Session?.lifetime));
 		if ($session.user) {
-			console.log('SESSION_RECOVERING', $session);
 			$session.expires = expires;
-			proxyEvent('ticker:started');
 		}
 	}
 </script>
