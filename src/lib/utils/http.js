@@ -16,7 +16,6 @@ export function get(endpoint) {
 export function post(endpoint, data = {}) {
 	return fetch(endpoint, {
 		method: 'POST',
-		credentials,
 		body: JSON.stringify(data),
 		headers: {
 			'Content-Type': 'application/json'
