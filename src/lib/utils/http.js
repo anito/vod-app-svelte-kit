@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { browser } from '$app/env';
 
-const credentials = browser ? 'include' : 'omit';
+const credentials = browser ? 'include' : void 0;
 
 export function get(endpoint) {
 	return fetch(endpoint, {
