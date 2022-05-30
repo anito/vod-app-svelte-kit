@@ -107,6 +107,12 @@
 	$: searchParams = $page.url.searchParams.toString();
 	$: location = searchParams && `?${searchParams}`;
 
+	unsubscribeTicker = ticker.subscribe((val) => {
+		if (val === 0) {
+			proxyEvent('ticker:end', { path: '/login' });
+		}
+	});
+
 	onMount(async () => {
 		console.log('MOUNTING');
 		root = document.documentElement;
@@ -261,12 +267,6 @@
 
 	function tickerStartedHandler() {
 		if (__ticker__.started) return;
-
-		unsubscribeTicker = ticker.subscribe((val) => {
-			if (val === 0) {
-				proxyEvent('ticker:end', { path: '/login' });
-			}
-		});
 	}
 
 	// TODO

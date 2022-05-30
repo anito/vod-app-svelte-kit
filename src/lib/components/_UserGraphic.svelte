@@ -38,14 +38,12 @@
 		: 'transparent';
 
 	$: (async (user) => {
-		if (!user || !user?.avatar) {
+		let avatar = user?.avatar;
+		if (!avatar) {
 			await Promise.resolve(fallbackImage || placeholderDotComAvatar(user?.name)).then(
 				(val) => (src = val)
 			);
-		}
-
-		let avatar = user.avatar;
-		if (avatar?.src) {
+		} else {
 			if (avatar.src.startsWith('http')) {
 				await Promise.resolve(avatar.src).then((val) => (src = val));
 			} else {

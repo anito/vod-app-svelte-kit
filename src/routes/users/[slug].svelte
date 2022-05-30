@@ -10,6 +10,7 @@
 	import { _ } from 'svelte-i18n';
 
 	const TABS = ['user', 'time', 'mail'];
+	const defaultTab = TABS[1];
 
 	let userExpires;
 	let hasExpired;
@@ -18,13 +19,12 @@
 	let currentUser;
 	let username;
 
-	$: selected_tab = $page.url.searchParams.get('tab') || 'time';
 	$: selectionUserId = $page.params.slug;
 	$: currentUser = ((id) => $users.length && $users.filter((usr) => usr.id === id)[0])(
 		selectionUserId
 	);
 	$: username = (currentUser && currentUser.name) || '';
-	$: tab = ((t) => TABS.find((itm) => itm === t) || TABS[1])(selected_tab);
+	$: tab = ((t) => TABS.find((itm) => itm === t))($page.url.searchParams.get('tab')) || defaultTab;
 	$: ((user) => {
 		if (!user) return;
 		userExpires = user.expires;
