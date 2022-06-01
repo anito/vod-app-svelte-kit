@@ -263,11 +263,10 @@
 		}
 	}
 
-	async function redirectDialogCloseHandler(e) {
-		console.log(magicLink);
+	async function redirectMagicLinkDialogCloseHandler(e) {
 		if (
 			'redirect' === e.detail.action &&
-			/^(https?|ftp|torrent|image|irc):\/\/(-\.)?([^\s\/?\.#-]+\.?)+(\/[^\s]*)?$/i.test(magicLink)
+			/^(https?|ftp|torrent|image|irc):\/\/(-\.)?([^\s\/?\.#-&]+\.?)+(\/[^\s]*)?$/i.test(magicLink)
 		) {
 			await goto(magicLink);
 		}
@@ -495,7 +494,7 @@
 	bind:this={redirectDialog}
 	aria-labelledby="event-title"
 	aria-describedby="event-content"
-	on:SMUIDialog:closed={redirectDialogCloseHandler}
+	on:SMUIDialog:closed={redirectMagicLinkDialogCloseHandler}
 >
 	<DialogTitle id="event-title">{$_('text.magic-link')}</DialogTitle>
 	<Content id="event-content">

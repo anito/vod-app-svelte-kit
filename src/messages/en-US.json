@@ -195,7 +195,9 @@
     "watch_movie": "Watch",
     "empty-user-selection": "No user selected",
     "search-video": "Search video",
-    "no_title": "No Title"
+    "no_title": "No Title",
+    "busy": "Still busy...",
+    "hallo": "..."
   },
   "summary": {
     "copy-link": {

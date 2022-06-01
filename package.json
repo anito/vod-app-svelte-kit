@@ -1,6 +1,8 @@
 {
-	"name": "vod-app",
-	"version": "0.0.1",
+	"name": "vod-manager",
+	"version": "0.9.1",
+	"description": "VoD Manager",
+	"license": "UNLICENSED",
 	"scripts": {
 		"dev": "svelte-kit dev",
 		"build": "svelte-kit build",
