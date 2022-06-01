@@ -4,7 +4,7 @@ import { writable } from 'svelte/store';
 function createStore() {
 	const { subscribe, update, set } = writable({
 		Session: {
-			lifetime: 4 * 60 * 60 * 1000
+			lifetime: 60 * 1000
 		}
 	});
 

@@ -1,4 +1,6 @@
 <script>
+	// @ts-nocheck
+
 	import './_textfield.scss';
 	import './_button.scss';
 	import { settings } from '$lib/stores';

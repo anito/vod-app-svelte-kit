@@ -88,7 +88,10 @@
 		restoreFab: () => fabs.restore()
 	});
 
+	$: $session.user && proxyEvent('ticker:recover');
 	$: $settings && proxyEvent('ticker:recover');
+	$: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
+	$: $session.user && proxyEvent('ticker:recover');
 	$: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
 	$: user = $session.user;
 	$: person = svg(svg_manifest.person, $theme.primary);
@@ -114,6 +117,15 @@
 		}
 	});
 
+	unsubscribeVideoEmitter = videoEmitter.subscribe((t) => {
+		if ('put' === t.method) {
+			put(t);
+		}
+		if ('del' === t.method) {
+			del(t);
+		}
+	});
+
 	onMount(async () => {
 		root = document.documentElement;
 		snackbar = getSnackbar();
@@ -121,7 +133,6 @@
 		initListener();
 		initClasses();
 		initStyles();
-		initSubscribers();
 
 		return () => {
 			removeListener();
@@ -132,9 +143,6 @@
 
 	function initListener() {
 		window.addEventListener('ticker:start', tickerStartHandler);
-		window.addEventListener('ticker:started', tickerStartedHandler);
-		window.addEventListener('ticker:extend', tickerExtendHandler);
-		window.addEventListener('ticker:extended', tickerExtendedHandler);
 		window.addEventListener('ticker:end', tickerEndHandler);
 		window.addEventListener('ticker:ended', tickerEndedHandler);
 		window.addEventListener('ticker:recover', tickerRecoverHandler);
@@ -152,24 +160,8 @@
 		});
 	}
 
-	function initSubscribers() {
-		unsubscribeSettings = settings.subscribe((val) => proxyEvent('ticker:extend'));
-
-		unsubscribeVideoEmitter = videoEmitter.subscribe((t) => {
-			if ('put' === t.method) {
-				put(t);
-			}
-			if ('del' === t.method) {
-				del(t);
-			}
-		});
-	}
-
 	function removeListener() {
 		window.removeEventListener('ticker:start', tickerStartHandler);
-		window.removeEventListener('ticker:started', tickerStartedHandler);
-		window.removeEventListener('ticker:extend', tickerExtendHandler);
-		window.removeEventListener('ticker:extended', tickerExtendedHandler);
 		window.removeEventListener('ticker:end', tickerEndHandler);
 		window.removeEventListener('ticker:ended', tickerEndedHandler);
 		window.removeEventListener('ticker:recover', tickerRecoverHandler);
@@ -178,6 +170,7 @@
 	function removeSubscribers() {
 		unsubscribeSettings();
 		unsubscribeVideoEmitter();
+		unsubscribeTicker();
 	}
 
 	function removeClasses() {
@@ -255,7 +248,6 @@
 		$session.groups = groups;
 
 		renewed && localStorage.setItem('renewed', renewed);
-		proxyEvent('ticker:extend');
 
 		configSnackbar(
 			$_('text.external-login-welcome-message', {
@@ -265,19 +257,6 @@
 		snackbar = getSnackbar();
 		snackbar.open();
 	}
-
-	function tickerStartedHandler() {
-		if (__ticker__.started) return;
-	}
-
-	// TODO
-	async function tickerExtendHandler() {
-		const expires = new Date(Date.now() + parseInt($settings.Session?.lifetime));
-		$session.expires = expires;
-	}
-
-	// TODO
-	function tickerExtendedHandler(e) {}
 
 	async function tickerEndHandler(e) {
 		if (!$session.user) return;
@@ -312,9 +291,8 @@
 	}
 
 	function tickerRecoverHandler() {
-		const expires = new Date(Date.now() + parseInt($settings.Session?.lifetime));
 		if ($session.user) {
-			$session.expires = expires;
+			$session.expires = new Date(Date.now() + parseInt($settings.Session?.lifetime));
 		}
 	}
 </script>

@@ -36,17 +36,9 @@
 		Actions,
 		InitialFocus
 	} from '@smui/dialog';
-	import { key } from '$lib/utils/key';
 
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
 	const { setFab } = getContext('fab');
-	const sortAZ = (a, b) => {
-		let an = a['name'].toLowerCase();
-		let bn = b['name'].toLowerCase();
-		if (an < bn) return -1;
-		if (an > bn) return 1;
-		return 0;
-	};
 	const sortAZProtected = (a, b) => {
 		let ap = (a['protected'] && a['name'].toLowerCase()) || 'z';
 		let bp = (b['protected'] && b['name'].toLowerCase()) || 'z';
@@ -97,6 +89,7 @@
 	let pendingActiveTemplate;
 	let activeMailbox;
 	let selectionIndex;
+	let dynamicTemplatePath;
 
 	export let selectionUserId = null;
 
@@ -118,6 +111,7 @@
 	$: currentTemplate && isAdmin ? setFab('send-mail') : setFab('');
 	$: currentStore =
 		activeMailbox === 'inboxes' ? inboxes : activeMailbox === 'sents' ? sents : inboxes;
+	$: dynamicTemplatePath = currentUser && ((slug) => createTemplatePath(slug));
 
 	onMount(async () => {
 		root = document.documentElement;
@@ -128,9 +122,29 @@
 		drawerOpen = drawerOpenOnMount;
 	});
 
-	function setActivePath(active) {
-		$page.url.searchParams.set('active', active);
+	function createTemplatePath(target) {
+		$page.url.searchParams.set('active', target);
 		return `${validatePath($page.url.pathname)}?${$page.url.searchParams.toString()}`;
+	}
+
+	/**
+	 * User ID comes from $page.params.slug
+	 * Fix non-existent users (caused from from a redirect) in case there is no such
+	 * @param path
+	 *
+	 * @returns (String) path
+	 */
+	function validatePath(path) {
+		const user = currentUser || $session.user;
+		const regex = /(\/users\/)([\w-]+)/g;
+		const subst = `$1${user.id}`;
+		return path.replace(regex, subst);
+	}
+
+	async function gotoActiveBox(active) {
+		if (!active) active = defaultActive;
+		// fix falsy users and append mailbox path to url
+		return await goto(createTemplatePath(active));
 	}
 
 	async function sendMail() {
@@ -454,12 +468,6 @@
 		return slug;
 	}
 
-	async function gotoActiveBox(active) {
-		if (!active) active = defaultActive;
-		// fix falsy users and append mailbox path to url
-		return await goto(setActivePath(active));
-	}
-
 	function matchesTemplate(value) {
 		if (!value) return;
 		let matches = value.match(/(template):([\w-:\d]+)/);
@@ -470,20 +478,6 @@
 		return `template:${slug}`;
 	}
 
-	/**
-	 * User ID comes from $page.params.slug
-	 * Fix non-existent users (caused from from a redirect) in case there is no such
-	 * @param path
-	 *
-	 * @returns (String) path
-	 */
-	function validatePath(path) {
-		if (currentUser) return path;
-		const regex = /(\/users\/)([\w-]+)/g;
-		const subst = `$1${$session.user?.id}`;
-		return path.replace(regex, subst);
-	}
-
 	function validateData(template) {
 		let data = getTemplateData(template.slug);
 		if (data) {
@@ -492,9 +486,9 @@
 		return true;
 	}
 
-	function getMagicLink(user) {
-		if (currentUser && currentUser.token) {
-			return `https://${$page.host}/login?token=${currentUser.token.token}`;
+	function getMagicLink() {
+		if (currentUser?.token) {
+			return `${$page.url.origin}/login?token=${currentUser.token.token}`;
 		}
 		return '';
 	}
@@ -512,7 +506,7 @@
 					<List>
 						<Item
 							sveltekit:prefetch
-							href={setActivePath('inboxes')}
+							href={dynamicTemplatePath('inboxes')}
 							on:click={() => (selectionIndex = -1)}
 							activated={activeMailbox === 'inboxes'}
 						>
@@ -529,7 +523,7 @@
 						</Item>
 						<Item
 							sveltekit:prefetch
-							href={setActivePath('sents')}
+							href={dynamicTemplatePath('sents')}
 							on:click={() => (selectionIndex = -1)}
 							activated={activeMailbox === 'sents'}
 						>
@@ -580,7 +574,7 @@
 							{#each $templates.sort(sortAZProtected) as template (template.id)}
 								<Item
 									sveltekit:prefetch
-									href={setActivePath(templateStringFromSlug(template.slug))}
+									href={dynamicTemplatePath(templateStringFromSlug(template.slug))}
 									activated={activeMailbox === `template:${template.slug}`}
 									on:mouseover={(e) => overEditable(e)}
 									on:mouseleave={(e) => leaveEditable(e)}

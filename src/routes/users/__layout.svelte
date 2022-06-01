@@ -106,8 +106,7 @@
 		tokenVal = token?.token || '';
 		tokenExpires = usr?.expires;
 		hasExpired = (tokenExpires && tokenExpires * 1000 < +new Date().getTime()) || false;
-		magicLink =
-			(tokenVal && `http://${$page.url.host}/login?token=${tokenVal}&lang=${$locale}`) || '';
+		magicLink = (tokenVal && `${$page.url.origin}/login?token=${tokenVal}&lang=${$locale}`) || '';
 	})(currentUser);
 	$: filteredUsers = $users?.filter(
 		(user) => user.name.toLowerCase().indexOf(search.toLowerCase()) !== -1

@@ -25,19 +25,15 @@ function createStore() {
 			return () => {
 				clearInterval(__ticker__.interval);
 
-				console.log(
-					'%c TICKER ENDED',
-					'background: #ff5722; color: #ffffff; padding:4px 6px 3px 0;'
-				);
+				// console.log(
+				// 	'%c TICKER ENDED',
+				// 	'background: #ff5722; color: #ffffff; padding:4px 6px 3px 0;'
+				// );
 
-				/**
-				 * Stop condition (value === 0) was possibly met
-				 * remove it to re-enable
-				 */
 				set(void 0);
 			};
 		},
-		void 0
+		void 0 // initial value
 	);
 }
 
