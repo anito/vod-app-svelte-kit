@@ -264,11 +264,11 @@
 	}
 
 	async function redirectDialogCloseHandler(e) {
+		console.log(magicLink);
 		if (
 			'redirect' === e.detail.action &&
 			/^(https?|ftp|torrent|image|irc):\/\/(-\.)?([^\s\/?\.#-]+\.?)+(\/[^\s]*)?$/i.test(magicLink)
 		) {
-			console.log(magicLink);
 			await goto(magicLink);
 		}
 	}
