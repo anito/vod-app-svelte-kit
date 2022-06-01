@@ -1,12 +1,12 @@
 <script>
+	// @ts-nocheck
+
 	import { GridItem, LayoutGrid } from '$lib/components';
 
 	export let stretch = false;
-
-	export let segment;
 </script>
 
-<LayoutGrid {segment} {stretch} class="no-pagebar">
+<LayoutGrid {stretch} class="no-pagebar">
 	<GridItem name="content" let:inner>
 		<div class={inner}>
 			<slot />

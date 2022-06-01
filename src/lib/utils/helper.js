@@ -1,4 +1,27 @@
 // @ts-nocheck
+export function sortByTitle(a, b) {
+	let _a = a.title?.toUpperCase() || '';
+	let _b = b.title?.toUpperCase() || '';
+	return (_a < _b && -1) || (_a > _b && 1) || 0;
+}
+
+export function sortByName(a, b) {
+	let _a = a.name?.toUpperCase() || '';
+	let _b = b.name?.toUpperCase() || '';
+	return (_a < _b && -1) || (_a > _b && 1) || 0;
+}
+
+export function sortByStartDate(a, b) {
+	let aStart = a._joinData.start || new Date('3000');
+	let bStart = b._joinData.start || new Date('3000');
+	return new Date(bStart) - new Date(aStart);
+}
+
+export function sortByEndDate(a, b) {
+	let aEnd = a._joinData.end || new Date('3000');
+	let bEnd = b._joinData.end || new Date('3000');
+	return new Date(bEnd) - new Date(aEnd);
+}
 
 export function equals(obj_1, obj_2) {
 	let json_1 = typeof obj_1 === 'object' && JSON.stringify(obj_1);
@@ -49,7 +72,7 @@ export function redirectPath(page, session = {}) {
 	if ((redirect = page.url.searchParams.get('redirect'))) {
 		return redirect;
 	} else {
-		uid = session?.user.id;
+		uid = session.user?.id;
 		path = isAdmin ? `/users/${uid}` : '/videos';
 		return path.concat(parseQuery(page.url.searchParams));
 	}

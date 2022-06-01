@@ -25,8 +25,10 @@
 	let canPlay = false;
 	let timeoutId;
 
+	const ADMIN = 'Administrator';
+
 	$: currentUser = $users.find((user) => user.id == $session.user?.id);
-	$: isAdmin = $session.role === 'Administrator';
+	$: isAdmin = ADMIN === $session.role;
 	$: token = currentUser?.token.token;
 	$: joinData =
 		currentUser && (vid = currentUser.videos.find((v) => v.id == video.id)) && vid._joinData;
@@ -70,6 +72,7 @@
 	}
 
 	async function savePlayhead() {
+		console.log('SAVING PLAYHEAD');
 		if (isAdmin) {
 			videoEmitter.dispatch({
 				method: 'put',

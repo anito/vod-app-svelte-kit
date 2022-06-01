@@ -26,18 +26,16 @@
 
 	let videoElement;
 	let className = '';
-	let item;
 
 	export { className as class };
 
-	onMount(() => {
+	onMount((_) => {
 		let timestamp = now;
-		item = {
-			videoElement,
-			video,
-			timestamp
-		};
-		!players.has(item) && players.add(item);
+		multiplayer &&
+			players.add({
+				video: videoElement,
+				timestamp
+			});
 	});
 
 	$: multiplayer &&
@@ -50,13 +48,13 @@
 
 	function pausePlayers() {
 		players.forEach((player) => {
-			if (player.videoElement !== videoElement) {
-				if (player.videoElement.promise) {
-					player.videoElement.promise.then(() => {
-						pauseVideo(player.videoElement);
+			if (player.video !== videoElement) {
+				if (player.video.promise) {
+					player.video.promise.then(() => {
+						pauseVideo(player.video);
 					});
 				} else {
-					pauseVideo(player.videoElement);
+					pauseVideo(player.video);
 				}
 			} else {
 				player.timestamp = new Date().getTime();
@@ -75,7 +73,7 @@
 		if (browserName !== 'Chrome') return;
 		var _player, _players;
 		_players = Array.from(players);
-		_players = _players.filter((player) => player.timestamp > now && player.videoElement.paused);
+		_players = _players.filter((player) => player.timestamp > now && player.video.paused);
 		_player = _players
 			.sort((a, b) => b.timestamp - a.timestamp)
 			.slice(MAXSTREAMS - 1)

@@ -11,7 +11,7 @@
 	import List, { Item, Graphic, Separator, Text } from '@smui/list';
 	import Button, { Label, Icon as ButtonIcon } from '@smui/button';
 	import IconButton, { Icon } from '@smui/icon-button';
-	import { videos, users, flash, infos } from '$lib/stores';
+	import { videos, videosAll, users, flash, infos } from '$lib/stores';
 	import SimpleVideoCard from './SimpleVideoCard';
 	import DateRangePicker from './DateRangePicker';
 	import Header from './_Header.svelte';
@@ -27,15 +27,14 @@
 		subYears,
 		parseISO
 	} from 'date-fns';
-	import * as locale from 'date-fns/locale/index.js';
-	import { toISODate, proxyEvent } from '$lib/utils';
+	import * as locales from 'date-fns/locale/index.js';
+	import { toISODate, proxyEvent, sortByEndDate, sortByTitle } from '$lib/utils';
 	import Dialog, { Title, Content, Actions, InitialFocus } from '@smui/dialog';
 	import Radio from '@smui/radio';
-	import { _, locale as _locale } from 'svelte-i18n';
+	import { _, locale } from 'svelte-i18n';
 
 	export let selectionUserId;
 
-	const user = $session.user;
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
 	const timespanSelections = [
 		{ title: 'text.1-month', value: 30 },
@@ -61,16 +60,27 @@
 	let selectedIndex;
 	let selectionVideoId;
 	let selectedVideo;
-	let userVideos = [];
 	let readout;
 	let schedulingVideo = '';
 	let expires;
 	let isExpired;
 
-	$: dateFormat = $_locale.indexOf('de') != -1 ? 'dd. MMM yyyy' : 'yyyy-MM-dd';
+	$: user = $session.user;
+	$: dateFormat = $locale.indexOf('de') != -1 ? 'dd. MMM yyyy' : 'yyyy-MM-dd';
 	$: currentUserIndex = ((id) => $users.findIndex((usr) => usr.id === id))(selectionUserId);
-	$: userVideos =
-		($users[currentUserIndex] && $users[currentUserIndex].videos.sort(sortByEndDate)) || [];
+	$: userVideos = ((idx) => {
+		if ($session.role === ADMIN) {
+			return $users[idx]?.videos.sort(sortByEndDate);
+		} else {
+			return $users[idx]?.videos
+				.filter((v) => {
+					return (
+						new Date(v._joinData.start) <= new Date() && new Date(v._joinData.end) >= new Date()
+					);
+				})
+				.sort(sortByEndDate);
+		}
+	})(currentUserIndex);
 	$: (() => (selectionVideoId = null))(selectionUserId);
 	$: currentUser =
 		(filtered = ((id) => $users.filter((usr) => usr.id === id))(selectionUserId)) &&
@@ -88,16 +98,20 @@
 	$: endDate = (joinData && joinData.end && parseISO(joinData.end)) || endOfWeek(new Date(0));
 	$: expires = currentUser && currentUser.expires;
 	$: isExpired = (expires && expires * 1000 < +new Date().getTime()) || false;
-	$: noneUserVideos =
-		(currentRole === ADMIN && $videos) ||
-		$videos
-			.filter(
-				(v) =>
-					!userVideos.find((uv) => {
-						return v.id === uv.id && (!uv._joinData.end || new Date(uv._joinData.end) > new Date());
-					})
-			)
-			.sort(sortByTitle);
+	$: noneUserVideos = ((role) => {
+		if (role === ADMIN) return $videos.sort(sortByTitle);
+		else
+			return $videosAll
+				.filter(
+					(v) =>
+						!userVideos?.find((uv) => {
+							return (
+								v.id === uv.id && (!uv._joinData.end || new Date(uv._joinData.end) > new Date())
+							);
+						})
+				)
+				.sort(sortByTitle);
+	})(currentRole);
 	$: isDatapickerOpen = ((id) => {
 		if (!root) return;
 		!id && root.classList.remove('datapicker--open');
@@ -105,7 +119,7 @@
 	})(selectionVideoId);
 	$: schedulingVideo = schedulingVideoId && $videos.find((video) => video.id === schedulingVideoId);
 	$: schedulingVideoTitle = (schedulingVideo && schedulingVideo.title) || '';
-	$: localeObject = ((l) => locale[l.slice(0, 2)])($_locale);
+	$: localeObject = ((l) => locales[l.slice(0, 2)])($locale);
 	$: userIssues =
 		($infos.has(selectionUserId) &&
 			$infos.get(selectionUserId).params.filter((info) => info.type === 'issue')) ||
@@ -119,21 +133,6 @@
 		return () => root.classList.remove('timemanager--open', 'datapicker--open');
 	});
 
-	function sortByTitle(a, b) {
-		let _a = (a.title && a.title.toUpperCase()) || '';
-		let _b = (b.title && b.title.toUpperCase()) || '';
-		return (_a < _b && -1) || (_a > _b && 1) || 0;
-	}
-	function sortByStartDate(a, b) {
-		let aStart = a._joinData.start || new Date('3000');
-		let bStart = b._joinData.start || new Date('3000');
-		return new Date(bStart) - new Date(aStart);
-	}
-	function sortByEndDate(a, b) {
-		let aEnd = a._joinData.end || new Date('3000');
-		let bEnd = b._joinData.end || new Date('3000');
-		return new Date(bEnd) - new Date(aEnd);
-	}
 	function openScheduleDialog(video) {
 		schedulingVideoId = video.id;
 		scheduleDialog.setOpen(true);
@@ -239,7 +238,7 @@
 	}
 
 	function saveUser(data) {
-		return api.put(`users/${selectionUserId}?lang=${$_locale}`, data, user && user.token);
+		return api.put(`users/${selectionUserId}?lang=${$locale}`, data, user?.token);
 	}
 
 	function handleSuccess(res, msg) {
@@ -256,14 +255,14 @@
 		snackbar.isOpen && snackbar.close();
 
 		message = res.message || res.data.message || res.statusText;
-		code = (res.data && res.data.code) || res.status;
+		code = res.data?.code || res.status;
 
 		if (400 <= code && code < 500) {
 			configSnackbar(message);
 			snackbar.open();
 		} else {
 			flash.update({ type: 'error', message });
-			path = `login${createRedirectSlug($page.url)}`;
+			path = `login${createRedirectSlug($page)}`;
 			configSnackbar(message, path);
 			snackbar.open();
 		}
@@ -281,7 +280,7 @@
 <div
 	class="grid-item user-videos"
 	class:no-user-selected={!currentUser}
-	class:no-videos={(userVideos && !userVideos.length) || currentRole === ADMIN}
+	class:no-videos={!userVideos?.length || currentRole === ADMIN}
 >
 	<Component>
 		<div slot="header">
@@ -298,7 +297,7 @@
 		</div>
 		<List class="video-list" threeLine avatarList singleSelection bind:selectedIndex>
 			{#if ADMIN !== currentRole}
-				{#if userVideos && userVideos.length}
+				{#if userVideos?.length}
 					{#each userVideos as video (video.id)}
 						<SimpleVideoCard
 							isUserVideo
@@ -376,12 +375,12 @@
 				>
 			</div>
 			<List class="video-list" twoLine avatarList singleSelection>
-				{#if noneUserVideos.length}
+				{#if noneUserVideos?.length}
 					{#each noneUserVideos as video (video.id)}
 						<SimpleVideoCard
 							let:unmanagable
 							class="video"
-							disabled={currentRole === ADMIN}
+							disabled={currentRole === ADMIN || $session.role !== ADMIN}
 							{video}
 							{selectionUserId}
 						>
@@ -390,18 +389,20 @@
 								class="self-center"
 								color="primary"
 								style="display: none;"
-								on:click={async () => await goto(`videos/${video.id}`)}
+								on:click={async () => await goto(`/videos/${video.id}`)}
 							>
 								<Icon class="material-icons">link</Icon>
 							</IconButton>
-							<IconButton
-								disabled={unmanagable || video.teaser}
-								class="add-action-button add"
-								color="primary"
-								on:click={() => openScheduleDialog(video)}
-							>
-								<Icon class="material-icons">add_circle_outline</Icon>
-							</IconButton>
+							{#if $session.role === ADMIN}
+								<IconButton
+									disabled={unmanagable || video.teaser}
+									class="add-action-button add"
+									color="primary"
+									on:click={() => openScheduleDialog(video)}
+								>
+									<Icon class="material-icons">add_circle_outline</Icon>
+								</IconButton>
+							{/if}
 						</SimpleVideoCard>
 					{/each}
 				{:else}

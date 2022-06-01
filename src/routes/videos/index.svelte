@@ -20,7 +20,7 @@
 	});
 
 	async function changeTab(tab) {
-		await goto(`videos?tab=${tab}`);
+		await goto(`/videos?tab=${tab}`);
 		return false;
 	}
 </script>

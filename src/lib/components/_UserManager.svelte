@@ -219,17 +219,17 @@
 		switch (mode) {
 			case 'add':
 				data = { active, email, name, password, group_id };
-				res = await api.post(`/users/add?lang=${$locale}`, data, user && user.token);
+				res = await api.post(`users/add?lang=${$locale}`, data, user && user.token);
 				break;
 			case 'edit':
 				data = { active, email, name, group_id, token };
 			case 'pass':
 				data = data || { password, token };
-				res = await api.put(`/users/${selectionUserId}?lang=${$locale}`, data, user && user.token);
+				res = await api.put(`users/${selectionUserId}?lang=${$locale}`, data, user && user.token);
 				break;
 			case 'del':
 				if (!confirm($_('messages.permanently-remove-user', { values: { name } }))) return;
-				res = await api.del(`/users/${selectionUserId}?lang=${$locale}`, user && user.token);
+				res = await api.del(`users/${selectionUserId}?lang=${$locale}`, user && user.token);
 				break;
 			default:
 				return;

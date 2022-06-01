@@ -9,7 +9,7 @@
 	const scrubStart = {};
 
 	let duration;
-	let showControlsTimeout;
+	let controlsTimeout;
 	let className = '';
 	let hydrated = false;
 	let hydrating = false;
@@ -17,10 +17,8 @@
 	let buffered;
 	let scrubbing;
 	let target;
-	let hideControlsOnPause = true;
+	let mouseAction;
 	let customControls;
-	let playPromise;
-	let loadPromise;
 
 	export let allowScrubbing = false;
 	export let videoElement = null;
@@ -31,15 +29,16 @@
 	export let type;
 	export let muted = true;
 	export let controls = false; // use native controls if true
-	export let paused = true;
+	export let paused = false;
 	export let preload = 'none';
 	export let playhead = 0;
 	export let curtain = false;
 	export { className as class };
 
 	$: customControls = !controls;
-	$: showControls = paused;
-	$: paused && !hideControlsOnPause && clearTimeout(showControlsTimeout);
+	$: showControls = paused || mouseAction;
+	$: !mouseAction && delayHideControls();
+	$: paused && delayHideControls();
 	$: ((p) => {
 		if (currentPoster !== p) {
 			currentPoster = p;
@@ -52,37 +51,33 @@
 	onMount(() => {});
 
 	function setSource(src) {
-		let oldSrc = videoElement?.getAttribute('src');
-		if (oldSrc && oldSrc !== src) {
+		if (!videoElement) return;
+
+		let oldSrc = videoElement.getAttribute('src');
+		if (oldSrc !== src) {
 			videoElement.setAttribute('src', src);
 		}
 	}
 
-	function handleMouseenter(e) {
-		e = e.detail;
-		showControls = true;
+	function handleMouseenter() {
+		mouseAction = true;
 	}
 
-	function handleMouseleave(e) {
-		e = e.detail;
-		showMediaControls();
+	function handleMouseleave() {
+		mouseAction = false;
 	}
 
-	function showMediaControls() {
+	function delayHideControls() {
 		if (!duration) return; // nothing loaded
-		clearTimeout(showControlsTimeout);
-		showControlsTimeout = setTimeout(() => (showControls = false), 4000);
+		clearTimeout(controlsTimeout);
+		controlsTimeout = setTimeout(() => (showControls = false), 4000);
 		showControls = true;
 	}
 
 	function handleMousemove(e) {
 		e = e.detail;
-		showMediaControls();
+		delayHideControls();
 		allowScrubbing && handleScrubbing(e);
-	}
-
-	function handleClearTimeout(e) {
-		clearTimeout(showControlsTimeout);
 	}
 
 	function handleScrubbing(e) {
@@ -99,8 +94,8 @@
 		let dist = left - x - (left - e.clientX);
 		let delta = ph + dist * ratio;
 
-		// playhead = (duration * (e.clientX - left)) / (right - left); // absolute
-		playhead = delta >= duration ? duration : delta < 0 ? 0 : delta; // relative
+		// playhead = (duration * (e.clientX - left)) / (right - left); // entry point relative to videos bounding rect - causes playhed to jump in most cases
+		playhead = delta >= duration ? duration : delta < 0 ? 0 : delta; // entry point equals current playhead - no playhead jump
 		scrubbing = true;
 	}
 
@@ -115,10 +110,12 @@
 			videoElement.promise = videoElement.play();
 		} else {
 			videoElement.promise
-				.then((_) => videoElement.pause()) // playback started so we can safely pause
+				.then((_) => {
+					// playback started so we can safely pause
+					videoElement.pause();
+				})
 				.catch((_) => {
-					videoElement.src = '';
-					console.log('Auto-play was prevented', video.title);
+					console.log('Auto-play was prevented');
 				});
 		}
 	}
@@ -135,11 +132,9 @@
 	}
 
 	function handleForeward(e) {
-		e.stopPropagation();
 		let step = e.detail || 15;
 		playhead += playhead + step > duration ? duration - playhead : step;
 		dispatch('player:fwd');
-		return false;
 	}
 
 	function handleWheel(e) {
@@ -149,7 +144,8 @@
 
 	function handleMousedown(e) {
 		e = e.detail;
-		const isMediaControl = e.target.classList.contains('media-controls');
+		mouseAction = true;
+		const isMediaControl = e.target.classList.contains('play-pause-controllable');
 
 		scrubStart.x = e.clientX;
 		scrubStart.y = e.clientY;
@@ -262,10 +258,10 @@
 		bind:duration
 		bind:paused
 		bind:buffered
+		bind:muted
 		{poster}
 		{preload}
 		{controls}
-		{muted}
 		{type}
 		{autoplay}
 		on:loadstart={handleLoadstart}
@@ -286,11 +282,11 @@
 	{#if customControls}
 		<Ui
 			on:wheel={handleWheel}
+			on:touchstart={handleMousedown}
 			on:mousedown={handleMousedown}
 			on:mousemove={handleMousemove}
 			on:mouseenter={handleMouseenter}
 			on:mouseleave={handleMouseleave}
-			on:clearTimeout={handleClearTimeout}
 			on:fullscreen={handleFullscreen}
 			on:play-pause={handlePlayPause}
 			on:rwd={handleRewind}
@@ -298,7 +294,6 @@
 			on:pip={handlePictureInPicture}
 			on:mute={handleMute}
 			bind:time={playhead}
-			on:click={(e) => e.stopPropagation()}
 			{muted}
 			{duration}
 			{showControls}
@@ -318,7 +313,7 @@
 		width: 100%;
 		width: var(--player-w);
 		object-position: center;
-		object-fit: cover;
+		object-fit: contain;
 	}
 	.hydrated video {
 		object-fit: contain;

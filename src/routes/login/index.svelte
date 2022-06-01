@@ -3,18 +3,13 @@
 	import { post } from '$lib/utils';
 
 	export async function load({ url }) {
-		let token = url.searchParams.get('token');
+		const token = url.searchParams.get('token');
 		if (browser && token) {
-			console.log('LOGIN_LOAD::token', { token });
 			// const props = await api.get(`login/?token=${token}`);
-			return await post(`/auth/login`, { token }).then((response) => {
-				console.log('LOGIN_LOAD::response', response);
-				if (response)
-					return {
-						props: {
-							data: { ...response }
-						}
-					};
+			return await post(`/auth/login`, { token }).then((res) => {
+				return {
+					props: { ...res }
+				};
 			});
 		}
 		return {};
@@ -39,17 +34,18 @@
 	 * For token logins:
 	 * load function has received data from backend server
 	 */
-	export let data;
+	export let data = null;
+	export let success = false;
 
 	const transitionParams = {
-		delay: 0,
+		delay: 300,
 		duration: 200
 	};
 	const flyTransitionParams = { ...transitionParams, x: -80 };
 
 	let errors = null;
 	let message = '';
-	let flashOutroEnded = false;
+	let outroended = false;
 
 	$: message = ((user) => {
 		return (
@@ -64,7 +60,7 @@
 
 	onMount(() => {
 		/**
-		 * DISPLAY RESULT MESSAGES
+		 * DISPLAYING RESULT MESSAGES
 		 * There are two steps:
 		 *
 		 * Message 1: The flashStore handles the timeout time the first message should stay visible until the servers result message appears
@@ -76,26 +72,28 @@
 		 */
 		if (!data) {
 			// Form login
-			flash.update({ message: message.text, timeout: -5 });
+			flash.update({ message: message.text });
 		} else {
 			// Token login
-			if (data.success) {
-				flash.update({ type: 'success', ...data });
-				setTimeout(sessionTicker, 100, 'start', data);
+			if (success) {
+				// start session before flash store has updated (and redirects)
+				setTimeout(dispatcher, 100, { type: 'start', data: { ...data } });
+				flash.update({ type: 'success', ...data, timeout: 2000 });
 			} else {
-				setTimeout(sessionTicker, 100, 'end', { path: '/login' });
+				setTimeout(dispatcher, 100, { type: 'end', data: { path: 'login' } });
 				flash.update({ type: 'warning', ...data, timeout: 5000 });
 			}
 		}
+		return () => {};
 	});
 
-	function sessionTicker(type, data) {
+	function dispatcher({ type, data }) {
 		proxyEvent(`ticker:${type}`, { ...data });
 	}
 
-	function redirectAfterIntroEnd(e) {
+	async function introendHandler() {
 		if ($session.user) {
-			goto(redirectPath($page, $session));
+			await goto(redirectPath($page, $session));
 		}
 	}
 </script>
@@ -116,18 +114,18 @@
 					<div
 						class="flex justify-center message {$flash.type}"
 						transition:fly={flyTransitionParams}
-						on:outrostart={(e) => (flashOutroEnded = false)}
-						on:outroend={(e) => (flashOutroEnded = true)}
+						on:outrostart={(e) => (outroended = false)}
+						on:outroend={(e) => (outroended = true)}
 					>
 						<h5 class="m-2 mdc-typography--headline5 headline">
 							{$flash.message}
 						</h5>
 					</div>
-				{:else if flashOutroEnded}
+				{:else if outroended}
 					<div
 						class="flex justify-center message {message.type}"
 						in:fly={flyTransitionParams}
-						on:introend={(e) => redirectAfterIntroEnd(e)}
+						on:introend={introendHandler}
 					>
 						<h5 class="m-2 mdc-typography--headline5 headline">
 							{message.text}

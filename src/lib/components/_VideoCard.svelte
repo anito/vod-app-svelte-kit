@@ -165,7 +165,7 @@
 					<div class="flex flex-col" style="flex-basis: 50%; max-width: 50%">
 						<div class="text-xs text-inherit inline-flex">
 							<Icon class="material-icons">movie</Icon>
-							<span class="ellipsed pl-2">{video.title}</span>
+							<span class="ellipsed pl-2">{video.title || $_('text.no_title')}</span>
 						</div>
 						<div class="opacity-25">
 							<div class="flex text-xs text-inherit">

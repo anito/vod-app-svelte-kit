@@ -40,17 +40,14 @@
 			$page.status = 401;
 		}
 		if ($session.user && 401 === $page.status) {
-			const res = await del(`/auth/logout`);
-			if (res.success) {
-				$session.user = null;
-				$session.role = null;
-				$session.groups = null;
-			}
+			await del(`/auth/logout`).then((res) => {
+				res.success && (($session.user = null), ($session.role = null), ($session.groups = null));
+			});
 		}
 	});
 
 	async function gotoLogin() {
-		goto(`login${createRedirectSlug($page.url)}`);
+		goto(`/login${createRedirectSlug($page.url)}`);
 	}
 
 	function createTimer() {

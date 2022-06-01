@@ -30,7 +30,7 @@
 	}
 </script>
 
-<Layout {segment}>
+<Layout>
 	<slot />
 	<div slot="ad"><Legal /></div>
 	<div slot="footer" class="flex justify-between">

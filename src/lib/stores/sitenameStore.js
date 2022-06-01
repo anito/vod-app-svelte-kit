@@ -1,7 +1,5 @@
 // @ts-nocheck
-import { derived } from "svelte/store";
-import { settings } from "./settingStore";
+import { derived } from 'svelte/store';
+import { default as settings } from './settingStore';
 
-export const sitename = derived(settings, ($s, set) =>
-  set(($s.Site?.name) || "...")
-);
+export default derived(settings, ($s, set) => set($s.Site?.name || '...'));

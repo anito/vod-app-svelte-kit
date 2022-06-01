@@ -1,30 +1,39 @@
 <script context="module">
 	import * as api from '$lib/api';
-	import { users, videos } from '$lib/stores';
 
 	export async function load({ url, session }) {
-		let token = session?.user?.token,
-			usersData = [],
-			videosData = [];
+		let usersData = [],
+			videosData = [],
+			videosAllData = [];
 
-		const resUsers = await api.get('users', token);
+		await api
+			.get('users', session.user?.token)
+			.then((res) => {
+				res.success && (usersData = res.data);
+			})
+			.catch(() => {});
 
-		if (resUsers?.success) {
-			usersData = resUsers.data;
-			users.update(usersData);
-		}
+		await api
+			.get('videos', session.user?.token)
+			.then((res) => {
+				res.success && (videosData = res.data);
+			})
+			.catch(() => {});
 
-		const resVideos = await api.get('videos', token);
-
-		if (resVideos?.success) {
-			videosData = resVideos.data;
-			videos.update(videosData);
-		}
+		await api
+			.get('videos/all')
+			.then((res) => {
+				res.success && (videosAllData = res.data);
+			})
+			.catch(() => {});
 
 		return {
 			props: {
 				tab: url.searchParams.get('tab'),
-				active: url.searchParams.get('active')
+				active: url.searchParams.get('active'),
+				usersData,
+				videosData,
+				videosAllData
 			}
 		};
 	}
@@ -35,7 +44,7 @@
 
 	import { page, session } from '$app/stores';
 	import { onMount, getContext } from 'svelte';
-	import { infos, fabs } from '$lib/stores';
+	import { infos, fabs, users, videos, videosAll } from '$lib/stores';
 	import Layout from './layout.svelte';
 	import { InfoChips, Legal, SimpleUserCard, PageBar } from '$lib/components';
 	import { proxyEvent } from '$lib/utils';
@@ -55,6 +64,9 @@
 	// from load
 	export let tab = TAB;
 	export let active = false;
+	export let usersData = [];
+	export let videosData = [];
+	export let videosAllData = [];
 
 	let code;
 	let currentUser;
@@ -80,6 +92,9 @@
 	const { setFab } = getContext('fab');
 
 	$: user = $session.user;
+	$: users.update(usersData);
+	$: videos.update(videosData);
+	$: videosAll.update(videosAllData);
 	$: isAdmin = $session.role === 'Administrator';
 	$: selectionUserId = $page.params.slug;
 	$: currentUser = ((id) => $users.filter((usr) => usr.id === id)[0])(selectionUserId);

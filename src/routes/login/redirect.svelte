@@ -1,11 +1,13 @@
 <script context="module">
 	import { goto } from '$app/navigation';
 
-	export async function load({ url }) {
-		let token = url.searchParams.get('token');
+	export function load({ url }) {
+		const token = url.searchParams.get('token');
 		if (token) {
 			return {
-				props: token
+				props: {
+					token
+				}
 			};
 		}
 	}
@@ -19,6 +21,6 @@
 	export let token = '';
 
 	onMount(() => {
-		goto(`login/?token=${token}`);
+		goto(`/login/?token=${token}`);
 	});
 </script>

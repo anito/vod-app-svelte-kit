@@ -19,8 +19,7 @@
 	import { locale, _ } from 'svelte-i18n';
 	import { dev } from '$app/env';
 
-	export let signInWithGoogle = false;
-
+	const client_id = import.meta.env.VITE_CLIENT_ID;
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
 	const toplevel = dev ? 'dev' : 'de';
 
@@ -34,39 +33,33 @@
 	let email = '';
 	let snackbar;
 	let invalidTokenUserDialog;
+	let timeout = 2000;
 
 	onMount(() => {
 		defreeze();
 		snackbar = getSnackbar();
 
-		if (signInWithGoogle) {
-			(window.google && googleSignIn()) || window.addEventListener('load', googleSignIn);
-		}
+		(window.google && googleSignIn()) || window.addEventListener('load', googleSignIn);
 
 		return () => defreeze();
 	});
 
 	async function submit() {
 		freeze();
-		flash.update({ message: $_('text.one-moment'), wait: -1 });
+		flash.update({ message: $_('text.one-moment'), timeout: false });
 
-		const res = await post(`/auth/login?lang=${$locale}`, { email, password });
-
-		// TODO handle network errors
-		if (res) {
+		await post(`/auth/login?lang=${$locale}`, { email, password }).then((res) => {
 			let type, wait;
-			let message = res.message;
+			let message = res.message || res.data.message || res.statusText;
 
 			defreeze();
 
 			if (res.success) {
-				console.log('LOGINFORM::res', res);
 				type = 'success';
-				proxyEvent('ticker:start', { ...res });
+				proxyEvent('ticker:start', { ...res.data });
 			} else {
 				reset();
 				type = 'warning';
-				wait = 5000;
 
 				if (++loginAttempts > 3) invalidTokenUserDialog.setOpen(true);
 			}
@@ -74,9 +67,11 @@
 			flash.update({
 				type,
 				message,
-				wait: (res.data && res.data.wait) || wait
+				timeout
 			});
-		}
+			configSnackbar(message);
+			snackbar.open();
+		});
 
 		// TODO handle network errors
 		// errors = res.errors;
@@ -113,7 +108,7 @@
 
 	function googleSignIn() {
 		google.accounts.id.initialize({
-			client_id: $session.CLIENT_ID,
+			client_id,
 			callback: handleCredentialResponse
 		});
 		renderGoogleButton();
@@ -124,13 +119,14 @@
 	}
 
 	async function decodeJwtResponse(token) {
-		flash.update({ message: $_('text.one-moment'), wait: -1 });
+		flash.update({ message: $_('text.one-moment') });
 
-		const res = await api.post(`users/google_login?lang=${$locale}`, {}, token);
-		if (res.success) {
-			goto(`login-redirect/?token=${res.data.token}`);
+		await api.post(`users/google_login?lang=${$locale}`, {}, token).then(async (res) => {
+			if (res.success) {
+				await goto(`/login/redirect/?token=${res.data.token}`);
+			}
 			setTimeout(() => renderGoogleButton(), 500);
-		}
+		});
 	}
 
 	function renderGoogleButton() {

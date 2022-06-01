@@ -41,7 +41,7 @@
 	import * as api from '$lib/api';
 	import { goto } from '$app/navigation';
 	import { page, session } from '$app/stores';
-	import { onMount, setContext } from 'svelte';
+	import { getContext, onMount, setContext } from 'svelte';
 	import isMobile from 'ismobilejs';
 	import { Icons, Icon as ExternalIcon } from '$lib/components';
 	import Button, { Icon } from '@smui/button';
@@ -49,7 +49,7 @@
 	import Snackbar, { Actions } from '@smui/snackbar';
 	import { Label } from '@smui/common';
 	import { get, del as logout, createRedirectSlug, proxyEvent, svg, __ticker__ } from '$lib/utils';
-	import { fabs, settings, theme, ticker, urls, videos, videoEmitter } from '$lib/stores';
+	import { fabs, flash, settings, theme, ticker, urls, videos, videoEmitter } from '$lib/stores';
 	import { Modal } from '$lib/components';
 	import { Jumper } from 'svelte-loading-spinners';
 	import { UserGraphic, LoadingModal, LocaleSwitcher, Nav, NavItem } from '$lib/components';
@@ -61,7 +61,6 @@
 	const redirectDelay = 300;
 
 	let root;
-	let snackbar;
 	let message = '';
 	let action = '';
 	let path = '';
@@ -72,6 +71,7 @@
 	let unsubscribeVideoEmitter;
 	let unsubscribeSettings;
 	let emphasize;
+	let snackbar;
 
 	// load configuration from server
 	serverConfig();
@@ -81,12 +81,13 @@
 		configSnackbar
 	});
 
+	const { getSnackbar } = getContext('snackbar');
+
 	setContext('fab', {
 		setFab: (fab) => $session.role === 'Administrator' && fabs.update(fab),
 		restoreFab: () => fabs.restore()
 	});
 
-	$: console.log('SETTINGS', $settings);
 	$: $settings && proxyEvent('ticker:recover');
 	$: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
 	$: user = $session.user;
@@ -109,13 +110,13 @@
 
 	unsubscribeTicker = ticker.subscribe((val) => {
 		if (val === 0) {
-			proxyEvent('ticker:end', { path: '/login' });
+			proxyEvent('ticker:end', { path: 'login' });
 		}
 	});
 
 	onMount(async () => {
-		console.log('MOUNTING');
 		root = document.documentElement;
+		snackbar = getSnackbar();
 
 		initListener();
 		initClasses();
@@ -123,7 +124,6 @@
 		initSubscribers();
 
 		return () => {
-			console.log('DESTROYING');
 			removeListener();
 			removeSubscribers();
 			removeClasses();
@@ -247,7 +247,7 @@
 
 	function handleClosed() {}
 
-	async function tickerStartHandler(e) {
+	function tickerStartHandler(e) {
 		const { user, groups, renewed } = { ...e.detail };
 
 		$session.user = user;
@@ -255,7 +255,7 @@
 		$session.groups = groups;
 
 		renewed && localStorage.setItem('renewed', renewed);
-		proxyEvent('ticker:started');
+		proxyEvent('ticker:extend');
 
 		configSnackbar(
 			$_('text.external-login-welcome-message', {
@@ -281,14 +281,15 @@
 	async function tickerEndHandler(e) {
 		if (!$session.user) return;
 		// logout from backend
-		const res = await logout(`/auth/logout?lang=${$locale}`);
-		if (res.success) {
-			proxyEvent('ticker:ended', { ...e.detail.data });
-			message = res.message;
+		await logout(`/auth/logout?lang=${$locale}`).then((res) => {
+			if (res.success) {
+				proxyEvent('ticker:ended', { ...e.detail.data });
+				message = res.message;
 
-			configSnackbar(message);
-			snackbar.open();
-		}
+				configSnackbar(message);
+				snackbar.open();
+			}
+		});
 	}
 
 	function tickerEndedHandler(e) {

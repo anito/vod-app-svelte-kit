@@ -41,4 +41,4 @@ function createStore() {
 	);
 }
 
-export const ticker = createStore();
+export default createStore();

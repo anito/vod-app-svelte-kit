@@ -1,5 +1,4 @@
 <script context="module">
-	import { images, videos, users } from '$lib/stores';
 	import * as api from '$lib/api';
 
 	export async function load({ session }) {
@@ -7,25 +6,34 @@
 			videosData = [],
 			imagesData = [];
 
-		const resUsers = await api.get('users', session.user?.token);
-		if (resUsers?.success) {
-			usersData = resUsers.data;
-			users.update(usersData);
-		}
+		await api
+			.get('users', session.user?.token)
+			.then((res) => {
+				res.success && (usersData = res.data);
+			})
+			.catch(() => {});
 
-		const resVideos = await api.get('videos', session.user?.token);
-		if (resVideos?.success) {
-			videosData = resVideos.data;
-			videos.update(videosData);
-		}
+		await api
+			.get('videos', session.user?.token)
+			.then((res) => {
+				res.success && (videosData = res.data);
+			})
+			.catch(() => {});
 
-		const resImages = await api.get('images', session.user?.token);
-		if (resImages?.success) {
-			imagesData = resImages.data;
-			images.update(imagesData);
-		}
+		await api
+			.get('images', session.user?.token)
+			.then((res) => {
+				res.success && (imagesData = res.data);
+			})
+			.catch(() => {});
 
-		return {};
+		return {
+			props: {
+				usersData,
+				videosData,
+				imagesData
+			}
+		};
 	}
 </script>
 
@@ -36,15 +44,28 @@
 	import { page } from '$app/stores';
 	import Layout from './layout.svelte';
 	import List from '@smui/list';
+	import Textfield from '@smui/textfield';
+	import { Icon } from '@smui/icon-button';
 	import { Legal, PageBar, SimpleVideoCard } from '$lib/components';
-	import { _, locale } from 'svelte-i18n';
+	import { sortByTitle } from '$lib/utils';
+	import { images, videos, users } from '$lib/stores';
+	import { _ } from 'svelte-i18n';
+
+	export let usersData = [];
+	export let videosData = [];
+	export let imagesData = [];
 
 	let selectedIndex;
+	let search = '';
 
-	$: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
+	$: users.update(usersData);
+	$: videos.update(videosData);
+	$: images.update(imagesData);
 	$: sidebar = !!$page.params.slug;
 	$: selectionVideoId = $page.params.slug;
-	$: dateFormat = $locale.indexOf('de') != -1 ? 'dd. MMM yyyy' : 'yyyy-MM-dd';
+	$: filteredVideos = $videos
+		.filter((video) => video.title?.toLowerCase().indexOf(search.toLowerCase()) !== -1)
+		.sort(sortByTitle);
 
 	function itemSelectedHandler(e) {
 		let { video } = e.detail;
@@ -55,15 +76,32 @@
 	}
 </script>
 
-<Layout {sidebar} {segment}>
+<Layout {sidebar}>
 	<div class="flex flex-1" slot="pagebar">
 		<PageBar />
 	</div>
 	<slot />
 	<div class="sidebar" slot="side" style="flex: 1;">
+		<div class="flex flex-col">
+			<Textfield
+				class="search"
+				variant="filled"
+				bind:value={search}
+				label={$_('text.search-video')}
+				input$aria-controls="helper-text"
+				input$aria-describedby="helper-text"
+			>
+				<Icon
+					role="button"
+					class="material-icons-outlined cancel-search"
+					slot="trailingIcon"
+					on:click={() => (search = '')}>{search.length && 'cancel'}</Icon
+				>
+			</Textfield>
+		</div>
 		<List class="video-list" twoLine avatarList singleSelection bind:selectedIndex>
-			{#if $videos.length}
-				{#each $videos as video (video.id)}
+			{#if filteredVideos.length}
+				{#each filteredVideos as video (video.id)}
 					<SimpleVideoCard
 						class="video"
 						selected={selectionVideoId === video.id}

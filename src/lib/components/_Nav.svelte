@@ -199,8 +199,8 @@
 	.home {
 		position: relative;
 		top: -0.1rem;
-		width: 11.25rem;
-		height: 3.525rem;
+		width: 2.6rem;
+		height: 2.925rem;
 		-webkit-tap-highlight-color: transparent;
 		-webkit-touch-callout: none;
 		background: 0 50% no-repeat;

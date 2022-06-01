@@ -25,4 +25,4 @@ function createStore() {
 	};
 }
 
-export const users = createStore();
+export default createStore();

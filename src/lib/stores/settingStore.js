@@ -22,4 +22,4 @@ function createStore() {
 		set
 	};
 }
-export const settings = createStore();
+export default createStore();

@@ -8,6 +8,9 @@ const config = {
 			optimizeDeps: {
 				exclude: ['svelte-kit-cookie-session'],
 				allowNodeBuiltins: ['crypto']
+			},
+			server: {
+				port: process.env.PORT || 3000
 			}
 		}
 	}

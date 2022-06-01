@@ -2,12 +2,13 @@
 import { writable } from 'svelte/store';
 
 function createStore() {
-	const { subscribe, update, set } = writable(false);
+	const { subscribe, update, set } = writable([], () => {});
 
 	return {
 		subscribe,
-		update: (val) => update((_) => val),
+		update: (val) => update((items) => val),
 		set
 	};
 }
+
 export default createStore();

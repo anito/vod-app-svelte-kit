@@ -192,7 +192,9 @@
     "title": "Titel",
     "empty-video-selection": "Kein Video ausgewählt",
     "watch_movie": "Ansehen",
-    "empty-user-selection": "Kein Benutzer ausgewählt"
+    "empty-user-selection": "Kein Benutzer ausgewählt",
+    "search-video": "Video suchen",
+    "no_title": "Kein Titel"
   },
   "summary": {
     "copy-link": {

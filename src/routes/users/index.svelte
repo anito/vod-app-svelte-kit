@@ -5,15 +5,10 @@
 	import { users } from '$lib/stores';
 	import { _ } from 'svelte-i18n';
 
-	let preSelectedIndex = 0;
-
 	onMount(() => {
 		if (!$users.length) return;
 
-		let max = $users.length - 1;
-		preSelectedIndex = preSelectedIndex < 0 || preSelectedIndex > max ? 0 : preSelectedIndex;
-
-		// goto(`users/${$users[preSelectedIndex].id}`); // commented to prevent to automatically change to first user
+		goto(`/users/${$users[0].id}`);
 	});
 </script>
 

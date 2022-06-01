@@ -1,27 +1,29 @@
-import { writable } from "svelte/store";
+// @ts-nocheck
+import { writable } from 'svelte/store';
 
 function createStore() {
-  const type = "success";
-  const status = "";
-  const message = "";
-  const timeout = 1000;
-  const { subscribe, update, set } = writable({}, () => {});
-  let timeoutId;
+	const type = 'success';
+	const status = '';
+	const message = '';
+	const { subscribe, update, set } = writable({}, () => {});
+	let timeoutId;
 
-  return {
-    subscribe,
-    update: (item) =>
-      update((_) => {
-        clearTimeout(timeoutId);
-        // setting and removing the message triggers view respectively
-        item.wait !== -1 &&
-          (timeoutId = setTimeout((msg) => set(msg), item.timeout || timeout, {
-            message,
-          }));
-        return { type, status, message, ...item };
-      }),
-    set,
-  };
+	return {
+		subscribe,
+		update: (item) =>
+			update((_) => {
+				const { timeout } = { ...item };
+				clearTimeout(timeoutId);
+				// setting and removing the message after amount of time
+				if (timeout) {
+					timeoutId = setTimeout((msg) => set(msg), timeout, {
+						message
+					});
+				}
+				return { type, status, message, ...item };
+			}),
+		set
+	};
 }
 
-export const flash = createStore();
+export default createStore();

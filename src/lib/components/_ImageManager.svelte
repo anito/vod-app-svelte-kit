@@ -63,19 +63,16 @@
 	async function deletePoster(e) {
 		let detail = e.detail;
 		let image = detail.image;
-		let message;
 		const id = image.id;
-		const res = await api.del(`images/${image.id}?lang=${$locale}`, user?.token);
-
-		message = res.message || res.data.message || res.statusText;
-		if (res) {
+		api.del(`images/${image.id}?lang=${$locale}`, user?.token).then((res) => {
+			let message = res.message || res.data.message || res.statusText;
 			if (res.success) {
 				urls.del(id);
 				images.del(id);
 			}
 			configSnackbar(message);
 			snackbar.open();
-		}
+		});
 	}
 </script>
 
