@@ -268,8 +268,8 @@
 			'redirect' === e.detail.action &&
 			/^(https?|ftp|torrent|image|irc):\/\/(-\.)?([^\s\/?\.#-]+\.?)+(\/[^\s]*)?$/i.test(magicLink)
 		) {
-			// const res = await goto(magicLink);
-			window && (window.location = magicLink);
+			console.log(magicLink);
+			await goto(magicLink);
 		}
 	}
 
