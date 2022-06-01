@@ -464,7 +464,7 @@
 	bind:this={scheduleDialog}
 	aria-labelledby="list-selection-title"
 	aria-describedby="list-selection-content"
-	on:MDCDialog:closed={scheduleDialogCloseHandler}
+	on:SMUIDialog:closed={scheduleDialogCloseHandler}
 >
 	<Title id="list-selection-title">{$_('text.select-time-slot')}</Title>
 	<Content id="list-selection-content">
@@ -510,7 +510,7 @@
 	bind:this={removeDialog}
 	aria-labelledby="event-title"
 	aria-describedby="event-content"
-	on:MDCDialog:closed={removeDialogCloseHandler}
+	on:SMUIDialog:closed={removeDialogCloseHandler}
 >
 	<Title id="event-title">
 		{$_('text.video-is-active')}

@@ -72,7 +72,6 @@
 	}
 
 	async function savePlayhead() {
-		console.log('SAVING PLAYHEAD');
 		if (isAdmin) {
 			videoEmitter.dispatch({
 				method: 'put',

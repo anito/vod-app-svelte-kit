@@ -263,13 +263,13 @@
 		}
 	}
 
-	function redirectDialogCloseHandler(e) {
+	async function redirectDialogCloseHandler(e) {
 		if (
-			/^(https?|ftp|torrent|image|irc):\/\/(-\.)?([^\s\/?\.#-]+\.?)+(\/[^\s]*)?$/i.test(
-				e.detail.action
-			)
+			'redirect' === e.detail.action &&
+			/^(https?|ftp|torrent|image|irc):\/\/(-\.)?([^\s\/?\.#-]+\.?)+(\/[^\s]*)?$/i.test(magicLink)
 		) {
-			goto(e.detail.action);
+			// const res = await goto(magicLink);
+			window && (window.location = magicLink);
 		}
 	}
 
@@ -380,7 +380,7 @@
 	bind:this={resolveAllDialog}
 	aria-labelledby="info-title"
 	aria-describedby="info-content"
-	on:MDCDialog:closed={resolveAllDialogCloseHandler}
+	on:SMUIDialog:closed={resolveAllDialogCloseHandler}
 >
 	{#if userIssues.length}
 		<DialogTitle id="info-title">{$_('text.content-inaccessible')}</DialogTitle>
@@ -423,7 +423,7 @@
 	bind:this={activateUserDialog}
 	aria-labelledby="info-title"
 	aria-describedby="info-content"
-	on:MDCDialog:closed={activateUserDialogCloseHandler}
+	on:SMUIDialog:closed={activateUserDialogCloseHandler}
 >
 	<DialogTitle id="info-title">{$_('text.activate-user')}</DialogTitle>
 	<Content id="info-content">
@@ -446,7 +446,7 @@
 	bind:this={generateTokenDialog}
 	aria-labelledby="info-title"
 	aria-describedby="info-content"
-	on:MDCDialog:closed={generateTokenDialogCloseHandler}
+	on:SMUIDialog:closed={generateTokenDialogCloseHandler}
 >
 	<DialogTitle id="info-title">{$_('text.generate-token')}</DialogTitle>
 	<Content id="info-content">
@@ -475,7 +475,7 @@
 	bind:this={removeTokenDialog}
 	aria-labelledby="info-title"
 	aria-describedby="info-content"
-	on:MDCDialog:closed={removeTokenDialogCloseHandler}
+	on:SMUIDialog:closed={removeTokenDialogCloseHandler}
 >
 	<DialogTitle id="info-title">{$_('text.delete-token')}</DialogTitle>
 	<Content id="info-content">
@@ -495,7 +495,7 @@
 	bind:this={redirectDialog}
 	aria-labelledby="event-title"
 	aria-describedby="event-content"
-	on:MDCDialog:closed={redirectDialogCloseHandler}
+	on:SMUIDialog:closed={redirectDialogCloseHandler}
 >
 	<DialogTitle id="event-title">{$_('text.magic-link')}</DialogTitle>
 	<Content id="event-content">
@@ -521,7 +521,7 @@
 		<Button action="none">
 			<Label>{$_('text.cancel')}</Label>
 		</Button>
-		<Button variant="unelevated" action={magicLink} use={[InitialFocus]}>
+		<Button variant="unelevated" action="redirect" use={[InitialFocus]}>
 			<Label class="token-button-label"
 				>{hasExpired || !active ? $_('text.continue-anyways') : $_('text.switch-user')}</Label
 			>
@@ -532,7 +532,7 @@
 	bind:this={renewedTokenDialog}
 	aria-labelledby="info-title"
 	aria-describedby="info-content"
-	on:MDCDialog:closed={renewTokenDialogCloseHandler}
+	on:SMUIDialog:closed={renewTokenDialogCloseHandler}
 >
 	<DialogTitle id="info-title">{$_('text.token-updated')}</DialogTitle>
 	<Content id="info-content">

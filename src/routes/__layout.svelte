@@ -262,6 +262,7 @@
 				values: { name: user.name }
 			})
 		);
+		snackbar = getSnackbar();
 		snackbar.open();
 	}
 
@@ -287,6 +288,7 @@
 				message = res.message;
 
 				configSnackbar(message);
+				snackbar = getSnackbar();
 				snackbar.open();
 			}
 		});

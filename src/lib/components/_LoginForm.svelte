@@ -211,7 +211,7 @@
 	bind:this={invalidTokenUserDialog}
 	aria-labelledby="info-title"
 	aria-describedby="info-content"
-	on:MDCDialog:closed={invalidTokenDialogCloseHandler}
+	on:SMUIDialog:closed={invalidTokenDialogCloseHandler}
 >
 	<DialogTitle id="info-title">{$_('text.login-issues')}</DialogTitle>
 	<Content id="info-content">

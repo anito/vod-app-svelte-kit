@@ -687,7 +687,7 @@
 	bind:this={unsavedChangesDialog}
 	aria-labelledby="info-title"
 	aria-describedby="info-content"
-	on:MDCDialog:closed={unsavedChangesDialogCloseHandler}
+	on:SMUIDialog:closed={unsavedChangesDialogCloseHandler}
 >
 	<DialogTitle id="info-title">{$_('text.unsaved-changes')}</DialogTitle>
 	<DialogContent id="info-content">
