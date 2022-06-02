@@ -12,7 +12,6 @@
 	let paused;
 	let poster = '';
 	let src = '';
-	let joinData;
 	let playhead;
 	let timeoutId;
 	let canPlay;

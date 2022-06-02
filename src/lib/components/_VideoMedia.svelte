@@ -2,7 +2,7 @@
 	// @ts-nocheck
 
 	import * as api from '$lib/api';
-	import { session } from '$app/stores';
+	import { session, navigating } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { Media, MediaContent } from '@smui/card';
 	import Textfield, { Textarea } from '@smui/textfield';
@@ -19,8 +19,6 @@
 	let paused = true;
 	let poster = '';
 	let src = '';
-	let joinData;
-	let vid;
 	let playhead;
 	let canPlay = false;
 	let timeoutId;
@@ -30,20 +28,18 @@
 	$: currentUser = $users.find((user) => user.id == $session.user?.id);
 	$: isAdmin = ADMIN === $session.role;
 	$: token = currentUser?.token.token;
-	$: joinData =
-		currentUser && (vid = currentUser.videos.find((v) => v.id == video.id)) && vid._joinData;
-	$: ((id) => getMediaImage(id, $session.user).then((v) => (poster = v)))(video.image_id);
-	$: ((id) => getMediaVideo(id, $session.user).then((v) => (src = v)))(video.id);
+	$: joinData = currentUser && currentUser.videos.find((v) => v.id == video.id)?._joinData;
+	$: video && getMediaImage(video.image_id, $session.user).then((v) => (poster = v));
+	$: video && getMediaVideo(video.id, $session.user).then((v) => (src = v));
 	$: ((time) => {
 		if (!paused || !canPlay) return;
-		let savedTime = time;
+		let pauseTime = time;
 		clearTimeout(timeoutId);
-		timeoutId = setTimeout((saved) => saved === playhead && savePlayhead(), 500, savedTime);
+		timeoutId = setTimeout((saved) => saved === playhead && savePlayhead(), 500, pauseTime);
 	})(playhead);
+	$: $navigating && ((paused = true), (src = ''), savePlayhead());
 
-	onMount(() => {
-		return () => !paused && savePlayhead();
-	});
+	onMount(() => {});
 
 	// set playhead to the last saved position when the video is ready to play
 	function handleCanPlay(e) {
@@ -53,55 +49,77 @@
 	}
 
 	function handleEmptied(e) {
-		// console.log("Video emptied", e.detail.title);
+		console.log(
+			'%c EMPTIED   %c %s',
+			'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
+			'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
+			e.detail.title
+		);
 	}
 
 	function handleLoadStart(e) {
-		// console.log("Video load start", e.detail.title);
+		console.log(
+			'%c LOADSTART %c %s',
+			'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
+			'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
+			e.detail.title
+		);
 	}
 
 	function handleLoadedData(e) {
-		// console.log("Video loaded data", e.detail.title);
+		console.log(
+			'%c LOADEDDATA%c %s',
+			'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
+			'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
+			e.detail.title
+		);
 	}
 
 	function handleAborted(e) {
-		// in Chrome we have to limit streams do to Chromes limitation
+		console.log(
+			'%c ABORTED   %c %s',
+			'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
+			'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
+			e.detail.title
+		);
+		// in Chrome we have to limit streams due to Chromes limitation
 		// this is done by emptying src attribute on the video which forgets the playheads position
-		// setting canPlay to false will reset the playhead when video can play again
+		// to set the videos canPlay flag to false will re-adjust playhead to last saved position when video canPlay again
+		paused = true;
 		canPlay = false;
 	}
 
 	async function savePlayhead() {
+		if (!canPlay) return;
 		if (isAdmin) {
+			if (Math.round(video.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
 			videoEmitter.dispatch({
 				method: 'put',
 				data: { ...video, playhead }
 			});
-		} else {
-			let joinData,
-				data,
-				id = video.id,
-				vid,
-				associated = currentUser.videos.filter((v) => v.id != video.id).map((v) => ({ id: v.id }));
-			vid = currentUser.videos.find((v) => v.id == video.id);
-			if (vid) {
-				joinData = vid._joinData;
-				data = {
-					videos: [
-						{
-							id,
-							_joinData: { ...joinData, playhead }
-						},
-						...associated
-					]
-				};
-				saveUser(data);
-			}
+		} else if (video) {
+			if (Math.round(joinData.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
+			let associated = currentUser.videos
+				.filter((v) => v.id != video.id)
+				.map((v) => ({ id: v.id }));
+			let data = {
+				videos: [
+					{
+						id: video.id,
+						_joinData: { ...joinData, playhead }
+					},
+					...associated
+				]
+			};
+
+			saveUser(data);
 		}
 	}
 
 	async function saveUser(data) {
-		await api.put(`users/${currentUser.id}?lang=${$locale}`, data, token);
+		await api.put(`users/${currentUser.id}?lang=${$locale}`, data, token).then((res) => {
+			res.success && users.put(res.data);
+		});
 	}
 </script>
 
