@@ -52,7 +52,14 @@
 	import { fabs, flash, settings, theme, ticker, urls, videos, videoEmitter } from '$lib/stores';
 	import { Modal } from '$lib/components';
 	import { Jumper } from 'svelte-loading-spinners';
-	import { UserGraphic, LoadingModal, LocaleSwitcher, Nav, NavItem } from '$lib/components';
+	import {
+		UserGraphic,
+		LoadingModal,
+		LocaleSwitcher,
+		FrameworkSwitcher,
+		Nav,
+		NavItem
+	} from '$lib/components';
 	import { svg_manifest } from '$lib/svg_manifest';
 	import { _, locale } from 'svelte-i18n';
 	import { serverConfig } from '$lib/config';
@@ -366,6 +373,10 @@
 
 				<li class="locale-switcher">
 					<LocaleSwitcher />
+				</li>
+
+				<li class="">
+					<FrameworkSwitcher />
 				</li>
 
 				<NavItem external="https://github.com/anito/vod-app" title="GitHub Repo">
