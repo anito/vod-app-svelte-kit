@@ -19,7 +19,7 @@
 	$: video = $videos.find((v) => v.id === $page.params.slug);
 	$: loggedInUser = $users.find((user) => user.id == $session.user?.id);
 	$: currentUser = loggedInUser || currentUser;
-	$: joinData = currentUser?.videos.find((v) => video.id == v.id)?._joinData;
+	$: joinData = currentUser?.videos.find((v) => video?.id == v.id)?._joinData;
 	$: token = currentUser?.token.token;
 	$: isAdmin = currentUser?.group.name === 'Administrator';
 	$: ((time) => {
