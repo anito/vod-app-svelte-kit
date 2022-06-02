@@ -48,7 +48,7 @@
 	import IconButton from '@smui/icon-button';
 	import Snackbar, { Actions } from '@smui/snackbar';
 	import { Label } from '@smui/common';
-	import { get, del as logout, createRedirectSlug, proxyEvent, svg, __ticker__ } from '$lib/utils';
+	import { del as logout, createRedirectSlug, proxyEvent, svg, __ticker__ } from '$lib/utils';
 	import { fabs, flash, settings, theme, ticker, urls, videos, videoEmitter } from '$lib/stores';
 	import { Modal } from '$lib/components';
 	import { Jumper } from 'svelte-loading-spinners';
@@ -178,7 +178,7 @@
 	}
 
 	/**
-	 * Saves changes on video
+	 * Saves video changes and deletions
 	 * @param item
 	 */
 	async function put({ data, show }) {
@@ -255,12 +255,12 @@
 			})
 		);
 		snackbar = getSnackbar();
-		snackbar.open();
+		snackbar?.open();
 	}
 
 	async function tickerEndHandler(e) {
 		if (!$session.user) return;
-		// logout from backend
+
 		await logout(`/auth/logout?lang=${$locale}`).then((res) => {
 			if (res.success) {
 				proxyEvent('ticker:ended', { ...e.detail.data });
@@ -268,7 +268,7 @@
 
 				configSnackbar(message);
 				snackbar = getSnackbar();
-				snackbar.open();
+				snackbar?.open();
 			}
 		});
 	}

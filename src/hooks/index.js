@@ -1,10 +1,6 @@
 // @ts-nocheck
 
 import { handleSession } from 'svelte-kit-cookie-session';
-import { settings } from '$lib/stores';
-
-let lifetime;
-settings.subscribe((val) => (lifetime = val.Session?.lifetime));
 
 export const handle = handleSession(
 	{
@@ -24,5 +20,5 @@ export const getSession = async ({ locals }) => {
 };
 
 export async function handleError({ error, event }) {
-	console.log(error, event);
+	console.log('ERROR (hooks.js)', error, event);
 }

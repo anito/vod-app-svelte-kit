@@ -1,7 +1,8 @@
 <script context="module">
 	import * as api from '$lib/api';
 
-	export async function load({ session }) {
+	export async function load({ url, session }) {
+		// console.log(url);
 		let usersData = [],
 			videosData = [],
 			imagesData = [];
