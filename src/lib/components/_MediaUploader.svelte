@@ -1,4 +1,6 @@
 <script>
+	// @ts-nocheck
+
 	import { onMount, getContext } from 'svelte';
 	import Uploader from './_Uploader.svelte';
 	import Header from './_Header.svelte';
@@ -68,11 +70,11 @@
 </script>
 
 <div class="uploader-wrapper {className}" use:init>
-	<Header h="4" mdc class="upload-header">{$_('text.upload_type', { values: { type } })}</Header>
+	<Header h="4" mdc class="upload-header">{$_('text.upload-type', { values: { type } })}</Header>
 	<div class="subheader">
-		<span>{$_('text.file_queue', { values: { count } })}</span>
+		<span>{$_('text.file-queue', { values: { count } })}</span>
 		<span
-			>({$_('text.max_file_count', {
+			>({$_('text.max-file-count', {
 				values: { count: options.maxFiles }
 			})})</span
 		>

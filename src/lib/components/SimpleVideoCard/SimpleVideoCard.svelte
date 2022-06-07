@@ -7,7 +7,7 @@
 	import { Icon } from '@smui/button';
 	import { Item, Graphic, Text, PrimaryText, SecondaryText } from '@smui/list';
 	import Chip, { Set, LeadingIcon } from '@smui/chips';
-	import { localeFormat, hasStarted, isExpired } from '$lib/utils';
+	import { localeFormat, hasStarted, isExpired, proxyEvent } from '$lib/utils';
 	import { getMedia } from '$lib/utils/media';
 	import { parseISO } from 'date-fns';
 	import { users } from '$lib/stores';
@@ -125,7 +125,7 @@
 	on:SMUI:action={() => dispatch('itemSelected', { video })}
 	{selected}
 >
-	<Graphic style="background-image: url({src});" />
+	<Graphic class="relative z-10" style="background-image: url({src});" />
 	<Text>
 		<PrimaryText>
 			<span class="opacity-25" class:opacity-25={!video.title}>
@@ -133,7 +133,7 @@
 			</span>
 		</PrimaryText>
 		{#if isUserVideo}
-			<Set class="time-chip-set" chips={[{ id: 0 }]} let:chip>
+			<Set class="time-chip-set relative z-10" chips={[{ id: 0 }]} let:chip>
 				<Chip
 					{chip}
 					class={(className = pending
@@ -143,6 +143,7 @@
 						: expired
 						? 'expired'
 						: 'active')}
+					on:click={() => dispatch('datapicker', { id: video.id })}
 				>
 					<LeadingIcon class="material-icons" leading>date_range</LeadingIcon>
 					<Text>{readoutPeriod}</Text>

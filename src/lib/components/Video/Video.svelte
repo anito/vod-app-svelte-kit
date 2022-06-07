@@ -240,13 +240,13 @@
 					class="mdc-typography--headline6 curtain-title opacity-25"
 					class:opacity-25={!video.title}
 				>
-					{video.title || $_('text.empty_title')}
+					{video.title || $_('text.empty-title')}
 				</h2>
 				<h3
 					class="mdc-typography--subtitle2 curtain-desc opacity-25"
 					class:opacity-25={!video.description}
 				>
-					{video.description || $_('text.empty_description')}
+					{video.description || $_('text.empty-description')}
 				</h3>
 			</div>
 			<div class="curtain-right bg-black opacity-30" />

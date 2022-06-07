@@ -304,6 +304,11 @@
 							threeLine
 							class="user-video video-list-item"
 							on:itemSelected={itemSelectedHandler}
+							on:datapicker={(e) =>
+								toggleDataPicker(
+									e.detail.id,
+									selectionVideoId != e.detail.id || !root.classList.contains('datapicker--open')
+								)}
 							selected={selectionVideoId === video.id}
 							{video}
 							{selectionUserId}
@@ -384,16 +389,15 @@
 							{video}
 							{selectionUserId}
 						>
-							<IconButton
-								disabled={$session.role !== ADMIN}
-								class="self-center"
-								color="primary"
-								style="display: none;"
-								on:click={async () => await goto(`/videos/${video.id}`)}
-							>
-								<Icon class="material-icons">link</Icon>
-							</IconButton>
 							{#if $session.role === ADMIN}
+								<IconButton
+									class="self-center mr-2"
+									color="primary"
+									style=""
+									on:click={async () => await goto(`/videos/${video.id}`)}
+								>
+									<Icon class="material-icons">open_with</Icon>
+								</IconButton>
 								<IconButton
 									disabled={unmanagable || video.teaser}
 									class="add-action-button add"

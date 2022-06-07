@@ -4,7 +4,7 @@
 	import * as api from '$lib/api';
 	import { page, session, navigating } from '$app/stores';
 	import { onMount } from 'svelte';
-	import { videos, users, videoEmitter } from '$lib/stores';
+	import { sitename, videos, users, videoEmitter } from '$lib/stores';
 	import { VideoPlayer } from '$lib/components/Video';
 	import { getMediaImage, getMediaVideo } from '$lib/utils';
 	import { _, locale } from 'svelte-i18n';
@@ -115,6 +115,10 @@
 		});
 	}
 </script>
+
+<svelte:head>
+	<title>{$sitename} | {video?.title || $_('text.no-title')}</title>
+</svelte:head>
 
 {#if video}
 	<div class="single-player flex bg-black">

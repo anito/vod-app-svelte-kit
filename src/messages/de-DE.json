@@ -183,20 +183,21 @@
     "seconds": "Sekunden",
     "welcome-link-label": "Ihr Zugangslink",
     "authentication-required": "Um diesen Bereich zu sehen, musst du angemeldet sein",
-    "empty_title": "Titel",
-    "empty_description": "Beschreibung",
-    "upload_type": "{type} hochladen",
-    "max_file_count": "max. {count}",
-    "file_queue": "Warteschlange {count}",
+    "empty-title": "Titel",
+    "empty-description": "Beschreibung",
+    "upload-type": "{type} hochladen",
+    "max-file-count": "max. {count}",
+    "file-queue": "Warteschlange {count}",
     "no-videos": "Keine Videos verfügbar",
     "title": "Titel",
     "empty-video-selection": "Kein Video ausgewählt",
     "watch_movie": "Ansehen",
     "empty-user-selection": "Kein Benutzer ausgewählt",
     "search-video": "Video suchen",
-    "no_title": "Kein Titel",
+    "no-title": "Kein Titel",
     "busy": "Noch beschäftigt...",
-    "hallo": "..."
+    "hallo": "...",
+    "individually": "individuell"
   },
   "summary": {
     "copy-link": {
@@ -289,6 +290,7 @@
   "direction": "ltr",
   "message": {},
   "test": {
-    "empty-mail-selection": "Keine Email ausgewählt"
+    "empty-mail-selection": "Keine Email ausgewählt",
+    "issues-fixed": ""
   }
 }
