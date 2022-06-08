@@ -1,6 +1,6 @@
 {
 	"name": "vod-manager",
-	"version": "0.9.1",
+	"version": "1.0.0",
 	"description": "VoD Manager",
 	"license": "UNLICENSED",
 	"scripts": {
