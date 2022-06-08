@@ -18,7 +18,6 @@
 	import MenuSurface, { Anchor } from '@smui/menu-surface';
 	import ImageList, { Item as ImageListItem, ImageAspectContainer, Image } from '@smui/image-list';
 	import List, { Item, Separator, Text } from '@smui/list';
-
 	import { _, locale } from 'svelte-i18n';
 
 	export let video;

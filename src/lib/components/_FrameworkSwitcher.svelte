@@ -5,10 +5,12 @@
 	import { dev } from '$app/env';
 	import { goto } from '$app/navigation';
 	import { frameworks } from '$lib/stores';
-	import Menu from '@smui/menu';
+	import Menu, { SelectionGroup, SelectionGroupIcon } from '@smui/menu';
 	import { Anchor } from '@smui/menu-surface';
-	import List, { Item, Text } from '@smui/list';
-	import { Icon } from '$lib/components';
+	import List, { Item, Separator, Text } from '@smui/list';
+	import SvgIcon from './_SvgIcon.svelte';
+	import IconButton from '@smui/icon-button';
+	import { _ } from 'svelte-i18n';
 
 	const defaultFrameworkIndex = 1;
 	const data = [
@@ -29,35 +31,47 @@
 
 	let menu;
 	let menuAnchor;
+	let selectedFramwork;
 
 	async function setFramework(value) {
-		frameworks.set(value);
+		frameworks.update(value);
 		await goto(`${$frameworks.host}${$page.url.pathname}${$page.url.search}`);
+	}
+
+	function handleClick(e) {
+		e.preventDefault();
+		!menu.isOpen() && menu.setOpen(true);
 	}
 </script>
 
-<span class="relative">
-	<a href="." on:click|preventDefault={() => menu.setOpen(true)} name={$frameworks.name}>
-		<div class="menu-anchor switcher lg:-mr-8" bind:this={menuAnchor} use:Anchor>
-			<div class="current-framework">
-				<Icon name={$frameworks.icon} />
-			</div>
-		</div>
-	</a>
+<span class="menu-anchor lg:-mr-8" bind:this={menuAnchor} use:Anchor>
+	<IconButton
+		class="material-icons on-surface"
+		on:click={handleClick}
+		aria-label={$_('text.more-options')}
+		title={$_('text.more-options')}>more_vert</IconButton
+	>
 	<Menu bind:this={menu} bind:anchorElement={menuAnchor} anchor={false} anchorCorner="BOTTOM_LEFT">
 		<List>
-			{#each data as fw}
-				<Item on:SMUI:action={() => setFramework(fw)}>
-					<Icon name={fw.icon} class="mr-2" />
-					<Text>{fw.name}</Text>
-				</Item>
-			{/each}
+			<SelectionGroup>
+				{#each data as fw}
+					<Item on:SMUI:action={() => setFramework(fw)} selected={$frameworks.name === fw.name}>
+						<SvgIcon name={fw.icon} class="mr-2" />
+						<Text>{fw.name}</Text>
+						<SelectionGroupIcon>
+							<i class="material-icons">check</i>
+						</SelectionGroupIcon>
+					</Item>
+				{/each}
+			</SelectionGroup>
+			<Separator />
+			<Item on:SMUI:action={() => goto($frameworks.git)} class="justify-center">
+				<SvgIcon name="github" class="mr-2" />
+				<Text>GitHub</Text>
+			</Item>
 		</List>
 	</Menu>
 </span>
 
 <style>
-	.switcher {
-		display: inline-block;
-	}
 </style>

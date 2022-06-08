@@ -1,6 +1,6 @@
 <script>
 	import { afterUpdate } from 'svelte';
-	import Icon from './_Icon.svelte';
+	import SvgIcon from './_SvgIcon.svelte';
 
 	export let sections = [];
 	export let active_section = null;
@@ -52,7 +52,7 @@
 
 				{#if section.slug === active_section}
 					<div class="icon-container">
-						<Icon name="arrow-right" />
+						<SvgIcon name="arrow-right" />
 					</div>
 				{/if}
 			</a>
@@ -69,7 +69,7 @@
 
 					{#if subsection.slug === active_section}
 						<div class="icon-container">
-							<Icon name="arrow-right" />
+							<SvgIcon name="arrow-right" />
 						</div>
 					{/if}
 				</a>

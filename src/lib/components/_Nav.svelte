@@ -98,6 +98,7 @@
 		user-select: none;
 		transform: translate(0, calc(-100% - 1rem));
 		transition: transform 0.2s;
+		color: inherit;
 	}
 
 	header.visible {
@@ -179,7 +180,7 @@
 		border: none;
 		color: inherit;
 		display: inline-block !important;
-		min-width: 40px !important;
+		min-width: 40px;
 	}
 
 	ul.open :global(li.nav-item) :global(a) {

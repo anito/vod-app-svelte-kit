@@ -8,21 +8,25 @@
 	export let href = null;
 	export let external = null;
 	export let title = null;
+	export let style = '';
+	export { className as class };
 
 	const current = getContext('nav');
+	let className = '';
 
 	$: active = $current === segment;
 </script>
 
 {#if external}
-	<li class="nav-item">
+	<li class="nav-item" class:className>
 		<a target="_blank" href={external} {title}><slot /></a>
 	</li>
 {:else}
-	<li class:active class="nav-item">
+	<li class:active class="nav-item {className}">
 		<a
 			aria-current={$page.url.pathname.startsWith(href) ? true : undefined}
 			sveltekit:prefetch
+			{style}
 			{href}
 			{title}><slot /></a
 		>

@@ -7,7 +7,7 @@
 	import { Icon } from '@smui/button';
 	import { Item, Graphic, Text, PrimaryText, SecondaryText } from '@smui/list';
 	import Chip, { Set, LeadingIcon } from '@smui/chips';
-	import { localeFormat, hasStarted, isExpired, proxyEvent } from '$lib/utils';
+	import { localeFormat, hasStarted, isExpired } from '$lib/utils';
 	import { getMedia } from '$lib/utils/media';
 	import { parseISO } from 'date-fns';
 	import { users } from '$lib/stores';

@@ -187,6 +187,24 @@ export function svg(fn, colors) {
 	);
 }
 
+Array.prototype.unique = function () {
+	return this.filter((val, index, self) => self.indexOf(index) != val);
+};
+
+String.prototype.remove = function (val) {
+	let arr = this.split(' ');
+	return arr
+		.filter((item) => item != val)
+		.unique()
+		.join(' ')
+		.trim();
+};
+
+String.prototype.add = function (val) {
+	let arr = this.split(' ');
+	return arr.concat(val).unique().join(' ').trim();
+};
+
 export const __key__ = {};
 export const __session__ = {};
 export const __ticker__ = {};

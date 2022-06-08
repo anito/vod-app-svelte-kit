@@ -423,7 +423,7 @@ button[disabled],
   color: currentColor;
 }
 /*  links ------------------------------------- */
-a {
+html a {
   position: relative;
   padding: 0 0 1px 0;
   border-bottom: 1px solid currentColor;
@@ -431,14 +431,13 @@ a {
   color: var(--prime);
   transition: color 0.2s, border 0.2s, padding 0.2s;
 }
-a:hover {
+html a:hover {
   color: var(--flash);
 }
-a.no-underline {
+html a.no-underline {
   border-bottom: none;
   padding: 0;
 }
-/* a:hover:not(.disabled) > .icon { stroke: var(--flash) } */
 
 /*  lists ---------------------------------- */
 .listify ol,

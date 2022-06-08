@@ -1,7 +1,9 @@
 <script>
+	// @ts-nocheck
+
 	import { onMount } from 'svelte';
 	import GuideContents from './_GuideContents.svelte'; // TODO rename
-	import Icon from './_Icon.svelte';
+	import SvgIcon from './_SvgIcon.svelte';
 	import { getFragment } from '../utils/navigation';
 
 	export let owner = 'sveltejs';
@@ -83,7 +85,7 @@
 						href="https://github.com/{owner}/{project}/edit/master{path}/{dir}/{section.file}"
 						title={edit_title}
 					>
-						<Icon name="edit" />
+						<SvgIcon name="edit" />
 					</a>
 				</small>
 			</h2>
@@ -100,7 +102,7 @@
 	</div>
 
 	<button on:click={() => (show_contents = !show_contents)}>
-		<Icon name={show_contents ? 'close' : 'menu'} />
+		<SvgIcon name={show_contents ? 'close' : 'menu'} />
 	</button>
 </aside>
 

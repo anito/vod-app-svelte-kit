@@ -303,12 +303,12 @@
 							isUserVideo
 							threeLine
 							class="user-video video-list-item"
-							on:itemSelected={itemSelectedHandler}
 							on:datapicker={(e) =>
 								toggleDataPicker(
 									e.detail.id,
 									selectionVideoId != e.detail.id || !root.classList.contains('datapicker--open')
 								)}
+							on:itemSelected={itemSelectedHandler}
 							selected={selectionVideoId === video.id}
 							{video}
 							{selectionUserId}
@@ -400,8 +400,7 @@
 								</IconButton>
 								<IconButton
 									disabled={unmanagable || video.teaser}
-									class="add-action-button add"
-									color="primary"
+									class="add-action-button add primary"
 									on:click={() => openScheduleDialog(video)}
 								>
 									<Icon class="material-icons">add_circle_outline</Icon>

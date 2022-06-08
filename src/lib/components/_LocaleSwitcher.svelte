@@ -1,7 +1,7 @@
 <script>
 	// @ts-nocheck
 
-	import Menu from '@smui/menu';
+	import Menu, { SelectionGroup, SelectionGroupIcon } from '@smui/menu';
 	import { Anchor } from '@smui/menu-surface';
 	import List, { Item, Text } from '@smui/list';
 	import { _, locale, locales } from 'svelte-i18n';
@@ -30,13 +30,18 @@
 		anchorCorner="BOTTOM_LEFT"
 	>
 		<List>
-			{#each $locales as _locale}
-				<Item on:SMUI:action={() => setLocale(_locale)}>
-					<Text class={_locale === currentLocale && 'font-bold'}
-						>{_locale.toUpperCase().slice(0, 2)}</Text
-					>
-				</Item>
-			{/each}
+			<SelectionGroup>
+				{#each $locales as _locale}
+					<Item on:SMUI:action={() => setLocale(_locale)} selected={_locale === currentLocale}>
+						<Text class={_locale === currentLocale && 'font-bold'}
+							>{_locale.toUpperCase().slice(0, 2)}</Text
+						>
+						<SelectionGroupIcon>
+							<i class="material-icons">check</i>
+						</SelectionGroupIcon>
+					</Item>
+				{/each}
+			</SelectionGroup>
 		</List>
 	</Menu>
 </span>

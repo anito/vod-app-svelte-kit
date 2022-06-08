@@ -43,7 +43,7 @@
 	import { page, session } from '$app/stores';
 	import { getContext, onMount, setContext } from 'svelte';
 	import isMobile from 'ismobilejs';
-	import { Icons, Icon as ExternalIcon } from '$lib/components';
+	import { Icons } from '$lib/components';
 	import Button, { Icon } from '@smui/button';
 	import IconButton from '@smui/icon-button';
 	import Snackbar, { Actions } from '@smui/snackbar';
@@ -108,7 +108,6 @@
 	$: $settings && proxyEvent('ticker:recover');
 	$: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
 	$: $session.user && proxyEvent('ticker:recover');
-	$: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
 	$: user = $session.user;
 	$: person = svg(svg_manifest.person, $theme.primary);
 	$: logo = svg(svg_manifest.logo_vod, $theme.primary);
@@ -320,21 +319,21 @@
 		<form class="main-menu" on:submit|stopPropagation|preventDefault={submit} method="post">
 			<Nav {segment} {page} {logo}>
 				{#if $session.user}
-					<NavItem href="/videos" title="Videothek">
+					<NavItem href="/videos" title="Videothek" segment="videos">
 						<Icon class="material-icons" style="vertical-align: middle;">video_library</Icon>
 						<Label>{$_('nav.library')}</Label>
 					</NavItem>
 				{/if}
 
 				{#if $session.role === 'Administrator'}
-					<NavItem href="/users" title="Administration">
+					<NavItem href="/users" title="Administration" segment="users">
 						<Icon class="material-icons" style="vertical-align: middle;">settings</Icon>
 						<Label>Admin</Label>
 					</NavItem>
 				{/if}
 
 				{#if $session.user}
-					<NavItem>
+					<NavItem segment="login">
 						<Button
 							variant="raised"
 							class="sign-in-out button-logout v-emph v-emph-bounce {emphasize}"
@@ -384,12 +383,8 @@
 					<LocaleSwitcher />
 				</NavItem>
 
-				<NavItem title={$_('text.choose-framework')}>
+				<NavItem title={$_('text.choose-framework')} style="vertical-align: sub;">
 					<FrameworkSwitcher />
-				</NavItem>
-
-				<NavItem external={$frameworks.git} title="GitHub Repo">
-					<ExternalIcon name="github" />
 				</NavItem>
 			</Nav>
 		</form>
@@ -437,7 +432,7 @@
 		transform: translateY(0px);
 		transition: all 0.4s ease-in;
 	}
-	.main-menu :global(button .no-break) {
+	.main-menu :global(button.sign-in-out .no-break) {
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
