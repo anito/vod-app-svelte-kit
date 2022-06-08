@@ -73,7 +73,7 @@
 			on:mouseenter={() => (open = true)}
 			on:mouseleave={() => (open = false)}
 		>
-			<li class:hide-if-desktop={!showHome} class:active={!segment}>
+			<li class:hide-if-desktop={!showHome} class:active={!segment} class="nav-item">
 				<a sveltekit:prefetch href="/">{home}</a>
 			</li>
 			<slot />
@@ -127,12 +127,12 @@
 		line-height: 1;
 	}
 
-	ul :global(li) {
+	ul :global(li.nav-item) {
 		display: block;
 		display: none;
 	}
 
-	ul :global(li.active) {
+	ul :global(li.nav-item.active) {
 		display: block;
 	}
 
@@ -163,7 +163,7 @@
 		align-self: start;
 	}
 
-	ul.open :global(li) {
+	ul.open :global(li.nav-item) {
 		display: block;
 		text-align: right;
 	}
@@ -172,7 +172,7 @@
 		display: none;
 	}
 
-	ul :global(li) :global(a) {
+	ul :global(li.nav-item) :global(a) {
 		font-size: var(--h4);
 		font-weight: 600;
 		padding: 0 0.5rem;
@@ -182,12 +182,12 @@
 		min-width: 40px !important;
 	}
 
-	ul.open :global(li) :global(a) {
+	ul.open :global(li.nav-item) :global(a) {
 		padding: 0.9375rem 2.3125rem 0.9375rem 2.5rem;
 		display: block;
 	}
 
-	ul.open :global(li):first-child :global(a) {
+	ul.open :global(li.nav-item):first-child :global(a) {
 		padding-top: 1.4375rem;
 	}
 
@@ -209,7 +209,7 @@
 		/* z-index: 11; */
 	}
 
-	ul :global(li.active a) {
+	ul :global(li.nav-item.active a) {
 		color: var(--prime);
 	}
 
@@ -228,7 +228,7 @@
 		transition: none;
 	}
 
-	ul :global(li):not(.active) :global(a):hover {
+	ul :global(li.nav-item):not(.active) :global(a):hover {
 		color: var(--flash);
 	}
 
@@ -245,12 +245,12 @@
 			align-self: initial;
 		}
 
-		ul.open :global(li) {
+		ul.open :global(li.nav-item) {
 			display: inline;
 			text-align: left;
 		}
 
-		ul.open :global(li) :global(a) {
+		ul.open :global(li.nav-item a) {
 			font-size: var(--h4);
 			padding: 0 0.5rem;
 		}
@@ -259,7 +259,7 @@
 			display: none;
 		}
 
-		ul :global(li) {
+		ul :global(li.nav-item) {
 			display: inline !important;
 			padding-left: 5px;
 		}

@@ -10,11 +10,16 @@
 
 	export let name;
 	export let size = 20;
+	export { className as class };
+
+	let className = '';
 </script>
 
-<svg class="icon" width={size} height={size}>
-	<use xlink:href="#{name}" />
-</svg>
+<div class={className}>
+	<svg class="icon" width={size} height={size}>
+		<use xlink:href="#{name}" />
+	</svg>
+</div>
 
 <style>
 	.icon {

@@ -4,49 +4,52 @@
 	import { page } from '$app/stores';
 	import { dev } from '$app/env';
 	import { goto } from '$app/navigation';
-	import { writable } from 'svelte/store';
+	import { frameworks } from '$lib/stores';
 	import Menu from '@smui/menu';
 	import { Anchor } from '@smui/menu-surface';
 	import List, { Item, Text } from '@smui/list';
 	import { Icon } from '$lib/components';
 
 	const defaultFrameworkIndex = 1;
-	const frameworks = [
+	const data = [
 		{
 			name: 'Sapper',
 			icon: 'sapper-icon',
+			git: 'https://github.com/anito/vod-app',
 			host: dev ? 'http://localhost:3001' : 'https://vod.doojoo.de'
 		},
 		{
 			name: 'SvelteKit',
 			icon: 'svelte-kit-icon',
+			git: 'https://github.com/anito/vod-app-svelte-kit',
 			host: dev ? 'http://localhost:3000' : 'https://vod-app.doojoo.de'
 		}
 	];
-	const framework = writable(frameworks[defaultFrameworkIndex]);
+	frameworks.update(data[defaultFrameworkIndex]);
 
 	let menu;
 	let menuAnchor;
 
 	async function setFramework(value) {
-		framework.set(value);
-		await goto(`${$framework.host}${$page.url.pathname}${$page.url.search}`);
+		frameworks.set(value);
+		await goto(`${$frameworks.host}${$page.url.pathname}${$page.url.search}`);
 	}
 </script>
 
 <span class="relative">
-	<a href="." on:click|preventDefault={() => menu.setOpen(true)} name={$framework.name}>
+	<a href="." on:click|preventDefault={() => menu.setOpen(true)} name={$frameworks.name}>
 		<div class="menu-anchor switcher lg:-mr-8" bind:this={menuAnchor} use:Anchor>
 			<div class="current-framework">
-				<Icon name={$framework.icon} />
+				<Icon name={$frameworks.icon} />
 			</div>
 		</div>
 	</a>
 	<Menu bind:this={menu} bind:anchorElement={menuAnchor} anchor={false} anchorCorner="BOTTOM_LEFT">
 		<List>
-			{#each frameworks as fw}
+			{#each data as fw}
 				<Item on:SMUI:action={() => setFramework(fw)}>
-					<Icon name={fw.icon} />
+					<Icon name={fw.icon} class="mr-2" />
+					<Text>{fw.name}</Text>
 				</Item>
 			{/each}
 		</List>

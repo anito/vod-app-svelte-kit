@@ -49,7 +49,16 @@
 	import Snackbar, { Actions } from '@smui/snackbar';
 	import { Label } from '@smui/common';
 	import { del as logout, createRedirectSlug, proxyEvent, svg, __ticker__ } from '$lib/utils';
-	import { fabs, flash, settings, theme, ticker, urls, videos, videoEmitter } from '$lib/stores';
+	import {
+		fabs,
+		frameworks,
+		settings,
+		theme,
+		ticker,
+		urls,
+		videos,
+		videoEmitter
+	} from '$lib/stores';
 	import { Modal } from '$lib/components';
 	import { Jumper } from 'svelte-loading-spinners';
 	import {
@@ -371,15 +380,15 @@
 					</NavItem>
 				{/if}
 
-				<li class="locale-switcher">
+				<NavItem title={$_('text.choose-locale')}>
 					<LocaleSwitcher />
-				</li>
+				</NavItem>
 
-				<li class="">
+				<NavItem title={$_('text.choose-framework')}>
 					<FrameworkSwitcher />
-				</li>
+				</NavItem>
 
-				<NavItem external="https://github.com/anito/vod-app" title="GitHub Repo">
+				<NavItem external={$frameworks.git} title="GitHub Repo">
 					<ExternalIcon name="github" />
 				</NavItem>
 			</Nav>

@@ -15,11 +15,11 @@
 </script>
 
 {#if external}
-	<li>
+	<li class="nav-item">
 		<a target="_blank" href={external} {title}><slot /></a>
 	</li>
 {:else}
-	<li class:active>
+	<li class:active class="nav-item">
 		<a
 			aria-current={$page.url.pathname.startsWith(href) ? true : undefined}
 			sveltekit:prefetch
