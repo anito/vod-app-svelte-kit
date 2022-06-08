@@ -8,7 +8,7 @@ Dive into the [Mail](http://vod-app.doojoo.de/login?token=eyJ0eXAiOiJKV1QiLCJhbG
 
 # Sapper
 
-The application originally was made using Sapper. [Repo](github.com/anito/vod-app).
+The application originally was made using Sapper. Here is the [Repo](https://github.com/anito/vod-app).
 
 _Special thanks to the creators of:_
 
