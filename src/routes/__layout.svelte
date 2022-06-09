@@ -289,7 +289,11 @@
 	}
 
 	function tickerEndedHandler(e) {
-		unsubscribeTicker && unsubscribeTicker();
+		try {
+			unsubscribeTicker();
+		} catch (e) {
+			console.log('nothing to unsubscribe');
+		}
 
 		$session.user = null;
 		$session.groups = null;
