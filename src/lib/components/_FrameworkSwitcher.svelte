@@ -52,7 +52,7 @@
 		title={$_('text.more-options')}>more_vert</IconButton
 	>
 	<Menu bind:this={menu} bind:anchorElement={menuAnchor} anchor={false} anchorCorner="BOTTOM_LEFT">
-		<List>
+		<List class="option-list">
 			<SelectionGroup>
 				{#each data as fw}
 					<Item on:SMUI:action={() => setFramework(fw)} selected={$frameworks.name === fw.name}>
@@ -65,13 +65,22 @@
 				{/each}
 			</SelectionGroup>
 			<Separator />
-			<Item on:SMUI:action={() => goto($frameworks.git)} class="justify-center">
-				<SvgIcon name="github" class="mr-2" />
-				<Text>GitHub</Text>
+			<Item class="justify-center">
+				<a class="github" href={$frameworks.git} target="_blank" title={$_('text.goto-github')}>
+					<span>
+						<SvgIcon name="github" class="mr-2" />
+						<Text>GitHub</Text>
+					</span>
+				</a>
 			</Item>
 		</List>
 	</Menu>
 </span>
 
 <style>
+	:global(ul.primary ul.option-list > li:not(.nav-item)) a.github,
+	:global(ul.primary ul.option-list > li:not(.nav-item)) a.github:hover {
+		font-size: inherit;
+		font-weight: 300;
+	}
 </style>

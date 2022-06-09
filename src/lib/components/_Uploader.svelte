@@ -15,7 +15,7 @@
 	export let uploadMultiple = false;
 	export let parallelUploads = 2;
 	export let maxFiles = 2;
-	export let maxFilesize = 100; // Megabyte
+	export let maxFilesize = 1024; // Megabyte
 	export let timeout = 180 * 1000; // 3min
 	export let uid = '';
 

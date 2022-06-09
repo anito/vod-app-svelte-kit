@@ -15,14 +15,12 @@
 	let className = '';
 </script>
 
-<div class={className}>
-	<svg class="icon" width={size} height={size}>
-		<use xlink:href="#{name}" />
-	</svg>
-</div>
+<svg class={className} width={size} height={size}>
+	<use xlink:href="#{name}" />
+</svg>
 
 <style>
-	.icon {
+	svg {
 		display: inline;
 		position: relative;
 		overflow: hidden;

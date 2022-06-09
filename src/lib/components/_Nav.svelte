@@ -128,23 +128,23 @@
 		line-height: 1;
 	}
 
-	ul :global(li.nav-item) {
+	.primary :global(li.nav-item) {
 		display: block;
 		display: none;
 	}
 
-	ul :global(li.nav-item.active) {
+	.primary :global(li.nav-item.active) {
 		display: block;
 	}
 
-	ul {
+	.primary {
 		position: relative;
 		padding: 0 3rem 0 0;
 		background: url(/icons/chevron.svg) calc(100% - 1em) 0.05em no-repeat;
 		background-size: 1em 1em;
 	}
 
-	ul::after {
+	.primary::after {
 		/* prevent clicks from registering if nav is closed */
 		position: absolute;
 		content: '';
@@ -154,7 +154,7 @@
 		top: 0;
 	}
 
-	ul.open {
+	.primary.open {
 		padding: 0 0 1em 0;
 		background: white;
 		border-left: 1px solid #eee;
@@ -164,16 +164,16 @@
 		align-self: start;
 	}
 
-	ul.open :global(li.nav-item) {
+	.primary.open > :global(li.nav-item) {
 		display: block;
 		text-align: right;
 	}
 
-	ul.open::after {
+	.primary.open::after {
 		display: none;
 	}
 
-	ul :global(li.nav-item) :global(a) {
+	.primary > :global(li.nav-item a) {
 		font-size: var(--h4);
 		font-weight: 600;
 		padding: 0 0.5rem;
@@ -183,12 +183,12 @@
 		min-width: 40px;
 	}
 
-	ul.open :global(li.nav-item) :global(a) {
+	.primary.open > :global(li.nav-item a) {
 		padding: 0.9375rem 2.3125rem 0.9375rem 2.5rem;
 		display: block;
 	}
 
-	ul.open :global(li.nav-item):first-child :global(a) {
+	.primary.open > :global(li.nav-item):first-child :global(a) {
 		padding-top: 1.4375rem;
 	}
 
@@ -210,7 +210,7 @@
 		/* z-index: 11; */
 	}
 
-	ul :global(li.nav-item.active a) {
+	.primary > :global(li.nav-item.active a) {
 		color: var(--prime);
 	}
 
@@ -229,38 +229,38 @@
 		transition: none;
 	}
 
-	ul :global(li.nav-item):not(.active) :global(a):hover {
+	.primary > :global(li.nav-item):not(.active) :global(a):hover {
 		color: var(--flash);
 	}
 
 	@media (min-width: 991px) {
-		ul {
+		.primary {
 			padding: 0;
 			background: none;
 		}
 
-		ul.open {
+		.primary.open {
 			padding: 0;
 			background: transparent;
 			border: none;
 			align-self: initial;
 		}
 
-		ul.open :global(li.nav-item) {
+		.primary.open > :global(li.nav-item) {
 			display: inline;
 			text-align: left;
 		}
 
-		ul.open :global(li.nav-item a) {
+		.primary.open > :global(li.nav-item a) {
 			font-size: var(--h4);
 			padding: 0 0.5rem;
 		}
 
-		ul::after {
+		.primary::after {
 			display: none;
 		}
 
-		ul :global(li.nav-item) {
+		.primary :global(li.nav-item) {
 			display: inline !important;
 			padding-left: 5px;
 		}
