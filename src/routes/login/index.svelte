@@ -2,7 +2,7 @@
 	import { browser } from '$app/env';
 	import { post } from '$lib/utils';
 
-	export async function load({ url }) {
+	export async function load({ url, session }) {
 		const token = url.searchParams.get('token');
 		if (browser && token) {
 			// const props = await api.get(`login/?token=${token}`);
@@ -12,7 +12,11 @@
 				};
 			});
 		}
-		return {};
+		return {
+			props: {
+				loggedin: !!session.user
+			}
+		};
 	}
 </script>
 
@@ -36,6 +40,7 @@
 	 */
 	export let data = null;
 	export let success = false;
+	export let loggedin = null;
 
 	const transitionParams = {
 		delay: 0,
@@ -48,14 +53,14 @@
 	let outroended = false;
 
 	$: message = ((user) => {
-		return (
-			(user && {
-				text: $_('text.welcome-message', { values: { name: user.name } }),
-				type: 'success'
-			}) || {
-				text: $_('text.login-text')
-			}
-		);
+		if (user) {
+			return {
+				text: $_('text.welcome-message', { values: { name: user.name } })
+			};
+		}
+		return {
+			text: $_('text.login-text')
+		};
 	})($session.user);
 
 	onMount(() => {
@@ -70,9 +75,16 @@
 		 * This second message will be either a welcome message (on success) or
 		 * a default message (on first appearance)
 		 */
-		if (!data) {
+		if (loggedin) {
+			// valid session already exists, jump straight to outroend message
+			outroended = true;
+		} else if (!data) {
 			// Form login
-			flash.update({ message: message.text });
+			// start with either Login request message w/o timeout
+			flash.update({
+				message: message.text,
+				type: 'success'
+			});
 		} else {
 			// Token login
 			if (success) {
@@ -81,7 +93,7 @@
 				flash.update({ type: 'success', ...data, timeout: 2000 });
 			} else {
 				setTimeout(dispatcher, 100, { type: 'end', data: { path: 'login' } });
-				flash.update({ type: 'warning', ...data, timeout: 5000 });
+				flash.update({ type: 'error', ...data, timeout: 5000 });
 			}
 		}
 		return () => {};
@@ -138,7 +150,7 @@
 						out:fly={{ duration: 200, x: 20 }}
 					>
 						<h5 class="m-2 mdc-typography--headline5 headline">
-							{$_('text.hallo')}
+							{$_('text.one-moment')}
 						</h5>
 					</div>
 				{/if}

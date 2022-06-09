@@ -3,7 +3,6 @@ import { writable } from 'svelte/store';
 
 function createStore() {
 	const type = 'success';
-	const status = '';
 	const message = '';
 	const { subscribe, update, set } = writable({}, () => {});
 	let timeoutId;
@@ -14,13 +13,13 @@ function createStore() {
 			update((_) => {
 				const { timeout } = { ...item };
 				clearTimeout(timeoutId);
-				// setting and removing the message after amount of time
-				if (timeout) {
+				// removing the message after timeout
+				if (!isNaN(timeout)) {
 					timeoutId = setTimeout((msg) => set(msg), timeout, {
 						message
 					});
 				}
-				return { type, status, message, ...item };
+				return { type, message, ...item };
 			}),
 		set
 	};

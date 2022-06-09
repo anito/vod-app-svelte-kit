@@ -93,7 +93,7 @@
 					uploadMultiple: false,
 					parallelUploads: 1,
 					maxFiles: 1,
-					maxFilesize: 2
+					maxFilesize: 1024
 				},
 				events: { uploadDone }
 			},

@@ -46,10 +46,10 @@
 
 	async function submit() {
 		freeze();
-		flash.update({ message: $_('text.one-moment'), timeout: false });
+		flash.update({ message: $_('text.one-moment') });
 
 		await post(`/auth/login?lang=${$locale}`, { email, password }).then((res) => {
-			let type, wait;
+			let type;
 			let message = res.message || res.data.message || res.statusText;
 
 			defreeze();
@@ -57,9 +57,10 @@
 			if (res.success) {
 				type = 'success';
 				proxyEvent('ticker:start', { ...res.data });
+				reset();
 			} else {
 				reset();
-				type = 'warning';
+				type = 'error';
 
 				if (++loginAttempts > 3) invalidTokenUserDialog.setOpen(true);
 			}
@@ -67,7 +68,7 @@
 			flash.update({
 				type,
 				message,
-				timeout
+				timeout: 2000
 			});
 			configSnackbar(message);
 			snackbar.open();

@@ -42,7 +42,7 @@
 					parallelUploads: 2,
 					maxFiles: 2,
 					timeout: 3600 * 1000, // 60min
-					maxFilesize: 1000 // Megabyte
+					maxFilesize: 1024 // Megabyte
 				},
 				events: { uploadDone }
 			},

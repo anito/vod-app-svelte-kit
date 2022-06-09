@@ -9,11 +9,13 @@ export async function post({ locals, request }) {
 
 	return await api.post('users/login', data, token).then(async (res) => {
 		await locals.session.destroy();
-		await locals.session.data({
-			user: res.data.user,
-			groups: res.data.groups,
-			role: res.data.user.group.name
-		});
+		if (res.success) {
+			await locals.session.data({
+				user: res.data.user,
+				groups: res.data.groups,
+				role: res.data.user.group.name
+			});
+		}
 
 		return {
 			body: { ...res }
