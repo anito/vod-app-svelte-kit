@@ -328,7 +328,7 @@
 							{:else if selectedMode === 'add'}{$_('text.create-new-user')}{/if}
 						</span>
 					</Header>
-					<button on:click={() => goto('users')} class="button-close" variant="outlined">
+					<button on:click={() => goto('/users')} class="button-close" variant="outlined">
 						<Icon class="material-icons" style="vertical-align: middle;">close</Icon>
 					</button>
 				</div>
