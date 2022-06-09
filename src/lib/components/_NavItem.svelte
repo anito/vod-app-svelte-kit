@@ -19,7 +19,7 @@
 
 {#if external}
 	<li class="nav-item" class:className>
-		<a target="_blank" href={external} {title}><slot /></a>
+		<a target="_blank" href={external} {title} {style}><slot /></a>
 	</li>
 {:else}
 	<li class:active class="nav-item {className}">

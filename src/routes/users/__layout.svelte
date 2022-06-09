@@ -300,15 +300,13 @@
 			</Textfield>
 		</div>
 		{#if $users.length}
-			<div class="overflow-hidden">
-				<List class="users-list" twoLine avatarList singleSelection bind:selectedIndex>
-					{#each filteredUsers as user (user.id)}
-						<a sveltekit:prefetch href={`/users/${user.id}${location}`}>
-							<SimpleUserCard class="flex" {selectionUserId} {user} />
-						</a>
-					{/each}
-				</List>
-			</div>
+			<List class="users-list" twoLine avatarList singleSelection bind:selectedIndex>
+				{#each filteredUsers as user (user.id)}
+					<a sveltekit:prefetch href={`/users/${user.id}${location}`}>
+						<SimpleUserCard class="flex" {selectionUserId} {user} />
+					</a>
+				{/each}
+			</List>
 		{:else}
 			<div class="paper-container flex justify-center">
 				<div>{$_('text.user-not-found')}</div>
