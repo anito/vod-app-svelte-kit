@@ -166,31 +166,28 @@
 							<Icon class="material-icons">movie</Icon>
 							<span class="ellipsed pl-2">{video.title || $_('text.no-title')}</span>
 						</div>
-						<div class="opacity-25">
-							<div class="flex text-xs text-inherit">
-								<Icon class="material-icons">timer</Icon>
-								<span class="ellipsed pl-2"
-									>{@html $_('text.until-date', {
-										values: {
-											date:
-												matchingData &&
-												new Date(matchingData.end).toLocaleDateString($locale, dateOptions)
-										}
-									})}</span
-								>
-							</div>
+						<div class="flex text-xs text-inherit">
+							<Icon class="material-icons">timer</Icon>
+							<span class="ellipsed pl-2"
+								>{@html $_('text.until-date', {
+									values: {
+										date:
+											matchingData &&
+											new Date(matchingData.end).toLocaleDateString($locale, dateOptions)
+									}
+								})}</span
+							>
 						</div>
 					</div>
 				{/if}
 				<div class="flex justify-end" style="flex-basis: 50%; max-width: 50%">
-					<Button
+					<IconButton
 						on:click={() => goto(`/videos/${video.id}`)}
 						variant="outlined"
 						class="button-shaped-round unelevated"
 					>
-						<Icon class="material-icons">open_with</Icon>
-						<Label>{$_('text.watch_movie')}</Label>
-					</Button>
+						<i class="material-icons">smart_display</i>
+					</IconButton>
 				</div>
 			</div>
 		</Content>

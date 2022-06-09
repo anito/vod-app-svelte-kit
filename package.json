@@ -16,6 +16,7 @@
 		"format": "prettier --ignore-path .gitignore --write --plugin-search-dir=. ."
 	},
 	"devDependencies": {
+		"@mdi/js": "^6.7.96",
 		"@smui/button": "^6.0.0-beta.16",
 		"@smui/card": "^6.0.0-beta.16",
 		"@smui/checkbox": "^6.0.0-beta.16",

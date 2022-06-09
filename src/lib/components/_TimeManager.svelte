@@ -318,7 +318,7 @@
 								color="primary"
 								on:click={async () => await goto(`/videos/${video.id}`)}
 							>
-								<Icon class="material-icons">open_with</Icon>
+								<Icon class="material-icons">smart_display</Icon>
 							</IconButton>
 							{#if ADMIN === $session.role}
 								<Button
@@ -341,7 +341,7 @@
 									class="delete-action-button delete ml-2"
 									on:click={(e) => openRemoveDialog(e, video)}
 								>
-									<Icon class="material-icons">remove_circle_outline</Icon>
+									<Icon class="material-icons">remove_circle</Icon>
 								</IconButton>
 							{/if}
 						</SimpleVideoCard>
@@ -396,14 +396,14 @@
 									style=""
 									on:click={async () => await goto(`/videos/${video.id}`)}
 								>
-									<Icon class="material-icons">open_with</Icon>
+									<Icon class="material-icons">smart_display</Icon>
 								</IconButton>
 								<IconButton
 									disabled={unmanagable || video.teaser}
 									class="add-action-button add primary"
 									on:click={() => openScheduleDialog(video)}
 								>
-									<Icon class="material-icons">add_circle_outline</Icon>
+									<Icon class="material-icons">add_circle</Icon>
 								</IconButton>
 							{/if}
 						</SimpleVideoCard>

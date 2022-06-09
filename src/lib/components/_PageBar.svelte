@@ -8,7 +8,7 @@
 
 <div class="pagebar">
 	<div class="breadcrumb-container m-auto ml-0">
-		<Breadcrumb />
+		<Breadcrumb simple />
 	</div>
 	<div class="ticker-container m-auto mr-0">
 		<SessionTicker
