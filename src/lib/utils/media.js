@@ -10,7 +10,7 @@ async function uri(id, user, type, options = {}) {
 	}
 	let url = `u/${type}/${id}/${query.length && '?' + query.join('&')}`;
 
-	const res = await api.get(url, user && user.token);
+	const res = await api.get(url, user?.token);
 
 	if (res && res.success) {
 		return res.data;
@@ -22,7 +22,7 @@ export async function getMedia(type, id, user, { ...options }) {
 	type = type.length && type.toLowerCase();
 	const TYPE = type === 'video' ? 'v' : type === 'avatar' ? 'a' : 'i';
 
-	if (user && user.token) {
+	if (user?.token) {
 		let defaults = {
 			width: 300,
 			height: 300,

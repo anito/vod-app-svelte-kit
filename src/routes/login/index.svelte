@@ -30,7 +30,7 @@
 	import { flash } from '$lib/stores';
 	import { sitename } from '$lib/stores';
 	import { fly } from 'svelte/transition';
-	import { redirectPath, proxyEvent } from '$lib/utils';
+	import { processRedirect, proxyEvent } from '$lib/utils';
 	import Paper, { Title, Subtitle, Content } from '@smui/paper';
 	import { _ } from 'svelte-i18n';
 
@@ -105,7 +105,7 @@
 
 	async function introendHandler() {
 		if ($session.user) {
-			await goto(redirectPath($page, $session));
+			await goto(processRedirect($page, $session));
 		}
 	}
 </script>

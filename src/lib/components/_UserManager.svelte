@@ -99,7 +99,7 @@
 		tokenVal = token?.token || '';
 		activeLabel = (active && $_('text.deactivate-user')) || $_('text.activate-user');
 	})(currentUser);
-	$: magicLink = (tokenVal && `http://${$page.host}/login?token=${tokenVal}`) || '';
+	$: magicLink = (tokenVal && `http://${$page.url.host}/login?token=${tokenVal}`) || '';
 	$: actionsLookup = new Set([
 		{ action: 'edit', name: 'text.edit-user' },
 		{ action: 'pass', name: 'text.edit-password' },
@@ -162,10 +162,7 @@
 	}
 
 	async function deleteAvatar() {
-		const res = await api.del(
-			`avatars/${currentUser.avatar.id}?lang=${$locale}`,
-			user && user.token
-		);
+		const res = await api.del(`avatars/${currentUser.avatar.id}?lang=${$locale}`, user?.token);
 		message = res.message || res.data.message;
 		if (res.success) {
 			users.put(res.data);
@@ -188,11 +185,7 @@
 	}
 
 	async function activateUser() {
-		const res = await api.put(
-			`users/${selectionUserId}?lang=${$locale}`,
-			{ active },
-			user && user.token
-		);
+		const res = await api.put(`users/${selectionUserId}?lang=${$locale}`, { active }, user?.token);
 
 		if (res) {
 			message = res.message || res.data.message || res.statusText;
@@ -219,17 +212,17 @@
 		switch (mode) {
 			case 'add':
 				data = { active, email, name, password, group_id };
-				res = await api.post(`users/add?lang=${$locale}`, data, user && user.token);
+				res = await api.post(`users/add?lang=${$locale}`, data, user?.token);
 				break;
 			case 'edit':
 				data = { active, email, name, group_id, token };
 			case 'pass':
 				data = data || { password, token };
-				res = await api.put(`users/${selectionUserId}?lang=${$locale}`, data, user && user.token);
+				res = await api.put(`users/${selectionUserId}?lang=${$locale}`, data, user?.token);
 				break;
 			case 'del':
 				if (!confirm($_('messages.permanently-remove-user', { values: { name } }))) return;
-				res = await api.del(`users/${selectionUserId}?lang=${$locale}`, user && user.token);
+				res = await api.del(`users/${selectionUserId}?lang=${$locale}`, user?.token);
 				break;
 			default:
 				return;

@@ -1,9 +1,10 @@
 <script>
 	// @ts-nocheck
 
-	import { page } from '$app/stores';
+	import { page, session } from '$app/stores';
 	import { dev } from '$app/env';
 	import { goto } from '$app/navigation';
+	import { tick } from 'svelte';
 	import { frameworks } from '$lib/stores';
 	import Menu, { SelectionGroup, SelectionGroupIcon } from '@smui/menu';
 	import { Anchor } from '@smui/menu-surface';
@@ -31,11 +32,15 @@
 
 	let menu;
 	let menuAnchor;
-	let selectedFramwork;
+
+	$: token = $session.user?.token;
+	$: withToken = (token && `/login?token=${token}&redirect=`) || '';
+	$: redirect = `${$frameworks.host}${withToken}${$page.url.pathname}${$page.url.search}`;
 
 	async function setFramework(value) {
 		frameworks.update(value);
-		await goto(`${$frameworks.host}${$page.url.pathname}${$page.url.search}`);
+		await tick();
+		await goto(redirect);
 	}
 
 	function handleClick(e) {

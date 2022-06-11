@@ -1,4 +1,6 @@
 <script>
+	// @ts-nocheck
+
 	import { onMount } from 'svelte';
 	import { sitename } from '$lib/stores';
 	import { UserManager } from '$lib/components';

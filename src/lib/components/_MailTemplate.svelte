@@ -57,7 +57,7 @@
 	</div>
 	<div class="grid content main-grid-area">
 		<div class="starter grid-item">
-			<span>Hallo, {user && user.name}!</span>
+			<span>Hallo, {user?.name}!</span>
 		</div>
 		<div class="before-content grid-item">
 			<Textfield

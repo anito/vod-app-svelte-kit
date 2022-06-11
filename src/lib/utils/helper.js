@@ -66,7 +66,7 @@ export function createRedirectSlug(url) {
 	return `?redirect=${path}${parseQuery(query)}`;
 }
 
-export function redirectPath(page, session = {}) {
+export function processRedirect(page, session = {}) {
 	const isAdmin = session.role === 'Administrator';
 	let redirect, uid, path;
 	if ((redirect = page.url.searchParams.get('redirect'))) {
