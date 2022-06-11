@@ -208,8 +208,8 @@
 
 		if (res.success) {
 			handleSuccess(res, $_('text.time-slot-updated'));
-			selectionVideoId = id;
 		} else {
+			startDate = startDate;
 			handleError(res);
 		}
 	}
@@ -304,7 +304,6 @@
 							threeLine
 							class="user-video video-list-item"
 							on:datapicker={(e) =>
-								ADMIN === $session.role &&
 								toggleDataPicker(
 									e.detail.id,
 									selectionVideoId != e.detail.id || !root.classList.contains('datapicker--open')
@@ -326,7 +325,6 @@
 									class="close-action-button button-shaped-round flex self-center"
 									variant="unelevated"
 									on:click={() =>
-										ADMIN === $session.role &&
 										toggleDataPicker(
 											video.id,
 											selectionVideoId != video.id || !root.classList.contains('datapicker--open')
