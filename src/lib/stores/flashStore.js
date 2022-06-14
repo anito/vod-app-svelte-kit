@@ -21,6 +21,7 @@ function createStore() {
 				}
 				return { type, message, ...item };
 			}),
+		text: (message) => update((val) => ({ ...val, message })),
 		set
 	};
 }

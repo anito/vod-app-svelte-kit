@@ -6,7 +6,7 @@
 	// @ts-nocheck
 
 	import * as api from '$lib/api';
-	import { onMount, getContext } from 'svelte';
+	import { onMount, getContext, tick } from 'svelte';
 	import { session } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { post, proxyEvent } from '$lib/utils';
@@ -48,15 +48,15 @@
 		freeze();
 		flash.update({ message: $_('text.one-moment') });
 
-		await post(`/auth/login?lang=${$locale}`, { email, password }).then((res) => {
+		await post(`/auth/login?lang=${$locale}`, { email, password }).then(async (res) => {
 			let type;
 			let message = res.message || res.data.message || res.statusText;
 
 			defreeze();
-
 			if (res.success) {
 				type = 'success';
 				proxyEvent('ticker:start', { ...res.data });
+				await tick();
 				reset();
 			} else {
 				reset();

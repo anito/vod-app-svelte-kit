@@ -8,15 +8,20 @@
 	} from 'svelte-i18n';
 	import { browser } from '$app/env';
 
-	register('en-US', () => import('../messages/en-US.json'));
-	register('de-DE', () => import('../messages/de-DE.json'));
+	const fallbackLocale = 'en-US';
+	const locales = new Map([
+		['en-US', { path: '../messages/en_US.json' }],
+		['de-DE', { path: '../messages/de_DE.json' }]
+	]);
+
+	locales.forEach((val, key) => register(key, () => import(val.path)));
 
 	if (browser) {
 		// init on client side only
 		// don't put this inside `load`, otherwise it will gets executed every time you changed route on client side
 		init_i18n({
-			fallbackLocale: 'en-US',
-			initialLocale: getLocaleFromNavigator()
+			fallbackLocale: fallbackLocale,
+			initialLocale: localeFromQueryString('lang')
 		});
 	}
 
@@ -24,12 +29,20 @@
 		if (!browser) {
 			// init on server side only, need to get query from `page.query.get("lang")`
 			init_i18n({
-				fallbackLocale: 'en-US',
-				initialLocale: getLocaleFromQueryString('lang')
+				fallbackLocale: fallbackLocale,
+				initialLocale: localeFromQueryString('lang')
 			});
 		}
 		await waitLocale();
 		return {};
+	}
+
+	function localeFromQueryString(key) {
+		let locale = getLocaleFromQueryString(key);
+		if (locales.has(locale)) {
+			return locale;
+		}
+		return fallbackLocale;
 	}
 </script>
 
@@ -41,24 +54,15 @@
 	import * as api from '$lib/api';
 	import { goto } from '$app/navigation';
 	import { page, session } from '$app/stores';
-	import { getContext, onMount, setContext } from 'svelte';
+	import { getContext, onMount, setContext, tick } from 'svelte';
 	import isMobile from 'ismobilejs';
 	import { Icons } from '$lib/components';
 	import Button, { Icon } from '@smui/button';
 	import IconButton from '@smui/icon-button';
 	import Snackbar, { Actions } from '@smui/snackbar';
 	import { Label } from '@smui/common';
-	import { del as logout, createRedirectSlug, proxyEvent, svg, __ticker__ } from '$lib/utils';
-	import {
-		fabs,
-		frameworks,
-		settings,
-		theme,
-		ticker,
-		urls,
-		videos,
-		videoEmitter
-	} from '$lib/stores';
+	import { del as logout, get, createRedirectSlug, proxyEvent, svg, __ticker__ } from '$lib/utils';
+	import { fabs, settings, theme, ticker, urls, videos, videoEmitter } from '$lib/stores';
 	import { Modal } from '$lib/components';
 	import { Jumper } from 'svelte-loading-spinners';
 	import {
@@ -90,7 +94,8 @@
 	let snackbar;
 
 	// load configuration from server
-	serverConfig();
+	// $: serverConfig($locale);
+	// getSettings();
 
 	setContext('snackbar', {
 		getSnackbar: () => snackbar,
@@ -104,10 +109,8 @@
 		restoreFab: () => fabs.restore()
 	});
 
-	$: $session.user && proxyEvent('ticker:recover');
-	$: $settings && proxyEvent('ticker:recover');
 	$: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
-	$: $session.user && proxyEvent('ticker:recover');
+	$: ($settings || $session.user) && proxyEvent('ticker:recover');
 	$: user = $session.user;
 	$: person = svg(svg_manifest.person, $theme.primary);
 	$: logo = svg(svg_manifest.logo_vod, $theme.primary);
@@ -145,6 +148,8 @@
 		root = document.documentElement;
 		snackbar = getSnackbar();
 
+		serverConfig();
+		checkLocale();
 		initListener();
 		initClasses();
 		initStyles();
@@ -155,6 +160,17 @@
 			removeClasses();
 		};
 	});
+
+	async function checkLocale() {
+		await get('/session/recover').then((res) => {
+			const { locale } = res;
+			locale && ($session.locale = locale);
+		});
+
+		if ($locale !== $session.locale) {
+			($session.locale && locale.set($session.locale)) || ($locale && ($session.locale = $locale));
+		}
+	}
 
 	function initListener() {
 		window.addEventListener('ticker:start', tickerStartHandler);
@@ -225,7 +241,7 @@
 	function submit(e) {
 		if ($session.user) {
 			loggedInButtonTextSecondLine = $_('text.one-moment');
-			proxyEvent('ticker:end');
+			proxyEvent('ticker:end', { user: $session.user });
 		}
 	}
 
@@ -256,7 +272,7 @@
 	function handleClosed() {}
 
 	function tickerStartHandler(e) {
-		const { user, groups, renewed } = { ...e.detail };
+		const { user, groups, renewed, locale } = { ...e.detail };
 
 		$session.user = user;
 		$session.role = user.group.name;
@@ -309,7 +325,7 @@
 		);
 	}
 
-	function tickerRecoverHandler() {
+	async function tickerRecoverHandler() {
 		if ($session.user) {
 			$session.expires = new Date(Date.now() + parseInt($settings.Session?.lifetime));
 		}

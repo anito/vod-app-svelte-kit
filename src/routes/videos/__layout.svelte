@@ -47,7 +47,7 @@
 	import Textfield from '@smui/textfield';
 	import { Icon } from '@smui/icon-button';
 	import { Legal, PageBar, SimpleVideoCard } from '$lib/components';
-	import { sortByTitle } from '$lib/utils';
+	import { proxyEvent, sortByTitle } from '$lib/utils';
 	import { images, videos, users } from '$lib/stores';
 	import { _ } from 'svelte-i18n';
 
@@ -63,6 +63,7 @@
 	$: images.update(imagesData);
 	$: sidebar = !!$page.params.slug;
 	$: selectionVideoId = $page.params.slug;
+	$: selectionVideoId && proxyEvent('ticker:recover');
 	$: filteredVideos = $videos
 		.filter((video) => video.title?.toLowerCase().indexOf(search.toLowerCase()) !== -1)
 		.sort(sortByTitle);

@@ -43,6 +43,7 @@
 	// @ts-nocheck
 
 	import { page, session } from '$app/stores';
+	import { goto } from '$app/navigation';
 	import { onMount, getContext } from 'svelte';
 	import { infos, fabs, users, videos, videosAll } from '$lib/stores';
 	import Layout from './layout.svelte';
@@ -55,7 +56,6 @@
 	import List from '@smui/list';
 	import Dialog, { Title as DialogTitle, Content, Actions, InitialFocus } from '@smui/dialog';
 	import { _, locale } from 'svelte-i18n';
-	import { goto } from '$app/navigation';
 
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
 	const TAB = 'time';
@@ -68,7 +68,6 @@
 	export let videosData = [];
 	export let videosAllData = [];
 
-	let code;
 	let currentUser;
 	let username;
 	let tokenExpires;
@@ -97,6 +96,7 @@
 	$: videosAll.update(videosAllData);
 	$: isAdmin = $session.role === 'Administrator';
 	$: selectionUserId = $page.params.slug;
+	$: selectionUserId && proxyEvent('ticker:recover');
 	$: currentUser = ((id) => $users.filter((usr) => usr.id === id)[0])(selectionUserId);
 	$: ((usr) => {
 		username = usr?.name;
@@ -193,7 +193,6 @@
 		const res = await api.put(`users/${selectionUserId}?lang=${$locale}`, data, user?.token);
 
 		message = res.message || res.data.message || res.statusText;
-		code = (res.data && res.data.code) || res.status;
 
 		if (res) {
 			(res.success && users.put({ ...currentUser, ...data })) || (active = !active);

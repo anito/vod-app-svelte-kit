@@ -7,7 +7,7 @@ export function respond(body) {
 	const json = JSON.stringify(body);
 	const value = Buffer.from(json).toString('base64');
 
-	console.log(value)
+	console.log('_respond.js', value);
 
 	return {
 		headers: {

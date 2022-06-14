@@ -5,7 +5,6 @@
 	export async function load({ url, session }) {
 		const token = url.searchParams.get('token');
 		if (browser && token) {
-			// const props = await api.get(`login/?token=${token}`);
 			return await post(`/auth/login`, { token }).then((res) => {
 				return {
 					props: { ...res }
@@ -31,7 +30,7 @@
 	import { sitename } from '$lib/stores';
 	import { fly } from 'svelte/transition';
 	import { processRedirect, proxyEvent } from '$lib/utils';
-	import Paper, { Title, Subtitle, Content } from '@smui/paper';
+	import Paper, { Content } from '@smui/paper';
 	import { _ } from 'svelte-i18n';
 
 	/**
@@ -52,16 +51,15 @@
 	let message = '';
 	let outroended = false;
 
-	$: message = ((user) => {
-		if (user) {
-			return {
-				text: $_('text.welcome-message', { values: { name: user.name } })
-			};
-		}
-		return {
-			text: $_('text.login-text')
-		};
-	})($session.user);
+	$: message = $session.user
+		? $_('text.welcome-message', { values: { name: $session.user.name } })
+		: $_('text.login-text');
+	// ensure reactivity during locale change
+	$: !$session.user &&
+		flash.update({
+			message,
+			type: 'success'
+		});
 
 	onMount(() => {
 		/**
@@ -78,14 +76,7 @@
 		if (loggedin) {
 			// valid session already exists, jump straight to outroend message
 			outroended = true;
-		} else if (!data) {
-			// Form login
-			// start with either Login request message w/o timeout
-			flash.update({
-				message: message.text,
-				type: 'success'
-			});
-		} else {
+		} else if (data) {
 			// Token login
 			if (success) {
 				// start session before flash store has updated (and redirects)
@@ -105,7 +96,7 @@
 
 	async function introendHandler() {
 		if ($session.user) {
-			await goto(processRedirect($page, $session));
+			setTimeout(() => goto(processRedirect($page, $session)), 1500);
 		}
 	}
 </script>
@@ -137,10 +128,10 @@
 					<div
 						class="flex justify-center message {message.type}"
 						in:fly={flyTransitionParams}
-						on:introend={introendHandler}
+						on:introend={() => introendHandler()}
 					>
 						<h5 class="m-2 mdc-typography--headline5 headline">
-							{message.text}
+							{message}
 						</h5>
 					</div>
 				{:else}

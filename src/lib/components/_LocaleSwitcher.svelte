@@ -1,19 +1,35 @@
 <script>
 	// @ts-nocheck
 
+	import { session } from '$app/stores';
+	import { getContext, onMount } from 'svelte';
 	import Menu, { SelectionGroup, SelectionGroupIcon } from '@smui/menu';
 	import { Anchor } from '@smui/menu-surface';
 	import List, { Item, Text } from '@smui/list';
 	import { _, locale, locales } from 'svelte-i18n';
+	import { post } from '$lib/utils';
 
+	const { getSnackbar, configSnackbar } = getContext('snackbar');
+
+	let snackbar;
 	let localeMenu;
 	let localeMenuAnchor;
 	let currentLocale;
 
-	locale.subscribe((cur) => (currentLocale = cur));
+	$: currentLocale = $session.locale || $locale;
+
+	onMount(() => {
+		snackbar = getSnackbar();
+	});
 
 	async function setLocale(value) {
 		locale.set(value);
+		await post('/locale', value).then((res) => {
+			session.set({ ...res.data });
+
+			configSnackbar(res.message);
+			snackbar.open();
+		});
 	}
 </script>
 
