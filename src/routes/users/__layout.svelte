@@ -97,7 +97,7 @@
 	$: isAdmin = $session.role === 'Administrator';
 	$: selectionUserId = $page.params.slug;
 	$: selectionUserId && proxyEvent('ticker:recover');
-	$: currentUser = ((id) => $users.filter((usr) => usr.id === id)[0])(selectionUserId);
+	$: currentUser = ((id) => $users.filter((usr) => usr.id === id)[0] || user)(selectionUserId);
 	$: ((usr) => {
 		username = usr?.name;
 		active = usr?.active || false;

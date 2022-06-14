@@ -79,7 +79,6 @@
 	let selected;
 	let unreadInboxes = 0;
 	let activeTemplate = false;
-	let root;
 	let canSave;
 	let working;
 	let templateComponent;
@@ -94,7 +93,8 @@
 	export let selectionUserId = null;
 
 	$: isAdmin = $session.role === 'Administrator';
-	$: currentUser = ((id) => $users.filter((usr) => usr.id === id))(selectionUserId)[0];
+	$: currentUser =
+		((id) => $users.filter((usr) => usr.id === id))(selectionUserId)[0] || $session.user;
 	$: selectionUserId && (selectionIndex = -1);
 	$: username = currentUser && currentUser.name;
 	$: totalMails = currentUser && $sents.length;
@@ -111,11 +111,9 @@
 	$: currentTemplate && isAdmin ? setFab('send-mail') : setFab('');
 	$: currentStore =
 		activeMailbox === 'inboxes' ? inboxes : activeMailbox === 'sents' ? sents : inboxes;
-	$: dynamicTemplatePath = currentUser && ((slug) => createTemplatePath(slug));
+	$: dynamicTemplatePath = (slug) => createTemplatePath(slug);
 
 	onMount(async () => {
-		root = document.documentElement;
-
 		snackbar = getSnackbar();
 		getTemplates();
 
@@ -124,7 +122,7 @@
 
 	function createTemplatePath(target) {
 		$page.url.searchParams.set('active', target);
-		return `${validatePath($page.url.pathname)}?${$page.url.searchParams.toString()}`;
+		return `${validateUserPath($page.url.pathname)}?${$page.url.searchParams.toString()}`;
 	}
 
 	/**
@@ -134,8 +132,8 @@
 	 *
 	 * @returns (String) path
 	 */
-	function validatePath(path) {
-		const user = currentUser || $session.user;
+	function validateUserPath(path) {
+		const user = currentUser;
 		const regex = /(\/users\/)([\w-]+)/g;
 		const subst = `$1${user.id}`;
 		return path.replace(regex, subst);
