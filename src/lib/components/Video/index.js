@@ -1,3 +1,4 @@
+// @ts-nocheck
 import './_index.scss';
 
 import VideoPlayer from './VideoPlayer.svelte';

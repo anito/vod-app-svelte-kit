@@ -157,7 +157,7 @@
 	async function generateToken(config = {}) {
 		const { constrained } = { ...config };
 		const res = await api.post(
-			`tokens?lang=${$locale}`,
+			`tokens?locale=${$locale}`,
 			{ user_id: currentUser.id, constrained },
 			user?.token
 		);
@@ -180,7 +180,7 @@
 	}
 
 	async function removeToken() {
-		const res = await api.del(`tokens/${tokenId}?lang=${$locale}`, user?.token);
+		const res = await api.del(`tokens/${tokenId}`, user?.token);
 		if (res?.success) {
 			users.put({ ...currentUser, ...res.data });
 		}
@@ -190,7 +190,7 @@
 
 	async function activateUser(state = {}) {
 		let data = 'active' in state ? state : { active: !active };
-		const res = await api.put(`users/${selectionUserId}?lang=${$locale}`, data, user?.token);
+		const res = await api.put(`users/${selectionUserId}`, data, user?.token);
 
 		message = res.message || res.data.message || res.statusText;
 

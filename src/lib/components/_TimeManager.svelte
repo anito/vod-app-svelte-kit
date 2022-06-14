@@ -238,7 +238,7 @@
 	}
 
 	function saveUser(data) {
-		return api.put(`users/${selectionUserId}?lang=${$locale}`, data, user?.token);
+		return api.put(`users/${selectionUserId}`, data, user?.token);
 	}
 
 	function handleSuccess(res, msg) {

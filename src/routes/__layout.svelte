@@ -218,7 +218,7 @@
 	 * @param item
 	 */
 	async function put({ data, show }) {
-		const res = await api.put(`videos/${data.id}?lang=${$locale}`, data, user?.token);
+		const res = await api.put(`videos/${data.id}`, data, user?.token);
 		if (show) {
 			let message = res.message || res.data.message;
 			snackbar.isOpen && snackbar.close();
@@ -229,7 +229,7 @@
 	}
 
 	async function del({ data, show }) {
-		const res = await api.del(`videos/${data.id}?lang=${$locale}`, user?.token);
+		const res = await api.del(`videos/${data.id}`, user?.token);
 		if (res?.success) {
 			if (show) {
 				let message = res.message || res.data.message;
@@ -297,7 +297,7 @@
 	async function tickerEndHandler(e) {
 		if (!$session.user) return;
 
-		await logout(`/auth/logout?lang=${$locale}`).then((res) => {
+		await logout(`/auth/logout`).then((res) => {
 			if (res.success) {
 				proxyEvent('ticker:ended', { ...e.detail.data });
 				message = res.message;
