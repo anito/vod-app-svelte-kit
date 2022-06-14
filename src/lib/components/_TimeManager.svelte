@@ -52,7 +52,6 @@
 	let timespanSelected;
 	let firstDayOfWeek = 'monday';
 	let snackbar;
-	let code;
 	let message;
 	let filtered;
 	let group;
@@ -251,10 +250,11 @@
 	}
 
 	function handleError(res) {
-		let path;
+		let path, code;
 		snackbar.isOpen && snackbar.close();
 
 		message = res?.message || res?.data?.message || res?.statusText;
+		code = res.data?.code || res.status;
 
 		if (400 <= code && code < 500) {
 			configSnackbar(message);
