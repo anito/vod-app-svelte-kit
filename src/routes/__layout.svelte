@@ -10,11 +10,16 @@
 
 	const fallbackLocale = 'en-US';
 	const locales = new Map([
-		['en-US', { path: '../messages/en_US.json' }],
-		['de-DE', { path: '../messages/de_DE.json' }]
+		['en-US', () => import('../messages/en_US.json')],
+		['de-DE', () => import('../messages/de_DE.json')]
 	]);
 
-	locales.forEach((val, key) => register(key, () => import(val.path)));
+	locales.forEach((val, key) => {
+		register(key, val);
+	});
+
+	// register('en-US', () => import('../messages/en_US.json'));
+	// register('de-DE', () => import('../messages/de_DE.json'));
 
 	if (browser) {
 		// init on client side only
