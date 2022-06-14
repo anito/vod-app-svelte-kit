@@ -111,7 +111,7 @@
 	$: currentTemplate && isAdmin ? setFab('send-mail') : setFab('');
 	$: currentStore =
 		activeMailbox === 'inboxes' ? inboxes : activeMailbox === 'sents' ? sents : inboxes;
-	$: dynamicTemplatePath = (slug) => createTemplatePath(slug);
+	$: dynamicTemplatePath = currentUser && ((slug) => createTemplatePath(slug));
 
 	onMount(async () => {
 		snackbar = getSnackbar();

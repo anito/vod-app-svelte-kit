@@ -43,6 +43,7 @@
 	// @ts-nocheck
 
 	import { page, session } from '$app/stores';
+	import { browser } from '$app/env';
 	import { goto } from '$app/navigation';
 	import { onMount, getContext } from 'svelte';
 	import { infos, fabs, users, videos, videosAll } from '$lib/stores';
@@ -95,9 +96,9 @@
 	$: videos.update(videosData);
 	$: videosAll.update(videosAllData);
 	$: isAdmin = $session.role === 'Administrator';
-	$: selectionUserId = $page.params.slug;
+	$: selectionUserId = $page.params.slug || user.id;
 	$: selectionUserId && proxyEvent('ticker:recover');
-	$: currentUser = ((id) => $users.filter((usr) => usr.id === id)[0] || user)(selectionUserId);
+	$: currentUser = ((id) => $users.find((usr) => usr.id === id))(selectionUserId);
 	$: ((usr) => {
 		username = usr?.name;
 		active = usr?.active || false;

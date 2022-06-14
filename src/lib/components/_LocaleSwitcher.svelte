@@ -16,7 +16,7 @@
 	let localeMenuAnchor;
 	let currentLocale;
 
-	$: currentLocale = $session.locale || $locale;
+	$: currentLocale = $locale;
 
 	onMount(() => {
 		snackbar = getSnackbar();
