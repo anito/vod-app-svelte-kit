@@ -204,14 +204,14 @@
 			]
 		};
 
-		const res = await saveUser(data);
-
-		if (res.success) {
-			handleSuccess(res, $_('text.time-slot-updated'));
-		} else {
-			startDate = startDate;
-			handleError(res);
-		}
+		await saveUser(data).then((res) => {
+			if (res?.success) {
+				handleSuccess(res, $_('text.time-slot-updated'));
+			} else {
+				startDate = startDate;
+				handleError(res);
+			}
+		});
 	}
 
 	function timeRemaining(video) {
@@ -238,7 +238,7 @@
 	}
 
 	function saveUser(data) {
-		return api.put(`users/${selectionUserId}`, data, user?.token);
+		return api.put(`users/${selectionUserId}?locale=${$locale}`, data, user?.token);
 	}
 
 	function handleSuccess(res, msg) {
@@ -254,8 +254,7 @@
 		let path;
 		snackbar.isOpen && snackbar.close();
 
-		message = res.message || res.data.message || res.statusText;
-		code = res.data?.code || res.status;
+		message = res?.message || res?.data?.message || res?.statusText;
 
 		if (400 <= code && code < 500) {
 			configSnackbar(message);
