@@ -261,7 +261,7 @@
 			snackbar.open();
 		} else {
 			flash.update({ type: 'error', message });
-			path = `login${createRedirectSlug($page)}`;
+			path = `login${createRedirectSlug($page.url)}`;
 			configSnackbar(message, path);
 			snackbar.open();
 		}
