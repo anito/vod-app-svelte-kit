@@ -48,7 +48,7 @@
 		freeze();
 		flash.update({ message: $_('text.one-moment') });
 
-		await post(`/auth/login?lang=${$locale}`, { email, password }).then(async (res) => {
+		await post('/auth/login', { email, password }).then(async (res) => {
 			let type;
 			let message = res.message || res.data.message || res.statusText;
 
@@ -122,7 +122,7 @@
 	async function decodeJwtResponse(token) {
 		flash.update({ message: $_('text.one-moment') });
 
-		await api.post(`users/google_login?lang=${$locale}`, {}, token).then(async (res) => {
+		await api.post('users/google_login', {}, token).then(async (res) => {
 			if (res.success) {
 				await goto(`/login/redirect/?token=${res.data.token}`);
 			}

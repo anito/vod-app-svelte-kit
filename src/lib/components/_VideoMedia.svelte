@@ -117,7 +117,7 @@
 	}
 
 	async function saveUser(data) {
-		await api.put(`users/${currentUser.id}?lang=${$locale}`, data, token).then((res) => {
+		await api.put(`users/${currentUser.id}`, data, token).then((res) => {
 			res.success && users.put(res.data);
 		});
 	}

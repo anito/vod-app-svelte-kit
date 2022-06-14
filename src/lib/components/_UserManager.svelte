@@ -2,6 +2,7 @@
 	// @ts-nocheck
 
 	import './_switch.scss';
+	import './_button.scss';
 	import * as api from '$lib/api';
 	import { page, session } from '$app/stores';
 	import { goto } from '$app/navigation';
@@ -162,7 +163,7 @@
 	}
 
 	async function deleteAvatar() {
-		const res = await api.del(`avatars/${currentUser.avatar.id}?lang=${$locale}`, user?.token);
+		const res = await api.del(`avatars/${currentUser.avatar.id}`, user?.token);
 		message = res.message || res.data.message;
 		if (res.success) {
 			users.put(res.data);
@@ -185,7 +186,7 @@
 	}
 
 	async function activateUser() {
-		const res = await api.put(`users/${selectionUserId}?lang=${$locale}`, { active }, user?.token);
+		const res = await api.put(`users/${selectionUserId}`, { active }, user?.token);
 
 		if (res) {
 			message = res.message || res.data.message || res.statusText;
@@ -212,17 +213,17 @@
 		switch (mode) {
 			case 'add':
 				data = { active, email, name, password, group_id };
-				res = await api.post(`users/add?lang=${$locale}`, data, user?.token);
+				res = await api.post(`users/add`, data, user?.token);
 				break;
 			case 'edit':
 				data = { active, email, name, group_id, token };
 			case 'pass':
 				data = data || { password, token };
-				res = await api.put(`users/${selectionUserId}?lang=${$locale}`, data, user?.token);
+				res = await api.put(`users/${selectionUserId}`, data, user?.token);
 				break;
 			case 'del':
 				if (!confirm($_('messages.permanently-remove-user', { values: { name } }))) return;
-				res = await api.del(`users/${selectionUserId}?lang=${$locale}`, user?.token);
+				res = await api.del(`users/${selectionUserId}`, user?.token);
 				break;
 			default:
 				return;
@@ -527,19 +528,19 @@
 							{#if selectedMode === 'del'}
 								<div class="item">
 									<div class="alert" role="alert">
-										<div class="bg-warning-500 text-white font-bold rounded-t px-4 py-2">
+										<div class="mdc-theme-error-bg rounded-t px-4 py-2">
 											{$_('text.attention')}
 										</div>
 										<div
-											class="border border-t-0 rounded-b bg-warning-100 px-4 py-3 text-warning-500"
+											class="border border-t-0 rounded-b bg-warning-100 px-4 py-3 mdc-theme-error-color"
 										>
 											<p>{$_('text.you-cant-revert-deletion-of-user')}</p>
+											<Button class="error mt-5" variant="unelevated">
+												<Label>{$_('text.delete-user')}</Label>
+												<Icon class="material-icons">delete</Icon>
+											</Button>
 										</div>
 									</div>
-									<Button color="primary" variant="unelevated">
-										<Label>{$_('text.delete-user')}</Label>
-										<Icon class="material-icons">delete</Icon>
-									</Button>
 								</div>
 							{/if}
 							{#if !selectedMode}
@@ -807,5 +808,13 @@
 		right: 20px;
 		top: 50%;
 		transform: translate(50%, -50%);
+	}
+	.mdc-theme-error-bg {
+		background-color: var(--mdc-theme-error);
+		color: var(--mdc-theme-surface);
+	}
+	.mdc-theme-error-color {
+		color: var(--mdc-theme-error);
+		border-color: var(--mdc-theme-error);
 	}
 </style>

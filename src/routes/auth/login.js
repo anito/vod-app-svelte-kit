@@ -8,7 +8,7 @@ export async function post({ locals, request }) {
 	if (token) data = {}; // reset data if token has been received
 
 	const savedData = await locals.session.data();
-	const { locale } = savedData;
+	const { locale } = { locale: '', ...savedData };
 	await locals.session.destroy();
 
 	return await api.post(`users/login?locale=${locale}`, data, token).then(async (res) => {

@@ -3,7 +3,8 @@
 import * as api from '$lib/api.js';
 
 export async function del({ locals, request }) {
-	const { locale, user } = await locals.session.data();
+	const savedData = await locals.session.data();
+	const { locale, user } = { locale: '', ...savedData };
 	await locals.session.destroy();
 	await locals.session.data({ locale });
 

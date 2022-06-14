@@ -10,8 +10,8 @@
 
 	const fallbackLocale = 'en-US';
 	const locales = new Map([
-		['en-US', () => import('../messages/en_US.json')],
-		['de-DE', () => import('../messages/de_DE.json')]
+		['de-DE', () => import('../messages/de_DE.json')],
+		['en-US', () => import('../messages/en_US.json')]
 	]);
 
 	locales.forEach((val, key) => {
@@ -26,7 +26,7 @@
 		// don't put this inside `load`, otherwise it will gets executed every time you changed route on client side
 		init_i18n({
 			fallbackLocale: fallbackLocale,
-			initialLocale: localeFromQueryString('lang')
+			initialLocale: getLocaleFromNavigator()
 		});
 	}
 
@@ -35,7 +35,7 @@
 			// init on server side only, need to get query from `page.query.get("lang")`
 			init_i18n({
 				fallbackLocale: fallbackLocale,
-				initialLocale: localeFromQueryString('lang')
+				initialLocale: localeFromQueryString('locale')
 			});
 		}
 		await waitLocale();
@@ -66,7 +66,15 @@
 	import IconButton from '@smui/icon-button';
 	import Snackbar, { Actions } from '@smui/snackbar';
 	import { Label } from '@smui/common';
-	import { del as logout, get, createRedirectSlug, proxyEvent, svg, __ticker__ } from '$lib/utils';
+	import {
+		del as logout,
+		get,
+		post,
+		createRedirectSlug,
+		proxyEvent,
+		svg,
+		__ticker__
+	} from '$lib/utils';
 	import { fabs, settings, theme, ticker, urls, videos, videoEmitter } from '$lib/stores';
 	import { Modal } from '$lib/components';
 	import { Jumper } from 'svelte-loading-spinners';
@@ -175,6 +183,9 @@
 		if ($locale !== $session.locale) {
 			($session.locale && locale.set($session.locale)) || ($locale && ($session.locale = $locale));
 		}
+		await post('/locale', $session.locale).then((res) => {
+			session.set({ ...res.data });
+		});
 	}
 
 	function initListener() {
@@ -298,7 +309,7 @@
 		if (!$session.user) return;
 
 		await logout(`/auth/logout`).then((res) => {
-			if (res.success) {
+			if (res) {
 				proxyEvent('ticker:ended', { ...e.detail.data });
 				message = res.message;
 
