@@ -1,5 +1,6 @@
 // @ts-nocheck
 import * as api from '$lib/api';
+import { dev } from '$app/env';
 import { serialize } from 'cookie';
 
 export async function post({ locals, request }) {
@@ -20,9 +21,9 @@ export async function post({ locals, request }) {
 							'Set-Cookie': serialize('locale', locale, {
 								path: '/',
 								httpOnly: false,
-								sameSite: 'Lax',
-								secure: false,
-								maxAge: 60 * 60 * 24 * 7 // one week
+								sameSite: 'none',
+								secure: true,
+								maxAge: 60 * 60 * 24 * 7 // one week,
 							})
 						},
 						body: { ...res }
