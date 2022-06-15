@@ -54,7 +54,7 @@
 		{
 			'magic-link': () => {
 				return {
-					validate: () => currentUser.active && isValidToken() && getMagicLink(),
+					validate: () => currentUser.active && isValidToken() && { href: getMagicLink() },
 					label: $_('text.magic-link')
 				};
 			}
@@ -62,7 +62,7 @@
 		{
 			welcome: () => {
 				return {
-					validate: () => currentUser.active && isValidToken() && getMagicLink(),
+					validate: () => currentUser.active && isValidToken() && { href: getMagicLink() },
 					label: $_('text.welcome-link-label')
 				};
 			}
@@ -88,7 +88,6 @@
 	let pendingActiveTemplate;
 	let activeMailbox;
 	let selectionIndex;
-	let dynamicTemplatePath;
 
 	export let selectionUserId = null;
 
@@ -106,12 +105,16 @@
 	$: templateSlug = $page.url.searchParams.get('active') || defaultActive;
 	$: setActiveList(templateSlug);
 	$: activeTemplate = matchesTemplate(activeMailbox);
-	$: templateData = currentUser && getTemplateData(activeTemplate);
+	$: dynamicTemplateData = currentUser && getTemplateData(activeTemplate);
 	$: currentTemplate = $templates.find((tmpl) => tmpl.slug === activeTemplate) || null;
 	$: currentTemplate && isAdmin ? setFab('send-mail') : setFab('');
 	$: currentStore =
 		activeMailbox === 'inboxes' ? inboxes : activeMailbox === 'sents' ? sents : inboxes;
 	$: dynamicTemplatePath = currentUser && ((slug) => createTemplatePath(slug));
+	$: data = dynamicTemplateData && {
+		...dynamicTemplateData,
+		...dynamicTemplateData.validate(currentTemplate)
+	};
 
 	onMount(async () => {
 		snackbar = getSnackbar();
@@ -153,7 +156,8 @@
 				...working,
 				template: {
 					slug: currentTemplate.slug,
-					data: { ...templateData, href: validateData(currentTemplate) || '' }
+					themeVars: [{ '--prime': '#ad1457' }],
+					data
 				}
 			},
 			$session.user?.token
@@ -313,6 +317,7 @@
 				field: item.field
 			});
 		});
+
 		let newTemplate = { name, slug, items };
 		const res = await api.post('templates', { ...newTemplate }, $session.user?.token);
 		configSnackbar(res.message);
@@ -409,8 +414,8 @@
 		editor.node.removeEventListener('click', cancelEvent);
 		editor.editable.classList.remove('hover');
 		if (editor.value !== editor.node.innerText) {
-			success = await saveTemplateName(editor.node.innerText, editor.id);
-			!success && (editor.node.innerText = editor.value);
+			success = await saveTemplateName();
+			!success && restoreTemplateName();
 		}
 
 		editor.id = void 0;
@@ -418,23 +423,42 @@
 
 	function cancelEditable(e) {
 		cancelEvent(e);
-		editor.node.innerText = editor.value;
+
 		editor.node.classList.remove('editor');
 		editor.node.setAttribute('contenteditable', 'false');
 		editor.node.removeEventListener('keydown', keyListener);
 		editor.node.removeEventListener('click', cancelEvent);
 		editor.editable.classList.remove('hover');
 
+		restoreTemplateName();
+
 		editor.id = void 0;
 	}
 
-	async function saveTemplateName(name, id) {
+	async function restoreTemplateName() {
+		let id = editor.id;
+		let name = editor.value;
 		let template = $templates.find((tmpl) => tmpl.id === id);
+
 		if (!template) return;
-		let slug = generateSlug(name);
-		const res = await api.put(`templates/${id}`, { name, slug }, $session.user?.token);
+
+		if (template) {
+			templates.put({ ...template, name: '' });
+			await tick();
+			templates.put({ ...template, name });
+		}
+	}
+
+	async function saveTemplateName() {
+		let id = editor.id;
+		let name = editor.node.innerText;
+		let template = $templates.find((tmpl) => tmpl.id === id);
+
+		if (!template) return;
+
+		const res = await api.put(`templates/${id}`, { name }, $session.user?.token);
 		if (res.success) {
-			templates.put({ ...template, name, slug });
+			templates.put({ ...template, name });
 			configSnackbar($_('text.template-renamed'));
 		} else {
 			configSnackbar($_('text.template-could-not-be-renamed'));
@@ -450,11 +474,12 @@
 	}
 
 	function generateName(name) {
-		let newName = (name && name.concat($_('text.new-copy-label'))) || $_('text.new');
-		let slug = slugify(newName);
-		if ($templates.find((tmpl) => tmpl.slug === slug)) {
+		let slug,
+			newName = (name && name.concat($_('text.new-copy-label'))) || $_('text.new');
+		if ($templates.find((tmpl) => tmpl.name === newName)) {
 			return generateName(newName);
 		}
+		slug = generateSlug(newName);
 		return { name: newName, slug };
 	}
 
@@ -488,7 +513,6 @@
 		if (currentUser?.token) {
 			return `${$page.url.origin}/login?token=${currentUser.token.token}`;
 		}
-		return '';
 	}
 </script>
 
@@ -643,7 +667,7 @@
 										bind:this={templateComponent}
 										bind:canSave
 										bind:working
-										template={{ ...currentTemplate, data: templateData }}
+										template={{ ...currentTemplate, data }}
 										user={currentUser}
 									/>
 								</div>
