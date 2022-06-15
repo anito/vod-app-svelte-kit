@@ -183,9 +183,6 @@
 		if ($locale !== $session.locale) {
 			($session.locale && locale.set($session.locale)) || ($locale && ($session.locale = $locale));
 		}
-		await post('/locale', $session.locale).then((res) => {
-			session.set({ ...res.data });
-		});
 	}
 
 	function initListener() {
