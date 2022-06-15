@@ -25,7 +25,7 @@
 	async function setLocale(value) {
 		locale.set(value);
 		await post('/locale', value).then((res) => {
-			session.set({ ...res.data });
+			session.set({ ...$session, locale: value });
 
 			configSnackbar(res.message);
 			snackbar.open();

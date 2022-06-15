@@ -12,6 +12,7 @@ export async function post({ locals, request }) {
 	await locals.session.destroy();
 
 	return await api.post(`users/login?locale=${locale}`, data, token).then(async (res) => {
+		console.log(res);
 		if (res?.success) {
 			await locals.session.data({
 				user: res.data.user,

@@ -8,24 +8,24 @@ export async function post({ locals, request }) {
 
 	return await api.get(`settings/locale?locale=${locale}`).then(async (res) => {
 		if (res?.success) {
-			const { locale, message } = { ...res.data };
+			const { locale } = { ...res.data };
 			return await locals.session
 				.data({
 					...data,
 					locale
 				})
-				.then((res) => {
+				.then((resSession) => {
 					return {
 						headers: {
 							'Set-Cookie': serialize('locale', locale, {
 								path: '/',
-								httpOnly: true,
-								sameSite: 'None',
+								httpOnly: false,
+								sameSite: 'Lax',
 								secure: false,
 								maxAge: 60 * 60 * 24 * 7 // one week
 							})
 						},
-						body: { data: { ...res }, locale, message }
+						body: { ...res }
 					};
 				});
 		}
