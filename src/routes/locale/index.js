@@ -20,7 +20,7 @@ export async function post({ locals, request }) {
 							'Set-Cookie': serialize('locale', locale, {
 								path: '/',
 								httpOnly: true,
-								sameSite: 'Lax',
+								sameSite: 'None',
 								secure: false,
 								maxAge: 60 * 60 * 24 * 7 // one week
 							})
