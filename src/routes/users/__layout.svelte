@@ -7,14 +7,14 @@
 			videosAllData = [];
 
 		await api
-			.get('users', session.user?.token)
+			.get('users', session.user?.jwt)
 			.then((res) => {
 				res.success && (usersData = res.data);
 			})
 			.catch(() => {});
 
 		await api
-			.get('videos', session.user?.token)
+			.get('videos', session.user?.jwt)
 			.then((res) => {
 				res.success && (videosData = res.data);
 			})
@@ -75,7 +75,6 @@
 	let hasExpired;
 	let token;
 	let tokenId;
-	let tokenVal;
 	let magicLink;
 	let search = '';
 	let snackbar;
@@ -102,12 +101,11 @@
 	$: ((usr) => {
 		username = usr?.name;
 		active = usr?.active || false;
-		token = usr?.token;
-		tokenId = token?.id || null;
-		tokenVal = token?.token || '';
+		tokenId = usr?.token_id || null;
+		token = usr?.jwt || '';
 		tokenExpires = usr?.expires;
 		hasExpired = (tokenExpires && tokenExpires * 1000 < +new Date().getTime()) || false;
-		magicLink = (tokenVal && `${$page.url.origin}/login?token=${tokenVal}&lang=${$locale}`) || '';
+		magicLink = (token && `${$page.url.origin}/login?token=${token}&locale=${$locale}`) || '';
 	})(currentUser);
 	$: filteredUsers = $users?.filter(
 		(user) => user.name.toLowerCase().indexOf(search.toLowerCase()) !== -1
@@ -160,7 +158,7 @@
 		const res = await api.post(
 			`tokens?locale=${$locale}`,
 			{ user_id: currentUser.id, constrained },
-			user?.token
+			user?.jwt
 		);
 
 		let message;
@@ -181,7 +179,7 @@
 	}
 
 	async function removeToken() {
-		const res = await api.del(`tokens/${tokenId}`, user?.token);
+		const res = await api.del(`tokens/${tokenId}`, user?.jwt);
 		if (res?.success) {
 			users.put({ ...currentUser, ...res.data });
 		}
@@ -191,7 +189,7 @@
 
 	async function activateUser(state = {}) {
 		let data = 'active' in state ? state : { active: !active };
-		const res = await api.put(`users/${selectionUserId}`, data, user?.token);
+		const res = await api.put(`users/${selectionUserId}`, data, user?.jwt);
 
 		message = res.message || res.data.message || res.statusText;
 
@@ -308,7 +306,7 @@
 				{/each}
 			</List>
 		{:else}
-			<div class="paper-container flex justify-center">
+			<div class="mt-5 flex justify-center">
 				<div>{$_('text.user-not-found')}</div>
 			</div>
 		{/if}

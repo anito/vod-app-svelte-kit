@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import { dev } from '$app/env';
 import { handleSession } from 'svelte-kit-cookie-session';
 
 export const handle = handleSession(
@@ -7,6 +8,8 @@ export const handle = handleSession(
 		secret: 'ALKDSFH§%&24LKFDJSD/&$§&ÖLDKFJSDL§&%$&=&=SLKAF'
 	},
 	({ event, resolve }) => {
+		dev && (process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0);
+
 		const response = resolve(event);
 
 		// console.log('HANDLE::locals', event.locals);
@@ -16,8 +19,7 @@ export const handle = handleSession(
 );
 
 export const getSession = async ({ locals }) => {
-	const data = await locals.session.data();
-	return data || {};
+	return locals.session.data;
 };
 
 export async function handleError({ error, event }) {

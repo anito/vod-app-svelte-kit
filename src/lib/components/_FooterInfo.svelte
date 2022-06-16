@@ -1,4 +1,6 @@
 <script>
+	// @ts-nocheck
+
 	import { users, infos } from '$lib/stores';
 
 	export let selectionUserId;

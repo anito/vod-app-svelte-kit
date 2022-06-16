@@ -64,7 +64,7 @@
 		let detail = e.detail;
 		let image = detail.image;
 		const id = image.id;
-		api.del(`images/${image.id}`, user?.token).then((res) => {
+		api.del(`images/${image.id}`, user?.jwt).then((res) => {
 			let message = res.message || res.data.message || res.statusText;
 			if (res.success) {
 				urls.del(id);

@@ -14,7 +14,7 @@
 
 	let userExpires;
 	let hasExpired;
-	let tokenVal;
+	let token;
 	let magicLink;
 	let currentUser;
 	let username;
@@ -29,8 +29,8 @@
 		if (!user) return;
 		userExpires = user.expires;
 		hasExpired = (userExpires && userExpires * 1000 < +new Date().getTime()) || false;
-		tokenVal = user.token && user.token.token;
-		magicLink = tokenVal && `http://${$page.host}/login?token=${tokenVal}`;
+		token = user.jwt;
+		magicLink = token && `http://${$page.host}/login?token=${token}`;
 	})(currentUser);
 	$: hidden =
 		$session.role !== 'Administrator' ? true : selectionUserId == $session.user?.id ? true : false;

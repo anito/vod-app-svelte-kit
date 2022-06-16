@@ -61,7 +61,7 @@
 					subject: options.find((option) => option.key === selected).label,
 					content
 				},
-				isAdmin && $session.user?.token
+				isAdmin && $session.user?.jwt
 			)
 			.then((res) => {
 				if (res?.success) {

@@ -1,8 +1,12 @@
 // @ts-nocheck
 import { dev } from '$app/env';
+import { locale as i18n } from 'svelte-i18n';
 
-export const base = dev ? 'http://localhost:8765/api' : 'https://vod.webpremiere.de/api';
-// export const base = dev ? 'https://physio.mbp/api' : 'https://vod.webpremiere.de/api';
+let locale;
+i18n.subscribe((val) => (locale = val));
+
+// export const base = dev ? 'http://localhost:8765/api' : 'https://vod.webpremiere.de/api';
+export const base = dev ? 'https://physio.mbp/api' : 'https://vod.webpremiere.de/api';
 
 async function send({ method, path, data, token }) {
 	const fullpath = path.startsWith('http') ? path : `${base}/${path}`;
@@ -10,7 +14,8 @@ async function send({ method, path, data, token }) {
 	const opts = {
 		method,
 		headers: {
-			Accept: 'application/json' // make cakephp happy (required for ajax-rendering)
+			Accept: 'application/json',
+			'Accept-Language': locale
 		},
 		credentials: 'include'
 	};
@@ -31,7 +36,9 @@ async function send({ method, path, data, token }) {
 				return JSON.parse(res);
 			} catch (_) {}
 		})
-		.catch((_) => {});
+		.catch((err) => {
+			console.log('FETCH ERROR', err);
+		});
 }
 
 export function get(path, token) {

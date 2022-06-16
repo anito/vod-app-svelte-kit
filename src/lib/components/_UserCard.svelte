@@ -20,7 +20,7 @@
 
 	async function deleteUser() {
 		const id = user.id;
-		const res = await api.del(`users/${id}`, user?.token);
+		const res = await api.del(`users/${id}`, user?.jwt);
 
 		if (res && res.success) {
 			// at this point associated videos are not updated yet

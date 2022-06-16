@@ -78,7 +78,7 @@
 
 	onMount(async () => {
 		options = {
-			url: `${base}/${path}?token=${$session.user?.token}`,
+			url: `${base}/${path}?token=${$session.user?.jwt}`,
 			timeout,
 			paramName: 'Files',
 			uploadMultiple,

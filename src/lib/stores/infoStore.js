@@ -24,8 +24,7 @@ function createStore() {
 				type: ''
 			},
 			value: (usr) =>
-				hasActiveVideos(usr) &&
-				(!usr.token || !usr.active || (usr.expires && isExpired(usr.expires)))
+				hasActiveVideos(usr) && (!usr.jwt || !usr.active || (usr.expires && isExpired(usr.expires)))
 		},
 		{
 			key: {
@@ -55,7 +54,7 @@ function createStore() {
 				flag: 'flash',
 				type: 'issue'
 			},
-			value: (usr) => !usr.token
+			value: (usr) => !usr.jwt
 		}
 	];
 

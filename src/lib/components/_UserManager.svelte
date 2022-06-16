@@ -49,8 +49,7 @@
 	let message;
 	let avatarMenu;
 	let avatarMenuAnchor;
-	let token;
-	let tokenVal = '';
+	let token = '';
 	let activeLabel;
 	let textAreaMagicLink;
 	let copyTimeoutId;
@@ -96,11 +95,10 @@
 	$: userCan = ((userActions) =>
 		[...actionsLookup].filter((s) => userActions.find((u) => s.action === u)))(actions);
 	$: ((user) => {
-		token = user?.token;
-		tokenVal = token?.token || '';
+		token = user?.jwt || '';
 		activeLabel = (active && $_('text.deactivate-user')) || $_('text.activate-user');
 	})(currentUser);
-	$: magicLink = (tokenVal && `http://${$page.url.host}/login?token=${tokenVal}`) || '';
+	$: magicLink = (token && `http://${$page.url.host}/login?token=${token}`) || '';
 	$: actionsLookup = new Set([
 		{ action: 'edit', name: 'text.edit-user' },
 		{ action: 'pass', name: 'text.edit-password' },
@@ -146,16 +144,28 @@
 
 		message = detail.message || detail.data.message;
 		if (detail.success) {
-			users.put(detail.data);
+			const user = detail.data;
+			users.put(user);
 			// have we updated the loggedin users avatar?
 			// since the loggedin user is in a different store (the session store), put the newly uploaded avatar there
 			// this also means we have to persist the new user value(s) in the node server session
-			if (user.id === detail.data.id) {
-				const fields = ['avatar'];
-				const res = await post('/auth/save', { user: detail.data, fields });
-				if (res.success) {
-					fields.map((field) => ($session.user[field] = res.data[field]));
-				}
+			if ($session.user.id === detail.data.id) {
+				// console.log($session.user);
+				console.log('SESSION_USER', $session.user);
+				console.log('DETAIL', detail.data);
+				$session.user = detail.data;
+
+				await post('/auth/save', { user, fields: ['avatar'] }).then((res) => {
+					console.log(res);
+				});
+
+				// $session.user.avatar = detail.data
+				// const fields = ['avatar'];
+				// await post('/auth/save', { user: detail.data, fields }).then((res) => {
+				// 	if (res.success) {
+				// 		fields.map((field) => ($session.user[field] = res.data[field]));
+				// 	}
+				// });
 			}
 		}
 		configSnackbar(message);
@@ -163,22 +173,23 @@
 	}
 
 	async function deleteAvatar() {
-		const res = await api.del(`avatars/${currentUser.avatar.id}`, user?.token);
+		const res = await api.del(`avatars/${currentUser.avatar.id}`, user?.jwt);
 		message = res.message || res.data.message;
 		if (res.success) {
 			users.put(res.data);
 
 			// have we deleted the loggedin users avatar?
 			// tell node-session about it
-			if (user.id === currentUser.id) {
+			if ($session.user.id === currentUser.id) {
 				const fields = ['avatar'];
-				const res = await post('/auth/save', {
+				await post('/auth/save', {
 					user: currentUser,
 					config: fields
+				}).then((res) => {
+					if (res.success) {
+						fields.map((field) => ($session.user[field] = res.data[field]));
+					}
 				});
-				if (res.success) {
-					fields.map((field) => ($session.user[field] = res.data[field]));
-				}
 			}
 		}
 		configSnackbar(message);
@@ -186,23 +197,23 @@
 	}
 
 	async function activateUser() {
-		const res = await api.put(`users/${selectionUserId}`, { active }, user?.token);
+		await api.put(`users/${selectionUserId}`, { active }, user?.jwt).then((res) => {
+			if (res) {
+				message = res.message || res.data.message || res.statusText;
+				code = (res.data && res.data.code) || res.status;
 
-		if (res) {
-			message = res.message || res.data.message || res.statusText;
-			code = (res.data && res.data.code) || res.status;
+				if (res.success) {
+					users.put({ ...currentUser, active });
+				} else if (200 < code && code < 500) {
+					// Sample Users are protected
+					reset();
+				}
 
-			if (res.success) {
-				users.put({ ...currentUser, active });
-			} else if (200 < code && code < 500) {
-				// Sample Users are protected
-				reset();
+				configSnackbar(message);
+				snackbar.isOpen && snackbar.close();
+				snackbar.open();
 			}
-
-			configSnackbar(message);
-			snackbar.isOpen && snackbar.close();
-			snackbar.open();
-		}
+		});
 	}
 
 	async function submit(event) {
@@ -213,17 +224,17 @@
 		switch (mode) {
 			case 'add':
 				data = { active, email, name, password, group_id };
-				res = await api.post(`users/add`, data, user?.token);
+				res = await api.post(`users/add`, data, user?.jwt);
 				break;
 			case 'edit':
 				data = { active, email, name, group_id, token };
 			case 'pass':
 				data = data || { password, token };
-				res = await api.put(`users/${selectionUserId}`, data, user?.token);
+				res = await api.put(`users/${selectionUserId}`, data, user?.jwt);
 				break;
 			case 'del':
 				if (!confirm($_('messages.permanently-remove-user', { values: { name } }))) return;
-				res = await api.del(`users/${selectionUserId}`, user?.token);
+				res = await api.del(`users/${selectionUserId}`, user?.jwt);
 				break;
 			default:
 				return;
@@ -233,13 +244,13 @@
 
 		if (res) {
 			message = res.message || res.data.message || res.statusText;
-			code = (res.data && res.data.code) || res.status;
+			code = res.data?.code || res.status;
 
 			if (res.success) {
 				switch (selectedMode) {
 					case 'add':
 						// fetch users and offer to jump to new user
-						const resUsers = await api.get('users', user?.token);
+						const resUsers = await api.get('users', user?.jwt);
 						if (resUsers.success) {
 							users.update(resUsers.data);
 							reset();
@@ -330,9 +341,11 @@
 			<div class="flex flex-shrink flex-wrap">
 				{#if userNotFound}
 					<div class="exception user-not-found">
-						<Paper color="primary">
-							<Title style="color: var(--text-light)">{$_('text.user-not-found')}</Title>
-						</Paper>
+						<div class="flex justify-center items-center flex-1">
+							<div class="empty-selection">
+								<span style="text-align: center;">{$_('text.empty-user-selection')}</span>
+							</div>
+						</div>
 					</div>
 				{:else}
 					{#if selectionUserId}
@@ -685,6 +698,10 @@
 			</div>
 		</Component>
 	</div>
+{:else}
+	<div class="empty-selection no-user-selection">
+		<span style="text-align: center;">{$_('text.empty-user-selection')}</span>
+	</div>
 {/if}
 
 <style>
@@ -816,5 +833,14 @@
 	.mdc-theme-error-color {
 		color: var(--mdc-theme-error);
 		border-color: var(--mdc-theme-error);
+	}
+	.empty-selection {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 100%;
+		font-size: 2em;
+		font-weight: 600;
+		color: #d8d8d8;
 	}
 </style>

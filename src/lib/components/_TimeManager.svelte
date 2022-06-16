@@ -237,7 +237,7 @@
 	}
 
 	function saveUser(data) {
-		return api.put(`users/${selectionUserId}?locale=${$locale}`, data, user?.token);
+		return api.put(`users/${selectionUserId}?locale=${$locale}`, data, user?.jwt);
 	}
 
 	function handleSuccess(res, msg) {
@@ -479,7 +479,7 @@
 					<Text>{$_(timespan.title)}</Text>
 				</Item>
 			{/each}
-			{#if !currentUser.token || isExpired || !currentUser.active}
+			{#if !currentUser.jwt || isExpired || !currentUser.active}
 				<div class="mt-3">
 					<Icon class="material-icons leading">warning</Icon>
 					<p>

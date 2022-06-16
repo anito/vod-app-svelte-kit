@@ -2,7 +2,7 @@
 	import * as api from '$lib/api';
 
 	export async function load({ session }) {
-		const props = await api.get('images', session?.user && session.user.token);
+		const props = await api.get('images', session.user?.jwt);
 
 		if (props?.success) {
 			return { props };

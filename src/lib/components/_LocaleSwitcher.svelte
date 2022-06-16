@@ -27,7 +27,7 @@
 		await post('/locale', value).then((res) => {
 			session.set({ ...$session, locale: value });
 
-			configSnackbar(res.message);
+			configSnackbar(res.data.message);
 			snackbar.open();
 		});
 	}

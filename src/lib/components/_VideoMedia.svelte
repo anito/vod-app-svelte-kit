@@ -27,7 +27,7 @@
 
 	$: currentUser = $users.find((user) => user.id == $session.user?.id);
 	$: isAdmin = ADMIN === $session.role;
-	$: token = currentUser?.token.token;
+	$: token = currentUser?.jwt;
 	$: joinData = currentUser && currentUser.videos.find((v) => v.id == video.id)?._joinData;
 	$: video && getMediaImage(video.image_id, $session.user).then((v) => (poster = v));
 	$: video && getMediaVideo(video.id, $session.user).then((v) => (src = v));
@@ -117,7 +117,7 @@
 	}
 
 	async function saveUser(data) {
-		await api.put(`users/${currentUser.id}`, data, token).then((res) => {
+		await api.put(`users/${currentUser.id}`, data, jwt).then((res) => {
 			res.success && users.put(res.data);
 		});
 	}

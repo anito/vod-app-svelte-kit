@@ -1,4 +1,6 @@
 <script>
+// @ts-nocheck
+
   import { _, locale } from 'svelte-i18n';
 
   export let selected;

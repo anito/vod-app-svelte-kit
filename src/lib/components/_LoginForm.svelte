@@ -50,7 +50,7 @@
 
 		await post('/auth/login', { email, password }).then(async (res) => {
 			let type;
-			let message = res.message || res.data.message || res.statusText;
+			let message = res.data.message;
 
 			defreeze();
 			if (res.success) {
@@ -124,7 +124,7 @@
 
 		await api.post('users/google_login', {}, token).then(async (res) => {
 			if (res.success) {
-				await goto(`/login/redirect/?token=${res.data.token}`);
+				await goto(`/login/redirect/?token=${res.data.jwt}`);
 			}
 			setTimeout(() => renderGoogleButton(), 500);
 		});

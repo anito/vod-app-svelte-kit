@@ -20,7 +20,7 @@
 	$: loggedInUser = $users.find((user) => user.id == $session.user?.id);
 	$: currentUser = loggedInUser || currentUser;
 	$: joinData = currentUser?.videos.find((v) => video?.id == v.id)?._joinData;
-	$: token = currentUser?.token.token;
+	$: token = currentUser?.jwt;
 	$: isAdmin = currentUser?.group.name === 'Administrator';
 	$: ((time) => {
 		if (!paused || !canPlay) return;
@@ -110,7 +110,7 @@
 	}
 
 	async function saveUser(data) {
-		await api.put(`users/${currentUser.id}`, data, token).then((res) => {
+		await api.put(`users/${currentUser.id}`, data, jwt).then((res) => {
 			res.success && users.put(res.data);
 		});
 	}

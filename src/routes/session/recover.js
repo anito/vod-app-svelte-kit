@@ -1,6 +1,6 @@
 // @ts-nocheck
-export async function get({ locals, request }) {
-	const data = await locals.session.data();
+export async function get({ locals }) {
+	const data = locals.session.data;
 
 	return {
 		body: { ...data }

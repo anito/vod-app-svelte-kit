@@ -33,7 +33,7 @@
 	let menu;
 	let menuAnchor;
 
-	$: token = $session.user?.token;
+	$: token = $session.user?.jwt;
 	$: withToken = (token && `/login?token=${token}&redirect=`) || '';
 	$: redirect = `${$frameworks.host}${withToken}${$page.url.pathname}${$page.url.search}`;
 
@@ -60,7 +60,11 @@
 		<List class="option-list">
 			<SelectionGroup>
 				{#each data as fw}
-					<Item on:SMUI:action={() => setFramework(fw)} selected={$frameworks.name === fw.name}>
+					<Item
+						on:SMUI:action={() => setFramework(fw)}
+						selected={$frameworks.name === fw.name}
+						disabled={$frameworks.name === fw.name}
+					>
 						<SvgIcon name={fw.icon} class="mr-2" />
 						<Text>{fw.name}</Text>
 						<SelectionGroupIcon>

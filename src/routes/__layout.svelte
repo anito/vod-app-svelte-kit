@@ -18,14 +18,11 @@
 		register(key, val);
 	});
 
-	// register('en-US', () => import('../messages/en_US.json'));
-	// register('de-DE', () => import('../messages/de_DE.json'));
-
 	if (browser) {
 		// init on client side only
 		// don't put this inside `load`, otherwise it will gets executed every time you changed route on client side
 		init_i18n({
-			fallbackLocale: fallbackLocale,
+			fallbackLocale,
 			initialLocale: getLocaleFromNavigator()
 		});
 	}
@@ -34,7 +31,7 @@
 		if (!browser) {
 			// init on server side only, need to get query from `page.query.get("lang")`
 			init_i18n({
-				fallbackLocale: fallbackLocale,
+				fallbackLocale,
 				initialLocale: localeFromQueryString('locale')
 			});
 		}
@@ -87,7 +84,7 @@
 		NavItem
 	} from '$lib/components';
 	import { svg_manifest } from '$lib/svg_manifest';
-	import { _, locale } from 'svelte-i18n';
+	import { _, locale as i18n } from 'svelte-i18n';
 	import { serverConfig } from '$lib/config';
 
 	const snackbarLifetimeDefault = 4000;
@@ -180,8 +177,8 @@
 			locale && ($session.locale = locale);
 		});
 
-		if ($locale !== $session.locale) {
-			($session.locale && locale.set($session.locale)) || ($locale && ($session.locale = $locale));
+		if ($i18n !== $session.locale) {
+			($session.locale && ($i18n = $session.locale)) || ($i18n && ($session.locale = $i18n));
 		}
 	}
 
@@ -226,7 +223,7 @@
 	 * @param item
 	 */
 	async function put({ data, show }) {
-		const res = await api.put(`videos/${data.id}`, data, user?.token);
+		const res = await api.put(`videos/${data.id}`, data, user?.jwt);
 		if (show) {
 			let message = res.message || res.data.message;
 			snackbar.isOpen && snackbar.close();
@@ -237,7 +234,7 @@
 	}
 
 	async function del({ data, show }) {
-		const res = await api.del(`videos/${data.id}`, user?.token);
+		const res = await api.del(`videos/${data.id}`, user?.jwt);
 		if (res?.success) {
 			if (show) {
 				let message = res.message || res.data.message;
@@ -348,7 +345,7 @@
 <Icons />
 
 <Modal>
-	{#if $session && $locale}
+	{#if $session && $i18n}
 		<form class="main-menu" on:submit|stopPropagation|preventDefault={submit} method="post">
 			<Nav {segment} {page} {logo}>
 				{#if $session.user}

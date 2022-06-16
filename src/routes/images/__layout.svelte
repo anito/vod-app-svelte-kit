@@ -2,7 +2,7 @@
 	import * as api from '$lib/api';
 
 	export async function load({ session }) {
-		const res = await api.get('images', session.user?.token);
+		const res = await api.get('images', session.user?.jwt);
 
 		if (!res?.success) {
 			this.error((res.data && res.data.code) || res.status, res.message || res.responseText);
