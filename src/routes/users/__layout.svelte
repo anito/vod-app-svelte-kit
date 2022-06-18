@@ -43,7 +43,6 @@
 	// @ts-nocheck
 
 	import { page, session } from '$app/stores';
-	import { browser } from '$app/env';
 	import { goto } from '$app/navigation';
 	import { onMount, getContext } from 'svelte';
 	import { infos, fabs, users, videos, videosAll } from '$lib/stores';
@@ -96,7 +95,6 @@
 	$: videosAll.update(videosAllData);
 	$: isAdmin = $session.role === 'Administrator';
 	$: selectionUserId = $page.params.slug || user.id;
-	$: selectionUserId && proxyEvent('ticker:recover');
 	$: currentUser = ((id) => $users.find((usr) => usr.id === id))(selectionUserId);
 	$: ((usr) => {
 		username = usr?.name;
@@ -553,11 +551,6 @@
 {/if}
 
 <style>
-	.paper-container {
-		display: flex;
-		flex: 1;
-		justify-content: center;
-	}
 	.fab-add-user {
 		position: absolute;
 	}

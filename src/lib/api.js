@@ -6,10 +6,13 @@ let locale;
 i18n.subscribe((val) => (locale = val));
 
 // export const base = dev ? 'http://localhost:8765/api' : 'https://vod.webpremiere.de/api';
-export const base = dev ? 'https://physio.mbp/api' : 'https://vod.webpremiere.de/api';
+export const base = dev
+	? `https://physio.mbp/api`
+	: `https://vod.webpremiere.de/api?locale=${locale}`;
 
 async function send({ method, path, data, token }) {
-	const fullpath = path.startsWith('http') ? path : `${base}/${path}`;
+	let fullpath = path.startsWith('http') ? path : `${base}/${path}`;
+	// if (locale) fullpath = `${fullpath}?locale=${locale}`;
 
 	const opts = {
 		method,

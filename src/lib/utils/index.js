@@ -16,7 +16,6 @@ import {
 	svg,
 	windowSize,
 	__key__,
-	__session__,
 	__ticker__
 } from './helper';
 import {
@@ -31,6 +30,7 @@ import {
 import { getMedia, getExt, getMediaAvatar, getMediaImage, getMediaVideo } from './media';
 import { localeFormat } from './locale-format';
 import { get, post, put, del } from './http';
+import { getAuxSession } from './sessionHelper';
 
 export {
 	convert,
@@ -41,6 +41,7 @@ export {
 	formatter,
 	get,
 	getExt,
+	getAuxSession,
 	getMedia,
 	getMediaAvatar,
 	getMediaImage,
@@ -67,6 +68,5 @@ export {
 	toLocalTime,
 	windowSize,
 	__key__,
-	__session__,
 	__ticker__
 };

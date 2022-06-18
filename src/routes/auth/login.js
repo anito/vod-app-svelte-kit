@@ -1,30 +1,34 @@
 // @ts-nocheck
 import * as api from '$lib/api';
-import { locale as i18n } from 'svelte-i18n';
+import { locale } from 'svelte-i18n';
 
-let locale;
-i18n.subscribe((val) => (locale = val));
+let lang;
+locale.subscribe((val) => {
+	console.log(val);
+	lang = val;
+});
 
 export async function post({ locals, request }) {
 	let data = await request.json();
 	const { token } = data;
 
-	if (token) data = {}; // reset data if token has been received
+	// force JWT-Authentication if token is available
+	if (token) data = void 0;
 
-	const saved = await locals.session.data;
-	await locals.session.destroy();
-
-	return await api.post(`users/login`, data, token).then(async (res) => {
-		if (res.success) {
+	return await api.post(`users/login?locale=${lang}`, data, token).then(async (res) => {
+		if (res?.success) {
+			const { id, name, jwt } = { ...res.data.user };
+			await locals.session.destroy();
 			await locals.session.set({
-				user: res.data.user,
-				groups: res.data.groups,
-				role: res.data.user.group.name,
-				locale: { locale, ...saved }
+				user: { id, name, jwt },
+				locale: lang
 			});
+			return {
+				body: { ...res }
+			};
 		}
-
 		return {
+			status: 401,
 			body: { ...res }
 		};
 	});

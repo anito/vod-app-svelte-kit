@@ -11,6 +11,7 @@ function createStore() {
 		session,
 		($s, set) => {
 			exp = $s.expires;
+			if (!exp) return;
 			if (!(exp instanceof Date)) {
 				exp = new Date(exp);
 			}

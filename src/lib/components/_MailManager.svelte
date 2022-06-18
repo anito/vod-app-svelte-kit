@@ -90,18 +90,23 @@
 	let selectionIndex;
 
 	export let selectionUserId = null;
+	export let inboxData;
+	export let sentData;
 
 	$: isAdmin = $session.role === 'Administrator';
-	$: currentUser =
-		((id) => $users.filter((usr) => usr.id === id))(selectionUserId)[0] || $session.user;
+	$: currentUser = ((id) => $users.filter((usr) => usr.id === id))(
+		selectionUserId || $session.user?.id
+	)[0];
 	$: selectionUserId && (selectionIndex = -1);
 	$: username = currentUser && currentUser.name;
-	$: totalMails = currentUser && $sents.length;
+	$: totalSents = currentUser && $sents.length;
 	$: totalInboxes = currentUser && $inboxes.length;
 	$: unreadInboxes = currentUser && $inboxes.filter((mail) => !mail.read).length;
 	$: email = currentUser && currentUser.email;
-	$: currentUser && getInbox(currentUser);
-	$: currentUser && getSent(currentUser);
+	// $: currentUser && getInbox(currentUser);
+	// $: currentUser && getSent(currentUser);
+	$: inboxData && parseInbox();
+	$: sentData && parseSent();
 	$: templateSlug = $page.url.searchParams.get('active') || defaultActive;
 	$: setActiveList(templateSlug);
 	$: activeTemplate = matchesTemplate(activeMailbox);
@@ -171,55 +176,50 @@
 		snackbar.open();
 	}
 
-	async function getInbox(user) {
+	function parseInbox() {
 		let items = [],
 			_users;
-		const res = await api.get(`inboxes/get/${user.id}`, $session.user?.jwt);
-		if (res.success) {
-			res.data.map((mail) => {
-				let message = JSON.parse(mail.message);
-				items.push({
-					id: mail.id,
-					from:
-						(_users = $users.filter((user) => user.email === mail._from)) && _users.length
-							? _users
-							: [mail._from],
-					to: [user],
-					message: message.message,
-					subject: message.subject,
-					read: mail._read,
-					created: mail.created
-				});
+		const user = currentUser;
+		inboxData.map((mail) => {
+			let message = JSON.parse(mail.message);
+			items.push({
+				id: mail.id,
+				from:
+					(_users = $users.filter((user) => user.email === mail._from)) && _users.length
+						? _users
+						: [mail._from],
+				to: [user],
+				message: message.message,
+				subject: message.subject,
+				read: mail._read,
+				created: mail.created
 			});
-			inboxes.update(items);
-		}
+		});
+		inboxes.update(items);
 	}
 
-	async function getSent(user) {
+	function parseSent() {
 		let items = [],
 			_users;
-		const res = await api.get(`sents/get/${user.id}`, $session.user?.jwt);
-		if (res.success) {
-			let _to;
-			res.data.map((mail) => {
-				let message = JSON.parse(mail.message);
-				_to = mail._to.split(';');
-				items.push({
-					id: mail.id,
-					from: [user],
-					to:
-						(_users = $users.filter((user) => _to.find((adr) => adr === user.email))) &&
-						_users.length
-							? _users
-							: _to,
-					message: message.message,
-					subject: message.subject,
-					read: true,
-					created: mail.created
-				});
+		const user = currentUser;
+		let _to;
+		sentData.map((mail) => {
+			let message = JSON.parse(mail.message);
+			_to = mail._to.split(';');
+			items.push({
+				id: mail.id,
+				from: [user],
+				to:
+					(_users = $users.filter((user) => _to.find((adr) => adr === user.email))) && _users.length
+						? _users
+						: _to,
+				message: message.message,
+				subject: message.subject,
+				read: true,
+				created: mail.created
 			});
-			sents.update(items);
-		}
+		});
+		sents.update(items);
 	}
 
 	function setActiveList(value) {
@@ -551,8 +551,8 @@
 						>
 							<Graphic class="material-icons" aria-hidden="true">send</Graphic>
 							<Text>{$_('text.sent')}</Text>
-							{#if totalMails}
-								<Badge class="medium" right>{totalMails}</Badge>
+							{#if totalSents}
+								<Badge class="medium" right>{totalSents}</Badge>
 							{/if}
 						</Item>
 

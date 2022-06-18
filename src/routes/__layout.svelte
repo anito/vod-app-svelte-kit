@@ -4,19 +4,16 @@
 		getLocaleFromNavigator,
 		getLocaleFromQueryString,
 		waitLocale,
-		init as init_i18n
+		init as init_i18n,
+		_,
+		locale as i18n
 	} from 'svelte-i18n';
 	import { browser } from '$app/env';
 
 	const fallbackLocale = 'en-US';
-	const locales = new Map([
-		['de-DE', () => import('../messages/de_DE.json')],
-		['en-US', () => import('../messages/en_US.json')]
-	]);
 
-	locales.forEach((val, key) => {
-		register(key, val);
-	});
+	register('de-DE', () => import('../messages/de_DE.json'));
+	register('en-US', () => import('../messages/en_US.json'));
 
 	if (browser) {
 		// init on client side only
@@ -29,22 +26,14 @@
 
 	export async function load() {
 		if (!browser) {
-			// init on server side only, need to get query from `page.query.get("lang")`
+			// init on server side only, need to get query from `page.query.get("locale")`
 			init_i18n({
 				fallbackLocale,
-				initialLocale: localeFromQueryString('locale')
+				initialLocale: getLocaleFromQueryString('locale')
 			});
 		}
 		await waitLocale();
 		return {};
-	}
-
-	function localeFromQueryString(key) {
-		let locale = getLocaleFromQueryString(key);
-		if (locales.has(locale)) {
-			return locale;
-		}
-		return fallbackLocale;
 	}
 </script>
 
@@ -72,7 +61,7 @@
 		svg,
 		__ticker__
 	} from '$lib/utils';
-	import { fabs, settings, theme, ticker, urls, videos, videoEmitter } from '$lib/stores';
+	import { fabs, settings, theme, ticker, urls, videos, videoEmitter, users } from '$lib/stores';
 	import { Modal } from '$lib/components';
 	import { Jumper } from 'svelte-loading-spinners';
 	import {
@@ -84,7 +73,6 @@
 		NavItem
 	} from '$lib/components';
 	import { svg_manifest } from '$lib/svg_manifest';
-	import { _, locale as i18n } from 'svelte-i18n';
 	import { serverConfig } from '$lib/config';
 
 	const snackbarLifetimeDefault = 4000;
@@ -99,13 +87,8 @@
 	let loggedInButtonTextSecondLine;
 	let unsubscribeTicker;
 	let unsubscribeVideoEmitter;
-	let unsubscribeSettings;
 	let emphasize;
 	let snackbar;
-
-	// load configuration from server
-	// $: serverConfig($locale);
-	// getSettings();
 
 	setContext('snackbar', {
 		getSnackbar: () => snackbar,
@@ -120,7 +103,6 @@
 	});
 
 	$: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
-	$: ($settings || $session.user) && proxyEvent('ticker:recover');
 	$: user = $session.user;
 	$: person = svg(svg_manifest.person, $theme.primary);
 	$: logo = svg(svg_manifest.logo_vod, $theme.primary);
@@ -137,7 +119,7 @@
 			values: { name: $session.user?.name }
 		}));
 	$: searchParams = $page.url.searchParams.toString();
-	$: location = searchParams && `?${searchParams}`;
+	$: search = searchParams && `?${searchParams}`;
 
 	unsubscribeTicker = ticker.subscribe((val) => {
 		if (val === 0) {
@@ -154,12 +136,12 @@
 		}
 	});
 
-	onMount(async () => {
+	onMount(() => {
 		root = document.documentElement;
 		snackbar = getSnackbar();
 
-		serverConfig();
-		checkLocale();
+		serverConfig().then(() => proxyEvent('ticker:recover'));
+		recoverLocaleFromSession();
 		initListener();
 		initClasses();
 		initStyles();
@@ -171,15 +153,11 @@
 		};
 	});
 
-	async function checkLocale() {
-		await get('/session/recover').then((res) => {
-			const { locale } = res;
-			locale && ($session.locale = locale);
-		});
-
-		if ($i18n !== $session.locale) {
-			($session.locale && ($i18n = $session.locale)) || ($i18n && ($session.locale = $i18n));
-		}
+	/**
+	 * for page refreshes try to retrieve previous locale from session
+	 **/
+	async function recoverLocaleFromSession() {
+		get('/session/recover');
 	}
 
 	function initListener() {
@@ -209,9 +187,10 @@
 	}
 
 	function removeSubscribers() {
-		unsubscribeSettings();
 		unsubscribeVideoEmitter();
-		unsubscribeTicker();
+		try {
+			unsubscribeTicker();
+		} catch (e) {}
 	}
 
 	function removeClasses() {
@@ -282,11 +261,13 @@
 	function handleClosed() {}
 
 	function tickerStartHandler(e) {
-		const { user, groups, renewed, locale } = { ...e.detail };
+		const { user, groups, renewed } = { ...e.detail };
 
 		$session.user = user;
 		$session.role = user.group.name;
 		$session.groups = groups;
+
+		proxyEvent('ticker:recover');
 
 		renewed && localStorage.setItem('renewed', renewed);
 
@@ -295,7 +276,6 @@
 				values: { name: user.name }
 			})
 		);
-		snackbar = getSnackbar();
 		snackbar?.open();
 	}
 
@@ -377,7 +357,7 @@
 						</Button>
 					</NavItem>
 				{:else}
-					<NavItem href="/login{location}">
+					<NavItem href="/login{search}">
 						<Button color="secondary" variant="raised" class="sign-in-out button-login">
 							<Label>{$_('nav.login')}</Label>
 						</Button>

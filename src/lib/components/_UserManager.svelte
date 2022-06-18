@@ -57,7 +57,7 @@
 	let setCopyButton = (node) => (copyButton = node);
 
 	$: user = $session.user;
-	$: groups = $session.groups;
+	$: groups = $session.groups || [];
 	$: currentUser = ((id) => $users.filter((usr) => usr.id === id))(selectionUserId)[0];
 	$: userNotFound = selectionUserId && undefined === $users.find((u) => u.id === selectionUserId);
 	$: _name = ((usr) => (usr && usr.name) || '')(selectedMode !== 'add' ? currentUser : false);

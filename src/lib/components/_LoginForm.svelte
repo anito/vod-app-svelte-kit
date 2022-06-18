@@ -26,6 +26,7 @@
 	// Fixtures
 	const adminEmail = `sampleadmin@webpremiere.${toplevel}`;
 	const adminPassword = 'Test@005';
+	// const userEmail = `sampleuser@webpremiere.${toplevel}`;
 	const userEmail = `sampleuser@webpremiere.${toplevel}`;
 	const userPassword = 'Angela@005';
 
@@ -33,7 +34,6 @@
 	let email = '';
 	let snackbar;
 	let invalidTokenUserDialog;
-	let timeout = 2000;
 
 	onMount(() => {
 		defreeze();
@@ -124,7 +124,7 @@
 
 		await api.post('users/google_login', {}, token).then(async (res) => {
 			if (res.success) {
-				await goto(`/login/redirect/?token=${res.data.jwt}`);
+				await goto(`/login/redirect/?token=${res.data.token}`);
 			}
 			setTimeout(() => renderGoogleButton(), 500);
 		});

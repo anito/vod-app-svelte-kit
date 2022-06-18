@@ -135,9 +135,12 @@ export let convert = (() => {
 })();
 
 export const proxyEvent = function (eventType, detail = {}) {
-	let type = typeof eventType === 'string' ? eventType : detail.eventType;
+	eventType = typeof eventType === 'string' ? eventType : detail.eventType;
 	if (typeof window !== 'undefined') {
-		window.dispatchEvent(new CustomEvent(type, { detail }));
+		window.dispatchEvent(new CustomEvent(eventType, { detail }));
+	} else {
+		console.log(`Could not dispatch event ${eventType}`);
+		// throw `Could not dispatch event ${eventType}`;
 	}
 };
 
@@ -206,5 +209,4 @@ String.prototype.add = function (val) {
 };
 
 export const __key__ = {};
-export const __session__ = {};
 export const __ticker__ = {};

@@ -18,16 +18,15 @@
 </svelte:head>
 
 <div class="wrapper">
-	<h1>{title}</h1>
+	<h1 class="pt-2">{title}</h1>
 
 	<div class="message">
 		{$page.error.message}
 	</div>
+	{#if dev && $page.error.stack}
+		<pre>{$page.error.stack}</pre>
+	{/if}
 </div>
-
-{#if dev && $page.error.stack}
-	<pre>{$page.error.stack}</pre>
-{/if}
 
 <style>
 	h1 {
@@ -35,8 +34,6 @@
 	}
 
 	h1 {
-		font-size: 2.8em;
-		font-weight: 700;
 		margin: 0 0 0.5em 0;
 	}
 

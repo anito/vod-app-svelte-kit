@@ -63,7 +63,6 @@
 	$: images.update(imagesData);
 	$: sidebar = !!$page.params.slug;
 	$: selectionVideoId = $page.params.slug;
-	$: selectionVideoId && proxyEvent('ticker:recover');
 	$: filteredVideos = $videos
 		.filter((video) => video.title?.toLowerCase().indexOf(search.toLowerCase()) !== -1)
 		.sort(sortByTitle);
@@ -107,6 +106,7 @@
 						class="video"
 						selected={selectionVideoId === video.id}
 						on:itemSelected={itemSelectedHandler}
+						on:click={() => proxyEvent('ticker:recover')}
 						{video}
 					/>
 				{/each}

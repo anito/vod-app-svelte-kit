@@ -1,3 +1,36 @@
+<script context="module">
+	import * as api from '$lib/api';
+
+	export async function load({ url, params, session }) {
+		let sentData = [];
+		let inboxData = [];
+
+		if (url.searchParams.get('tab') === 'mail') {
+			const id = params['slug'];
+
+			await api
+				.get(`sents/get/${id}`, session.user?.jwt)
+				.then((res) => {
+					res.success && (sentData = res.data);
+				})
+				.catch(() => {});
+
+			await api
+				.get(`inboxes/get/${id}`, session.user?.jwt)
+				.then((res) => {
+					res.success && (inboxData = res.data);
+				})
+				.catch(() => {});
+		}
+		return {
+			props: {
+				sentData,
+				inboxData
+			}
+		};
+	}
+</script>
+
 <script>
 	// @ts-nocheck
 
@@ -8,6 +41,9 @@
 	import { users, sitename } from '$lib/stores';
 	import { proxyEvent } from '$lib/utils';
 	import { _ } from 'svelte-i18n';
+
+	export let inboxData;
+	export let sentData;
 
 	const TABS = ['user', 'time', 'mail'];
 	const defaultTab = TABS[1];
@@ -99,7 +135,7 @@
 		/>
 	{/if}
 	{#if tab === TABS[2]}
-		<MailManager {selectionUserId} />
+		<MailManager {selectionUserId} {sentData} {inboxData} />
 	{/if}
 </div>
 

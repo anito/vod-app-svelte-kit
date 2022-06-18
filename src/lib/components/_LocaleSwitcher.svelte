@@ -23,7 +23,7 @@
 	});
 
 	async function setLocale(value) {
-		locale.set(value);
+		$locale = value;
 		await post('/locale', value).then((res) => {
 			session.set({ ...$session, locale: value });
 

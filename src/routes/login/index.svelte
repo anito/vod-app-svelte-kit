@@ -2,7 +2,7 @@
 	import { browser } from '$app/env';
 	import { post } from '$lib/utils';
 
-	export async function load({ url, session }) {
+	export async function load({ url }) {
 		const token = url.searchParams.get('token');
 		if (browser && token) {
 			return await post(`/auth/login`, { token }).then((res) => {
@@ -53,8 +53,10 @@
 
 	$: message = $session.user
 		? $_('text.welcome-message', { values: { name: $session.user.name } })
+		: $page.url.searchParams.has('token')
+		? $_('text.one-moment')
 		: $_('text.login-text');
-	// ensure reactivity during locale change
+	// ensure reactivity of splash scrren to reflect locale change
 	$: !$session.user &&
 		flash.update({
 			message,
@@ -78,9 +80,10 @@
 			outroended = true;
 		} else if (data) {
 			// Token login
+			// (for Form login logic is in LoginForm component)
 			if (success) {
 				// start session before flash store has updated (and redirects)
-				setTimeout(dispatcher, 100, { type: 'start', data: { ...data } });
+				setTimeout(dispatcher, 100, { type: 'start', data });
 				flash.update({ type: 'success', ...data, timeout: 2000 });
 			} else {
 				setTimeout(dispatcher, 100, { type: 'end', data: { path: 'login' } });
@@ -132,16 +135,6 @@
 					>
 						<h5 class="m-2 mdc-typography--headline5 headline">
 							{message}
-						</h5>
-					</div>
-				{:else}
-					<div
-						class="flex justify-center message success"
-						in:fly={{ duration: 200, x: -20, delay: 300 }}
-						out:fly={{ duration: 200, x: 20 }}
-					>
-						<h5 class="m-2 mdc-typography--headline5 headline">
-							{$_('text.one-moment')}
 						</h5>
 					</div>
 				{/if}

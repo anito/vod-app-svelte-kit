@@ -6,7 +6,7 @@ export async function del({ locals, request }) {
 	const saved = await locals.session.data;
 	const { locale, user } = { locale: '', ...saved };
 	await locals.session.destroy();
-	await locals.session.set(locale);
+	await locals.session.set({ locale });
 
 	return await api
 		.post(`users/logout?token=${user?.jwt}&locale=${locale}`)
