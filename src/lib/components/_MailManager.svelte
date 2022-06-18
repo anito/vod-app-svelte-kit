@@ -88,6 +88,7 @@
 	let pendingActiveTemplate;
 	let activeMailbox;
 	let selectionIndex;
+	let dynamicTemplatePath;
 
 	export let selectionUserId = null;
 	export let inboxData;
@@ -103,8 +104,6 @@
 	$: totalInboxes = currentUser && $inboxes.length;
 	$: unreadInboxes = currentUser && $inboxes.filter((mail) => !mail.read).length;
 	$: email = currentUser && currentUser.email;
-	// $: currentUser && getInbox(currentUser);
-	// $: currentUser && getSent(currentUser);
 	$: inboxData && parseInbox();
 	$: sentData && parseSent();
 	$: templateSlug = $page.url.searchParams.get('active') || defaultActive;
@@ -115,7 +114,7 @@
 	$: currentTemplate && isAdmin ? setFab('send-mail') : setFab('');
 	$: currentStore =
 		activeMailbox === 'inboxes' ? inboxes : activeMailbox === 'sents' ? sents : inboxes;
-	$: dynamicTemplatePath = currentUser && ((slug) => createTemplatePath(slug));
+	$: dynamicTemplatePath = (slug) => currentUser && createTemplatePath(slug);
 	$: data = dynamicTemplateData && {
 		...dynamicTemplateData,
 		...dynamicTemplateData.validate(currentTemplate)
