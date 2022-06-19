@@ -47,10 +47,10 @@
 	bind:this={list}
 	class="mails-list {type}"
 	on:SMUIList:mount={receiveListMethods}
+	bind:selectedIndex={selectionIndex}
 	twoLine
 	avatarList
 	singleSelection
-	bind:selectedIndex={selectionIndex}
 >
 	{#each _mails as mail (mail.id)}
 		<SimpleMailCard

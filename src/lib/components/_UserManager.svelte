@@ -60,15 +60,11 @@
 	$: groups = $session.groups || [];
 	$: currentUser = ((id) => $users.filter((usr) => usr.id === id))(selectionUserId)[0];
 	$: userNotFound = selectionUserId && undefined === $users.find((u) => u.id === selectionUserId);
-	$: _name = ((usr) => (usr && usr.name) || '')(selectedMode !== 'add' ? currentUser : false);
-	$: _active = ((usr) => (usr && usr.active) || false)(
-		selectedMode !== 'add' ? currentUser : false
-	);
-	$: _email = ((usr) => (usr && usr.email) || '')(selectedMode !== 'add' ? currentUser : false);
-	$: _group_id = ((usr) => (usr && usr.group_id) || '')(
-		selectedMode !== 'add' ? currentUser : false
-	);
-	$: group = ((usr) => (usr && usr.group) || '')(selectedMode !== 'add' ? currentUser : false);
+	$: _name = ((usr) => usr?.name || '')(selectedMode !== 'add' ? currentUser : false);
+	$: _active = ((usr) => usr?.active || false)(selectedMode !== 'add' ? currentUser : false);
+	$: _email = ((usr) => usr?.email || '')(selectedMode !== 'add' ? currentUser : false);
+	$: _group_id = ((usr) => usr?.group.id || '')(selectedMode !== 'add' ? currentUser : false);
+	$: group = ((usr) => usr?.group || '')(selectedMode !== 'add' ? currentUser : false);
 	$: invalidPassword = password.length < 8;
 	$: invalidRepeatedPassword = password !== repeatedPassword || invalidPassword;
 	$: active = _active;

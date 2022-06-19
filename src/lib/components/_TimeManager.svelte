@@ -86,12 +86,10 @@
 		(filtered = ((id) => $users.filter((usr) => usr.id === id))(selectionUserId)) &&
 		filtered.length &&
 		filtered[0];
-	$: username = (currentUser && currentUser.name) || '';
-	$: currentRole =
-		(group = ((usr) => groups.find((group) => group.id == usr.group_id))(currentUser)) &&
-		group.name;
+	$: username = currentUser?.name || '';
+	$: currentRole = currentUser?.group?.name;
 	$: joinData =
-		(selectedVideo = currentUser && currentUser.videos.find((v) => v.id === selectionVideoId)) &&
+		(selectedVideo = currentUser?.videos.find((v) => v.id === selectionVideoId)) &&
 		selectedVideo._joinData;
 	$: startDate = (joinData && joinData.start && parseISO(joinData.start)) || endOfWeek(new Date(0));
 	$: endDate = (joinData && joinData.end && parseISO(joinData.end)) || endOfWeek(new Date(0));
