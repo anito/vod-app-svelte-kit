@@ -20,7 +20,7 @@
 
 	export let token = '';
 
-	onMount(() => {
-		setTimeout(() => goto(`/login/?token=${token}`), 300);
+	onMount(async () => {
+		await goto(`/login/?token=${token}`);
 	});
 </script>
