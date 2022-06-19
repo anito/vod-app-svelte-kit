@@ -21,6 +21,6 @@
 	export let token = '';
 
 	onMount(() => {
-		goto(`/login/?token=${token}`);
+		setTimeout(() => goto(`/login/?token=${token}`), 300);
 	});
 </script>
