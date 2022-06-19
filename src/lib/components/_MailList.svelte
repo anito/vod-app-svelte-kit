@@ -1,4 +1,6 @@
 <script>
+	// @ts-nocheck
+
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { inboxes, sents } from '$lib/stores';
 	import List from '@smui/list';

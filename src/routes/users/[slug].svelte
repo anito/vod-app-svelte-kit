@@ -5,16 +5,15 @@
 		let sentData = [];
 		let inboxData = [];
 
+		// console.log(url.origin, url.pathname);
 		if (url.searchParams.get('tab') === 'mail') {
 			const id = params['slug'];
-
 			await api
 				.get(`sents/get/${id}`, session.user?.jwt)
 				.then((res) => {
 					res.success && (sentData = res.data);
 				})
 				.catch(() => {});
-
 			await api
 				.get(`inboxes/get/${id}`, session.user?.jwt)
 				.then((res) => {
@@ -59,7 +58,7 @@
 	$: currentUser = ((id) => $users.length && $users.filter((usr) => usr.id === id)[0])(
 		selectionUserId
 	);
-	$: username = (currentUser && currentUser.name) || '';
+	$: username = currentUser?.name || '';
 	$: tab = ((t) => TABS.find((itm) => itm === t))($page.url.searchParams.get('tab')) || defaultTab;
 	$: ((user) => {
 		if (!user) return;

@@ -1,7 +1,7 @@
 <script context="module">
 	import * as api from '$lib/api';
 
-	export async function load({ url, session }) {
+	export async function load({ session }) {
 		let usersData = [],
 			videosData = [],
 			videosAllData = [];
@@ -56,7 +56,7 @@
 	import { _, locale } from 'svelte-i18n';
 
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
-	const TAB = 'time';
+	const defaultTab = 'time';
 
 	$: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1]; // slug (user.id ) in case we start from a specific user e.g. /users/23
 	// from load
@@ -89,7 +89,7 @@
 	$: users.update(usersData);
 	$: videos.update(videosData);
 	$: videosAll.update(videosAllData);
-	$: tab = $page.url.searchParams.get('tab') || TAB;
+	$: tab = $page.url.searchParams.get('tab') || defaultTab;
 	$: active = $page.url.searchParams.get('active');
 	$: isAdmin = $session.role === 'Administrator';
 	$: selectionUserId = $page.params.slug || user?.id;
@@ -106,7 +106,6 @@
 	$: filteredUsers = $users?.filter(
 		(user) => user.name.toLowerCase().indexOf(search.toLowerCase()) !== -1
 	);
-	$: tab = ((t) => (!t && TAB) || t)(tab);
 	$: ((t) => {
 		if (!isAdmin) return;
 		t === 'time' && setFab('add-user');
@@ -116,7 +115,7 @@
 	$: userInfos = ($infos.has(selectionUserId) && $infos.get(selectionUserId).params) || [];
 	$: userIssues = userInfos.filter((info) => info.type === 'issue');
 	$: searchParams = $page.url.searchParams.toString();
-	$: location = searchParams && `?${searchParams}`;
+	$: query = searchParams && `?${searchParams}`;
 
 	onMount(() => {
 		snackbar = getSnackbar();
@@ -296,7 +295,7 @@
 		{#if $users.length}
 			<List class="users-list" twoLine avatarList singleSelection bind:selectedIndex>
 				{#each filteredUsers as user (user.id)}
-					<a sveltekit:prefetch href={`/users/${user.id}${location}`}>
+					<a sveltekit:prefetch href={`/users/${user.id}${query}`}>
 						<SimpleUserCard class="flex" {selectionUserId} {user} />
 					</a>
 				{/each}

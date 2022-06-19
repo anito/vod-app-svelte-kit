@@ -88,7 +88,6 @@
 	let pendingActiveTemplate;
 	let activeMailbox;
 	let selectionIndex;
-	let dynamicTemplatePath;
 
 	export let selectionUserId = null;
 	export let inboxData;
