@@ -1,5 +1,12 @@
 <script context="module">
-	import { register, waitLocale, init as init_i18n, _, locale as i18n } from 'svelte-i18n';
+	import {
+		register,
+		waitLocale,
+		init as init_i18n,
+		_,
+		locale as i18n,
+		getLocaleFromNavigator
+	} from 'svelte-i18n';
 	import { browser } from '$app/env';
 	import { get } from '$lib/utils';
 
@@ -10,7 +17,8 @@
 
 	if (!browser) {
 		init_i18n({
-			fallbackLocale
+			fallbackLocale,
+			initialLocale: getLocaleFromNavigator()
 		});
 	}
 
