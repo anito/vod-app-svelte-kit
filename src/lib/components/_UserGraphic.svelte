@@ -37,36 +37,36 @@
 		? extendedBorderColor
 		: 'transparent';
 
-	$: (async (user) => {
+	$: src = (async (user) => {
 		let avatar = user?.avatar;
 		if (!avatar) {
-			Promise.resolve(fallbackImage || placeholderDotComAvatar(user?.name)).then(
-				(val) => (src = val)
+			return Promise.resolve(fallbackImage || placeholderDotComAvatar(user?.name)).then(
+				(val) => val
 			);
 		} else {
 			if (avatar.src.startsWith('http')) {
-				Promise.resolve(avatar.src).then((val) => (src = val));
+				return Promise.resolve(avatar.src).then((val) => val);
 			} else {
-				await getMediaAvatar(avatar.id, $session.user, {
+				return await getMediaAvatar(avatar.id, $session.user, {
 					width,
 					height,
 					square: 1,
 					quality: 100
-				}).then((val) => (src = val));
+				}).then((val) => val);
 			}
 		}
 	})(user);
 </script>
 
 <div class="user-graphics-outer" class:dense {style}>
-	{#if src}
+	{#await src then url}
 		<Graphic
 			class="user-graphics"
 			style="display: inline-flex; vertical-align: middle; width: {width}px; height: {height}px; box-shadow: 0px 0px 0px {borderSize}px {borderColor} {extendedBorderSize
 				? `, 0px 0px 0px ${extendedBorderSize}px ${extendedBorderColor}`
-				: ''}; background-image: url('{src}'); background-size: cover;"
+				: ''}; background-image: url('{url}'); background-size: cover;"
 		/>
-	{/if}
+	{/await}
 	{#if badge.icon}
 		<div class="badge">
 			<Icon style="color:{badge.color}" class="material-icons">{badge.icon}</Icon>
