@@ -21,7 +21,7 @@
 		width="40"
 		height="40"
 		{user}
-		badge={user.group.name === 'Administrator' && {
+		badge={user.role === 'Administrator' && {
 			icon: 'admin_panel_settings',
 			color: 'rgb(206, 4, 4)'
 		}}

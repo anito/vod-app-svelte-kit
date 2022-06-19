@@ -256,7 +256,7 @@
 		const { user, groups, renewed } = { ...e.detail };
 
 		$session.user = user;
-		$session.role = user.group.name;
+		$session.role = user.role;
 		$session.groups = groups;
 
 		proxyEvent('ticker:extend');

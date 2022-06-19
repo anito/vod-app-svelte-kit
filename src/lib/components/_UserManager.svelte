@@ -28,7 +28,7 @@
 	import TokenInfo from './_TokenInfo.svelte';
 	import MediaUploader from './_MediaUploader.svelte';
 	import UserGraphic from './_UserGraphic.svelte';
-	import { _, locale } from 'svelte-i18n';
+	import { _ } from 'svelte-i18n';
 
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
 	const { open } = getContext('simple-modal');
@@ -55,22 +55,27 @@
 	let copyTimeoutId;
 	let copyButton = (node) => console.log(node);
 	let setCopyButton = (node) => (copyButton = node);
+	let group_id;
+	let role;
+	let name;
+	let email;
+	let active;
 
 	$: user = $session.user;
 	$: groups = $session.groups || [];
-	$: currentUser = ((id) => $users.filter((usr) => usr.id === id))(selectionUserId)[0];
+	$: currentUser = ((id) => {
+		const user = $users.filter((usr) => usr?.id === id)[0];
+		if (user) copy(user);
+		return user;
+	})(selectionUserId);
 	$: userNotFound = selectionUserId && undefined === $users.find((u) => u.id === selectionUserId);
 	$: _name = ((usr) => usr?.name || '')(selectedMode !== 'add' ? currentUser : false);
 	$: _active = ((usr) => usr?.active || false)(selectedMode !== 'add' ? currentUser : false);
 	$: _email = ((usr) => usr?.email || '')(selectedMode !== 'add' ? currentUser : false);
-	$: _group_id = ((usr) => usr?.group.id || '')(selectedMode !== 'add' ? currentUser : false);
+	$: _group_id = ((usr) => usr?.group_id || '')(selectedMode !== 'add' ? currentUser : false);
 	$: group = ((usr) => usr?.group || '')(selectedMode !== 'add' ? currentUser : false);
 	$: invalidPassword = password.length < 8;
 	$: invalidRepeatedPassword = password !== repeatedPassword || invalidPassword;
-	$: active = _active;
-	$: email = _email;
-	$: name = _name;
-	$: group_id = _group_id;
 	$: canSave =
 		selectedMode === 'add'
 			? name && group_id && !invalidEmail && !invalidRepeatedPassword
@@ -146,9 +151,6 @@
 			// since the loggedin user is in a different store (the session store), put the newly uploaded avatar there
 			// this also means we have to persist the new user value(s) in the node server session
 			if ($session.user.id === detail.data.id) {
-				// console.log($session.user);
-				console.log('SESSION_USER', $session.user);
-				console.log('DETAIL', detail.data);
 				$session.user = detail.data;
 
 				await post('/auth/save', { user, fields: ['avatar'] }).then((res) => {
@@ -212,6 +214,10 @@
 		});
 	}
 
+	function copy(user) {
+		({ name, email, active, role, group_id } = { ...user });
+	}
+
 	async function submit(event) {
 		let res, data, path, action;
 		snackbar.isOpen && snackbar.close();
@@ -223,7 +229,7 @@
 				res = await api.post(`users/add`, data, user?.jwt);
 				break;
 			case 'edit':
-				data = { active, email, name, group_id, token };
+				data = { active, email, name, group_id };
 			case 'pass':
 				data = data || { password, token };
 				res = await api.put(`users/${selectionUserId}`, data, user?.jwt);
@@ -260,7 +266,7 @@
 					case 'pass':
 						resetPassword();
 					case 'edit':
-						users.put({ ...currentUser, ...data });
+						users.put(({ ...data } = { ...res.data }));
 
 						configSnackbar(message);
 						snackbar.open();

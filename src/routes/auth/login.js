@@ -14,8 +14,7 @@ export async function post({ locals, request }) {
 
 	return await api.post(`users/login?locale=${lang}`, data, token).then(async (res) => {
 		if (res?.success) {
-			const { id, name, jwt, groups } = { ...res.data.user, ...res.data };
-			const role = res.data.user.group.name;
+			const { id, name, jwt, role, groups } = { ...res.data.user, ...res.data };
 
 			await locals.session.destroy();
 			await locals.session.set({

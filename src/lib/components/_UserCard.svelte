@@ -9,7 +9,6 @@
 	import IconButton, { Icon } from '@smui/icon-button';
 	import Menu from '@smui/menu';
 	import List, { Item, Separator, Text, PrimaryText, SecondaryText, Graphic } from '@smui/list';
-	import { locale } from 'svelte-i18n';
 
 	export let image = null;
 	export let user;
@@ -22,7 +21,7 @@
 		const id = user.id;
 		const res = await api.del(`users/${id}`, user?.jwt);
 
-		if (res && res.success) {
+		if (res?.success) {
 			// at this point associated videos are not updated yet
 			// however we fetch a fresh set on load when changing to video page
 			users.del(id);

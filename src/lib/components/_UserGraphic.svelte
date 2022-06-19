@@ -37,36 +37,34 @@
 		? extendedBorderColor
 		: 'transparent';
 
-	$: src = (async (user) => {
+	$: (async (user) => {
 		let avatar = user?.avatar;
 		if (!avatar) {
-			return Promise.resolve(fallbackImage || placeholderDotComAvatar(user?.name)).then(
-				(val) => val
+			Promise.resolve(fallbackImage || placeholderDotComAvatar(user?.name)).then(
+				(val) => (src = val)
 			);
 		} else {
 			if (avatar.src.startsWith('http')) {
-				return Promise.resolve(avatar.src).then((val) => val);
+				Promise.resolve(avatar.src).then((val) => (src = val));
 			} else {
-				return await getMediaAvatar(avatar.id, $session.user, {
+				await getMediaAvatar(avatar.id, $session.user, {
 					width,
 					height,
 					square: 1,
 					quality: 100
-				}).then((val) => val);
+				}).then((val) => (src = val));
 			}
 		}
 	})(user);
 </script>
 
 <div class="user-graphics-outer" class:dense {style}>
-	{#await src then url}
-		<Graphic
-			class="user-graphics"
-			style="display: inline-flex; vertical-align: middle; width: {width}px; height: {height}px; box-shadow: 0px 0px 0px {borderSize}px {borderColor} {extendedBorderSize
-				? `, 0px 0px 0px ${extendedBorderSize}px ${extendedBorderColor}`
-				: ''}; background-image: url('{url}'); background-size: cover;"
-		/>
-	{/await}
+	<Graphic
+		class="user-graphics"
+		style="display: inline-flex; vertical-align: middle; width: {width}px; height: {height}px; box-shadow: 0px 0px 0px {borderSize}px {borderColor} {extendedBorderSize
+			? `, 0px 0px 0px ${extendedBorderSize}px ${extendedBorderColor}`
+			: ''}; background-image: url('{src}'); background-size: cover;"
+	/>
 	{#if badge.icon}
 		<div class="badge">
 			<Icon style="color:{badge.color}" class="material-icons">{badge.icon}</Icon>

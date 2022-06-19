@@ -40,7 +40,7 @@
 		{ title: 'text.1-month', value: 30 },
 		{ title: 'text.2-months', value: 60 },
 		{ title: 'text.3-months', value: 90 },
-		{ title: 'text.custom', value: 'self' }
+		{ title: 'text.custom', value: 'custom' }
 	];
 	const ADMIN = 'Administrator';
 
@@ -89,7 +89,7 @@
 	$: username = currentUser?.name || '';
 	$: currentRole = currentUser?.group?.name;
 	$: joinData =
-		(selectedVideo = currentUser?.videos.find((v) => v.id === selectionVideoId)) &&
+		(selectedVideo = currentUser?.videos?.find((v) => v.id === selectionVideoId)) &&
 		selectedVideo._joinData;
 	$: startDate = (joinData && joinData.start && parseISO(joinData.start)) || endOfWeek(new Date(0));
 	$: endDate = (joinData && joinData.end && parseISO(joinData.end)) || endOfWeek(new Date(0));
@@ -114,7 +114,8 @@
 		!id && root.classList.remove('datapicker--open');
 		return root.classList.contains('datapicker--open');
 	})(selectionVideoId);
-	$: schedulingVideo = schedulingVideoId && $videos.find((video) => video.id === schedulingVideoId);
+	$: schedulingVideo =
+		schedulingVideoId && $videos?.find((video) => video.id === schedulingVideoId);
 	$: schedulingVideoTitle = (schedulingVideo && schedulingVideo.title) || '';
 	$: localeObject = ((l) => locales[l.slice(0, 2)])($locale);
 	$: userIssues =
@@ -134,6 +135,7 @@
 		schedulingVideoId = video.id;
 		scheduleDialog.setOpen(true);
 	}
+
 	function openRemoveDialog(e, video) {
 		e.stopPropagation();
 		schedulingVideoId = video.id;
@@ -157,7 +159,7 @@
 			let end = null;
 
 			timespanSelected = timespanSelection;
-			if (timespanSelected === 'self') {
+			if (timespanSelected === 'custom') {
 				selectionVideoId = schedulingVideoId;
 			} else {
 				let now = new Date();
