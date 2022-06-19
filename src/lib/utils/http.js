@@ -3,7 +3,8 @@ import { browser } from '$app/env';
 
 const credentials = browser ? 'include' : void 0;
 
-export function get(endpoint) {
+export function get(endpoint, options) {
+	const fetch = options?.fetch || fetch;
 	return fetch(endpoint, {
 		method: 'GET',
 		credentials,

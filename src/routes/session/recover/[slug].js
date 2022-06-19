@@ -4,15 +4,17 @@ import { locale } from 'svelte-i18n';
 export async function get({ locals, params }) {
 	const data = locals.session.data;
 	const slug = params.slug;
+	let status, body;
 	if (data[slug]) {
-		try {
-			locale.set(data[slug]);
-		} catch (e) {
-			console.log(`ERROR RECOVERING ${slug}: %s`, e);
-		}
+		status = 200;
+		body = { data: data[slug] };
+	} else {
+		status = 404;
+		body = { data: {} };
 	}
 
 	return {
-		status: 200
+		status,
+		body
 	};
 }

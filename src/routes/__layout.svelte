@@ -9,29 +9,31 @@
 		locale as i18n
 	} from 'svelte-i18n';
 	import { browser } from '$app/env';
+	import { get } from '$lib/utils';
 
 	const fallbackLocale = 'en-US';
 
 	register('de-DE', () => import('../messages/de_DE.json'));
 	register('en-US', () => import('../messages/en_US.json'));
 
-	if (browser) {
-		// init on client side only
-		// don't put this inside `load`, otherwise it will gets executed every time you changed route on client side
-		init_i18n({
-			fallbackLocale,
-			initialLocale: getLocaleFromNavigator()
-		});
-	}
+	export async function load({ fetch }) {
+		async function getLocaleFromSession() {
+			return await fetch('/session/recover/locale')
+				.then((res) => {
+					return res.json();
+				})
+				.then((res) => {
+					return res.data;
+				});
+		}
 
-	export async function load() {
-		if (!browser) {
-			// init on server side only, need to get query from `page.query.get("locale")`
+		if (browser) {
 			init_i18n({
 				fallbackLocale,
-				initialLocale: getLocaleFromQueryString('locale')
+				initialLocale: await getLocaleFromSession()
 			});
 		}
+
 		await waitLocale();
 		return {};
 	}
@@ -52,15 +54,7 @@
 	import IconButton from '@smui/icon-button';
 	import Snackbar, { Actions } from '@smui/snackbar';
 	import { Label } from '@smui/common';
-	import {
-		del as logout,
-		get,
-		post,
-		createRedirectSlug,
-		proxyEvent,
-		svg,
-		__ticker__
-	} from '$lib/utils';
+	import { del as logout, createRedirectSlug, proxyEvent, svg, __ticker__ } from '$lib/utils';
 	import { fabs, settings, theme, ticker, urls, videos, videoEmitter, users } from '$lib/stores';
 	import { Modal } from '$lib/components';
 	import { Jumper } from 'svelte-loading-spinners';
@@ -147,7 +141,6 @@
 		snackbar = getSnackbar();
 
 		serverConfig().then(() => proxyEvent('ticker:extend'));
-		recoverLocaleFromSession(); // does not work as expected
 		initListener();
 		initClasses();
 		initStyles();
@@ -158,13 +151,6 @@
 			removeClasses();
 		};
 	});
-
-	/**
-	 * for page refreshes try to retrieve previous locale from session
-	 **/
-	async function recoverLocaleFromSession() {
-		get('/session/recover/locale');
-	}
 
 	function initListener() {
 		window.addEventListener('ticker:start', tickerStartHandler);
