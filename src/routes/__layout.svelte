@@ -293,7 +293,7 @@
 	async function tickerEndedHandler(e) {
 		await logout(`/auth/logout`).then((res) => {
 			if (res) {
-				message = res.message;
+				message = res.message || res.data?.message;
 
 				configSnackbar(message);
 				snackbar = getSnackbar();
