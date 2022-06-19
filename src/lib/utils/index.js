@@ -4,7 +4,7 @@ import {
 	equals,
 	formatter,
 	minDigits,
-	parseQuery,
+	parseSearchParams,
 	placeholderDotComAvatar,
 	proxyEvent,
 	processRedirect,
@@ -16,6 +16,7 @@ import {
 	svg,
 	windowSize,
 	__key__,
+	__session__,
 	__ticker__
 } from './helper';
 import {
@@ -51,7 +52,7 @@ export {
 	isToday,
 	localeFormat,
 	minDigits,
-	parseQuery,
+	parseSearchParams,
 	placeholderDotComAvatar,
 	post,
 	proxyEvent,
@@ -68,5 +69,6 @@ export {
 	toLocalTime,
 	windowSize,
 	__key__,
+	__session__,
 	__ticker__
 };

@@ -65,6 +65,7 @@
 	let isExpired;
 
 	$: user = $session.user;
+	$: groups = $session.groups || [];
 	$: dateFormat = $locale.indexOf('de') != -1 ? 'dd. MMM yyyy' : 'yyyy-MM-dd';
 	$: currentUserIndex = ((id) => $users.findIndex((usr) => usr.id === id))(selectionUserId);
 	$: userVideos = ((idx) => {
@@ -87,8 +88,7 @@
 		filtered[0];
 	$: username = (currentUser && currentUser.name) || '';
 	$: currentRole =
-		(group = ((usr) =>
-			$session.groups && $session.groups.find((group) => group.id == usr.group_id))(currentUser)) &&
+		(group = ((usr) => groups.find((group) => group.id == usr.group_id))(currentUser)) &&
 		group.name;
 	$: joinData =
 		(selectedVideo = currentUser && currentUser.videos.find((v) => v.id === selectionVideoId)) &&

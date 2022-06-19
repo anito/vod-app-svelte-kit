@@ -2,7 +2,11 @@
 	import { browser } from '$app/env';
 	import { post } from '$lib/utils';
 
-	export async function load({ url }) {
+	export async function load({ url, session }) {
+		// session.user = null;
+		// session.groups = null;
+		// session.role = null;
+
 		const token = url.searchParams.get('token');
 		if (browser && token) {
 			return await post(`/auth/login`, { token }).then((res) => {
@@ -11,11 +15,7 @@
 				};
 			});
 		}
-		return {
-			props: {
-				loggedin: !!session.user
-			}
-		};
+		return {};
 	}
 </script>
 
@@ -39,7 +39,7 @@
 	 */
 	export let data = null;
 	export let success = false;
-	export let loggedin = null;
+	export let sessionExists = null;
 
 	const transitionParams = {
 		delay: 0,
@@ -75,9 +75,10 @@
 		 * This second message will be either a welcome message (on success) or
 		 * a default message (on first appearance)
 		 */
-		if (loggedin) {
+		if (sessionExists) {
 			// valid session already exists, jump straight to outroend message
 			outroended = true;
+			console.log('session exists');
 		} else if (data) {
 			// Token login
 			// (for Form login logic is in LoginForm component)
@@ -135,6 +136,12 @@
 					>
 						<h5 class="m-2 mdc-typography--headline5 headline">
 							{message}
+						</h5>
+					</div>
+				{:else}
+					<div class="flex justify-center message">
+						<h5 class="m-2 mdc-typography--headline5 headline">
+							{$_('text.one-moment')}
 						</h5>
 					</div>
 				{/if}

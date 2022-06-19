@@ -3,10 +3,7 @@ import * as api from '$lib/api';
 import { locale } from 'svelte-i18n';
 
 let lang;
-locale.subscribe((val) => {
-	console.log(val);
-	lang = val;
-});
+locale.subscribe((val) => (lang = val));
 
 export async function post({ locals, request }) {
 	let data = await request.json();
@@ -17,12 +14,17 @@ export async function post({ locals, request }) {
 
 	return await api.post(`users/login?locale=${lang}`, data, token).then(async (res) => {
 		if (res?.success) {
-			const { id, name, jwt } = { ...res.data.user };
+			const { id, name, jwt, groups } = { ...res.data.user, ...res.data };
+			const role = res.data.user.group.name;
+
 			await locals.session.destroy();
 			await locals.session.set({
 				user: { id, name, jwt },
+				role,
+				groups,
 				locale: lang
 			});
+			await locals.session.refresh();
 			return {
 				body: { ...res }
 			};

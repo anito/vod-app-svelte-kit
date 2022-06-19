@@ -10,7 +10,6 @@ export const base = dev ? `https://physio.mbp/api` : `https://vod.webpremiere.de
 
 async function send({ method, path, data, token }) {
 	let fullpath = path.startsWith('http') ? path : `${base}/${path}`;
-	// if (locale) fullpath = `${fullpath}?locale=${locale}`;
 
 	const opts = {
 		method,

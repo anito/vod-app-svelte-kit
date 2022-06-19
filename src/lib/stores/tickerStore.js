@@ -10,13 +10,12 @@ function createStore() {
 	return derived(
 		session,
 		($s, set) => {
-			exp = $s.expires;
+			exp = $s._expires;
 			if (!exp) return;
 			if (!(exp instanceof Date)) {
 				exp = new Date(exp);
 			}
 
-			clearInterval(__ticker__.interval);
 			__ticker__.interval = setInterval(() => {
 				let time = exp - new Date();
 				set(time > 0 ? time : 0);
@@ -26,12 +25,10 @@ function createStore() {
 			return () => {
 				clearInterval(__ticker__.interval);
 
-				// console.log(
-				// 	'%c TICKER ENDED',
-				// 	'background: #ff5722; color: #ffffff; padding:4px 6px 3px 0;'
-				// );
-
-				set(void 0);
+				console.log(
+					'%c TICKER EXTEND OR END',
+					'background: #ff5722; color: #000000; padding:4px 6px 3px 0;'
+				);
 			};
 		},
 		void 0 // initial value

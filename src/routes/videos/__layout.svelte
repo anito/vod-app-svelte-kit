@@ -106,7 +106,7 @@
 						class="video"
 						selected={selectionVideoId === video.id}
 						on:itemSelected={itemSelectedHandler}
-						on:click={() => proxyEvent('ticker:recover')}
+						on:click={() => proxyEvent('ticker:extend')}
 						{video}
 					/>
 				{/each}

@@ -1,4 +1,5 @@
 // @ts-nocheck
+
 export function sortByTitle(a, b) {
 	let _a = a.title?.toUpperCase() || '';
 	let _b = b.title?.toUpperCase() || '';
@@ -47,23 +48,26 @@ export function formatter(d) {
 	return `${Math.floor(hrs)}:${Math.floor(min)}:${Math.floor(sec)}`;
 }
 
-export function createRedirectSlug(url) {
-	let path, query;
-	const ignore_paths = ['login'];
+export function createRedirectSlug(url, searchMap) {
+	let path, searchParams;
+	const ignored = ['login'];
 
 	if (typeof url === 'string') {
 		url = new URL(url, window.location.hostname);
-		query = new URLSearchParams(url);
+		searchParams = new URLSearchParams(url);
 	} else {
-		query = url.searchParams;
+		searchParams = url.searchParams;
 	}
+	searchMap.forEach((val, name) => {
+		searchParams.append(name, val);
+	});
 	path = url.pathname;
 
-	for (let ignore_path of ignore_paths) {
-		let regex = new RegExp(`\\b${ignore_path}`, 'g');
+	for (let ignore of ignored) {
+		let regex = new RegExp(`\\b${ignore}`, 'g');
 		path = path.replace(regex, '');
 	}
-	return `?redirect=${path}${parseQuery(query)}`;
+	return `?redirect=${path}${parseSearchParams(searchParams)}`;
 }
 
 export function processRedirect(page, session = {}) {
@@ -74,18 +78,19 @@ export function processRedirect(page, session = {}) {
 	} else {
 		uid = session.user?.id;
 		path = isAdmin ? `/users/${uid}` : '/videos';
-		return path.concat(parseQuery(page.url.searchParams));
+		return path.concat(parseSearchParams(page.url.searchParams));
 	}
 }
 
-export function parseQuery(query) {
-	let concatenated = '?',
-		exclude = ['token', 'redirect'];
-	for (let entry of query) {
-		exclude.indexOf(entry[0]) < 0 &&
-			(concatenated = concatenated.concat(`${entry[0]}=${entry[1]}&`));
+export function parseSearchParams(searchParams) {
+	const excludeSet = new Set(['token', 'redirect', 'sessionend']);
+	for (let entry of searchParams.entries()) {
+		// console.log(`${entry[0]} => ${entry[1]}`);
 	}
-	return concatenated.slice(0, -1);
+	excludeSet.forEach((name) => searchParams.delete(name));
+	searchParams.entries((val, key) => console.log('#finished', key, val));
+
+	return searchParams.toString() ? `?${searchParams.toString()}` : '';
 }
 
 export function windowSize() {
@@ -210,3 +215,4 @@ String.prototype.add = function (val) {
 
 export const __key__ = {};
 export const __ticker__ = {};
+export const __session__ = {};

@@ -3,19 +3,19 @@
 import * as api from '$lib/api.js';
 
 export async function del({ locals, request }) {
-	const saved = await locals.session.data;
-	const { locale, user } = { locale: '', ...saved };
+	const locale = locals.session.data.locale;
 	await locals.session.destroy();
-	await locals.session.set({ locale });
+	// re-save locale to session
+	if (locale) {
+		await locals.session.set({ locale });
+	}
 
-	return await api
-		.post(`users/logout?token=${user?.jwt}&locale=${locale}`)
-		.then(async (response) => {
-			return {
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(response)
-			};
-		});
+	return await api.post(`users/logout?locale=${locale}`).then(async (res) => {
+		return {
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: { ...res }
+		};
+	});
 }

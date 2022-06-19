@@ -29,8 +29,6 @@
 
 		return {
 			props: {
-				tab: url.searchParams.get('tab'),
-				active: url.searchParams.get('active'),
 				usersData,
 				videosData,
 				videosAllData
@@ -62,8 +60,6 @@
 
 	$: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1]; // slug (user.id ) in case we start from a specific user e.g. /users/23
 	// from load
-	export let tab = TAB;
-	export let active = false;
 	export let usersData = [];
 	export let videosData = [];
 	export let videosAllData = [];
@@ -93,8 +89,10 @@
 	$: users.update(usersData);
 	$: videos.update(videosData);
 	$: videosAll.update(videosAllData);
+	$: tab = $page.url.searchParams.get('tab') || TAB;
+	$: active = $page.url.searchParams.get('active');
 	$: isAdmin = $session.role === 'Administrator';
-	$: selectionUserId = $page.params.slug || user.id;
+	$: selectionUserId = $page.params.slug || user?.id;
 	$: currentUser = ((id) => $users.find((usr) => usr.id === id))(selectionUserId);
 	$: ((usr) => {
 		username = usr?.name;

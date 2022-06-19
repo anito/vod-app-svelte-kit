@@ -19,7 +19,6 @@
 
 	let className = '',
 		last,
-		fail,
 		timeout,
 		fails = FAILS,
 		forced = false,
@@ -35,13 +34,13 @@
 
 	onMount(() => {
 		if (forceOnExtend) {
-			window.addEventListener('ticker:extended', forceVisible);
+			window.addEventListener('ticker:extend', forceVisible);
 			forceVisible();
 		}
 
 		return () => {
 			clearTimeout(timeout);
-			window.removeEventListener('ticker:extended', forceVisible);
+			window.removeEventListener('ticker:extend', forceVisible);
 		};
 	});
 
@@ -54,7 +53,7 @@
 
 	function parse(ms) {
 		let tt, sec, min, hrs;
-		if ((fail = isNaN(ms))) {
+		if (isNaN(ms)) {
 			return (--fails && last) || '--:--:--';
 		}
 		fails = FAILS;

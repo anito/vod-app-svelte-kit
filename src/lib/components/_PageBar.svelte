@@ -16,7 +16,7 @@
 			warning="180"
 			warningOnly
 			forceOnExtend="2"
-			on:MDCChip:interaction={() => proxyEvent('ticker:recover')}
+			on:MDCChip:interaction={() => proxyEvent('ticker:extend')}
 		/>
 	</div>
 </div>

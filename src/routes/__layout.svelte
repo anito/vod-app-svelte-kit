@@ -85,10 +85,14 @@
 	let timeoutId;
 	let isMobileDevice;
 	let loggedInButtonTextSecondLine;
-	let unsubscribeTicker;
 	let unsubscribeVideoEmitter;
 	let emphasize;
 	let snackbar;
+
+	setContext('fab', {
+		setFab: (fab) => $session.role === 'Administrator' && fabs.update(fab),
+		restoreFab: () => fabs.restore()
+	});
 
 	setContext('snackbar', {
 		getSnackbar: () => snackbar,
@@ -97,9 +101,25 @@
 
 	const { getSnackbar } = getContext('snackbar');
 
-	setContext('fab', {
-		setFab: (fab) => $session.role === 'Administrator' && fabs.update(fab),
-		restoreFab: () => fabs.restore()
+	ticker.subscribe((val) => {
+		// console.log(
+		// 	'%c TICKER %c %s',
+		// 	'background: #ffd54f; color: #000000; padding:4px 6px 3px 0;',
+		// 	'background: #ffff81; color: #000000; padding:4px 6px 3px 0;',
+		// 	`${(!isNaN(val) && parseInt(val / 1000) + ' s') || '--'}`
+		// );
+		if (val === 0) {
+			proxyEvent('ticker:end');
+		}
+	});
+
+	unsubscribeVideoEmitter = videoEmitter.subscribe((t) => {
+		if ('put' === t.method) {
+			put(t);
+		}
+		if ('del' === t.method) {
+			del(t);
+		}
 	});
 
 	$: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
@@ -120,28 +140,14 @@
 		}));
 	$: searchParams = $page.url.searchParams.toString();
 	$: search = searchParams && `?${searchParams}`;
-
-	unsubscribeTicker = ticker.subscribe((val) => {
-		if (val === 0) {
-			proxyEvent('ticker:end', { path: 'login' });
-		}
-	});
-
-	unsubscribeVideoEmitter = videoEmitter.subscribe((t) => {
-		if ('put' === t.method) {
-			put(t);
-		}
-		if ('del' === t.method) {
-			del(t);
-		}
-	});
+	$: $page.url.pathname && proxyEvent('ticker:extend');
 
 	onMount(() => {
 		root = document.documentElement;
 		snackbar = getSnackbar();
 
-		serverConfig().then(() => proxyEvent('ticker:recover'));
-		recoverLocaleFromSession();
+		serverConfig().then(() => proxyEvent('ticker:extend'));
+		recoverLocaleFromSession(); // does not work as expected
 		initListener();
 		initClasses();
 		initStyles();
@@ -157,14 +163,14 @@
 	 * for page refreshes try to retrieve previous locale from session
 	 **/
 	async function recoverLocaleFromSession() {
-		get('/session/recover');
+		get('/session/recover/locale');
 	}
 
 	function initListener() {
 		window.addEventListener('ticker:start', tickerStartHandler);
 		window.addEventListener('ticker:end', tickerEndHandler);
 		window.addEventListener('ticker:ended', tickerEndedHandler);
-		window.addEventListener('ticker:recover', tickerRecoverHandler);
+		window.addEventListener('ticker:extend', tickerExtendHandler);
 	}
 
 	function initClasses() {
@@ -183,14 +189,11 @@
 		window.removeEventListener('ticker:start', tickerStartHandler);
 		window.removeEventListener('ticker:end', tickerEndHandler);
 		window.removeEventListener('ticker:ended', tickerEndedHandler);
-		window.removeEventListener('ticker:recover', tickerRecoverHandler);
+		window.removeEventListener('ticker:extend', tickerExtendHandler);
 	}
 
 	function removeSubscribers() {
 		unsubscribeVideoEmitter();
-		try {
-			unsubscribeTicker();
-		} catch (e) {}
 	}
 
 	function removeClasses() {
@@ -267,10 +270,9 @@
 		$session.role = user.group.name;
 		$session.groups = groups;
 
-		proxyEvent('ticker:recover');
+		proxyEvent('ticker:extend');
 
 		renewed && localStorage.setItem('renewed', renewed);
-
 		configSnackbar(
 			$_('text.external-login-welcome-message', {
 				values: { name: user.name }
@@ -279,12 +281,18 @@
 		snackbar?.open();
 	}
 
-	async function tickerEndHandler(e) {
-		if (!$session.user) return;
+	function tickerEndHandler(e) {
+		$session.user = null;
+		$session.groups = null;
+		$session.role = null;
+		$session._expires = null;
 
+		proxyEvent('ticker:ended');
+	}
+
+	async function tickerEndedHandler(e) {
 		await logout(`/auth/logout`).then((res) => {
 			if (res) {
-				proxyEvent('ticker:ended', { ...e.detail.data });
 				message = res.message;
 
 				configSnackbar(message);
@@ -292,32 +300,20 @@
 				snackbar?.open();
 			}
 		});
-	}
-
-	function tickerEndedHandler(e) {
-		try {
-			unsubscribeTicker();
-		} catch (e) {
-			console.log('nothing to unsubscribe');
-		}
-
-		$session.user = null;
-		$session.groups = null;
-		$session.role = null;
-		$session.expires = null;
 
 		setTimeout(
-			(path) => {
-				goto(`${path}${createRedirectSlug($page.url)}`);
+			(path, searchMap) => {
+				goto(`${path}${createRedirectSlug($page.url, searchMap)}`);
 			},
 			1000,
-			e.detail.path || '/'
+			'/',
+			new Map([['sessionend', 'true']])
 		);
 	}
 
-	async function tickerRecoverHandler() {
+	async function tickerExtendHandler() {
 		if ($session.user) {
-			$session.expires = new Date(Date.now() + parseInt($settings.Session?.lifetime));
+			$session._expires = new Date(Date.now() + parseInt($settings.Session?.lifetime));
 		}
 	}
 </script>
@@ -326,7 +322,12 @@
 
 <Modal>
 	{#if $session && $i18n}
-		<form class="main-menu" on:submit|stopPropagation|preventDefault={submit} method="post">
+		<form
+			class="main-menu"
+			on:submit|stopPropagation|preventDefault={submit}
+			method="post"
+			action="/login"
+		>
 			<Nav {segment} {page} {logo}>
 				{#if $session.user}
 					<NavItem href="/videos" title="Videothek" segment="videos">
