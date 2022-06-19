@@ -17,10 +17,10 @@ export const handle = handleSession(
 	}
 );
 
-export const _getSession = getAuxSession();
+export const getSession = getAuxSession();
 
 // original implementaion deactivated
-export const getSession = ({ locals }) => {
+export const _getSession = ({ locals }) => {
 	return locals.session.data;
 };
 

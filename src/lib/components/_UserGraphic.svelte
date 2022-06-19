@@ -40,12 +40,12 @@
 	$: (async (user) => {
 		let avatar = user?.avatar;
 		if (!avatar) {
-			await Promise.resolve(fallbackImage || placeholderDotComAvatar(user?.name)).then(
+			Promise.resolve(fallbackImage || placeholderDotComAvatar(user?.name)).then(
 				(val) => (src = val)
 			);
 		} else {
 			if (avatar.src.startsWith('http')) {
-				await Promise.resolve(avatar.src).then((val) => (src = val));
+				Promise.resolve(avatar.src).then((val) => (src = val));
 			} else {
 				await getMediaAvatar(avatar.id, $session.user, {
 					width,
