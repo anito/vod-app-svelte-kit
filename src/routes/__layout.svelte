@@ -1,13 +1,5 @@
 <script context="module">
-	import {
-		register,
-		getLocaleFromNavigator,
-		getLocaleFromQueryString,
-		waitLocale,
-		init as init_i18n,
-		_,
-		locale as i18n
-	} from 'svelte-i18n';
+	import { register, waitLocale, init as init_i18n, _, locale as i18n } from 'svelte-i18n';
 	import { browser } from '$app/env';
 	import { get } from '$lib/utils';
 
@@ -15,6 +7,12 @@
 
 	register('de-DE', () => import('../messages/de_DE.json'));
 	register('en-US', () => import('../messages/en_US.json'));
+
+	if (!browser) {
+		init_i18n({
+			fallbackLocale
+		});
+	}
 
 	export async function load({ fetch }) {
 		async function getLocaleFromSession() {
