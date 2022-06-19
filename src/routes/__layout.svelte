@@ -15,13 +15,6 @@
 	register('de-DE', () => import('../messages/de_DE.json'));
 	register('en-US', () => import('../messages/en_US.json'));
 
-	if (!browser) {
-		init_i18n({
-			fallbackLocale,
-			initialLocale: getLocaleFromNavigator()
-		});
-	}
-
 	export async function load({ fetch }) {
 		async function getLocaleFromSession() {
 			return await fetch('/session/recover/locale')

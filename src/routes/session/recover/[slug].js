@@ -9,8 +9,8 @@ export async function get({ locals, params }) {
 		status = 200;
 		body = { data: data[slug] };
 	} else {
-		status = 404;
-		body = { data: {} };
+		status = 302;
+		body = { data: '' };
 	}
 
 	return {
