@@ -8,7 +8,6 @@
 		getLocaleFromNavigator
 	} from 'svelte-i18n';
 	import { browser } from '$app/env';
-	import { get } from '$lib/utils';
 
 	const fallbackLocale = 'en-US';
 
@@ -30,6 +29,11 @@
 			init_i18n({
 				fallbackLocale,
 				initialLocale: await getLocaleFromSession()
+			});
+		} else {
+			init_i18n({
+				fallbackLocale,
+				initialLocale: await getLocaleFromNavigator()
 			});
 		}
 
