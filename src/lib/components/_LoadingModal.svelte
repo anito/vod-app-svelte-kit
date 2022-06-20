@@ -5,7 +5,7 @@
 	import { onMount } from 'svelte';
 	import { convert } from '$lib/utils';
 
-	export let delay = 250;
+	export let wait = 250;
 	export let backgroundColor = '#222222';
 	export let opacity = 0.5;
 
@@ -15,7 +15,7 @@
 		root = document.documentElement;
 	});
 
-	$: root && setTimeout(() => root.classList.toggle('navigating', $navigating), delay);
+	$: root && setTimeout(() => root.classList.toggle('navigating', $navigating), wait);
 	$: _step1 = backgroundColor.slice(0, 7);
 	$: bgColor = `${_step1}${(_step1.length === 7 && opacityToHex) || ''}`;
 	$: opacityToHex = convert.dec2Hex(parseFloat(opacity), true);

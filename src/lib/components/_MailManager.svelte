@@ -114,7 +114,7 @@
 	$: currentStore =
 		activeMailbox === 'inboxes' ? inboxes : activeMailbox === 'sents' ? sents : inboxes;
 	$: dynamicTemplatePath = (slug) => {
-		return `${validateUserPath($page.url.pathname)}?${createTemplatePath(slug)}`;
+		return createTemplatePath(slug);
 	};
 	$: data = dynamicTemplateData && {
 		...dynamicTemplateData,
@@ -133,7 +133,7 @@
 		// stringify URLSearchParams before manipulating
 		let params = new URLSearchParams($page.url.searchParams.toString());
 		params.set('active', slug);
-		return `${params.toString()}`;
+		return `${validateUserPath($page.url.pathname)}?${params.toString()}`;
 	}
 
 	/**
@@ -492,10 +492,10 @@
 		return { name: newName, slug };
 	}
 
-	function generateSlug(name) {
-		let slug = slugify(name);
+	function generateSlug() {
+		let slug = crypto.randomUUID();
 		if ($templates.find((tmpl) => tmpl.slug === slug)) {
-			return generateSlug(slug.concat(' copy'));
+			return generateSlug();
 		}
 		return slug;
 	}

@@ -388,7 +388,7 @@
 		<slot />
 	{/if}
 </Modal>
-<LoadingModal backgroundColor="#ffffff" opacity=".45" wait="400">
+<LoadingModal backgroundColor="#ffffff" opacity=".45" wait="500">
 	<Jumper size="200" color="var(--flash)" unit="px" />
 </LoadingModal>
 

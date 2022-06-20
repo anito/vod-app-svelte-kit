@@ -7,8 +7,7 @@
 
 	onMount(() => {
 		if (!$users.length) return;
-
-		goto(`/users/${$users[0].id}`);
+		setTimeout(() => goto(`/users/${$users[0].id}`), 100);
 	});
 </script>
 

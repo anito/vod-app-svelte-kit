@@ -56,9 +56,9 @@
 	let copyButton = (node) => console.log(node);
 	let setCopyButton = (node) => (copyButton = node);
 	let group_id;
-	let name;
-	let email;
-	let active;
+	let name = '';
+	let email = '';
+	let active = false;
 
 	$: user = $session.user;
 	$: groups = $session.groups || [];
@@ -408,6 +408,22 @@
 							{#if selectedMode === 'add' || selectedMode === 'edit'}
 								<div class="item">
 									<Textfield
+										bind:value={name}
+										label="Name"
+										type="text"
+										input$aria-controls="helper-text-name"
+										input$aria-describedby="helper-text-name"
+									>
+										<TextfieldIcon slot="leadingIcon" class="material-icons"
+											>contact_page</TextfieldIcon
+										>
+										<HelperText slot="helper" id="helper-text-name"
+											>{$_('text.your-name')}</HelperText
+										>
+									</Textfield>
+								</div>
+								<div class="item">
+									<Textfield
 										class="w-full"
 										bind:value={email}
 										bind:invalid={invalidEmail}
@@ -422,23 +438,12 @@
 											style="font-size: 1em; line-height: normal; vertical-align: middle;"
 											>email</TextfieldIcon
 										>
-										<HelperText slot="helper" validationMsg>{$_('text.invalid-email')}</HelperText>
-									</Textfield>
-								</div>
-								<div class="item">
-									<Textfield
-										bind:value={name}
-										label="Name"
-										type="text"
-										input$aria-controls="helper-text-standard-b"
-										input$aria-describedby="helper-text-standard-b"
-									>
-										<TextfieldIcon slot="leadingIcon" class="material-icons"
-											>contact_page</TextfieldIcon
+										<HelperText slot="helper" id="helper-text-email" validationMsg
+											>{$_('text.invalid-email')}</HelperText
 										>
-										<HelperText slot="helper" id="helper-text-standard-b">Ihr Name</HelperText>
 									</Textfield>
 								</div>
+
 								<div class="item">
 									<Select
 										disabled={!isAdmin}
@@ -750,7 +755,7 @@
 		padding-top: 0;
 	}
 	.token-factory.no-token :global(button.magic-link) {
-		background-color: var(--warning);
+		background-color: var(--error);
 	}
 	.token-factory .additional-info {
 		overflow: auto;
