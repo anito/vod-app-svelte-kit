@@ -35,6 +35,7 @@
 		: extendedBorderColor
 		? extendedBorderColor
 		: 'transparent';
+	badge.color?.startsWith('--') && (badge.color = `var(${badge.color})`);
 
 	$: (async (user) => {
 		let avatar = user?.avatar;
@@ -58,16 +59,16 @@
 <div class="user-graphics-outer" class:dense {style}>
 	{#if src}
 		<Graphic
-			class="user-graphics"
+			class="user-graphics relative"
 			style="display: inline-flex; vertical-align: middle; width: {width}px; height: {height}px; box-shadow: 0px 0px 0px {borderSize}px {borderColor} {extendedBorderSize
 				? `, 0px 0px 0px ${extendedBorderSize}px ${extendedBorderColor}`
 				: ''}; background-image: url('{src}'); background-size: cover;"
 		/>
-	{/if}
-	{#if badge.icon}
-		<div class="badge">
-			<Icon style="color:{badge.color}" class="material-icons">{badge.icon}</Icon>
-		</div>
+		{#if badge.icon}
+			<div class="badge" style="left:{parseInt(width) - 10}px;">
+				<Icon style="color:{badge.color}" class="material-icons">{badge.icon}</Icon>
+			</div>
+		{/if}
 	{/if}
 </div>
 
@@ -86,7 +87,6 @@
 		position: absolute;
 		width: 14px;
 		height: 14px;
-		right: 12px;
 		top: -5px;
 	}
 	.badge :global(.material-icons) {

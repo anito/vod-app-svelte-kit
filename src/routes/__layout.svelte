@@ -363,6 +363,10 @@
 							width="40"
 							height="40"
 							user={$session.user}
+							badge={{
+								icon: 'settings_suggest',
+								color: '--prime'
+							}}
 						/>
 					</NavItem>
 				{:else}

@@ -11,19 +11,18 @@
  *  text-disabled-on-dark, text-icon-on-dark
  */
 .mdc-switch {
-  
-  &.user-activation {
-    @include switch.theme((
-      //
-    ));
+	&.user-activation {
+		@include switch.theme(());
 
-    &.mdc-switch--unselected {
-      @include switch.theme-styles((
-        unselected-handle-color: color-palette.$deep-orange-500,
-        unselected-track-color: color-palette.$deep-orange-300,
-        unselected-hover-handle-color: color-palette.$deep-orange-500,
-        unselected-hover-track-color: color-palette.$deep-orange-300,
-      ));
-    }
-  }
+		&.mdc-switch--unselected {
+			@include switch.theme-styles(
+				(
+					unselected-handle-color: error,
+					unselected-track-color: color-palette.$deep-orange-100,
+					unselected-hover-handle-color: error,
+					unselected-hover-track-color: color-palette.$deep-orange-100
+				)
+			);
+		}
+	}
 }
