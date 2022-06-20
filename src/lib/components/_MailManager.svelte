@@ -113,7 +113,9 @@
 	$: currentTemplate && isAdmin ? setFab('send-mail') : setFab('');
 	$: currentStore =
 		activeMailbox === 'inboxes' ? inboxes : activeMailbox === 'sents' ? sents : inboxes;
-	$: dynamicTemplatePath = (slug) => currentUser && createTemplatePath(slug);
+	$: dynamicTemplatePath = (slug) => {
+		return `${validateUserPath($page.url.pathname)}?${createTemplatePath(slug)}`;
+	};
 	$: data = dynamicTemplateData && {
 		...dynamicTemplateData,
 		...dynamicTemplateData.validate(currentTemplate)
@@ -126,9 +128,12 @@
 		drawerOpen = drawerOpenOnMount;
 	});
 
-	function createTemplatePath(target) {
-		$page.url.searchParams.set('active', target);
-		return `${validateUserPath($page.url.pathname)}?${$page.url.searchParams.toString()}`;
+	function createTemplatePath(slug) {
+		// don't operate directly on $page since its reactivity causes infinite load requests!
+		// stringify URLSearchParams before manipulating
+		let params = new URLSearchParams($page.url.searchParams.toString());
+		params.set('active', slug);
+		return `${params.toString()}`;
 	}
 
 	/**

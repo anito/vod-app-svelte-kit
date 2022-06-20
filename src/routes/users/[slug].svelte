@@ -1,8 +1,6 @@
 <script context="module">
 	import * as api from '$lib/api';
 
-	let slimLoaded = false;
-
 	export async function load({ url, params, session }) {
 		let sentData = [];
 		let inboxData = [];
@@ -23,15 +21,12 @@
 					res.success && (inboxData = res.data);
 				})
 				.catch(() => {});
-			if (!slimLoaded) {
-				await api
-					.get(`users/simpleindex`, session.user?.jwt)
-					.then((res) => {
-						res.success && (slimData = res.data);
-						slimLoaded = true;
-					})
-					.catch(() => {});
-			}
+			await api
+				.get(`users/simpleindex`, session.user?.jwt)
+				.then((res) => {
+					res.success && (slimData = res.data);
+				})
+				.catch(() => {});
 		}
 		return {
 			props: {
