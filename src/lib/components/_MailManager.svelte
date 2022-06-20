@@ -6,7 +6,7 @@
 	import { onMount, tick, getContext } from 'svelte';
 	import { page, session } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { fabs, users, sents, inboxes, templates } from '$lib/stores';
+	import { fabs, slim, sents, inboxes, templates } from '$lib/stores';
 	import { slugify } from '$lib/utils';
 	import MailViewer from './_MailViewer.svelte';
 	import MailList from './_MailList.svelte';
@@ -94,7 +94,7 @@
 	export let sentData;
 
 	$: isAdmin = $session.role === 'Administrator';
-	$: currentUser = ((id) => $users.filter((usr) => usr.id === id))(
+	$: currentUser = ((id) => $slim.filter((usr) => usr.id === id))(
 		selectionUserId || $session.user?.id
 	)[0];
 	$: selectionUserId && (selectionIndex = -1);
@@ -174,18 +174,29 @@
 		snackbar.open();
 	}
 
+	/**
+	 * Find the user for each email address in the email
+	 * @param addressees
+	 */
+	const getAddressees = (addressees) => {
+		let item,
+			items = [];
+		addressees.forEach((email) => {
+			item = $slim.find((user) => user.email === email);
+			items.push(item ? { ...item } : { email });
+		});
+		// console.log(items);
+		return items;
+	};
+
 	function parseInbox() {
-		let items = [],
-			_users;
+		let items = [];
 		const user = currentUser;
 		inboxData.map((mail) => {
 			let message = JSON.parse(mail.message);
 			items.push({
 				id: mail.id,
-				from:
-					(_users = $users.filter((user) => user.email === mail._from)) && _users.length
-						? _users
-						: [mail._from],
+				from: getAddressees([mail._from]),
 				to: [user],
 				message: message.message,
 				subject: message.subject,
@@ -197,20 +208,16 @@
 	}
 
 	function parseSent() {
-		let items = [],
-			_users;
-		const user = currentUser;
+		let items = [];
 		let _to;
+		const user = currentUser;
 		sentData.map((mail) => {
 			let message = JSON.parse(mail.message);
 			_to = mail._to.split(';');
 			items.push({
 				id: mail.id,
 				from: [user],
-				to:
-					(_users = $users.filter((user) => _to.find((adr) => adr === user.email))) && _users.length
-						? _users
-						: _to,
+				to: getAddressees(_to),
 				message: message.message,
 				subject: message.subject,
 				read: true,

@@ -4,8 +4,8 @@
 	import { session } from '$app/stores';
 	import { Graphic } from '@smui/list';
 	import { Icon } from '@smui/common';
-	import { getMediaAvatar, placeholderDotComAvatar, svg } from '$lib/utils';
-	import { onMount } from 'svelte';
+	import { getMediaAvatar, placeholderDotComAvatar } from '$lib/utils';
+	import { slim } from '$lib/stores';
 
 	export let user = {};
 	export let dense = '';
@@ -48,11 +48,10 @@
 	badge.color?.startsWith('--') && (badge.color = `var(${badge.color})`);
 
 	$: (async (user) => {
-		let avatar = user?.avatar;
-		if (avatar?.src?.startsWith('http')) {
-			Promise.resolve(avatar.src).then((val) => (src = val));
-		} else if (avatar?.src) {
-			await getMediaAvatar(avatar.id, $session.user, {
+		if (user.avatar?.src?.startsWith('http')) {
+			Promise.resolve(user.avatar?.src).then((val) => (src = val));
+		} else if (user.avatar) {
+			await getMediaAvatar(user.avatar?.id, $session.user, {
 				width,
 				height,
 				square: 1,
@@ -61,10 +60,11 @@
 		} else if (fallback) {
 			Promise.resolve(fallback).then((val) => (src = val));
 		} else {
-			Promise.resolve(placeholderDotComAvatar(user?.name)).then((val) => (src = val));
+			Promise.resolve(placeholderDotComAvatar(user.email.split('@').join(' '))).then(
+				(val) => (src = val)
+			);
 		}
 	})(user);
-
 	$: badge.icon && (badge.position = badgePosition[badge.position] || badgePosition['TOP_RIGHT']);
 </script>
 

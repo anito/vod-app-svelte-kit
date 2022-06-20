@@ -1,9 +1,12 @@
 <script context="module">
 	import * as api from '$lib/api';
 
+	let slimLoaded = false;
+
 	export async function load({ url, params, session }) {
 		let sentData = [];
 		let inboxData = [];
+		let slimData = [];
 
 		// console.log(url.origin, url.pathname);
 		if (url.searchParams.get('tab') === 'mail') {
@@ -20,11 +23,21 @@
 					res.success && (inboxData = res.data);
 				})
 				.catch(() => {});
+			if (!slimLoaded) {
+				await api
+					.get(`users/simpleindex`, session.user?.jwt)
+					.then((res) => {
+						res.success && (slimData = res.data);
+						slimLoaded = true;
+					})
+					.catch(() => {});
+			}
 		}
 		return {
 			props: {
 				sentData,
-				inboxData
+				inboxData,
+				slimData
 			}
 		};
 	}
@@ -37,12 +50,13 @@
 	import { onMount } from 'svelte';
 	import { UserManager, TimeManager, MailManager } from '$lib/components';
 	import Button, { Group, Label, Icon } from '@smui/button';
-	import { users, sitename } from '$lib/stores';
+	import { slim, users, sitename, sents, inboxes } from '$lib/stores';
 	import { proxyEvent } from '$lib/utils';
 	import { _ } from 'svelte-i18n';
 
 	export let inboxData;
 	export let sentData;
+	export let slimData;
 
 	const TABS = ['user', 'time', 'mail'];
 	const defaultTab = TABS[1];
@@ -54,6 +68,11 @@
 	let currentUser;
 	let username;
 
+	if (slimData.length) {
+		slim.update(slimData);
+	}
+
+	// $: console.log($slim, $sents, $inboxes);
 	$: selectionUserId = $page.params.slug;
 	$: currentUser = ((id) => $users.length && $users.filter((usr) => usr.id === id)[0])(
 		selectionUserId

@@ -63,19 +63,13 @@
 	selected={selected && selected.id === mail.id}
 	><div class="staggered">
 		{#each userItems as user, i}
-			<UserGraphic
-				width="40"
-				height="40"
-				user={typeof user === 'object' ? user : null}
-				borderSize
-				style={`z-index: ${10 - i};`}
-			/>
+			<UserGraphic size="30" {user} borderSize style={`z-index: ${10 - i};`} />
 		{/each}
 	</div>
-	<Text style="flex: 1;">
-		<PrimaryText>
+	<Text style="flex: 1; align-self: auto;">
+		<PrimaryText style="display: flex;">
 			{#each userItems as user}
-				<span class:unread>{user.name || user}</span>
+				<span class="mr-3 mail-list" class:unread>{user.name || user.email}</span>
 			{/each}
 		</PrimaryText>
 		<SecondaryText style="display: flex; align-items: baseline; justify-content: center;">
@@ -87,6 +81,12 @@
 <style>
 	.unread {
 		font-weight: 700;
+	}
+	.mail-list {
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		align-self: unset;
 	}
 	.subject {
 		flex: 1 0 60%;
