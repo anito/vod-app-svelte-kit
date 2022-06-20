@@ -50,7 +50,7 @@
 	import * as api from '$lib/api';
 	import { goto } from '$app/navigation';
 	import { page, session } from '$app/stores';
-	import { getContext, onMount, setContext, tick } from 'svelte';
+	import { getContext, onMount, setContext } from 'svelte';
 	import isMobile from 'ismobilejs';
 	import { Icons } from '$lib/components';
 	import Button, { Icon } from '@smui/button';
@@ -58,7 +58,7 @@
 	import Snackbar, { Actions } from '@smui/snackbar';
 	import { Label } from '@smui/common';
 	import { del as logout, createRedirectSlug, proxyEvent, svg, __ticker__ } from '$lib/utils';
-	import { fabs, settings, theme, ticker, urls, videos, videoEmitter, users } from '$lib/stores';
+	import { fabs, settings, theme, ticker, urls, videos, videoEmitter } from '$lib/stores';
 	import { Modal } from '$lib/components';
 	import { Jumper } from 'svelte-loading-spinners';
 	import {
@@ -363,7 +363,6 @@
 							width="40"
 							height="40"
 							user={$session.user}
-							fallbackImage={person}
 						/>
 					</NavItem>
 				{:else}
@@ -374,7 +373,7 @@
 							dense
 							width="40"
 							height="40"
-							fallbackImage={person}
+							fallback={person}
 						/>
 					</NavItem>
 				{/if}

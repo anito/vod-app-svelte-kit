@@ -4,7 +4,7 @@
 	import { session } from '$app/stores';
 	import { Graphic } from '@smui/list';
 	import { Icon } from '@smui/common';
-	import { getMediaAvatar, placeholderDotComAvatar } from '$lib/utils';
+	import { getMediaAvatar, placeholderDotComAvatar, svg } from '$lib/utils';
 
 	export let user = {};
 	export let dense = '';
@@ -14,10 +14,9 @@
 	export let borderColor = '';
 	export let extendedBorderSize = 0;
 	export let extendedBorderColor = '';
-	export let fallbackImage;
 	export let badge = {};
 	export let style = '';
-
+	export let fallback = '';
 	let src;
 
 	borderSize = !isNaN(borderSize) ? parseInt(borderSize) : borderSize ? 1 : borderSize;
@@ -39,32 +38,32 @@
 
 	$: (async (user) => {
 		let avatar = user?.avatar;
-		if (!avatar) {
-			Promise.resolve(fallbackImage || placeholderDotComAvatar(user?.name)).then(
-				(val) => (src = val)
-			);
+		if (avatar?.src?.startsWith('http')) {
+			Promise.resolve(avatar.src).then((val) => (src = val));
+		} else if (avatar?.src) {
+			await getMediaAvatar(avatar.id, $session.user, {
+				width,
+				height,
+				square: 1,
+				quality: 100
+			}).then((val) => (src = val));
+		} else if (fallback) {
+			Promise.resolve(fallback).then((val) => (src = val));
 		} else {
-			if (avatar.src.startsWith('http')) {
-				Promise.resolve(avatar.src).then((val) => (src = val));
-			} else {
-				await getMediaAvatar(avatar.id, $session.user, {
-					width,
-					height,
-					square: 1,
-					quality: 100
-				}).then((val) => (src = val));
-			}
+			Promise.resolve(placeholderDotComAvatar(user?.name)).then((val) => (src = val));
 		}
 	})(user);
 </script>
 
 <div class="user-graphics-outer" class:dense {style}>
-	<Graphic
-		class="user-graphics"
-		style="display: inline-flex; vertical-align: middle; width: {width}px; height: {height}px; box-shadow: 0px 0px 0px {borderSize}px {borderColor} {extendedBorderSize
-			? `, 0px 0px 0px ${extendedBorderSize}px ${extendedBorderColor}`
-			: ''}; background-image: url('{src}'); background-size: cover;"
-	/>
+	{#if src}
+		<Graphic
+			class="user-graphics"
+			style="display: inline-flex; vertical-align: middle; width: {width}px; height: {height}px; box-shadow: 0px 0px 0px {borderSize}px {borderColor} {extendedBorderSize
+				? `, 0px 0px 0px ${extendedBorderSize}px ${extendedBorderColor}`
+				: ''}; background-image: url('{src}'); background-size: cover;"
+		/>
+	{/if}
 	{#if badge.icon}
 		<div class="badge">
 			<Icon style="color:{badge.color}" class="material-icons">{badge.icon}</Icon>

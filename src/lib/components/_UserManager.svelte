@@ -56,7 +56,6 @@
 	let copyButton = (node) => console.log(node);
 	let setCopyButton = (node) => (copyButton = node);
 	let group_id;
-	let role;
 	let name;
 	let email;
 	let active;
@@ -147,23 +146,12 @@
 		if (detail.success) {
 			const user = detail.data;
 			users.put(user);
-			// have we updated the loggedin users avatar?
-			// since the loggedin user is in a different store (the session store), put the newly uploaded avatar there
-			// this also means we have to persist the new user value(s) in the node server session
+
+			// also reflect the change in the session cookie
 			if ($session.user.id === detail.data.id) {
 				$session.user = detail.data;
 
-				await post('/auth/save', { user, fields: ['avatar'] }).then((res) => {
-					console.log(res);
-				});
-
-				// $session.user.avatar = detail.data
-				// const fields = ['avatar'];
-				// await post('/auth/save', { user: detail.data, fields }).then((res) => {
-				// 	if (res.success) {
-				// 		fields.map((field) => ($session.user[field] = res.data[field]));
-				// 	}
-				// });
+				await post('/auth/save', { user });
 			}
 		}
 		configSnackbar(message);
@@ -176,17 +164,10 @@
 		if (res.success) {
 			users.put(res.data);
 
-			// have we deleted the loggedin users avatar?
-			// tell node-session about it
+			// also reflect the change in the session cookie
 			if ($session.user.id === currentUser.id) {
-				const fields = ['avatar'];
 				await post('/auth/save', {
-					user: currentUser,
-					config: fields
-				}).then((res) => {
-					if (res.success) {
-						fields.map((field) => ($session.user[field] = res.data[field]));
-					}
+					user: currentUser
 				});
 			}
 		}
@@ -215,7 +196,7 @@
 	}
 
 	function copy(user) {
-		({ name, email, active, role, group_id } = { ...user });
+		({ name, email, active, group_id } = { ...user });
 	}
 
 	async function submit(event) {

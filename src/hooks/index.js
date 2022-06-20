@@ -11,7 +11,7 @@ export const handle = handleSession(
 	async ({ event, resolve }) => {
 		dev && (process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0);
 
-		// console.log('HANDLE::locals', event.locals);
+		// console.log('HANDLE::locals', event);
 
 		return await resolve(event);
 	}
