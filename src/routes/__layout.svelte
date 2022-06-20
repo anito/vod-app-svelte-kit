@@ -372,14 +372,7 @@
 					</NavItem>
 				{:else}
 					<NavItem title="Avatar">
-						<UserGraphic
-							borderSize="3"
-							borderColor="--prime"
-							dense
-							width="40"
-							height="40"
-							fallback={person}
-						/>
+						<UserGraphic borderSize="3" borderColor="--prime" dense size="40" fallback={person} />
 					</NavItem>
 				{/if}
 

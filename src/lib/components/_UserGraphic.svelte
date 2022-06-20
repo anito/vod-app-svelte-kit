@@ -5,7 +5,6 @@
 	import { Graphic } from '@smui/list';
 	import { Icon } from '@smui/common';
 	import { getMediaAvatar, placeholderDotComAvatar } from '$lib/utils';
-	import { slim } from '$lib/stores';
 
 	export let user = {};
 	export let dense = '';

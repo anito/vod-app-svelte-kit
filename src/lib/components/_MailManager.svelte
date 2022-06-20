@@ -185,7 +185,6 @@
 			item = $slim.find((user) => user.email === email);
 			items.push(item ? { ...item } : { email });
 		});
-		// console.log(items);
 		return items;
 	};
 
