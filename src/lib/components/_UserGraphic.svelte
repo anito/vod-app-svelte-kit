@@ -60,7 +60,7 @@
 		} else if (fallback) {
 			Promise.resolve(fallback).then((val) => (src = val));
 		} else {
-			Promise.resolve(placeholderDotComAvatar(user.email.split('@').join(' '))).then(
+			Promise.resolve(placeholderDotComAvatar(user.email?.split('@').join(' '))).then(
 				(val) => (src = val)
 			);
 		}
