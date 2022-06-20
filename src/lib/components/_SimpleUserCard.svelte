@@ -18,12 +18,12 @@
 
 <Item class={className} selected={selectionUserId == user.id}>
 	<UserGraphic
-		width="40"
-		height="40"
+		size="40"
 		{user}
 		badge={user.role === 'Administrator' && {
 			icon: 'admin_panel_settings',
-			color: 'rgb(206, 4, 4)'
+			color: 'rgb(206, 4, 4)',
+			position: 'TOP_RIGHT'
 		}}
 		borderSize="1"
 		borderColor="#c5c5c5"

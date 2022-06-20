@@ -335,13 +335,18 @@
 						<div class="avatar-container" on:click={() => avatarMenu.setOpen(true)}>
 							<div bind:this={avatarMenuAnchor} use:Anchor>
 								<UserGraphic
-									width="100"
-									height="100"
+									size="100"
 									user={currentUser}
 									borderSize="4"
 									borderColor="--prime"
 									extendedBorderColor="--back-grid-item"
 									extendedBorderSize="10"
+									badge={currentUser?.role === 'Administrator' && {
+										icon: 'admin_panel_settings',
+										color: 'rgb(206, 4, 4)',
+										position: 'BOTTOM_RIGHT',
+										size: 'large'
+									}}
 								/>
 								<Menu
 									bind:this={avatarMenu}

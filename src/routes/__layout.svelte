@@ -360,12 +360,13 @@
 							borderSize="3"
 							borderColor="--prime"
 							dense
-							width="40"
-							height="40"
+							size="40"
 							user={$session.user}
 							badge={{
-								icon: 'settings_suggest',
-								color: '--prime'
+								icon: 'settings',
+								color: '--prime',
+								size: 'small',
+								position: 'BOTTOM_RIGHT'
 							}}
 						/>
 					</NavItem>
