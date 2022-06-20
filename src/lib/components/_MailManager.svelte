@@ -6,7 +6,7 @@
 	import { onMount, tick, getContext } from 'svelte';
 	import { page, session } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { fabs, slim, sents, inboxes, templates } from '$lib/stores';
+	import { fabs, slim, sents, inboxes, templates, users } from '$lib/stores';
 	import { slugify } from '$lib/utils';
 	import MailViewer from './_MailViewer.svelte';
 	import MailList from './_MailList.svelte';
@@ -94,7 +94,7 @@
 	export let sentData;
 
 	$: isAdmin = $session.role === 'Administrator';
-	$: currentUser = ((id) => $slim.filter((usr) => usr.id === id))(
+	$: currentUser = ((id) => $users.filter((usr) => usr.id === id))(
 		selectionUserId || $session.user?.id
 	)[0];
 	$: selectionUserId && (selectionIndex = -1);
