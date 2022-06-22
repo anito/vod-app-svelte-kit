@@ -142,9 +142,8 @@
 	}
 
 	async function sendMail() {
-		const res = await api.post(
-			'sents/add/',
-			{
+		const res = await api.post('sents/add/', {
+			data: {
 				email: currentUser.email,
 				...working,
 				template: {
@@ -153,8 +152,8 @@
 					data
 				}
 			},
-			{ token: $session.user?.jwt }
-		);
+			token: $session.user?.jwt
+		});
 		if (res.success) {
 			configSnackbar($_('text.message-sent-success'));
 			reloadMails();
