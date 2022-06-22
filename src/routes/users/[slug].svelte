@@ -1,38 +1,46 @@
 <script context="module">
 	import * as api from '$lib/api';
 
+	let state;
+	let sentData = [];
+	let inboxData = [];
 	export async function load({ url, params, session }) {
-		let sentData = [];
-		let inboxData = [];
-		let slimData = [];
+		const slug = params.slug;
+		const token = session.user?.jwt;
+		const constraint = JSON.stringify({
+			slug: params.slug,
+			tab: url.searchParams.get('tab')
+		});
+		if (state !== constraint) {
+			state = constraint;
 
-		// console.log(url.origin, url.pathname);
-		if (url.searchParams.get('tab') === 'mail') {
 			const id = params['slug'];
-			await api
-				.get(`sents/get/${id}`, session.user?.jwt)
-				.then((res) => {
-					res.success && (sentData = res.data);
-				})
-				.catch(() => {});
-			await api
-				.get(`inboxes/get/${id}`, session.user?.jwt)
-				.then((res) => {
-					res.success && (inboxData = res.data);
-				})
-				.catch(() => {});
-			await api
-				.get(`users/simpleindex`, session.user?.jwt)
-				.then((res) => {
-					res.success && (slimData = res.data);
-				})
-				.catch(() => {});
+			if (url.searchParams.get('tab') === 'mail') {
+				await api
+					.get(`sents/get/${id}`, { token, fetch })
+					.then((res) => {
+						res.success && (sentData = res.data);
+					})
+					.catch(() => {});
+				await api
+					.get(`inboxes/get/${id}`, { token, fetch })
+					.then((res) => {
+						res.success && (inboxData = res.data);
+					})
+					.catch(() => {});
+				await api
+					.get(`users/simpleindex`, { token, fetch })
+					.then((res) => {
+						res.success && slim.update(res.data);
+					})
+					.catch(() => {});
+			}
 		}
+
 		return {
 			props: {
 				sentData,
-				inboxData,
-				slimData
+				inboxData
 			}
 		};
 	}
@@ -45,13 +53,13 @@
 	import { onMount } from 'svelte';
 	import { UserManager, TimeManager, MailManager } from '$lib/components';
 	import Button, { Group, Label, Icon } from '@smui/button';
-	import { slim, users, sitename, sents, inboxes } from '$lib/stores';
+	import { slim, users, sitename } from '$lib/stores';
 	import { proxyEvent } from '$lib/utils';
 	import { _ } from 'svelte-i18n';
+	import { goto } from '$app/navigation';
 
 	export let inboxData;
 	export let sentData;
-	export let slimData;
 
 	const TABS = ['user', 'time', 'mail'];
 	const defaultTab = TABS[1];
@@ -63,11 +71,6 @@
 	let currentUser;
 	let username;
 
-	if (slimData.length) {
-		slim.update(slimData);
-	}
-
-	// $: console.log($slim, $sents, $inboxes);
 	$: selectionUserId = $page.params.slug;
 	$: currentUser = ((id) => $users.length && $users.filter((usr) => usr.id === id)[0])(
 		selectionUserId
@@ -84,7 +87,22 @@
 	$: hidden =
 		$session.role !== 'Administrator' ? true : selectionUserId == $session.user?.id ? true : false;
 
-	onMount(() => {});
+	onMount(() => {
+		// if ($session.user) validateURL();
+	});
+
+	function validateURL() {
+		let sessionUser;
+		if (!(sessionUser = $session.user)) return;
+		const slug = $page.params.slug;
+		const user = $users.find((user) => user.id === slug);
+		if (slug !== user?.id) {
+			setTimeout(() => {
+				const pathname = $page.url.pathname.replace(slug, sessionUser.id);
+				goto(`${pathname}${$page.url.search}`);
+			}, 100);
+		}
+	}
 </script>
 
 <svelte:head>

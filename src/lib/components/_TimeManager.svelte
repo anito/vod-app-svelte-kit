@@ -237,7 +237,7 @@
 	}
 
 	function saveUser(data) {
-		return api.put(`users/${selectionUserId}?locale=${$locale}`, data, user?.jwt);
+		return api.put(`users/${selectionUserId}?locale=${$locale}`, { data, token: user?.jwt });
 	}
 
 	function handleSuccess(res, msg) {
@@ -294,78 +294,78 @@
 				{/if}
 			</Header>
 		</div>
-		<List class="video-list" threeLine avatarList singleSelection bind:selectedIndex>
-			{#if ADMIN !== currentRole}
-				{#if userVideos?.length}
-					{#each userVideos as video (video.id)}
-						<SimpleVideoCard
-							isUserVideo
-							threeLine
-							class="user-video video-list-item"
-							on:datapicker={(e) =>
-								toggleDataPicker(
-									e.detail.id,
-									selectionVideoId != e.detail.id || !root.classList.contains('datapicker--open')
-								)}
-							on:itemSelected={itemSelectedHandler}
-							selected={selectionVideoId === video.id}
-							{video}
-							{selectionUserId}
-						>
-							<IconButton
-								class="self-center mr-2"
-								color="primary"
-								on:click={async () => await goto(`/videos/${video.id}`)}
+		{#if currentUser}
+			<List class="video-list" threeLine avatarList singleSelection bind:selectedIndex>
+				{#if ADMIN !== currentRole}
+					{#if userVideos?.length}
+						{#each userVideos as video (video.id)}
+							<SimpleVideoCard
+								isUserVideo
+								threeLine
+								class="user-video video-list-item"
+								on:datapicker={(e) =>
+									toggleDataPicker(
+										e.detail.id,
+										selectionVideoId != e.detail.id || !root.classList.contains('datapicker--open')
+									)}
+								on:itemSelected={itemSelectedHandler}
+								selected={selectionVideoId === video.id}
+								{video}
+								{selectionUserId}
 							>
-								<Icon class="material-icons">smart_display</Icon>
-							</IconButton>
-							{#if ADMIN === $session.role}
-								<Button
-									class="close-action-button button-shaped-round flex self-center"
-									variant="unelevated"
-									on:click={() =>
-										toggleDataPicker(
-											video.id,
-											selectionVideoId != video.id || !root.classList.contains('datapicker--open')
-										)}
-								>
-									<Icon class="material-icons">
-										{isDatapickerOpen && selectionVideoId == video.id
-											? 'close'
-											: 'insert_invitation'}
-									</Icon>
-									<Label>{$_('text.scheduler')}</Label>
-								</Button>
 								<IconButton
-									class="delete-action-button delete ml-2"
-									on:click={(e) => openRemoveDialog(e, video)}
+									class="self-center mr-2"
+									color="primary"
+									on:click={async () => await goto(`/videos/${video.id}`)}
 								>
-									<Icon class="material-icons">remove_circle</Icon>
+									<Icon class="material-icons">smart_display</Icon>
 								</IconButton>
-							{/if}
-						</SimpleVideoCard>
-					{/each}
-				{:else if currentUser}
-					<div class="flex flex-1 flex-col self-center text-center">
-						<div class="m-5">
-							{@html $_('text.user-has-no-videos', {
-								values: { name: username }
-							})}
+								{#if ADMIN === $session.role}
+									<Button
+										class="close-action-button button-shaped-round flex self-center"
+										variant="unelevated"
+										on:click={() =>
+											toggleDataPicker(
+												video.id,
+												selectionVideoId != video.id || !root.classList.contains('datapicker--open')
+											)}
+									>
+										<Icon class="material-icons">
+											{isDatapickerOpen && selectionVideoId == video.id
+												? 'close'
+												: 'insert_invitation'}
+										</Icon>
+										<Label>{$_('text.scheduler')}</Label>
+									</Button>
+									<IconButton
+										class="delete-action-button delete ml-2"
+										on:click={(e) => openRemoveDialog(e, video)}
+									>
+										<Icon class="material-icons">remove_circle</Icon>
+									</IconButton>
+								{/if}
+							</SimpleVideoCard>
+						{/each}
+					{:else if currentUser}
+						<div class="flex flex-1 flex-col self-center text-center">
+							<div class="m-5">
+								{@html $_('text.user-has-no-videos', {
+									values: { name: username }
+								})}
+							</div>
 						</div>
-					</div>
+					{/if}
 				{:else}
-					<li class="flex flex-1 flex-col self-center text-center">
-						<div class="m-5">
-							{$_('text.user-doesnt-exist')}
-						</div>
-					</li>
+					<div class="flex flex-1 flex-col self-center text-center">
+						<div class="m-5">{$_('text.admins-have-full-access')}</div>
+					</div>
 				{/if}
-			{:else}
-				<div class="flex flex-1 flex-col self-center text-center">
-					<div class="m-5">{$_('text.admins-have-full-access')}</div>
-				</div>
-			{/if}
-		</List>
+			</List>
+		{:else}
+			<div class="flex-1 flex-col">
+				<span class="empty-selection no-user-selection">{$_('text.empty-user-selection')}</span>
+			</div>
+		{/if}
 	</Component>
 </div>
 {#if !isDatapickerOpen}
@@ -567,5 +567,17 @@
 	.reasons > :global(*) {
 		display: block;
 		margin: 1em 0;
+	}
+	:global(.no-user-selected .content) {
+		display: flex;
+	}
+	.empty-selection {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 100%;
+		font-size: 2em;
+		font-weight: 600;
+		color: #d8d8d8;
 	}
 </style>

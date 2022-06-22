@@ -31,7 +31,7 @@ import {
 import { getMedia, getExt, getMediaAvatar, getMediaImage, getMediaVideo } from './media';
 import { localeFormat } from './locale-format';
 import { get, post, put, del } from './http';
-import { getAuxSession } from './sessionHelper';
+import { getAuxSession } from './session';
 
 export {
 	convert,

@@ -3,10 +3,6 @@
 	import { post } from '$lib/utils';
 
 	export async function load({ url, session }) {
-		// session.user = null;
-		// session.groups = null;
-		// session.role = null;
-
 		const token = url.searchParams.get('token');
 		if (browser && token) {
 			return await post(`/auth/login`, { token }).then((res) => {
@@ -15,7 +11,11 @@
 				};
 			});
 		}
-		return {};
+		return {
+			props: {
+				sessionExists: !!session.user
+			}
+		};
 	}
 </script>
 
@@ -78,7 +78,6 @@
 		if (sessionExists) {
 			// valid session already exists, jump straight to outroend message
 			outroended = true;
-			console.log('session exists');
 		} else if (data) {
 			// Token login
 			// (for Form login logic is in LoginForm component)

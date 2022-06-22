@@ -1,27 +1,27 @@
 <script context="module">
 	import * as api from '$lib/api';
 
-	export async function load({ url, session }) {
-		let usersData = [],
-			videosData = [],
-			imagesData = [];
-
+	let usersData = [];
+	let videosData = [];
+	let imagesData = [];
+	export async function load({ session }) {
+		const token = session.user?.jwt;
 		await api
-			.get('users', session.user?.jwt)
+			.get('users', { token })
 			.then((res) => {
 				res.success && (usersData = res.data);
 			})
 			.catch(() => {});
 
 		await api
-			.get('videos', session.user?.jwt)
+			.get('videos', { token })
 			.then((res) => {
 				res.success && (videosData = res.data);
 			})
 			.catch(() => {});
 
 		await api
-			.get('images', session.user?.jwt)
+			.get('images', { token })
 			.then((res) => {
 				res.success && (imagesData = res.data);
 			})

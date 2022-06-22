@@ -122,7 +122,7 @@
 	async function decodeJwtResponse(token) {
 		flash.update({ message: $_('text.one-moment') });
 
-		await api.post('users/google_login', {}, token).then(async (res) => {
+		await api.post('users/google_login', { token }).then(async (res) => {
 			if (res.success) {
 				await goto(`/login/redirect/?token=${res.data.token}`);
 			}

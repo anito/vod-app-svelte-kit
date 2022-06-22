@@ -2,7 +2,9 @@
 import { writable } from 'svelte/store';
 
 function createStore() {
-	const { subscribe, update, set } = writable([], () => {});
+	const { subscribe, update, set } = writable([], () => {
+		// first subscriber
+	});
 
 	let findIndexById = (id, items) => {
 		return items.findIndex((itm) => itm.id == id);

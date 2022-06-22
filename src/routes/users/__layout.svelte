@@ -1,39 +1,32 @@
 <script context="module">
 	import * as api from '$lib/api';
+	import { infos, fabs, users, videos, videosAll } from '$lib/stores';
 
-	export async function load({ session }) {
-		let usersData = [],
-			videosData = [],
-			videosAllData = [];
-
+	export async function load({ url, fetch, session }) {
+		const token = session.user?.jwt;
+		const tab = url.searchParams.get('tab');
 		await api
-			.get('users', session.user?.jwt)
+			.get('users', { token, fetch })
 			.then((res) => {
-				res.success && (usersData = res.data);
+				res.success && users.update(res.data);
 			})
 			.catch(() => {});
 
 		await api
-			.get('videos', session.user?.jwt)
+			.get('videos', { token, fetch })
 			.then((res) => {
-				res.success && (videosData = res.data);
+				res.success && videos.update(res.data);
 			})
 			.catch(() => {});
 
 		await api
-			.get('videos/all')
+			.get('videos/all', { token, fetch })
 			.then((res) => {
-				res.success && (videosAllData = res.data);
+				res.success && videosAll.update(res.data);
 			})
 			.catch(() => {});
 
-		return {
-			props: {
-				usersData,
-				videosData,
-				videosAllData
-			}
-		};
+		return {};
 	}
 </script>
 
@@ -43,7 +36,6 @@
 	import { page, session } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { onMount, getContext } from 'svelte';
-	import { infos, fabs, users, videos, videosAll } from '$lib/stores';
 	import Layout from './layout.svelte';
 	import { InfoChips, Legal, SimpleUserCard, PageBar } from '$lib/components';
 	import { proxyEvent } from '$lib/utils';
@@ -54,15 +46,13 @@
 	import List from '@smui/list';
 	import Dialog, { Title as DialogTitle, Content, Actions, InitialFocus } from '@smui/dialog';
 	import { _, locale } from 'svelte-i18n';
+	import { browser } from '$app/env';
+	import userStore from '$lib/stores/userStore';
 
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
 	const defaultTab = 'time';
 
 	$: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1]; // slug (user.id ) in case we start from a specific user e.g. /users/23
-	// from load
-	export let usersData = [];
-	export let videosData = [];
-	export let videosAllData = [];
 
 	let currentUser;
 	let username;
@@ -85,14 +75,13 @@
 
 	const { setFab } = getContext('fab');
 
-	$: user = $session.user;
-	$: users.update(usersData);
-	$: videos.update(videosData);
-	$: videosAll.update(videosAllData);
+	// $: users.update(usersData);
+	// $: videos.update(videosData);
+	// $: videosAll.update(videosAllData);
 	$: tab = $page.url.searchParams.get('tab') || defaultTab;
 	$: active = $page.url.searchParams.get('active');
 	$: isAdmin = $session.role === 'Administrator';
-	$: selectionUserId = $page.params.slug || user?.id;
+	$: selectionUserId = $page.params.slug || $session.user?.id;
 	$: currentUser = ((id) => $users.find((usr) => usr.id === id))(selectionUserId);
 	$: ((usr) => {
 		username = usr?.name;
@@ -150,11 +139,10 @@
 
 	async function generateToken(config = {}) {
 		const { constrained } = { ...config };
-		const res = await api.post(
-			`tokens?locale=${$locale}`,
-			{ user_id: currentUser.id, constrained },
-			user?.jwt
-		);
+		const res = await api.post(`tokens?locale=${$locale}`, {
+			data: { user_id: currentUser.id, constrained },
+			token: $session.user?.jwt
+		});
 
 		let message;
 		if (res?.success) {
@@ -174,7 +162,7 @@
 	}
 
 	async function removeToken() {
-		const res = await api.del(`tokens/${tokenId}`, user?.jwt);
+		const res = await api.del(`tokens/${tokenId}`, $session.user?.jwt);
 		if (res?.success) {
 			users.put({ ...currentUser, ...res.data });
 		}
@@ -184,7 +172,7 @@
 
 	async function activateUser(state = {}) {
 		let data = 'active' in state ? state : { active: !active };
-		const res = await api.put(`users/${selectionUserId}`, data, user?.jwt);
+		const res = await api.put(`users/${selectionUserId}`, { data, token: $session.user?.jwt });
 
 		message = res.message || res.data.message || res.statusText;
 

@@ -11,7 +11,7 @@ settings.subscribe((val) => (base = val.api));
 export function post(req, res) {
 	const user = req.body;
 
-	api.post('users', { user }).then((response) => {
+	api.post('users', { data: { user } }).then((response) => {
 		if (response.user) {
 			req.session.user = response.user;
 		}

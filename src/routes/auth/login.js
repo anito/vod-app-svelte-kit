@@ -12,13 +12,13 @@ export async function post({ locals, request }) {
 	// force JWT-Authentication if token is available
 	if (token) data = void 0;
 
-	return await api.post(`users/login?locale=${lang}`, data, token).then(async (res) => {
+	return await api.post(`users/login?locale=${lang}`, { data, token, fetch }).then(async (res) => {
 		if (res?.success) {
-			const { id, name, jwt, role, groups } = { ...res.data.user, ...res.data };
+			const { id, name, avatar, jwt, role, groups } = { ...res.data.user, ...res.data };
 
 			await locals.session.destroy();
 			await locals.session.set({
-				user: { id, name, jwt },
+				user: { id, name, jwt, avatar },
 				role,
 				groups,
 				locale: lang

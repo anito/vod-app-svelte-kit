@@ -4,6 +4,7 @@
 	import { onMount } from 'svelte';
 	import { sitename } from '$lib/stores';
 	import { UserManager } from '$lib/components';
+	import { _ } from 'svelte-i18n';
 
 	export let tab = 'time';
 
@@ -21,7 +22,7 @@
 </script>
 
 <svelte:head>
-	<title>{$sitename} | Klient hinzufügen</title>
+	<title>{$sitename} | {$_('text.add-user')}</title>
 </svelte:head>
 
 <div class="grid flex-1">

@@ -84,7 +84,6 @@
 		"3-months": "3 Monate",
 		"custom": "benutzerdefiniert",
 		"user-has-no-videos": "Benutzer <strong>{name}</strong> hat keine Videokurse abonniert",
-		"user-doesnt-exist": "Dieser Benutzer existiert nicht",
 		"admins-have-full-access": "Admins haben vollen Zugriff",
 		"user-is-deactivated": "Benutzer ist deaktiviert",
 		"remove-class": "Kurs entfernen",
@@ -202,7 +201,8 @@
 		"goto-github": "Gehe zu GitHub",
 		"welcome-back-message": "Willkommen zurück, {name}",
 		"no-user-found": "Kein Benutzer gefunden",
-		"one-moment": "Einen Moment..."
+		"one-moment": "Einen Moment...",
+		"add-user": "Neuer Benutzer"
 	},
 	"summary": {
 		"copy-link": {

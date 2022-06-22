@@ -144,8 +144,7 @@ export const proxyEvent = function (eventType, detail = {}) {
 	if (typeof window !== 'undefined') {
 		window.dispatchEvent(new CustomEvent(eventType, { detail }));
 	} else {
-		console.log(`Could not dispatch event ${eventType}`);
-		// throw `Could not dispatch event ${eventType}`;
+		throw `Could not dispatch event ${eventType}`;
 	}
 };
 

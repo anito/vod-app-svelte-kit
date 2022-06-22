@@ -159,7 +159,7 @@
 	}
 
 	async function deleteAvatar() {
-		const res = await api.del(`avatars/${currentUser.avatar.id}`, user?.jwt);
+		const res = await api.del(`avatars/${currentUser.avatar.id}`, { token: user?.jwt });
 		message = res.message || res.data.message;
 		if (res.success) {
 			users.put(res.data);
@@ -176,23 +176,25 @@
 	}
 
 	async function activateUser() {
-		await api.put(`users/${selectionUserId}`, { active }, user?.jwt).then((res) => {
-			if (res) {
-				message = res.message || res.data.message || res.statusText;
-				code = (res.data && res.data.code) || res.status;
+		await api
+			.put(`users/${selectionUserId}`, { data: { active }, token: user?.jwt })
+			.then((res) => {
+				if (res) {
+					message = res.message || res.data.message || res.statusText;
+					code = (res.data && res.data.code) || res.status;
 
-				if (res.success) {
-					users.put({ ...currentUser, active });
-				} else if (200 < code && code < 500) {
-					// Sample Users are protected
-					reset();
+					if (res.success) {
+						users.put({ ...currentUser, active });
+					} else if (200 < code && code < 500) {
+						// Sample Users are protected
+						reset();
+					}
+
+					configSnackbar(message);
+					snackbar.isOpen && snackbar.close();
+					snackbar.open();
 				}
-
-				configSnackbar(message);
-				snackbar.isOpen && snackbar.close();
-				snackbar.open();
-			}
-		});
+			});
 	}
 
 	function copy(user) {
@@ -207,17 +209,17 @@
 		switch (mode) {
 			case 'add':
 				data = { active, email, name, password, group_id };
-				res = await api.post(`users/add`, data, user?.jwt);
+				res = await api.post(`users/add`, { data, token: user?.jwt });
 				break;
 			case 'edit':
 				data = { active, email, name, group_id };
 			case 'pass':
 				data = data || { password, token };
-				res = await api.put(`users/${selectionUserId}`, data, user?.jwt);
+				res = await api.put(`users/${selectionUserId}`, { data, token: user?.jwt });
 				break;
 			case 'del':
 				if (!confirm($_('messages.permanently-remove-user', { values: { name } }))) return;
-				res = await api.del(`users/${selectionUserId}`, user?.jwt);
+				res = await api.del(`users/${selectionUserId}`, { token: user?.jwt });
 				break;
 			default:
 				return;
@@ -233,7 +235,7 @@
 				switch (selectedMode) {
 					case 'add':
 						// fetch users and offer to jump to new user
-						const resUsers = await api.get('users', user?.jwt);
+						const resUsers = await api.get('users', { token: user?.jwt });
 						if (resUsers.success) {
 							users.update(resUsers.data);
 							reset();

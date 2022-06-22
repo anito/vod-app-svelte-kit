@@ -5,7 +5,7 @@ import { serialize } from 'cookie';
 export async function post({ locals, request }) {
 	const locale = await request.json();
 
-	return await api.get(`settings/locale?locale=${locale}`).then(async (res) => {
+	return await api.get(`settings/locale?locale=${locale}`, { fetch }).then(async (res) => {
 		if (res.success) {
 			await locals.session.set({
 				...locals.session.data,

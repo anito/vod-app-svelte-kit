@@ -120,7 +120,7 @@
 	});
 
 	$: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
-	$: user = $session.user;
+	$: token = $session.user?.jwt;
 	$: person = svg(svg_manifest.person, $theme.primary);
 	$: logo = svg(svg_manifest.logo_vod, $theme.primary);
 	$: root && ((user) => root.classList.toggle('loggedin', user))(!!$session.user);
@@ -137,7 +137,7 @@
 		}));
 	$: searchParams = $page.url.searchParams.toString();
 	$: search = searchParams && `?${searchParams}`;
-	$: $page.url.pathname && proxyEvent('ticker:extend');
+	$: if (browser) $page.url.pathname && proxyEvent('ticker:extend');
 
 	onMount(() => {
 		root = document.documentElement;
@@ -194,7 +194,7 @@
 	 * @param item
 	 */
 	async function put({ data, show }) {
-		const res = await api.put(`videos/${data.id}`, data, user?.jwt);
+		const res = await api.put(`videos/${data.id}`, { data, token });
 		if (show) {
 			let message = res.message || res.data.message;
 			snackbar.isOpen && snackbar.close();
@@ -205,7 +205,7 @@
 	}
 
 	async function del({ data, show }) {
-		const res = await api.del(`videos/${data.id}`, user?.jwt);
+		const res = await api.del(`videos/${data.id}`, { token });
 		if (res?.success) {
 			if (show) {
 				let message = res.message || res.data.message;

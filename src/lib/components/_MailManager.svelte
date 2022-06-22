@@ -7,7 +7,6 @@
 	import { page, session } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { fabs, slim, sents, inboxes, templates, users } from '$lib/stores';
-	import { slugify } from '$lib/utils';
 	import MailViewer from './_MailViewer.svelte';
 	import MailList from './_MailList.svelte';
 	import MailToolbar from './_MailToolbar.svelte';
@@ -17,7 +16,7 @@
 	import BadgeGroup from './_BadgeGroup.svelte';
 	import Dot from './_Dot.svelte';
 	import { _ } from 'svelte-i18n';
-	import Drawer, { AppContent, Content, Header, Title, Subtitle, Scrim } from '@smui/drawer';
+	import Drawer, { AppContent, Content, Header, Title, Subtitle } from '@smui/drawer';
 	import Button, { Group, Icon } from '@smui/button';
 	import IconButton from '@smui/icon-button';
 	import List, {
@@ -94,15 +93,14 @@
 	export let sentData;
 
 	$: isAdmin = $session.role === 'Administrator';
-	$: currentUser = ((id) => $users.filter((usr) => usr.id === id))(
-		selectionUserId || $session.user?.id
-	)[0];
+	$: currentUser =
+		((id) => $users.filter((usr) => usr.id === id))(selectionUserId)[0] || $session.user;
 	$: selectionUserId && (selectionIndex = -1);
 	$: username = currentUser && currentUser.name;
 	$: totalSents = currentUser && $sents.length;
 	$: totalInboxes = currentUser && $inboxes.length;
 	$: unreadInboxes = currentUser && $inboxes.filter((mail) => !mail.read).length;
-	$: email = currentUser && currentUser.email;
+	$: email = currentUser?.email;
 	$: inboxData && parseInbox();
 	$: sentData && parseSent();
 	$: templateSlug = $page.url.searchParams.get('active') || defaultActive;
@@ -114,6 +112,7 @@
 	$: currentStore =
 		activeMailbox === 'inboxes' ? inboxes : activeMailbox === 'sents' ? sents : inboxes;
 	$: dynamicTemplatePath = (slug) => {
+		currentUser;
 		return createTemplatePath(slug);
 	};
 	$: data = dynamicTemplateData && {
@@ -133,26 +132,12 @@
 		// stringify URLSearchParams before manipulating
 		let params = new URLSearchParams($page.url.searchParams.toString());
 		params.set('active', slug);
-		return `${validateUserPath($page.url.pathname)}?${params.toString()}`;
-	}
-
-	/**
-	 * User ID comes from $page.params.slug
-	 * Fix non-existent users (caused from from a redirect) in case there is no such
-	 * @param path
-	 *
-	 * @returns (String) path
-	 */
-	function validateUserPath(path) {
-		const user = currentUser;
-		const regex = /(\/users\/)([\w-]+)/g;
-		const subst = `$1${user.id}`;
-		return path.replace(regex, subst);
+		return `${$page.url.pathname}?${params.toString()}`;
 	}
 
 	async function gotoActiveBox(active) {
 		if (!active) active = defaultActive;
-		// fix falsy users and append mailbox path to url
+		// fix non-existing page slug and append mailbox path to url
 		return await goto(createTemplatePath(active));
 	}
 
@@ -168,7 +153,7 @@
 					data
 				}
 			},
-			$session.user?.jwt
+			{ token: $session.user?.jwt }
 		);
 		if (res.success) {
 			configSnackbar($_('text.message-sent-success'));
@@ -268,7 +253,7 @@
 	}
 
 	async function getTemplates() {
-		const res = await api.get('templates', $session.user?.jwt);
+		const res = await api.get('templates', { token: $session.user?.jwt, fetch });
 		if (res.success) {
 			templates.update(res.data);
 		}
@@ -291,7 +276,10 @@
 			});
 		});
 		let newTemplate = { name, slug, items };
-		const res = await api.post('templates', { ...newTemplate }, $session.user?.jwt);
+		const res = await api.post('templates', {
+			data: { ...newTemplate },
+			token: $session.user?.jwt
+		});
 		configSnackbar(res.message);
 		if (res.success) {
 			templates.add({ ...newTemplate, id: res.data.id, items: res.data.items });
@@ -307,7 +295,10 @@
 			item.content = content;
 			items.push({ id: item.id, content });
 		});
-		const res = await api.put(`templates/${currentTemplate.id}`, { items }, $session.user?.jwt);
+		const res = await api.put(`templates/${currentTemplate.id}`, {
+			data: { items },
+			token: $session.user?.jwt
+		});
 		configSnackbar(res.message);
 		if (res.success) {
 			templates.put({ ...currentTemplate });
@@ -328,7 +319,10 @@
 		});
 
 		let newTemplate = { name, slug, items };
-		const res = await api.post('templates', { ...newTemplate }, $session.user?.jwt);
+		const res = await api.post('templates', {
+			data: { ...newTemplate },
+			token: $session.user?.jwt
+		});
 		configSnackbar(res.message);
 		if (res.success) {
 			templates.add({ ...newTemplate, id: res.data.id, items: res.data.items });
@@ -338,7 +332,7 @@
 	}
 
 	async function removeTemplate() {
-		const res = await api.del(`templates/${currentTemplate.id}`, $session.user?.jwt);
+		const res = await api.del(`templates/${currentTemplate.id}`, { token: $session.user?.jwt });
 		configSnackbar(res.message);
 		if (res.success) {
 			templates.del(currentTemplate.id);

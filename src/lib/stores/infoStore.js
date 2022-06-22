@@ -8,7 +8,7 @@ function createStore() {
 		let end,
 			active,
 			now = new Date();
-		return usr.videos.reduce((cum, cur) => {
+		return usr.videos?.reduce((cum, cur) => {
 			active = (end = cur._joinData.end) && new Date(end) > now;
 			return cum || active;
 		}, false);

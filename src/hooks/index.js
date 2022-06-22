@@ -19,6 +19,11 @@ export const handle = handleSession(
 
 export const getSession = getAuxSession();
 
+export async function externalFetch(request) {
+	// console.log('#externalFetch', request);
+	request.status = 200;
+	return request;
+}
 // original implementaion deactivated
 export const _getSession = ({ locals }) => {
 	return locals.session.data;

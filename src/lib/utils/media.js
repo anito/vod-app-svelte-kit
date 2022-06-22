@@ -10,13 +10,13 @@ async function uri(id, user, type, options = {}) {
 	}
 	let url = `u/${type}/${id}/${query.length && '?' + query.join('&')}`;
 
-	const res = await api.get(url, user?.jwt);
-
-	if (res && res.success) {
-		return res.data;
-	} else {
-		throw `The Uri method was unable to fetch a mediafile type: ${type.toUpperCase()}, id: ${id}`;
-	}
+	return await api.get(`${url}`, { token: user?.jwt, fetch }).then((res) => {
+		if (res?.success) {
+			return res.data;
+		} else {
+			throw `The Uri method was unable to fetch a mediafile type: ${type.toUpperCase()}, id: ${id}`;
+		}
+	});
 }
 export async function getMedia(type, id, user, { ...options }) {
 	type = type.length && type.toLowerCase();

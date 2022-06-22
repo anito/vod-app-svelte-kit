@@ -84,7 +84,6 @@
 		"3-months": "3 Months",
 		"individually": "individually",
 		"user-has-no-videos": "User <strong>{name}</strong> has not booked any videos",
-		"user-doesnt-exist": "User doesn't exist",
 		"admins-have-full-access": "Admins have full access",
 		"user-is-deactivated": "User is deactivated",
 		"remove-class": "Remove class",
@@ -202,7 +201,8 @@
 		"goto-github": "Go to GitHub",
 		"welcome-back-message": "Welcome back, {name}",
 		"no-user-found": "No user found",
-		"one-moment": "One moment..."
+		"one-moment": "One moment...",
+		"add-user": "Add User"
 	},
 	"summary": {
 		"copy-link": {

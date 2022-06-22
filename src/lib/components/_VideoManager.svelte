@@ -31,6 +31,14 @@
 
 	let snackbar;
 
+	onMount(() => {
+		snackbar = getSnackbar();
+
+		if ($session.role === 'Administrator') {
+			setFab('upload-video');
+		}
+	});
+
 	let openUploader = (type) => {
 		open(
 			MediaUploader,
@@ -55,14 +63,6 @@
 			}
 		);
 	};
-
-	onMount(() => {
-		snackbar = getSnackbar();
-
-		if ($session.role === 'Administrator') {
-			setFab('upload-video');
-		}
-	});
 
 	function uploadDone(e) {
 		let detail = e.detail;
@@ -144,10 +144,8 @@
 			{/each}
 		</div>
 	{:else}
-		<div class="paper-container flex justify-center">
-			<div class="flyer" transition:fly={flyTransitionParams}>
-				<Info class="flex justify-center" title={$_('text.no-content-available')} />
-			</div>
+		<div class="empty-selection no-user-selection">
+			<span style="text-align: center;">{$_('text.no-content-available')}</span>
 		</div>
 	{/if}
 	{#if $fabs === 'upload-video'}
@@ -170,5 +168,14 @@
 	.flyer {
 		min-width: 50%;
 		position: relative;
+	}
+	.empty-selection {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 100%;
+		font-size: 2em;
+		font-weight: 600;
+		color: #d8d8d8;
 	}
 </style>

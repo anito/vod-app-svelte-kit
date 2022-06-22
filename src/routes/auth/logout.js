@@ -10,11 +10,8 @@ export async function del({ locals, request }) {
 		await locals.session.set({ locale });
 	}
 
-	return await api.post(`users/logout?locale=${locale}`).then(async (res) => {
+	return await api.post(`users/logout?locale=${locale}`, { fetch }).then((res) => {
 		return {
-			headers: {
-				'Content-Type': 'application/json'
-			},
 			body: { ...res }
 		};
 	});
