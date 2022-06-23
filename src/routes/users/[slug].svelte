@@ -5,38 +5,29 @@
 	let sentData = [];
 	let inboxData = [];
 	export async function load({ url, params, session }) {
-		const slug = params.slug;
 		const token = session.user?.jwt;
-		const constraint = JSON.stringify({
-			slug: params.slug,
-			tab: url.searchParams.get('tab')
-		});
-		if (state !== constraint) {
-			state = constraint;
 
-			const id = params['slug'];
-			if (url.searchParams.get('tab') === 'mail') {
-				await api
-					.get(`sents/get/${id}`, { token, fetch })
-					.then((res) => {
-						res.success && (sentData = res.data);
-					})
-					.catch(() => {});
-				await api
-					.get(`inboxes/get/${id}`, { token, fetch })
-					.then((res) => {
-						res.success && (inboxData = res.data);
-					})
-					.catch(() => {});
-				await api
-					.get(`users/simpleindex`, { token, fetch })
-					.then((res) => {
-						res.success && slim.update(res.data);
-					})
-					.catch(() => {});
-			}
+		const id = params['slug'];
+		if (url.searchParams.get('tab') === 'mail') {
+			await api
+				.get(`sents/get/${id}`, { token, fetch })
+				.then((res) => {
+					res.success && (sentData = res.data);
+				})
+				.catch(() => {});
+			await api
+				.get(`inboxes/get/${id}`, { token, fetch })
+				.then((res) => {
+					res.success && (inboxData = res.data);
+				})
+				.catch(() => {});
+			await api
+				.get(`users/simpleindex`, { token, fetch })
+				.then((res) => {
+					res.success && slim.update(res.data);
+				})
+				.catch(() => {});
 		}
-
 		return {
 			props: {
 				sentData,
