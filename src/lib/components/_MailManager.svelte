@@ -93,16 +93,15 @@
 	export let mailData;
 
 	$: isAdmin = $session.role === 'Administrator';
-	$: currentUser =
-		((id) => $users.filter((usr) => usr.id === id))(selectionUserId)[0] || $session.user;
+	$: currentUser = ((id) => $users.filter((usr) => usr.id === id))(selectionUserId)[0];
 	$: selectionUserId && (selectionIndex = -1);
-	$: username = currentUser && currentUser.name;
-	$: totalSents = currentUser && $sents.length;
-	$: totalInboxes = currentUser && $inboxes.length;
-	$: unreadInboxes = currentUser && $inboxes.filter((mail) => !mail.read).length;
+	$: username = currentUser?.name;
 	$: email = currentUser?.email;
-	$: mailData && activeMailbox === SENT && parseSent();
-	$: mailData && activeMailbox === INBOX && parseInbox();
+	$: mailData && parseInbox(mailData[INBOX].data);
+	$: mailData && parseSent(mailData[SENT].data);
+	$: totalSents = $sents.length;
+	$: totalInboxes = $inboxes.length;
+	$: unreadInboxes = $inboxes.filter((mail) => !mail.read).length;
 	$: templateSlug = $page.url.searchParams.get('active');
 	$: setActiveList(templateSlug);
 	$: activeTemplate = matchesTemplate(activeMailbox);
@@ -176,10 +175,10 @@
 		return items;
 	};
 
-	function parseInbox() {
+	function parseInbox(data) {
 		let items = [];
 		const user = currentUser;
-		mailData.map((mail) => {
+		data.map((mail) => {
 			let message = JSON.parse(mail.message);
 			items.push({
 				id: mail.id,
@@ -194,11 +193,11 @@
 		inboxes.update(items);
 	}
 
-	function parseSent() {
+	function parseSent(data) {
 		let items = [];
 		let _to;
 		const user = currentUser;
-		mailData.map((mail) => {
+		data.map((mail) => {
 			let message = JSON.parse(mail.message);
 			_to = mail._to.split(';');
 			items.push({
@@ -227,7 +226,10 @@
 		let _selected, _read;
 		_selected = e && e.detail.selected;
 		_read = e && e.detail.read != void 0 ? e.detail.read : !_selected.read;
-		const res = await api.put(`inboxes/${_selected.id}`, { _read }, $session.user?.jwt);
+		const res = await api.put(`inboxes/${_selected.id}`, {
+			data: { _read },
+			token: $session.user?.jwt
+		});
 		if (res.success) {
 			selected = { ..._selected, read: _read };
 			inboxes.put(selected);
@@ -529,7 +531,6 @@
 				<Content>
 					<List>
 						<Item
-							sveltekit:prefetch
 							href={dynamicTemplatePath(INBOX)}
 							on:click={() => (selectionIndex = -1)}
 							activated={activeMailbox === INBOX}
@@ -546,7 +547,6 @@
 							</BadgeGroup>
 						</Item>
 						<Item
-							sveltekit:prefetch
 							href={dynamicTemplatePath(SENT)}
 							on:click={() => (selectionIndex = -1)}
 							activated={activeMailbox === SENT}

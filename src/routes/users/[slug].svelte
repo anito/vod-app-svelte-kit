@@ -4,25 +4,32 @@
 
 	export async function load({ url, params, session }) {
 		const token = session.user?.jwt;
-		const mailbox =
-			(url.searchParams.has('active') && validateQuery(url.searchParams.get('active'))) || null;
+		const mailbox = url.searchParams.has('active') && validateQuery(url.searchParams.get('active'));
 
-		let mailData = [];
+		let mailData = {};
+		const id = params['slug'];
 
 		if (mailbox) {
-			const id = params['slug'];
 			await api
-				.get(`${mailbox}/get/${id}`, { token, fetch })
+				.get(`inboxes/get/${id}`, { token, fetch })
 				.then((res) => {
-					res.success && (mailData = res.data);
+					res.success && (mailData[INBOX] = { id, data: res.data });
 				})
 				.catch(() => {});
+			await api
+				.get(`sents/get/${id}`, { token, fetch })
+				.then((res) => {
+					res.success && (mailData[SENT] = { id, data: res.data });
+				})
+				.catch(() => {});
+
+			return {
+				props: {
+					mailData
+				}
+			};
 		}
-		return {
-			props: {
-				mailData
-			}
-		};
+		return {};
 	}
 
 	function validateQuery(query = '') {

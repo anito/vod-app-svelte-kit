@@ -14,7 +14,7 @@
 	export let sort = 'DESC';
 	export let selectionIndex;
 
-	const mailDevTimeOut = dev ? 800 : 0;
+	const mailDevTimeOut = dev ? 1200 : 600;
 
 	let mailDevTimeOutId;
 	let list;
@@ -86,6 +86,4 @@
 {/await}
 
 <style>
-	.loader {
-	}
 </style>

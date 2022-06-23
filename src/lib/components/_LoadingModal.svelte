@@ -2,6 +2,7 @@
 	// @ts-nocheck
 
 	import { navigating } from '$app/stores';
+	import { afterNavigate, beforeNavigate } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { convert } from '$lib/utils';
 
@@ -9,13 +10,55 @@
 	export let backgroundColor = '#222222';
 	export let opacity = 0.5;
 
+	const SUPRESS_SEARCHES_KEY = 'searches';
+	const SUPPRESS_PATH_KEY = 'paths';
+
+	// configure url pathnames and/or searchParams to supress the LoadinSpinner here
+	const supressSearches = ['active'];
+	const supressPaths = [];
+
 	let root;
+	let disabled = false;
+	let suppress = new Map([
+		[
+			SUPRESS_SEARCHES_KEY,
+			(searches, to) => {
+				searches.forEach((slug) => {
+					if (to.searchParams.has(slug)) {
+						disabled = true;
+						return;
+					}
+				});
+			}
+		],
+		[
+			SUPPRESS_PATH_KEY,
+			(paths, to) => {
+				paths.forEach((slug) => {
+					if (to.pathname.indexOf(slug) != -1) {
+						disabled = true;
+						return;
+					}
+				});
+			}
+		]
+	]);
+
+	beforeNavigate(({ to }) => {
+		disabled = false;
+		suppress.forEach((fn, key) => {
+			key === SUPRESS_SEARCHES_KEY && fn(supressSearches, to);
+			key === SUPPRESS_PATH_KEY && fn(supressPaths, to);
+		});
+	});
+
+	afterNavigate(() => (disabled = false));
 
 	onMount(() => {
 		root = document.documentElement;
 	});
 
-	$: root && setTimeout(() => root.classList.toggle('navigating', $navigating), wait);
+	$: root && !disabled && setTimeout(() => root.classList.toggle('navigating', $navigating), wait);
 	$: _step1 = backgroundColor.slice(0, 7);
 	$: bgColor = `${_step1}${(_step1.length === 7 && opacityToHex) || ''}`;
 	$: opacityToHex = convert.dec2Hex(parseFloat(opacity), true);
