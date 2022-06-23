@@ -1,39 +1,33 @@
 <script context="module">
 	import * as api from '$lib/api';
+	import { INBOX, SENT } from '$lib/utils';
 
-	let state;
-	let sentData = [];
-	let inboxData = [];
 	export async function load({ url, params, session }) {
 		const token = session.user?.jwt;
+		const mailbox = validateQuery(url.searchParams.get('active'));
 
-		const id = params['slug'];
-		if (url.searchParams.get('tab') === 'mail') {
+		let mailData = [];
+
+		if (mailbox) {
+			const id = params['slug'];
 			await api
-				.get(`sents/get/${id}`, { token, fetch })
+				.get(`${mailbox}/get/${id}`, { token, fetch })
 				.then((res) => {
-					res.success && (sentData = res.data);
-				})
-				.catch(() => {});
-			await api
-				.get(`inboxes/get/${id}`, { token, fetch })
-				.then((res) => {
-					res.success && (inboxData = res.data);
-				})
-				.catch(() => {});
-			await api
-				.get(`users/simpleindex`, { token, fetch })
-				.then((res) => {
-					res.success && slim.update(res.data);
+					res.success && (mailData = res.data);
 				})
 				.catch(() => {});
 		}
 		return {
 			props: {
-				sentData,
-				inboxData
+				mailData
 			}
 		};
+	}
+
+	function validateQuery(query) {
+		const mailboxes = [INBOX, SENT];
+		const stripped = query.replace('template:', '');
+		return mailboxes.find((box) => box === stripped);
 	}
 </script>
 
@@ -47,10 +41,8 @@
 	import { slim, users, sitename } from '$lib/stores';
 	import { proxyEvent } from '$lib/utils';
 	import { _ } from 'svelte-i18n';
-	import { goto } from '$app/navigation';
 
-	export let inboxData;
-	export let sentData;
+	export let mailData;
 
 	const TABS = ['user', 'time', 'mail'];
 	const defaultTab = TABS[1];
@@ -79,20 +71,15 @@
 		$session.role !== 'Administrator' ? true : selectionUserId == $session.user?.id ? true : false;
 
 	onMount(() => {
-		// if ($session.user) validateURL();
+		getSimpleUserIndex();
 	});
 
-	function validateURL() {
-		let sessionUser;
-		if (!(sessionUser = $session.user)) return;
-		const slug = $page.params.slug;
-		const user = $users.find((user) => user.id === slug);
-		if (slug !== user?.id) {
-			setTimeout(() => {
-				const pathname = $page.url.pathname.replace(slug, sessionUser.id);
-				goto(`${pathname}${$page.url.search}`);
-			}, 100);
-		}
+	async function getSimpleUserIndex() {
+		await api.get('users/simpleindex', { token: $session.user?.jwt, fetch }).then((res) => {
+			if (res.success) {
+				slim.update(res.data);
+			}
+		});
 	}
 </script>
 
@@ -157,7 +144,7 @@
 		/>
 	{/if}
 	{#if tab === TABS[2]}
-		<MailManager {selectionUserId} {sentData} {inboxData} />
+		<MailManager {selectionUserId} {mailData} />
 	{/if}
 </div>
 

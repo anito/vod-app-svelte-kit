@@ -59,14 +59,14 @@
 	<Menu bind:this={menu} bind:anchorElement={menuAnchor} anchor={false} anchorCorner="BOTTOM_LEFT">
 		<List class="option-list">
 			<SelectionGroup>
-				{#each data as fw}
+				{#each data as framework}
 					<Item
-						on:SMUI:action={() => setFramework(fw)}
-						selected={$frameworks.name === fw.name}
-						disabled={$frameworks.name === fw.name}
+						on:SMUI:action={() => setFramework(framework)}
+						selected={$frameworks.name === framework.name}
+						disabled={$frameworks.name === framework.name}
 					>
-						<SvgIcon name={fw.icon} class="mr-2" />
-						<Text>{fw.name}</Text>
+						<SvgIcon name={framework.icon} class="mr-2" />
+						<Text>{framework.name}</Text>
 						<SelectionGroupIcon>
 							<i class="material-icons">check</i>
 						</SelectionGroupIcon>

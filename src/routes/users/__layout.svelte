@@ -2,9 +2,8 @@
 	import * as api from '$lib/api';
 	import { infos, fabs, users, videos, videosAll } from '$lib/stores';
 
-	export async function load({ url, fetch, session }) {
+	export async function load({ fetch, session }) {
 		const token = session.user?.jwt;
-		const tab = url.searchParams.get('tab');
 		await api
 			.get('users', { token, fetch })
 			.then((res) => {
@@ -46,8 +45,7 @@
 	import List from '@smui/list';
 	import Dialog, { Title as DialogTitle, Content, Actions, InitialFocus } from '@smui/dialog';
 	import { _, locale } from 'svelte-i18n';
-	import { browser } from '$app/env';
-	import userStore from '$lib/stores/userStore';
+	import SvgIcon from '$lib/components/_SvgIcon.svelte';
 
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
 	const defaultTab = 'time';
@@ -75,9 +73,6 @@
 
 	const { setFab } = getContext('fab');
 
-	// $: users.update(usersData);
-	// $: videos.update(videosData);
-	// $: videosAll.update(videosAllData);
 	$: tab = $page.url.searchParams.get('tab') || defaultTab;
 	$: active = $page.url.searchParams.get('active');
 	$: isAdmin = $session.role === 'Administrator';
@@ -108,6 +103,7 @@
 
 	onMount(() => {
 		snackbar = getSnackbar();
+		proxyEvent('ticker:extend');
 
 		let renewed;
 		if ((renewed = localStorage.getItem('renewed')) && renewed == $session.user?.id) {
@@ -289,8 +285,8 @@
 				{/each}
 			</List>
 		{:else}
-			<div class="mt-5 flex justify-center">
-				<div>{$_('text.user-not-found')}</div>
+			<div class="loader flex justify-center">
+				<SvgIcon name="animated-loader-3" size="50" fillColor="var(--prime)" class="mr-2" />
 			</div>
 		{/if}
 	</div>

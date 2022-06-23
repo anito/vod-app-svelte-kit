@@ -1,4 +1,6 @@
 <script>
+// @ts-nocheck
+
 	import { session } from '$app/stores';
 	import { Media } from '@smui/card';
 	import { getExt, getMediaImage } from '$lib/utils';

@@ -17,7 +17,9 @@ import {
 	windowSize,
 	__key__,
 	__session__,
-	__ticker__
+	__ticker__,
+	INBOX,
+	SENT
 } from './helper';
 import {
 	ellapsedFormatted,
@@ -70,5 +72,7 @@ export {
 	windowSize,
 	__key__,
 	__session__,
-	__ticker__
+	__ticker__,
+	INBOX,
+	SENT
 };

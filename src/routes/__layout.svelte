@@ -137,7 +137,7 @@
 		}));
 	$: searchParams = $page.url.searchParams.toString();
 	$: search = searchParams && `?${searchParams}`;
-	$: if (browser) $page.url.pathname && proxyEvent('ticker:extend');
+	// $: if (browser) $page.url.pathname && proxyEvent('ticker:extend');
 
 	onMount(() => {
 		root = document.documentElement;

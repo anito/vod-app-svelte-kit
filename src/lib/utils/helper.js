@@ -215,3 +215,5 @@ String.prototype.add = function (val) {
 export const __key__ = {};
 export const __ticker__ = {};
 export const __session__ = {};
+export const INBOX = 'inboxes';
+export const SENT = 'sents';

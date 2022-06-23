@@ -8,14 +8,21 @@
 <script>
 	// @ts-nocheck
 
+	import { onMount } from 'svelte';
+
+	// @ts-nocheck
+
 	export let name;
+	export let fillColor = 'none';
 	export let size = 20;
 	export { className as class };
 
 	let className = '';
+
+	onMount(() => {});
 </script>
 
-<svg class={className} width={size} height={size}>
+<svg class={className} width={size} height={size} style="fill: {fillColor}">
 	<use xlink:href="#{name}" />
 </svg>
 

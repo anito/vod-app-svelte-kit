@@ -35,6 +35,7 @@
 		Actions,
 		InitialFocus
 	} from '@smui/dialog';
+	import { INBOX, SENT } from '$lib/utils';
 
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
 	const { setFab } = getContext('fab');
@@ -68,7 +69,7 @@
 		}
 	];
 
-	const defaultActive = 'inboxes';
+	const defaultActive = INBOX;
 
 	let sort = 'DESC';
 	let drawer;
@@ -89,8 +90,7 @@
 	let selectionIndex;
 
 	export let selectionUserId = null;
-	export let inboxData;
-	export let sentData;
+	export let mailData;
 
 	$: isAdmin = $session.role === 'Administrator';
 	$: currentUser =
@@ -101,16 +101,15 @@
 	$: totalInboxes = currentUser && $inboxes.length;
 	$: unreadInboxes = currentUser && $inboxes.filter((mail) => !mail.read).length;
 	$: email = currentUser?.email;
-	$: inboxData && parseInbox();
-	$: sentData && parseSent();
+	$: mailData && activeMailbox === SENT && parseSent();
+	$: mailData && activeMailbox === INBOX && parseInbox();
 	$: templateSlug = $page.url.searchParams.get('active') || defaultActive;
 	$: setActiveList(templateSlug);
 	$: activeTemplate = matchesTemplate(activeMailbox);
 	$: dynamicTemplateData = currentUser && getTemplateData(activeTemplate);
 	$: currentTemplate = $templates.find((tmpl) => tmpl.slug === activeTemplate) || null;
 	$: currentTemplate && isAdmin ? setFab('send-mail') : setFab('');
-	$: currentStore =
-		activeMailbox === 'inboxes' ? inboxes : activeMailbox === 'sents' ? sents : inboxes;
+	$: currentStore = activeMailbox === INBOX ? inboxes : activeMailbox === SENT ? sents : inboxes;
 	$: dynamicTemplatePath = (slug) => {
 		currentUser;
 		return createTemplatePath(slug);
@@ -180,7 +179,7 @@
 	function parseInbox() {
 		let items = [];
 		const user = currentUser;
-		inboxData.map((mail) => {
+		mailData.map((mail) => {
 			let message = JSON.parse(mail.message);
 			items.push({
 				id: mail.id,
@@ -199,7 +198,7 @@
 		let items = [];
 		let _to;
 		const user = currentUser;
-		sentData.map((mail) => {
+		mailData.map((mail) => {
 			let message = JSON.parse(mail.message);
 			_to = mail._to.split(';');
 			items.push({
@@ -252,10 +251,11 @@
 	}
 
 	async function getTemplates() {
-		const res = await api.get('templates', { token: $session.user?.jwt, fetch });
-		if (res.success) {
-			templates.update(res.data);
-		}
+		await api.get('templates', { token: $session.user?.jwt, fetch }).then((res) => {
+			if (res.success) {
+				templates.update(res.data);
+			}
+		});
 	}
 
 	function resetTemplate() {
@@ -530,9 +530,9 @@
 					<List>
 						<Item
 							sveltekit:prefetch
-							href={dynamicTemplatePath('inboxes')}
+							href={dynamicTemplatePath(INBOX)}
 							on:click={() => (selectionIndex = -1)}
-							activated={activeMailbox === 'inboxes'}
+							activated={activeMailbox === INBOX}
 						>
 							<Graphic class="material-icons" aria-hidden="true">inbox</Graphic>
 							<Text>{$_('text.inbox')}</Text>
@@ -547,9 +547,9 @@
 						</Item>
 						<Item
 							sveltekit:prefetch
-							href={dynamicTemplatePath('sents')}
+							href={dynamicTemplatePath(SENT)}
 							on:click={() => (selectionIndex = -1)}
-							activated={activeMailbox === 'sents'}
+							activated={activeMailbox === SENT}
 						>
 							<Graphic class="material-icons" aria-hidden="true">send</Graphic>
 							<Text>{$_('text.sent')}</Text>
