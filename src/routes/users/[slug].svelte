@@ -24,7 +24,7 @@
 		};
 	}
 
-	function validateQuery(query) {
+	function validateQuery(query = '') {
 		const mailboxes = [INBOX, SENT];
 		const stripped = query.replace('template:', '');
 		return mailboxes.find((box) => box === stripped);
