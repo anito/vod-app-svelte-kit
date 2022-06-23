@@ -4,7 +4,8 @@
 
 	export async function load({ url, params, session }) {
 		const token = session.user?.jwt;
-		const mailbox = validateQuery(url.searchParams.get('active'));
+		const mailbox =
+			(url.searchParams.has('active') && validateQuery(url.searchParams.get('active'))) || null;
 
 		let mailData = [];
 
@@ -111,7 +112,7 @@
 			<Button
 				class="focus:outline-none focus:shadow-outline"
 				sveltekit:prefetch
-				href="/users/{selectionUserId}?tab=mail"
+				href="/users/{selectionUserId}?tab=mail&active={INBOX}"
 				variant={tab === TABS[2] ? 'unelevated' : 'outlined'}
 			>
 				<Icon class="material-icons">mail</Icon>

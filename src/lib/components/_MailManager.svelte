@@ -103,7 +103,7 @@
 	$: email = currentUser?.email;
 	$: mailData && activeMailbox === SENT && parseSent();
 	$: mailData && activeMailbox === INBOX && parseInbox();
-	$: templateSlug = $page.url.searchParams.get('active') || defaultActive;
+	$: templateSlug = $page.url.searchParams.get('active');
 	$: setActiveList(templateSlug);
 	$: activeTemplate = matchesTemplate(activeMailbox);
 	$: dynamicTemplateData = currentUser && getTemplateData(activeTemplate);
