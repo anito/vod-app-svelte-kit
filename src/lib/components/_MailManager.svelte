@@ -97,8 +97,8 @@
 	$: selectionUserId && (selectionIndex = -1);
 	$: username = currentUser?.name;
 	$: email = currentUser?.email;
-	$: mailData && parseInbox(mailData[INBOX].data);
-	$: mailData && parseSent(mailData[SENT].data);
+	$: mailData?.[INBOX]?.data && parseInbox(mailData[INBOX].data);
+	$: mailData?.[SENT]?.data && parseSent(mailData[SENT].data);
 	$: totalSents = $sents.length;
 	$: totalInboxes = $inboxes.length;
 	$: unreadInboxes = $inboxes.filter((mail) => !mail.read).length;
@@ -560,8 +560,10 @@
 
 						{#if $session.role === 'Administrator'}
 							<Separator />
-							<div class="flex justify-between">
-								<SecondaryText>{$_('text.email-templates')}</SecondaryText>
+							<div class="flex justify-center">
+								<SecondaryText class="p-3" style="align-self: center;"
+									>{$_('text.templates')}</SecondaryText
+								>
 								<Group>
 									<IconButton
 										class="material-icons"

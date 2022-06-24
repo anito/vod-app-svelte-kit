@@ -58,7 +58,7 @@
 		root = document.documentElement;
 	});
 
-	$: root && !disabled && setTimeout(() => root.classList.toggle('navigating', $navigating), wait);
+	$: !disabled && setTimeout(() => root?.classList.toggle('navigating', $navigating), wait);
 	$: _step1 = backgroundColor.slice(0, 7);
 	$: bgColor = `${_step1}${(_step1.length === 7 && opacityToHex) || ''}`;
 	$: opacityToHex = convert.dec2Hex(parseFloat(opacity), true);

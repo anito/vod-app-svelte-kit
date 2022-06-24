@@ -4,14 +4,14 @@
 
 	export async function load({ url, params, session }) {
 		const token = session.user?.jwt;
-		const mailbox = url.searchParams.has('active') && validateQuery(url.searchParams.get('active'));
-
-		let mailData = {};
+		const canLoad = url.searchParams.get('tab') === 'mail';
 		const id = params['slug'];
 
-		if (mailbox) {
+		let mailData = {};
+
+		if (canLoad) {
 			await api
-				.get(`inboxes/get/${id}`, { token, fetch })
+				.get(`inboxes/get/${id}`, { token })
 				.then((res) => {
 					res.success && (mailData[INBOX] = { id, data: res.data });
 				})
@@ -22,7 +22,6 @@
 					res.success && (mailData[SENT] = { id, data: res.data });
 				})
 				.catch(() => {});
-
 			return {
 				props: {
 					mailData

@@ -1,6 +1,7 @@
 <script>
 	// @ts-nocheck
 
+	import { navigating } from '$app/stores';
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { inboxes, sents } from '$lib/stores';
 	import List from '@smui/list';
@@ -14,27 +15,14 @@
 	export let sort = 'DESC';
 	export let selectionIndex;
 
-	const mailDevTimeOut = dev ? 1200 : 600;
-
-	let mailDevTimeOutId;
 	let list;
 	let focusItemAtIndex;
 	let items;
 
 	$: sortBit = sort === 'DESC' ? -1 : sort === 'ASC' ? 1 : 0;
-	$: _mails = (async (type) => {
+	$: _mails = ((type) => {
 		let m = type === 'inboxes' ? $inboxes : type === 'sents' ? $sents : [];
-		return new Promise((resolve) => {
-			clearTimeout(mailDevTimeOutId);
-			mailDevTimeOutId = setTimeout(
-				() => resolve(m.sort((a, b) => sortBit * (new Date(a.created) - new Date(b.created)))),
-				mailDevTimeOut
-			);
-		})
-			.then((res) => {
-				return res;
-			})
-			.then((res) => res);
+		return m.sort((a, b) => sortBit * (new Date(a.created) - new Date(b.created)));
 	})(type);
 
 	onMount(() => {});
@@ -58,11 +46,11 @@
 	}
 </script>
 
-{#await _mails}
+{#if $navigating}
 	<div class="loader flex justify-center">
 		<SvgIcon name="animated-loader-3" size="50" fillColor="var(--prime)" class="mr-2" />
 	</div>
-{:then _mails}
+{:else}
 	<List
 		bind:this={list}
 		class="mails-list {type}"
@@ -83,7 +71,7 @@
 			/>
 		{/each}
 	</List>
-{/await}
+{/if}
 
 <style>
 </style>
