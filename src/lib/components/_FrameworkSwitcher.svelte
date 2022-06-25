@@ -19,7 +19,7 @@
 			name: 'Sapper',
 			icon: 'sapper-icon',
 			git: 'https://github.com/anito/vod-app',
-			host: dev ? 'http://localhost:3001' : 'https://vod.doojoo.de'
+			host: dev ? 'http://localhost:3001' : 'https://doojoo.de'
 		},
 		{
 			name: 'SvelteKit',
