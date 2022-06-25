@@ -12,8 +12,8 @@
 
 	// export let mailData;
 
-	const TABS = ['user', 'time', 'mail'];
-	const defaultTab = TABS[1];
+	const TABS = ['time', 'user', 'mail'];
+	const defaultTab = TABS[2];
 
 	let userExpires;
 	let hasExpired;
