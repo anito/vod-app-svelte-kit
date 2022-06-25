@@ -4,9 +4,11 @@
 	import { createEventDispatcher } from 'svelte';
 	import { Group } from '@smui/button';
 	import IconButton from '@smui/icon-button';
+	import { proxyEvent } from '$lib/utils';
 
-	export let selected = false;
+	export let selection;
 	export let type;
+	export let sort;
 
 	const dispatch = createEventDispatcher();
 </script>
@@ -15,7 +17,7 @@
 	<Group variant="outlined">
 		<IconButton
 			class="material-icons"
-			on:click={() => dispatch('mail:reload', { selected })}
+			on:click={() => dispatch('mail:reload', { selection })}
 			variant="outlined"
 			color="primary"
 		>
@@ -28,30 +30,30 @@
 			color="primary"
 			disabled={!type}
 		>
-			sort
+			{sort === 'DESC' ? 'sort' : sort === 'ASC' ? 'sort' : 'sort'}
 		</IconButton>
 	</Group>
 	<Group variant="outlined">
 		<IconButton
 			class="material-icons"
-			on:click={() => dispatch('mail:toggleRead', { selected })}
+			on:click={() => dispatch('mail:toggleRead', { selection })}
 			variant="outlined"
 			color="primary"
-			disabled={!selected || type === 'sents'}
+			disabled={!selection || type === 'sents'}
 			>{type === 'sents'
 				? 'mail'
 				: type === 'inboxes'
-				? selected && selected.read
+				? selection && selection._read
 					? 'mark_email_unread'
 					: 'mark_email_read'
 				: ''}
 		</IconButton>
 		<IconButton
 			class="material-icons"
-			on:click={() => dispatch('mail:delete', { selected })}
+			on:click={() => dispatch('mail:delete', { selection })}
 			variant="outlined"
 			color="primary"
-			disabled={!selected}
+			disabled={!selection}
 			>delete
 		</IconButton>
 	</Group>

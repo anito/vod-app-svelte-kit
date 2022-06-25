@@ -1,40 +1,40 @@
 <script>
-// @ts-nocheck
+	// @ts-nocheck
 
-  import { _, locale } from 'svelte-i18n';
+	import { _, locale } from 'svelte-i18n';
 
-  export let selected;
+	export let selection;
 
-  let iframe;
+	let iframe;
 
-  $: message = ((sel) => (sel && sel.message) || false)(selected);
-  $: message && setTimeout(() => renderMail(message), 100);
+	$: message = ((sel) => (sel && sel.message) || false)(selection);
+	$: message && setTimeout(() => renderMail(message), 100);
 
-  function renderMail(message = '') {
-    if (iframe) {
-      iframe.contentDocument.open();
-      iframe.contentDocument.write(message);
-      iframe.contentDocument.close();
-    }
-  }
+	function renderMail(message = '') {
+		if (iframe) {
+			iframe.contentDocument.open();
+			iframe.contentDocument.write(message);
+			iframe.contentDocument.close();
+		}
+	}
 </script>
 
 {#if message}
-  <iframe title="Sent Mail" class="" style="width:100%; height: 100%;" bind:this={iframe} />
+	<iframe title="Sent Mail" class="" style="width:100%; height: 100%;" bind:this={iframe} />
 {:else}
-  <div class="empty-selection">
-    <span style="text-align: center;">{$_('text.empty-email-selection')}</span>
-  </div>
+	<div class="empty-selection">
+		<span style="text-align: center;">{$_('text.empty-email-selection')}</span>
+	</div>
 {/if}
 
 <style>
-  .empty-selection {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    font-size: 2em;
-    font-weight: 600;
-    color: #d8d8d8;
-  }
+	.empty-selection {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 100%;
+		font-size: 2em;
+		font-weight: 600;
+		color: #d8d8d8;
+	}
 </style>

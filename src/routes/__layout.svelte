@@ -58,7 +58,17 @@
 	import Snackbar, { Actions } from '@smui/snackbar';
 	import { Label } from '@smui/common';
 	import { del as logout, createRedirectSlug, proxyEvent, svg, __ticker__ } from '$lib/utils';
-	import { fabs, settings, theme, ticker, urls, videos, videoEmitter } from '$lib/stores';
+	import {
+		fabs,
+		settings,
+		theme,
+		ticker,
+		urls,
+		videos,
+		videoEmitter,
+		inboxes,
+		sents
+	} from '$lib/stores';
 	import { Modal } from '$lib/components';
 	import { Jumper } from 'svelte-loading-spinners';
 	import {

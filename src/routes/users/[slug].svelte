@@ -1,55 +1,16 @@
-<script context="module">
-	import * as api from '$lib/api';
-	import { INBOX, SENT } from '$lib/utils';
-
-	export async function load({ url, params, session }) {
-		const token = session.user?.jwt;
-		const canLoad = url.searchParams.get('tab') === 'mail';
-		const id = params['slug'];
-
-		let mailData = {};
-
-		if (canLoad) {
-			await api
-				.get(`inboxes/get/${id}`, { token })
-				.then((res) => {
-					res.success && (mailData[INBOX] = { id, data: res.data });
-				})
-				.catch(() => {});
-			await api
-				.get(`sents/get/${id}`, { token, fetch })
-				.then((res) => {
-					res.success && (mailData[SENT] = { id, data: res.data });
-				})
-				.catch(() => {});
-			return {
-				props: {
-					mailData
-				}
-			};
-		}
-		return {};
-	}
-
-	function validateQuery(query = '') {
-		const mailboxes = [INBOX, SENT];
-		const stripped = query.replace('template:', '');
-		return mailboxes.find((box) => box === stripped);
-	}
-</script>
-
 <script>
 	// @ts-nocheck
 
+	import * as api from '$lib/api';
 	import { page, session } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { UserManager, TimeManager, MailManager } from '$lib/components';
 	import Button, { Group, Label, Icon } from '@smui/button';
-	import { slim, users, sitename } from '$lib/stores';
-	import { proxyEvent } from '$lib/utils';
+	import { users, slim, sitename } from '$lib/stores';
+	import { proxyEvent, INBOX } from '$lib/utils';
 	import { _ } from 'svelte-i18n';
 
-	export let mailData;
+	// export let mailData;
 
 	const TABS = ['user', 'time', 'mail'];
 	const defaultTab = TABS[1];
@@ -77,9 +38,9 @@
 	$: hidden =
 		$session.role !== 'Administrator' ? true : selectionUserId == $session.user?.id ? true : false;
 
-	onMount(() => {
-		getSimpleUserIndex();
-	});
+	// to get this ASAP make that SSR and (don't put it in onMount)
+	// we need to have it available before MailList wants it
+	getSimpleUserIndex();
 
 	async function getSimpleUserIndex() {
 		await api.get('users/simpleindex', { token: $session.user?.jwt, fetch }).then((res) => {
@@ -91,7 +52,7 @@
 </script>
 
 <svelte:head>
-	<title>{$sitename} | User {username}</title>
+	<title>{$sitename} | {$_('text.user')} {username}</title>
 </svelte:head>
 
 <div class="flex flex-1 user-grid inner-grid {tab}">
@@ -151,7 +112,7 @@
 		/>
 	{/if}
 	{#if tab === TABS[2]}
-		<MailManager {selectionUserId} {mailData} />
+		<MailManager {selectionUserId} />
 	{/if}
 </div>
 

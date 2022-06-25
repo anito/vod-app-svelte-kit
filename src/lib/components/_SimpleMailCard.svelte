@@ -2,13 +2,13 @@
 	// @ts-nocheck
 
 	import './_meta.scss';
-	import { localeFormat, isToday } from '$lib/utils';
+	import { localeFormat, isToday, INBOX, SENT } from '$lib/utils';
 	import { onMount, onDestroy, createEventDispatcher } from 'svelte';
 	import UserGraphic from './_UserGraphic.svelte';
 	import { Item, Text, PrimaryText, SecondaryText } from '@smui/list';
 	import { locale } from 'svelte-i18n';
 
-	export let selected = null;
+	export let selection = null;
 	export let mail;
 	export let type;
 	export { className as class };
@@ -18,9 +18,8 @@
 	let userItems = [];
 	let created = '';
 	let className = '';
-	let zIndex = 10;
 
-	$: unread = !mail.read;
+	$: unread = !mail._read;
 	$: dateFormat =
 		$locale.indexOf('de') != -1
 			? isToday(mail.created)
@@ -31,27 +30,29 @@
 			: 'yy-MM-dd hh:mm a';
 
 	$: created = localeFormat(new Date(mail.created), dateFormat);
+	$: mail?.id === selection?.id && (selection = mail);
 
 	onMount(() => {
-		userItems = type === 'inboxes' ? mail.from : type === 'sents' ? mail.to : [];
+		userItems = type === INBOX ? mail.from : type === SENT ? mail.to : [];
 	});
+
 	onDestroy(() => {
-		selected = null;
+		selection = null;
 		userItems = [];
 		dispatch('mail:destroyed');
 	});
 
 	function focusHandler(e) {
-		selected = mail;
-		if (type === 'inboxes') {
-			unread && dispatch('mail:toggleRead', { selected, read: true });
+		selection = mail;
+		if (type === INBOX) {
+			unread && dispatch('mail:toggleRead', { selection, _read: true });
 		}
 	}
 
 	function keydownHandler(e) {
 		const isBackspace = e.key === 'Backspace' || e.keyCode === 8;
 		if (isBackspace) {
-			dispatch('mail:delete', { selected });
+			dispatch('mail:delete', { selection });
 		}
 	}
 </script>
@@ -59,8 +60,8 @@
 <Item
 	on:focus={(e) => focusHandler(e)}
 	on:keydown={(e) => keydownHandler(e)}
-	class="{className} {mail.read ? 'read' : 'unread'}"
-	selected={selected && selected.id === mail.id}
+	class="{className} {mail._read ? 'read' : 'unread'}"
+	selected={selection?.id === mail.id}
 	><div class="staggered">
 		{#each userItems as user, i}
 			<UserGraphic size="30" {user} borderSize style={`z-index: ${10 - i};`} />

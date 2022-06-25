@@ -3,10 +3,10 @@
 
 	import './_drawer.scss';
 	import * as api from '$lib/api';
-	import { onMount, tick, getContext } from 'svelte';
+	import { onMount, tick, getContext, createEventDispatcher } from 'svelte';
 	import { page, session } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { fabs, slim, sents, inboxes, templates, users } from '$lib/stores';
+	import { fabs, sents, inboxes, templates, users } from '$lib/stores';
 	import MailViewer from './_MailViewer.svelte';
 	import MailList from './_MailList.svelte';
 	import MailToolbar from './_MailToolbar.svelte';
@@ -35,7 +35,8 @@
 		Actions,
 		InitialFocus
 	} from '@smui/dialog';
-	import { INBOX, SENT } from '$lib/utils';
+	import { INBOX, proxyEvent, SENT } from '$lib/utils';
+	import { get } from 'svelte/store';
 
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
 	const { setFab } = getContext('fab');
@@ -70,13 +71,15 @@
 	];
 
 	const defaultActive = INBOX;
+	const mailboxes = [INBOX, SENT];
+	const getStoreByMailbox = (name) => (name === INBOX ? inboxes : name === SENT ? sents : null);
 
 	let sort = 'DESC';
 	let drawer;
 	let snackbar;
 	let drawerOpen;
 	let drawerOpenOnMount = true;
-	let selected;
+	let selection;
 	let unreadInboxes = 0;
 	let activeTemplate = false;
 	let canSave;
@@ -86,29 +89,32 @@
 	let editable;
 	let editor = {};
 	let pendingActiveTemplate;
-	let activeMailbox;
+	let activeListItem;
 	let selectionIndex;
+	let totalInboxes = 0;
+	let totalSents = 0;
+	let sentData = [];
+	let inboxData = [];
+	let currentSlug;
 
 	export let selectionUserId = null;
-	export let mailData;
+
+	const dispatch = createEventDispatcher();
 
 	$: isAdmin = $session.role === 'Administrator';
 	$: currentUser = ((id) => $users.filter((usr) => usr.id === id))(selectionUserId)[0];
 	$: selectionUserId && (selectionIndex = -1);
 	$: username = currentUser?.name;
 	$: email = currentUser?.email;
-	$: mailData?.[INBOX]?.data && parseInbox(mailData[INBOX].data);
-	$: mailData?.[SENT]?.data && parseSent(mailData[SENT].data);
 	$: totalSents = $sents.length;
 	$: totalInboxes = $inboxes.length;
-	$: unreadInboxes = $inboxes.filter((mail) => !mail.read).length;
-	$: templateSlug = $page.url.searchParams.get('active');
-	$: setActiveList(templateSlug);
-	$: activeTemplate = matchesTemplate(activeMailbox);
+	$: unreadInboxes = $inboxes.filter((mail) => !mail._read).length;
+	$: activeItem = $page.url.searchParams.get('active');
+	$: setActiveListItem(activeItem);
+	$: activeTemplate = matchesTemplate(activeListItem);
 	$: dynamicTemplateData = currentUser && getTemplateData(activeTemplate);
 	$: currentTemplate = $templates.find((tmpl) => tmpl.slug === activeTemplate) || null;
 	$: currentTemplate && isAdmin ? setFab('send-mail') : setFab('');
-	$: currentStore = activeMailbox === INBOX ? inboxes : activeMailbox === SENT ? sents : inboxes;
 	$: dynamicTemplatePath = (slug) => {
 		currentUser;
 		return createTemplatePath(slug);
@@ -117,6 +123,13 @@
 		...dynamicTemplateData,
 		...dynamicTemplateData.validate(currentTemplate)
 	};
+	$: currentSlug = (currentSlug !== $page.params.slug && $page.params.slug) || currentSlug;
+	$: inboxData = currentSlug && getMail(INBOX);
+	$: sentData = currentSlug && getMail(SENT);
+	$: mailData = ((active) => (active === INBOX ? inboxData : active === SENT ? sentData : []))(
+		activeItem
+	);
+	$: currentStore = getStoreByMailbox(activeItem);
 
 	onMount(async () => {
 		snackbar = getSnackbar();
@@ -125,18 +138,23 @@
 		drawerOpen = drawerOpenOnMount;
 	});
 
-	function createTemplatePath(slug) {
-		// don't operate directly on $page since its reactivity causes infinite load requests!
-		// stringify URLSearchParams before manipulating
-		let params = new URLSearchParams($page.url.searchParams.toString());
-		params.set('active', slug);
-		return `${$page.url.pathname}?${params.toString()}`;
-	}
-
-	async function gotoActiveBox(active) {
-		if (!active) active = defaultActive;
-		// fix non-existing page slug and append mailbox path to url
-		return await goto(createTemplatePath(active));
+	async function getMail(name) {
+		name = validateMailboxName(name);
+		if (!name)
+			return new Promise((res, rej) => rej(`The mailbox "${name}" doesn'nt exist`)).catch(
+				(reason) => console.log(reason)
+			);
+		const id = $page.params.slug;
+		return await api
+			.get(`${name}/get/${id}`, { token: $session.user?.jwt, fetch })
+			.then((res) => {
+				if (res.success) {
+					let store = getStoreByMailbox(name);
+					if (store) store.update(res.data);
+					return res.data;
+				}
+			})
+			.catch((reason) => console.log(reason));
 	}
 
 	async function sendMail() {
@@ -154,98 +172,81 @@
 		});
 		if (res.success) {
 			configSnackbar($_('text.message-sent-success'));
-			reloadMails();
+			refreshMailData();
 		} else {
 			configSnackbar($_('text.message-sent-failed'));
 		}
 		snackbar.open();
 	}
 
-	/**
-	 * Find the user for each email address in the email
-	 * @param addressees
-	 */
-	const getAddressees = (addressees) => {
-		let item,
-			items = [];
-		addressees.forEach((email) => {
-			item = $slim.find((user) => user.email === email);
-			items.push(item ? { ...item } : { email });
-		});
-		return items;
-	};
-
-	function parseInbox(data) {
-		let items = [];
-		const user = currentUser;
-		data.map((mail) => {
-			let message = JSON.parse(mail.message);
-			items.push({
-				id: mail.id,
-				from: getAddressees([mail._from]),
-				to: [user],
-				message: message.message,
-				subject: message.subject,
-				read: mail._read,
-				created: mail.created
-			});
-		});
-		inboxes.update(items);
+	function validateMailboxName(name) {
+		if (!name) return;
+		const stripped = name.replace('template:', '');
+		return mailboxes.find((box) => box === stripped);
 	}
 
-	function parseSent(data) {
-		let items = [];
-		let _to;
-		const user = currentUser;
-		data.map((mail) => {
-			let message = JSON.parse(mail.message);
-			_to = mail._to.split(';');
-			items.push({
-				id: mail.id,
-				from: [user],
-				to: getAddressees(_to),
-				message: message.message,
-				subject: message.subject,
-				read: true,
-				created: mail.created
-			});
-		});
-		sents.update(items);
+	function createTemplatePath(slug) {
+		// don't operate directly on $page since its reactive and causes infinite load requests!
+		// instead stringify URLSearchParams before manipulating
+		let params = new URLSearchParams($page.url.searchParams.toString());
+		params.set('active', slug);
+		return `${$page.url.pathname}?${params.toString()}`;
 	}
 
-	function setActiveList(value) {
-		if (activeMailbox != matchesTemplate(value) && canSave) {
+	async function gotoActiveBox(active) {
+		if (!active) active = defaultActive;
+		// fix non-existing page slug and append mailbox path to url
+		return await goto(createTemplatePath(active));
+	}
+
+	function setActiveListItem(value) {
+		if (activeListItem != matchesTemplate(value) && canSave) {
 			pendingActiveTemplate = value;
 			unsavedChangesDialog.setOpen(true);
 		} else {
-			activeMailbox = value;
+			activeListItem = value;
 		}
 	}
 
 	async function toggleRead(e) {
-		let _selected, _read;
-		_selected = e && e.detail.selected;
-		_read = e && e.detail.read != void 0 ? e.detail.read : !_selected.read;
-		const res = await api.put(`inboxes/${_selected.id}`, {
-			data: { _read },
-			token: $session.user?.jwt
+		let selected = e.detail.selection;
+		let _read = e.detail._read || !selected._read;
+		await api
+			.put(`${INBOX}/${selected.id}`, {
+				data: { _read },
+				token: $session.user?.jwt,
+				fetch
+			})
+			.then((res) => {
+				if (res.success) {
+					updateStoreFromOtherItem(inboxes, { ...selected, _read }, '_read');
+				}
+			});
+	}
+
+	function updateStoreFromOtherItem(store, otherItem, keys) {
+		if (!keys) return;
+		if (typeof keys === 'string') keys = [keys];
+		let newItem = {};
+		let storeItem = get(store).find((item) => item.id === otherItem.id);
+		keys.forEach((key) => {
+			newItem[key] = otherItem[key];
 		});
-		if (res.success) {
-			selected = { ..._selected, read: _read };
-			inboxes.put(selected);
-		}
+		inboxes.put({ ...storeItem, ...newItem });
 	}
 
 	async function deleteMail(e) {
-		let _selected = e.detail.selected;
-		const res = await api.del(`${activeMailbox}/${_selected.id}`, $session.user?.jwt);
-		if (res.success) {
-			currentStore.del(_selected.id);
-		}
+		const id = e.detail.selection?.id;
+		if (!id) return;
+		await api.del(`${activeListItem}/${id}`, { token: $session.user?.jwt, fetch }).then((res) => {
+			if (res.success) {
+				currentStore?.del(id);
+			}
+		});
 	}
 
-	function reloadMails() {
-		currentUser = currentUser;
+	function refreshMailData() {
+		currentSlug = '';
 	}
 
 	function toggleSortByDate() {
@@ -351,7 +352,7 @@
 
 	function unsavedChangesDialogCloseHandler(e) {
 		if (e.detail.action === 'discard') {
-			pendingActiveTemplate && (activeMailbox = pendingActiveTemplate);
+			pendingActiveTemplate && (activeListItem = pendingActiveTemplate);
 			pendingActiveTemplate = void 0;
 		}
 	}
@@ -533,7 +534,7 @@
 						<Item
 							href={dynamicTemplatePath(INBOX)}
 							on:click={() => (selectionIndex = -1)}
-							activated={activeMailbox === INBOX}
+							activated={activeListItem === INBOX}
 						>
 							<Graphic class="material-icons" aria-hidden="true">inbox</Graphic>
 							<Text>{$_('text.inbox')}</Text>
@@ -549,7 +550,7 @@
 						<Item
 							href={dynamicTemplatePath(SENT)}
 							on:click={() => (selectionIndex = -1)}
-							activated={activeMailbox === SENT}
+							activated={activeListItem === SENT}
 						>
 							<Graphic class="material-icons" aria-hidden="true">send</Graphic>
 							<Text>{$_('text.sent')}</Text>
@@ -601,7 +602,7 @@
 								<Item
 									sveltekit:prefetch
 									href={dynamicTemplatePath(templateStringFromSlug(template.slug))}
-									activated={activeMailbox === `template:${template.slug}`}
+									activated={activeListItem === `template:${template.slug}`}
 									on:mouseover={(e) => overEditable(e)}
 									on:mouseleave={(e) => leaveEditable(e)}
 								>
@@ -655,9 +656,10 @@
 								/>
 							{:else}
 								<MailToolbar
-									bind:selected
-									type={activeMailbox}
-									on:mail:reload={(e) => reloadMails(e)}
+									bind:selection
+									type={activeListItem}
+									{sort}
+									on:mail:reload={(e) => refreshMailData(e)}
 									on:mail:toggleRead={(e) => toggleRead(e)}
 									on:mail:delete={(e) => deleteMail(e)}
 									on:mail:sort={(e) => toggleSortByDate(e)}
@@ -685,16 +687,18 @@
 						{:else}
 							<div class="grid-item grid-mail-list">
 								<MailList
-									on:mail:delete={(e) => deleteMail(e)}
-									on:mail:toggleRead={(e) => toggleRead(e)}
-									bind:selected
+									on:mail:delete={deleteMail}
+									on:mail:toggleRead={toggleRead}
+									bind:selection
 									bind:selectionIndex
-									type={activeMailbox}
+									type={activeListItem}
+									{mailData}
+									{currentStore}
 									{sort}
 								/>
 							</div>
 							<div class="grid-item grid-mail-viewer">
-								<MailViewer {selected} />
+								<MailViewer {selection} />
 							</div>
 						{/if}
 					</div>
