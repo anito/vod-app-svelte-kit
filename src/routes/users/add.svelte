@@ -12,7 +12,7 @@
 
 	let root;
 
-	$: tab = ((t) => TABS.find((itm) => itm === t) || TABS[0])(tab);
+	$: tab = ((t) => TABS.find((itm) => itm === t) || TABS[1])(tab);
 
 	onMount(() => {
 		root = document.documentElement;

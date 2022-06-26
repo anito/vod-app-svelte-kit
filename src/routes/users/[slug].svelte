@@ -14,7 +14,6 @@
 	// export let mailData;
 
 	const TABS = ['time', 'user', 'mail'];
-	const defaultTab = TABS[2];
 
 	let userExpires;
 	let hasExpired;
@@ -72,7 +71,7 @@
 				class="focus:outline-none focus:shadow-outline"
 				sveltekit:prefetch
 				href="/users/{selectionUserId}?tab=time"
-				variant={tab === TABS[1] ? 'unelevated' : 'outlined'}
+				variant={tab === TABS[0] ? 'unelevated' : 'outlined'}
 			>
 				<Icon class="material-icons">video_settings</Icon>
 				<Label>{$_('text.classes')}</Label>
@@ -81,7 +80,7 @@
 				class="focus:outline-none focus:shadow-outline"
 				sveltekit:prefetch
 				href="/users/{selectionUserId}?tab=user"
-				variant={tab === TABS[0] ? 'unelevated' : 'outlined'}
+				variant={tab === TABS[1] ? 'unelevated' : 'outlined'}
 			>
 				<Icon class="material-icons">account_circle</Icon>
 				<Label>{$_('text.user-profil')}</Label>
@@ -107,10 +106,10 @@
 			</Button>
 		</div>
 	</div>
-	{#if tab === TABS[1]}
+	{#if tab === TABS[0]}
 		<TimeManager {selectionUserId} />
 	{/if}
-	{#if tab === TABS[0]}
+	{#if tab === TABS[1]}
 		<UserManager
 			on:user:Redirect
 			on:token:Generate
@@ -137,8 +136,8 @@
 	:global(.user).user-grid {
 		grid-template-areas:
 			'toolbar toolbar'
-			'one two';
-		grid-template-columns: 1fr;
+			'one one';
+		grid-template-columns: 1fr 1fr;
 	}
 	:global(.time).user-grid {
 		grid-template-areas:
