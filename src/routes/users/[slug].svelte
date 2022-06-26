@@ -44,11 +44,11 @@
 	getSimpleUserIndex();
 
 	onMount(() => {
-		if (!tab || (tab === 'mail' && !active)) {
-			setTimeout(() => {
-				goto(`${$page.url.pathname}?tab=mail&active=${INBOX}`);
-			}, 200);
-		}
+		// if (!tab || (tab === 'mail' && !active)) {
+		// 	setTimeout(() => {
+		// 		goto(`${$page.url.pathname}?tab=mail&active=${INBOX}`);
+		// 	}, 200);
+		// }
 	});
 
 	async function getSimpleUserIndex() {
@@ -131,7 +131,11 @@
 		grid-template-rows: var(--toolbar-h) auto;
 		grid-gap: var(--grid-gap);
 		align-items: center;
-		overflow: hidden;
+		grid-template-areas:
+			'toolbar toolbar'
+			'one one';
+		grid-template-columns: 4fr 4fr;
+		align-items: initial;
 	}
 	:global(.user).user-grid {
 		grid-template-areas:

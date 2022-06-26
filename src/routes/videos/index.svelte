@@ -85,14 +85,13 @@
 <style>
 	.videos-grid {
 		display: grid;
-		grid-template-areas:
-			'one'
-			'two';
 		grid-template-rows: var(--toolbar-h) auto;
 		grid-template-columns: 1fr;
 		grid-gap: var(--grid-gap);
 		align-items: initial;
-		overflow: hidden;
+		grid-template-areas:
+			'one'
+			'two';
 	}
 	.grid-item {
 		background: var(--back-grid-item);
