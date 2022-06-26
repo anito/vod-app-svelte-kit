@@ -70,26 +70,22 @@ export function createRedirectSlug(url, searchMap) {
 	return `?redirect=${path}${parseSearchParams(searchParams)}`;
 }
 
-export function processRedirect(page, session = {}) {
+export function processRedirect(searchParams, session = {}) {
 	const isAdmin = session.role === 'Administrator';
 	let redirect, uid, path;
-	if ((redirect = page.url.searchParams.get('redirect'))) {
+	if ((redirect = searchParams.get('redirect'))) {
 		return redirect;
 	} else {
 		uid = session.user?.id;
 		path = isAdmin ? `/users/${uid}` : '/videos';
-		return path.concat(parseSearchParams(page.url.searchParams));
+		return path.concat(parseSearchParams(searchParams));
 	}
 }
 
-export function parseSearchParams(searchParams) {
+export function parseSearchParams(search) {
 	const excludeSet = new Set(['token', 'redirect', 'sessionend']);
-	for (let entry of searchParams.entries()) {
-		// console.log(`${entry[0]} => ${entry[1]}`);
-	}
+	let searchParams = new URLSearchParams(search);
 	excludeSet.forEach((name) => searchParams.delete(name));
-	searchParams.entries((val, key) => console.log('#finished', key, val));
-
 	return searchParams.toString() ? `?${searchParams.toString()}` : '';
 }
 

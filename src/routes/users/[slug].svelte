@@ -9,6 +9,7 @@
 	import { users, slim, sitename } from '$lib/stores';
 	import { proxyEvent, INBOX } from '$lib/utils';
 	import { _ } from 'svelte-i18n';
+	import { goto } from '$app/navigation';
 
 	// export let mailData;
 
@@ -27,7 +28,8 @@
 		selectionUserId
 	);
 	$: username = currentUser?.name || '';
-	$: tab = ((t) => TABS.find((itm) => itm === t))($page.url.searchParams.get('tab')) || defaultTab;
+	$: tab = ((t) => TABS.find((itm) => itm === t))($page.url.searchParams.get('tab'));
+	$: active = $page.url.searchParams.get('active');
 	$: ((user) => {
 		if (!user) return;
 		userExpires = user.expires;
@@ -41,6 +43,14 @@
 	// to get this ASAP make that SSR and (don't put it in onMount)
 	// we need to have it available before MailList wants it
 	getSimpleUserIndex();
+
+	onMount(() => {
+		if (!tab || (tab === 'mail' && !active)) {
+			setTimeout(() => {
+				goto(`${$page.url.pathname}?tab=mail&active=${INBOX}`);
+			}, 200);
+		}
+	});
 
 	async function getSimpleUserIndex() {
 		await api.get('users/simpleindex', { token: $session.user?.jwt, fetch }).then((res) => {

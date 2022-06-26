@@ -99,7 +99,7 @@
 
 	async function introendHandler() {
 		if ($session.user) {
-			setTimeout(() => goto(processRedirect($page, $session)), 1500);
+			setTimeout(() => goto(processRedirect($page.url.searchParams, $session)), 1000);
 		}
 	}
 </script>
