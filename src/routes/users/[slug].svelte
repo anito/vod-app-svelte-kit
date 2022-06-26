@@ -11,10 +11,8 @@
 	import { _ } from 'svelte-i18n';
 	import { goto } from '$app/navigation';
 
-	// export let mailData;
-
-	const TABS = ['time', 'user', 'mail'];
 	const defaultSearch = `?tab=mail&active=${INBOX}`;
+	const TABS = ['time', 'user', 'mail'];
 
 	let userExpires;
 	let hasExpired;
@@ -28,8 +26,7 @@
 		selectionUserId
 	);
 	$: username = currentUser?.name || '';
-	$: tab = ((t) => TABS.find((itm) => itm === t))($page.url.searchParams.get('tab')) || defaultTab;
-	$: active = $page.url.searchParams.get('active');
+	$: tab = ((t) => TABS.find((itm) => itm === t))($page.url.searchParams.get('tab'));
 	$: ((user) => {
 		if (!user) return;
 		userExpires = user.expires;
@@ -45,10 +42,11 @@
 	getSimpleUserIndex();
 
 	onMount(() => {
-		if (!tab || (tab === 'mail' && !active)) {
-			setTimeout(() => {
-				goto(`${$page.url.pathname}${defaultSearch}`);
-			}, 200);
+		let pathname = $page.url.pathname;
+		let search = $page.url.searchParams.search || defaultSearch;
+
+		if (!tab) {
+			setTimeout(() => goto(`${pathname}${search}`), 200);
 		}
 	});
 

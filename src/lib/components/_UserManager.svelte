@@ -258,7 +258,7 @@
 						users.del(selectionUserId);
 						selectionUserId = null;
 
-						configSnackbar(message, 'users');
+						configSnackbar(message, '/users');
 						snackbar.open();
 				}
 			} else if (200 < code && code < 500) {

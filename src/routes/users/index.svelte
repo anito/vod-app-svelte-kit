@@ -1,13 +1,23 @@
 <script>
+	// @ts-nocheck
+
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { sitename } from '$lib/stores';
-	import { users } from '$lib/stores';
 	import { _ } from 'svelte-i18n';
+	import { page, session } from '$app/stores';
+	import { INBOX } from '$lib/utils';
+
+	const defaultSearch = `?tab=mail&active=${INBOX}`;
 
 	onMount(() => {
-		if (!$users.length) return;
-		setTimeout(() => goto(`/users/${$users[0].id}`), 100);
+		let pathname = $page.url.pathname;
+		let tab = $page.url.searchParams.get('tab');
+		let slug = $page.params.slug || $session.user?.id;
+		let search = $page.url.searchParams.search || defaultSearch;
+
+		// console.log(console.log(`${pathname}/${slug}${search}`));
+		setTimeout(() => goto(`${pathname}/${slug}${search}`), 200);
 	});
 </script>
 
