@@ -14,6 +14,7 @@
 	// export let mailData;
 
 	const TABS = ['time', 'user', 'mail'];
+	const defaultSearch = `?tab=mail&active=${INBOX}`;
 
 	let userExpires;
 	let hasExpired;
@@ -27,7 +28,7 @@
 		selectionUserId
 	);
 	$: username = currentUser?.name || '';
-	$: tab = ((t) => TABS.find((itm) => itm === t))($page.url.searchParams.get('tab'));
+	$: tab = ((t) => TABS.find((itm) => itm === t))($page.url.searchParams.get('tab')) || defaultTab;
 	$: active = $page.url.searchParams.get('active');
 	$: ((user) => {
 		if (!user) return;
@@ -44,11 +45,11 @@
 	getSimpleUserIndex();
 
 	onMount(() => {
-		// if (!tab || (tab === 'mail' && !active)) {
-		// 	setTimeout(() => {
-		// 		goto(`${$page.url.pathname}?tab=mail&active=${INBOX}`);
-		// 	}, 200);
-		// }
+		if (!tab || (tab === 'mail' && !active)) {
+			setTimeout(() => {
+				goto(`${$page.url.pathname}${defaultSearch}`);
+			}, 200);
+		}
 	});
 
 	async function getSimpleUserIndex() {
