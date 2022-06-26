@@ -28,8 +28,8 @@
 		clearTimeout(timeoutId);
 		timeoutId = setTimeout((saved) => saved === playhead && savePlayhead(), 500, pauseTime);
 	})(playhead);
-	$: video && getMediaImage(video.image_id, $session.user).then((v) => (poster = v));
-	$: video && getMediaVideo(video.id, $session.user).then((v) => (src = v));
+	$: video.image_id && getMediaImage(video.image_id, $session.user).then((v) => (poster = v));
+	$: video.id && getMediaVideo(video.id, $session.user).then((v) => (src = v));
 	$: $navigating && ((paused = true), (src = ''), savePlayhead());
 
 	onMount(() => {});

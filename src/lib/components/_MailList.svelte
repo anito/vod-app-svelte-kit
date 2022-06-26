@@ -51,8 +51,8 @@
 		let message = JSON.parse(mail.message);
 		return {
 			id: mail.id,
-			from: parseUsernames([mail.from]),
-			to: [userId],
+			_from: parseUsernames([mail._from]),
+			_to: [userId],
 			message: message.message,
 			subject: message.subject,
 			_read: mail._read,
@@ -62,11 +62,11 @@
 
 	function parseSent(mail) {
 		let message = JSON.parse(mail.message);
-		let to = mail.to.split(';');
+		let _to = mail._to.split(';');
 		return {
 			id: mail.id,
-			from: mail.from,
-			to: parseUsernames(to),
+			_from: mail._from,
+			_to: parseUsernames(_to),
 			message: message.message,
 			subject: message.subject,
 			created: mail.created,

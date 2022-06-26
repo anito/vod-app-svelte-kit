@@ -70,24 +70,30 @@
 </script>
 
 <div class="uploader-wrapper {className}" use:init>
-	<Header h="4" mdc class="upload-header">{$_('text.upload-type', { values: { type } })}</Header>
-	<div class="subheader">
-		<span>{$_('text.file-queue', { values: { count } })}</span>
-		<span
-			>({$_('text.max-file-count', {
-				values: { count: options.maxFiles }
-			})})</span
+	<div class="flex justify-between">
+		<Header h="6" mdc class="upload-header flex justify-between"
+			>{$_('text.upload-type', { values: { type } })}</Header
 		>
+		<div class="subheader p-2 pb-3 mr-10">
+			<span>{$_('text.file-queue', { values: { count } })}</span>
+			<span
+				>({$_('text.max-file-count', {
+					values: { count: options.maxFiles }
+				})})</span
+			>
+		</div>
 	</div>
-	<Uploader
-		on:Uploader:successmultiple={onSuccessmultiple}
-		on:Uploader:success={onSuccess}
-		on:Uploader:error={onError}
-		on:Uploader:addedfile={onAddedfile}
-		on:Uploader:removedfile={onRemovedfile}
-		{...options}
-		{uid}
-	/>
+	<div class="content-wrapper">
+		<Uploader
+			on:Uploader:successmultiple={onSuccessmultiple}
+			on:Uploader:success={onSuccess}
+			on:Uploader:error={onError}
+			on:Uploader:addedfile={onAddedfile}
+			on:Uploader:removedfile={onRemovedfile}
+			{...options}
+			{uid}
+		/>
+	</div>
 </div>
 
 <style>
@@ -96,5 +102,6 @@
 	}
 	.subheader {
 		font-size: 0.8rem;
+		color: #aaaaaa;
 	}
 </style>

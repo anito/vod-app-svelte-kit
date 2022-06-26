@@ -29,8 +29,8 @@
 	$: isAdmin = ADMIN === $session.role;
 	$: token = currentUser?.jwt;
 	$: joinData = currentUser && currentUser.videos.find((v) => v.id == video.id)?._joinData;
-	$: video && getMediaImage(video.image_id, $session.user).then((v) => (poster = v));
-	$: video && getMediaVideo(video.id, $session.user).then((v) => (src = v));
+	$: video.image_id && getMediaImage(video.image_id, $session.user).then((v) => (poster = v));
+	$: video.id && getMediaVideo(video.id, $session.user).then((v) => (src = v));
 	$: ((time) => {
 		if (!paused || !canPlay) return;
 		let pauseTime = time;

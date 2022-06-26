@@ -8,6 +8,7 @@
 	import LinearProgress from '@smui/linear-progress';
 	import Dropzone from '$lib/components/Dropzone/index.svelte';
 	import { base } from '$lib/api';
+	import { _ } from 'svelte-i18n';
 
 	export { className as class };
 	export let path;
@@ -103,7 +104,7 @@
 		<Dropzone style="margin-bottom: 3em" dropzoneEvents={{ init }} let:id {options}>
 			<form {id} on:submit|preventDefault={submit} enctype="multipart/form-data" method="post">
 				<p class:hasFiles class="fileAdded dz-message">
-					Hier Ihre Dateien ablegen oder klicken um sie hinzuzufügen
+					{$_('text.drop-your-files-here')}
 				</p>
 				<Button disabled={!hasFiles} variant="raised" color="primary" class="button-upload w-full">
 					<Label>Hochladen</Label>

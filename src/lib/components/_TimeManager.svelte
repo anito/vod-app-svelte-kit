@@ -295,7 +295,7 @@
 			</Header>
 		</div>
 		{#if currentUser}
-			<List class="video-list" threeLine avatarList singleSelection bind:selectedIndex>
+			<List class="video-list mb-24" threeLine avatarList singleSelection bind:selectedIndex>
 				{#if ADMIN !== currentRole}
 					{#if userVideos?.length}
 						{#each userVideos as video (video.id)}
@@ -378,7 +378,7 @@
 					</div></Header
 				>
 			</div>
-			<List class="video-list" twoLine avatarList singleSelection>
+			<List class="video-list mb-24" twoLine avatarList singleSelection>
 				{#if noneUserVideos?.length}
 					{#each noneUserVideos as video (video.id)}
 						<SimpleVideoCard

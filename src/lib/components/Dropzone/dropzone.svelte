@@ -61,7 +61,7 @@
 		z-index: 1;
 		height: 200px;
 		border-radius: 5px;
-		border: 2px dashed var(--prime);
+		border: 1px solid #00000011;
 		display: flex;
 		justify-content: center;
 		align-items: center;

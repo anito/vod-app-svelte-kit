@@ -150,7 +150,7 @@
 	{/if}
 	{#if $fabs === 'upload-video'}
 		<Fab class="floating-fab" color="primary" on:click={() => openUploader('video')} extended>
-			<Label>{$_('text.new-class')}</Label>
+			<Label>{$_('text.add-video')}</Label>
 			<Icon class="material-icons">add</Icon>
 		</Fab>
 	{/if}

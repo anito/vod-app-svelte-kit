@@ -147,7 +147,6 @@
 		}));
 	$: searchParams = $page.url.searchParams.toString();
 	$: search = searchParams && `?${searchParams}`;
-	// $: if (browser) $page.url.pathname && proxyEvent('ticker:extend');
 
 	onMount(() => {
 		root = document.documentElement;
@@ -215,18 +214,19 @@
 	}
 
 	async function del({ data, show }) {
-		const res = await api.del(`videos/${data.id}`, { token });
-		if (res?.success) {
-			if (show) {
-				let message = res.message || res.data.message;
-				snackbar.isOpen && snackbar.close();
-				configSnackbar(message);
-				snackbar.open();
-			}
+		await api.del(`videos/${data.id}`, { token }).then((res) => {
+			if (res.success) {
+				if (show) {
+					let message = res.message || res.data.message;
+					snackbar.isOpen && snackbar.close();
+					configSnackbar(message);
+					snackbar.open();
+				}
 
-			urls.del(data.id);
-			videos.del(data.id);
-		}
+				urls.del(data.id);
+				videos.del(data.id);
+			}
+		});
 	}
 
 	function submit(e) {

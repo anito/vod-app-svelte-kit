@@ -116,7 +116,7 @@
     "you-cant-revert-deletion-of-user": "This action can not be undone!",
     "attention": "Attention!",
     "expired": "expired",
-    "new-class": "New Class",
+    "add-video": "Add Video",
     "sign-in-now": "Sign in now",
     "no-content-available": "No content available",
     "no-description": "no description",
@@ -202,7 +202,8 @@
     "no-user-found": "No user found",
     "one-moment": "One moment...",
     "add-user": "Add User",
-    "waiting-for-users": "Retrieving user data..."
+    "waiting-for-users": "Retrieving user data...",
+    "drop-your-files-here": "Drop your file here or click to upload"
   },
   "summary": {
     "copy-link": {

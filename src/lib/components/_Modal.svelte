@@ -148,7 +148,7 @@
 		max-height: 100%;
 		margin: 2rem auto;
 		color: black;
-		border-radius: 0.5rem;
+		border-radius: 0.2rem;
 		background: white;
 	}
 

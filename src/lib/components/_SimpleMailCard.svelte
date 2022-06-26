@@ -33,7 +33,7 @@
 	$: mail?.id === selection?.id && (selection = mail);
 
 	onMount(() => {
-		userItems = type === INBOX ? mail.from : type === SENT ? mail.to : [];
+		userItems = type === INBOX ? mail._from : type === SENT ? mail._to : [];
 	});
 
 	onDestroy(() => {

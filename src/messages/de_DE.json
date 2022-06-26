@@ -116,7 +116,7 @@
     "you-cant-revert-deletion-of-user": "Dieser Vorgang kann nicht rückgängig gemacht werden!",
     "attention": "Achtung!",
     "expired": "abgelaufen",
-    "new-class": "Neuer Kurs",
+    "add-video": "Video hinzufügen",
     "sign-in-now": "Jetzt anmelden",
     "no-content-available": "Keine Inhalte verfügbar",
     "no-description": "keine Beschreibung",
@@ -202,7 +202,8 @@
     "no-user-found": "Kein Benutzer gefunden",
     "one-moment": "Einen Moment...",
     "add-user": "Neuer Benutzer",
-    "waiting-for-users": "Warte auf Benutzerdaten..."
+    "waiting-for-users": "Warte auf Benutzerdaten...",
+    "drop-your-files-here": "Hier Ihre Dateien ablegen oder klicken um sie hinzuzufügen"
   },
   "summary": {
     "copy-link": {
