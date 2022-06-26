@@ -19,7 +19,7 @@
 		</div>
 	</GridItem>
 	<GridItem name="content" let:inner>
-		<div class="{inner} flex-col">
+		<div class={inner}>
 			<slot />
 		</div>
 	</GridItem>
