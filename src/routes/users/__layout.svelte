@@ -46,7 +46,6 @@
 	import Dialog, { Title as DialogTitle, Content, Actions, InitialFocus } from '@smui/dialog';
 	import { _, locale } from 'svelte-i18n';
 	import SvgIcon from '$lib/components/_SvgIcon.svelte';
-	import { browser } from '$app/env';
 
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
 	const defaultTab = 'time';

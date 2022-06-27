@@ -106,18 +106,17 @@
 		avatarList
 		singleSelection
 	>
-		{#if $currentStore}
-			{#each sort && $currentStore.sort(sortByDate) as mail (mail.id)}
-				<SimpleMailCard
-					on:mail:delete
-					on:mail:toggleRead
-					on:mail:destroyed={(e) => afterMailDestroyedHandler(e)}
-					bind:selection
-					mail={parseMail(mail)}
-					type={activeItem}
-				/>
-			{/each}
-		{/if}
+		{#each sort && $currentStore.sort(sortByDate) as mail, index (mail.id)}
+			<SimpleMailCard
+				on:mail:delete
+				on:mail:toggleRead
+				on:mail:destroyed={(e) => afterMailDestroyedHandler(e)}
+				bind:selection
+				mail={parseMail(mail)}
+				type={activeItem}
+				{index}
+			/>
+		{/each}
 	</List>
 {:catch reason}
 	{reason}
