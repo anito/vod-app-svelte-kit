@@ -1,6 +1,6 @@
 <script context="module">
 	import * as api from '$lib/api';
-	import { infos, fabs, users, videos, videosAll } from '$lib/stores';
+	import { infos, fabs, users, videos, videosAll, slim } from '$lib/stores';
 
 	export async function load({ fetch, session }) {
 		const token = session.user?.jwt;
@@ -46,6 +46,7 @@
 	import Dialog, { Title as DialogTitle, Content, Actions, InitialFocus } from '@smui/dialog';
 	import { _, locale } from 'svelte-i18n';
 	import SvgIcon from '$lib/components/_SvgIcon.svelte';
+	import { browser } from '$app/env';
 
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
 	const defaultTab = 'time';
@@ -128,6 +129,10 @@
 			window.removeEventListener('INFO:token:Redirect', tokenRedirectHandler);
 		};
 	});
+
+	// subscribing to users just to reset the simpleuserindex (SIUX) in case of any changes
+	// which in turn triggers a fresh load from the server when siux data are needed
+	users.subscribe((items) => slim.set(null));
 
 	async function addUser() {
 		await goto('/users/add');

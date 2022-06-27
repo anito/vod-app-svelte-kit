@@ -240,7 +240,7 @@
 							users.update(resUsers.data);
 							reset();
 
-							path = `users/${res.data.id}?tab=user`;
+							path = `/users/${res.data.id}?tab=user`;
 							action = $_('text.reveal-user');
 							configSnackbar(message, { path, action });
 							snackbar.open();

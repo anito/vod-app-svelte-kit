@@ -13,7 +13,7 @@
 	export let selection = false;
 	export let sort = 'DESC';
 	export let selectionIndex;
-	export let mailData = [];
+	export let waitForData;
 	export let currentStore;
 
 	const sortByDate = (a, b) => sortBit * (new Date(a.created) - new Date(b.created));
@@ -36,7 +36,7 @@
 		let item,
 			items = [];
 		addressees.forEach((email) => {
-			item = $slim.find((user) => user.email === email);
+			item = $slim?.find((user) => user.email === email);
 			items.push(item ? { ...item } : { email });
 		});
 		return items;
@@ -92,7 +92,7 @@
 	}
 </script>
 
-{#await mailData}
+{#await waitForData}
 	<div class="loader flex justify-center">
 		<SvgIcon name="animated-loader-3" size="50" fillColor="var(--prime)" class="mr-2" />
 	</div>

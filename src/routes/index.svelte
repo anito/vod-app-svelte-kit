@@ -54,15 +54,14 @@
 
 	async function submit(e) {
 		await api
-			.post(
-				'sents/add',
-				{
+			.post('sents/add', {
+				data: {
 					user,
 					subject: options.find((option) => option.key === selected).label,
 					content
 				},
-				isAdmin && $session.user?.jwt
-			)
+				token: isAdmin && $session.user?.jwt
+			})
 			.then((res) => {
 				if (res?.success) {
 					configSnackbar($_('text.thank-you-for-your-message'));

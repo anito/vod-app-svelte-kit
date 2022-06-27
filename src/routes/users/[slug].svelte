@@ -3,7 +3,7 @@
 
 	import * as api from '$lib/api';
 	import { page, session } from '$app/stores';
-	import { onMount } from 'svelte';
+	import { onMount, setContext } from 'svelte';
 	import { UserManager, TimeManager, MailManager } from '$lib/components';
 	import Button, { Group, Label, Icon } from '@smui/button';
 	import { users, slim, sitename } from '$lib/stores';
@@ -37,9 +37,9 @@
 	$: hidden =
 		$session.role !== 'Administrator' ? true : selectionUserId == $session.user?.id ? true : false;
 
-	// to get this ASAP make that SSR and (don't put it in onMount)
-	// we need to have it available before MailList wants it
-	getSimpleUserIndex();
+	setContext('siux', {
+		getSIUX: getSimpleUserIndex
+	});
 
 	onMount(() => {
 		let pathname = $page.url.pathname;
@@ -51,11 +51,13 @@
 	});
 
 	async function getSimpleUserIndex() {
-		await api.get('users/simpleindex', { token: $session.user?.jwt, fetch }).then((res) => {
-			if (res.success) {
-				slim.update(res.data);
-			}
-		});
+		if ($slim) return Promise.resolve($slim);
+		return await api
+			.get('users/simpleindex', { token: $session.user?.jwt, fetch })
+			.then((res) => {
+				return res;
+			})
+			.catch((reason) => console.log(reason));
 	}
 </script>
 

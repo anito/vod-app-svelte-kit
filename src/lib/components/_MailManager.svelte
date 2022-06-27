@@ -3,10 +3,10 @@
 
 	import './_drawer.scss';
 	import * as api from '$lib/api';
-	import { onMount, tick, getContext, createEventDispatcher } from 'svelte';
+	import { onMount, tick, getContext } from 'svelte';
 	import { page, session } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { fabs, sents, inboxes, templates, users } from '$lib/stores';
+	import { fabs, sents, inboxes, templates, users, slim } from '$lib/stores';
 	import MailViewer from './_MailViewer.svelte';
 	import MailList from './_MailList.svelte';
 	import MailToolbar from './_MailToolbar.svelte';
@@ -35,7 +35,7 @@
 		Actions,
 		InitialFocus
 	} from '@smui/dialog';
-	import { INBOX, proxyEvent, SENT } from '$lib/utils';
+	import { INBOX, SENT } from '$lib/utils';
 	import { get } from 'svelte/store';
 
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
@@ -72,7 +72,9 @@
 
 	const defaultActive = INBOX;
 	const mailboxes = [INBOX, SENT];
-	const getStoreByMailbox = (name) => (name === INBOX ? inboxes : name === SENT ? sents : null);
+	const { getSIUX } = getContext('siux');
+	const getStoreByEndpoint = (endpoint) =>
+		endpoint === INBOX ? inboxes : endpoint === SENT ? sents : null;
 
 	let sort = 'DESC';
 	let drawer;
@@ -93,13 +95,9 @@
 	let selectionIndex;
 	let totalInboxes = 0;
 	let totalSents = 0;
-	let sentData = [];
-	let inboxData = [];
 	let currentSlug;
 
 	export let selectionUserId = null;
-
-	const dispatch = createEventDispatcher();
 
 	$: isAdmin = $session.role === 'Administrator';
 	$: currentUser = ((id) => $users.filter((usr) => usr.id === id))(selectionUserId)[0];
@@ -123,13 +121,28 @@
 		...dynamicTemplateData,
 		...dynamicTemplateData.validate(currentTemplate)
 	};
-	$: currentSlug = (currentSlug !== $page.params.slug && $page.params.slug) || currentSlug;
-	$: inboxData = currentSlug && getMail(INBOX);
-	$: sentData = currentSlug && getMail(SENT);
-	$: mailData = ((active) => (active === INBOX ? inboxData : active === SENT ? sentData : []))(
-		activeItem
-	);
-	$: currentStore = getStoreByMailbox(activeItem);
+	$: currentStore = getStoreByEndpoint(activeItem);
+	$: currentSlug = (currentSlug !== $page.params.slug && $page.params.slug) || currentSlug; // because $page.param.slug triggers even on no obvious change!
+	$: waitForData =
+		currentSlug &&
+		getSIUX()
+			.then((res) => {
+				if (res.success) {
+					slim.update(res.data);
+					$slim; // doesn't work w/o subscribing
+				}
+				return getMail(mailboxes[0]);
+			})
+			.then((inboxes) => {
+				return getMail(mailboxes[1]);
+			})
+			.then((sents) => {
+				return new Promise((resolve, reject) => {
+					// Don't really need the data, at this point they are already in the store.
+					// Just resolve the Promise after showing a little loading animation
+					setTimeout(() => resolve(sents), 800);
+				});
+			});
 
 	onMount(async () => {
 		snackbar = getSnackbar();
@@ -138,18 +151,18 @@
 		drawerOpen = drawerOpenOnMount;
 	});
 
-	async function getMail(name) {
-		name = validateMailboxName(name);
-		if (!name)
-			return new Promise((res, rej) => rej(`The mailbox "${name}" doesn'nt exist`)).catch(
+	async function getMail(endpoint) {
+		endpoint = validateMailboxName(endpoint);
+		if (!endpoint)
+			return new Promise((res, rej) => rej(`The mailbox "${endpoint}" doesn'nt exist`)).catch(
 				(reason) => console.log(reason)
 			);
 		const id = $page.params.slug;
 		return await api
-			.get(`${name}/get/${id}`, { token: $session.user?.jwt, fetch })
+			.get(`${endpoint}/get/${id}`, { token: $session.user?.jwt, fetch })
 			.then((res) => {
 				if (res.success) {
-					let store = getStoreByMailbox(name);
+					let store = getStoreByEndpoint(endpoint);
 					if (store) store.update(res.data);
 					return res.data;
 				}
@@ -692,7 +705,7 @@
 									bind:selection
 									bind:selectionIndex
 									type={activeListItem}
-									{mailData}
+									{waitForData}
 									{currentStore}
 									{sort}
 								/>

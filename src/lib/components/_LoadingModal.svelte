@@ -13,16 +13,16 @@
 	const SUPRESS_SEARCHES_KEY = 'searches';
 	const SUPPRESS_PATH_KEY = 'paths';
 
-	// configure url pathnames and/or searchParams to supress the LoadinSpinner here
-	const supressSearches = ['active'];
-	const supressPaths = [];
+	// configure url (navigate) pathnames/searchParams here which shall supress the LoadinSpinner
+	const searches = ['active'];
+	const paths = [];
 
 	let root;
 	let disabled = false;
 	let suppress = new Map([
 		[
 			SUPRESS_SEARCHES_KEY,
-			(searches, to) => {
+			(to) => {
 				searches.forEach((slug) => {
 					if (to.searchParams.has(slug)) {
 						disabled = true;
@@ -33,7 +33,7 @@
 		],
 		[
 			SUPPRESS_PATH_KEY,
-			(paths, to) => {
+			(to) => {
 				paths.forEach((slug) => {
 					if (to.pathname.indexOf(slug) != -1) {
 						disabled = true;
@@ -47,8 +47,8 @@
 	beforeNavigate(({ to }) => {
 		disabled = false;
 		suppress.forEach((fn, key) => {
-			key === SUPRESS_SEARCHES_KEY && fn(supressSearches, to);
-			key === SUPPRESS_PATH_KEY && fn(supressPaths, to);
+			key === SUPRESS_SEARCHES_KEY && fn(to);
+			key === SUPPRESS_PATH_KEY && fn(to);
 		});
 	});
 
