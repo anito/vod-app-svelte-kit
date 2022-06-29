@@ -42,7 +42,6 @@
 
 	onMount(() => {
 		userItems = type === INBOX ? mail._from : type === SENT ? mail._to : [];
-		setTimeout(() => (loaded = true), 100);
 	});
 
 	onDestroy(() => {
