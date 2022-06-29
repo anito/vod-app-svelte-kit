@@ -26,6 +26,7 @@
 	let userItems = [];
 	let created = '';
 	let className = '';
+	let loaded = false;
 
 	$: unread = !mail._read;
 	$: dateFormat =
@@ -42,6 +43,7 @@
 
 	onMount(() => {
 		userItems = type === INBOX ? mail._from : type === SENT ? mail._to : [];
+		setTimeout(() => (loaded = true), 100);
 	});
 
 	onDestroy(() => {
