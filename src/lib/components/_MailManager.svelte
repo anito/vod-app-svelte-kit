@@ -460,11 +460,9 @@
 
 		if (!template) return;
 
-		if (template) {
-			templates.put({ ...template, name: '' });
-			await tick();
-			templates.put({ ...template, name });
-		}
+		templates.put({ ...template, name: '' });
+		await tick();
+		templates.put({ ...template, name });
 	}
 
 	async function saveTemplateName() {
@@ -474,7 +472,7 @@
 
 		if (!template) return;
 
-		const res = await api.put(`templates/${id}`, { name }, $session.user?.jwt);
+		const res = await api.put(`templates/${id}`, { data: { name }, token: $session.user?.jwt });
 		if (res.success) {
 			templates.put({ ...template, name });
 			configSnackbar($_('text.template-renamed'));
