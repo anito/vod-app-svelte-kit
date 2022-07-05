@@ -92,35 +92,37 @@
 	}
 </script>
 
-{#await waitForData}
-	<div class="loader flex justify-center">
-		<SvgIcon name="animated-loader-3" size="50" fillColor="var(--prime)" class="mr-2" />
-	</div>
-{:then mails}
-	<List
-		bind:this={list}
-		class="mails-list list-{activeItem}"
-		on:SMUIList:mount={receiveListMethods}
-		bind:selectedIndex={selectionIndex}
-		twoLine
-		avatarList
-		singleSelection
-	>
-		{#each sort && $currentStore.sort(sortByDate) as mail, index (mail.id)}
-			<SimpleMailCard
-				on:mail:delete
-				on:mail:toggleRead
-				on:mail:destroyed={(e) => afterMailDestroyedHandler(e)}
-				bind:selection
-				mail={parseMail(mail)}
-				type={activeItem}
-				{index}
-			/>
-		{/each}
-	</List>
-{:catch reason}
-	{reason}
-{/await}
+{#if currentStore}
+	{#await waitForData}
+		<div class="loader flex justify-center">
+			<SvgIcon name="animated-loader-3" size="50" fillColor="var(--prime)" class="mr-2" />
+		</div>
+	{:then mails}
+		<List
+			bind:this={list}
+			class="mails-list list-{activeItem}"
+			on:SMUIList:mount={receiveListMethods}
+			bind:selectedIndex={selectionIndex}
+			twoLine
+			avatarList
+			singleSelection
+		>
+			{#each sort && $currentStore.sort(sortByDate) as mail, index (mail.id)}
+				<SimpleMailCard
+					on:mail:delete
+					on:mail:toggleRead
+					on:mail:destroyed={(e) => afterMailDestroyedHandler(e)}
+					bind:selection
+					mail={parseMail(mail)}
+					type={activeItem}
+					{index}
+				/>
+			{/each}
+		</List>
+	{:catch reason}
+		{reason}
+	{/await}
+{/if}
 
 <style>
 </style>
