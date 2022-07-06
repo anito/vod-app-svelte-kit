@@ -107,7 +107,7 @@
 			avatarList
 			singleSelection
 		>
-			{#each sort && $currentStore.sort(sortByDate) as mail, index (mail.id)}
+			{#each sort && $currentStore.sort(sortByDate) as mail (mail.id)}
 				<SimpleMailCard
 					on:mail:delete
 					on:mail:toggleRead
@@ -115,7 +115,6 @@
 					bind:selection
 					mail={parseMail(mail)}
 					type={activeItem}
-					{index}
 				/>
 			{/each}
 		</List>

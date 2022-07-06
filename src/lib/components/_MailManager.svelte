@@ -702,7 +702,6 @@
 									on:mail:toggleRead={toggleRead}
 									bind:selection
 									bind:selectionIndex
-									type={activeListItem}
 									{waitForData}
 									{currentStore}
 									{sort}

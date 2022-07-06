@@ -4,7 +4,6 @@
 	import { createEventDispatcher } from 'svelte';
 	import { Group } from '@smui/button';
 	import IconButton from '@smui/icon-button';
-	import { proxyEvent } from '$lib/utils';
 
 	export let selection;
 	export let type;
