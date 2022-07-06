@@ -46,7 +46,7 @@
 		let search = $page.url.searchParams.search || defaultSearch;
 
 		if (!tab) {
-			setTimeout(() => goto(`${pathname}${search}`), 200);
+			setTimeout(() => goto(`${pathname}${search}`), 100);
 		}
 	});
 

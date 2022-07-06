@@ -1,6 +1,6 @@
 <script context="module">
 	import * as api from '$lib/api';
-	import { infos, fabs, users, videos, videosAll, slim } from '$lib/stores';
+	import { infos, fabs, users, videos, videosAll, slim, videoEmitter } from '$lib/stores';
 
 	export async function load({ fetch, session }) {
 		const token = session.user?.jwt;
@@ -35,8 +35,9 @@
 	import { page, session } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { onMount, getContext } from 'svelte';
+	import { fly } from 'svelte/transition';
 	import Layout from './layout.svelte';
-	import { InfoChips, Legal, SimpleUserCard, PageBar } from '$lib/components';
+	import { InfoChips, Legal, SimpleUserCard, PageBar, MediaUploader } from '$lib/components';
 	import { proxyEvent } from '$lib/utils';
 	import Button, { Icon as Icon_ } from '@smui/button';
 	import Fab, { Label } from '@smui/fab';
@@ -47,6 +48,7 @@
 	import { _, locale } from 'svelte-i18n';
 	import SvgIcon from '$lib/components/_SvgIcon.svelte';
 
+	const { open } = getContext('simple-modal');
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
 	const defaultTab = 'time';
 
@@ -92,7 +94,7 @@
 	);
 	$: ((t) => {
 		if (!isAdmin) return;
-		t === 'time' && setFab('add-user');
+		t === 'time' && setFab('add-video');
 		t === 'user' && setFab('add-user');
 		t === 'mail' && setFab();
 	})(tab);
@@ -254,6 +256,51 @@
 
 	function chipInteractionHandler(e) {
 		console.log('chipInteractionHandler', e);
+	}
+
+	let openUploader = (type) => {
+		open(
+			MediaUploader,
+			{
+				type,
+				options: {
+					// acceptedFiles: '.mov .mp4 .m4a .m4v .3gp .3g2 .webm',
+					uploadMultiple: true,
+					parallelUploads: 2,
+					maxFiles: 2,
+					timeout: 3600 * 1000, // 60min
+					maxFilesize: 1024 // Megabyte
+				},
+				events: { uploadDone }
+			},
+			{
+				transitionWindow: fly,
+				transitionWindowProps: {
+					y: -200,
+					duration: 500
+				}
+			}
+		);
+	};
+
+	function uploadDone(e) {
+		const { data, message, success } = { ...e.detail };
+
+		if (message) {
+			configSnackbar(message);
+			snackbar.open();
+		}
+
+		if (success) {
+			videos.add(data);
+			// data.forEach((video) => {
+			// 		videoEmitter.dispatch({
+			// 			method: 'put',
+			// 			data: video,
+			// 			token: $session.user?.jwt
+			// 		});
+			// });
+		}
 	}
 </script>
 
@@ -527,20 +574,27 @@
 	</Actions>
 </Dialog>
 {#if $fabs === 'add-user'}
-	<div class="fab-add-user">
+	<div class="fab">
 		<Fab class="floating-fab" color="primary" on:click={addUser} extended>
 			<Label>{$_('text.new-user')}</Label>
 			<Icon_ class="material-icons">person_add</Icon_>
 		</Fab>
 	</div>
+{:else if $fabs === 'add-video'}
+	<div class="fab">
+		<Fab class="floating-fab" color="primary" on:click={() => openUploader('video')} extended>
+			<Label>{$_('text.add-video')}</Label>
+			<Icon class="material-icons">add</Icon>
+		</Fab>
+	</div>
 {/if}
 
 <style>
-	.fab-add-user {
+	.fab {
 		position: absolute;
 	}
-	:global(.datapicker--open) .fab-add-user,
-	:global(.add-user-view--open) .fab-add-user {
+	:global(.datapicker--open) .fab,
+	:global(.add-user-view--open) .fab {
 		display: none;
 	}
 	:global(.grid:not(.sidebar) .grid-item.side) {

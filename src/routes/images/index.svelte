@@ -36,7 +36,7 @@
 	const { setFab } = getContext('fab');
 
 	onMount(() => {
-		if ($session.user) setFab('upload-image');
+		if ($session.user) setFab('add-image');
 	});
 
 	let openUploader = (type) => {
@@ -94,7 +94,7 @@
 		</div>
 	{/if}
 </div>
-{#if $fabs === 'upload-image'}
+{#if $fabs === 'add-image'}
 	<Fab class="floating-fab" color="primary" on:click={() => openUploader('image')} extended>
 		<Label>{$_('text.new-poster')}</Label>
 		<Icon class="material-icons">add</Icon>

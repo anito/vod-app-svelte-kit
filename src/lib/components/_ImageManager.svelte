@@ -46,7 +46,7 @@
 
 	onMount(() => {
 		snackbar = getSnackbar();
-		setFab('upload-image');
+		setFab('add-image');
 	});
 
 	function uploadDone(e) {
@@ -101,7 +101,7 @@
 				</Paper>
 			</div>
 		{/if}
-		{#if $fabs === 'upload-image'}
+		{#if $fabs === 'add-image'}
 			<Fab class="floating-fab" color="primary" on:click={() => openUploader()} extended>
 				<Label>{$_('text.new-poster')}</Label>
 				<Icon class="material-icons">add</Icon>

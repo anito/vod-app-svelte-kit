@@ -203,7 +203,7 @@
 	 * @param item
 	 */
 	async function put({ data, show }) {
-		const res = await api.put(`videos/${data.id}`, { data, token });
+		const res = await api.put(`videos/${data.id}`, { data, token: $session.user?.jwt });
 		if (show) {
 			let message = res.message || res.data.message;
 			snackbar.isOpen && snackbar.close();

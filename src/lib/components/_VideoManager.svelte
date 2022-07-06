@@ -9,7 +9,7 @@
 	import MediaUploader from './_MediaUploader.svelte';
 	import VideoCard from './_VideoCard.svelte';
 	import Info from './_Info.svelte';
-	import { videos, images, fabs, currentVideo, videoEmitter, settings } from '$lib/stores';
+	import { videos, images, fabs, currentVideo, videoEmitter } from '$lib/stores';
 	import { _ } from 'svelte-i18n';
 
 	const { open } = getContext('simple-modal');
@@ -35,7 +35,7 @@
 		snackbar = getSnackbar();
 
 		if ($session.role === 'Administrator') {
-			setFab('upload-video');
+			setFab('add-video');
 		}
 	});
 
@@ -65,30 +65,16 @@
 	};
 
 	function uploadDone(e) {
-		let detail = e.detail;
-		let data, video, message;
+		const { data, message, success } = { ...e.detail };
 
-		message = detail.message;
-		if (detail.success) {
-			data = detail.data;
-			videos.add(data);
-		}
 		if (message) {
 			configSnackbar(message);
 			snackbar.open();
 		}
 
-		if (!(video = $currentVideo)) return;
-
-		// take the last element for our poster
-		let image_id = data.slice(-1)[0].id;
-		video.image_id = image_id;
-
-		videoEmitter.dispatch({
-			method: 'put',
-			data: video,
-			show: true
-		});
+		if (success) {
+			videos.add(data);
+		}
 	}
 
 	function posterCreatedHandler(e) {
@@ -148,7 +134,7 @@
 			<span style="text-align: center;">{$_('text.no-content-available')}</span>
 		</div>
 	{/if}
-	{#if $fabs === 'upload-video'}
+	{#if $fabs === 'add-video'}
 		<Fab class="floating-fab" color="primary" on:click={() => openUploader('video')} extended>
 			<Label>{$_('text.add-video')}</Label>
 			<Icon class="material-icons">add</Icon>
