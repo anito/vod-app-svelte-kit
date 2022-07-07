@@ -48,7 +48,7 @@
 	import List from '@smui/list';
 	import Dialog, { Title as DialogTitle, Content, Actions, InitialFocus } from '@smui/dialog';
 	import { _, locale } from 'svelte-i18n';
-	import SvgIcon from '$lib/components/_SvgIcon.svelte';
+	import { Component, SvgIcon } from '$lib/components';
 
 	const { open } = getContext('simple-modal');
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
@@ -298,37 +298,40 @@
 		<PageBar />
 	</div>
 	<slot />
-	<div class="sidebar" slot="side" style="flex: 1;">
-		<div class="flex flex-col">
-			<Textfield
-				class="search"
-				variant="filled"
-				bind:value={search}
-				label={$_('text.search-user')}
-				input$aria-controls="helper-text"
-				input$aria-describedby="helper-text"
-			>
-				<Icon
-					role="button"
-					class="material-icons-outlined cancel-search"
-					slot="trailingIcon"
-					on:click={() => (search = '')}>{search.length && 'cancel'}</Icon
+	<div class="sidebar flex-1" slot="side">
+		<Component transparent>
+			<div slot="header">
+				<Textfield
+					class="search"
+					style="width: 100%;"
+					variant="filled"
+					bind:value={search}
+					label={$_('text.search-user')}
+					input$aria-controls="helper-text"
+					input$aria-describedby="helper-text"
 				>
-			</Textfield>
-		</div>
-		{#if $users.length}
-			<List class="users-list" twoLine avatarList singleSelection bind:selectedIndex>
-				{#each filteredUsers as user (user.id)}
-					<a sveltekit:prefetch href={`/users/${user.id}${query}`}>
-						<SimpleUserCard class="flex" {selectionUserId} {user} />
-					</a>
-				{/each}
-			</List>
-		{:else}
-			<div class="loader flex justify-center">
-				<SvgIcon name="animated-loader-3" size="50" fillColor="var(--prime)" class="mr-2" />
+					<Icon
+						role="button"
+						class="material-icons-outlined cancel-search"
+						slot="trailingIcon"
+						on:click={() => (search = '')}>{search.length && 'cancel'}</Icon
+					>
+				</Textfield>
 			</div>
-		{/if}
+			{#if $users.length}
+				<List class="users-list mb-24" twoLine avatarList singleSelection bind:selectedIndex>
+					{#each filteredUsers as user (user.id)}
+						<a sveltekit:prefetch href={`/users/${user.id}${query}`}>
+							<SimpleUserCard class="flex" {selectionUserId} {user} />
+						</a>
+					{/each}
+				</List>
+			{:else}
+				<div class="loader flex justify-center">
+					<SvgIcon name="animated-loader-3" size="50" fillColor="var(--prime)" class="mr-2" />
+				</div>
+			{/if}
+		</Component>
 	</div>
 	<div slot="ad">
 		<div class="m-auto ml-0"><Legal /></div>

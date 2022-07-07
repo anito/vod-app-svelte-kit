@@ -297,7 +297,7 @@
 	class:no-user-selected={!currentUser}
 	class:no-videos={!userVideos?.length || currentRole === ADMIN}
 >
-	<Component>
+	<Component variant="sm">
 		<div slot="header">
 			<Header mdc h="5">
 				{#if currentUser}
@@ -393,7 +393,7 @@
 </div>
 {#if !isDatapickerOpen}
 	<div class="grid-item videos" class:no-videos={!noneUserVideos.length}>
-		<Component>
+		<Component variant="sm">
 			<div slot="header">
 				<Header mdc h="5">
 					<div class="uppercase" style="font-weight: 400; text-align: right;">
@@ -450,7 +450,7 @@
 	</div>
 {:else}
 	<div class="grid-item time">
-		<Component>
+		<Component variant="sm">
 			<div slot="header">
 				<div class="">
 					<Header mdc h="5">{readout}</Header>

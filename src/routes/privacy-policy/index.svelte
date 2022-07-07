@@ -13,7 +13,7 @@
 	<title>{$sitename} | Privacy Policy</title>
 </svelte:head>
 
-<Component extended>
+<Component variant="sm" extended>
 	<div slot="header" class="">
 		<Header>Privacy Policy</Header>
 	</div>

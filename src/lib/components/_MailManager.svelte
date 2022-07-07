@@ -67,11 +67,11 @@
 			}
 		}
 	];
-	const { getSnackbar, configSnackbar } = getContext('snackbar');
 	const { setFab } = getContext('fab');
+	const { getSIUX } = getContext('siux');
+	const { getSnackbar, configSnackbar } = getContext('snackbar');
 	const defaultActive = INBOX;
 	const mailboxes = [INBOX, SENT];
-	const { getSIUX } = getContext('siux');
 	const getStoreByEndpoint = (endpoint) =>
 		endpoint === INBOX ? inboxes : endpoint === SENT ? sents : null;
 

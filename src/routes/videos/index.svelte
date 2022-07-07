@@ -62,7 +62,7 @@
 		</div>
 	</div>
 {:else}
-	<Component>
+	<Component variant="sm">
 		<div slot="header">
 			<div class="grid grid-cols-2">
 				<span class="ml-2">

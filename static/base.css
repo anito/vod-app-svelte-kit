@@ -7,7 +7,7 @@
 	- under normal conditions, there's no need to touch these
 -----------------------------------------------
 */
-:root {
+:root, ::before, ::after {
   --nav-h: 3.75rem;
   --main-h: calc(100vh - var(--nav-h));
   --top-offset: 3.75rem;
@@ -53,7 +53,7 @@
   }
 }
 /*	theme vars */
-.theme-default {
+.theme-default, .theme-default ::before, .theme-default ::after {
   --back-light: #f6fafd;
   --back-white: #fff;
   --back-dark: #868585;
@@ -87,8 +87,9 @@
   --mdc-typography-font-family: var(--font);
 
   --mdc-theme-primary: var(--prime);
+  --mdc-theme-on-primary: var(--on-prime);
   --mdc-theme-secondary: var(--second);
-  --mdc-theme-on-secondary: var(--surface);
+  --mdc-theme-on-secondary: var(--on-second);
   --mdc-theme-error: var(--error);
   --mdc-theme-background: var(--back);
   --mdc-theme-surface: var(--back-white);

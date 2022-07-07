@@ -315,7 +315,7 @@
 
 {#if $session.user}
 	<div class="grid-item user" style="height: 100%;">
-		<Component extended>
+		<Component variant="sm" extended>
 			<div slot="header">
 				<div class="">
 					<Header h="5" mdc>

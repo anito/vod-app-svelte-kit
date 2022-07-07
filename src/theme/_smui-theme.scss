@@ -24,10 +24,13 @@ $mdc-typography-font-family: var(--font, 'sans-serif');
 	font-weight: 700;
 }
 
-.theme-default {
+.theme-default, ::before, ::after {
 	--prime: #{theme.$primary};
+	--on-prime: #{theme.$on-primary};
 	--second: #{theme.$secondary};
+	--on-second: #{theme.$on-secondary};
 	--surface: #{theme.$surface};
+	--on-surface: #{theme.$on-surface};
 	--error: #{theme.$error};
 	--back: #{theme.$background};
 }
