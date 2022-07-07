@@ -9,6 +9,7 @@
 	import { fly } from 'svelte/transition';
 	import { images, videoEmitter, currentVideo } from '$lib/stores';
 	import { getMedia } from '$lib/utils/media';
+	import { ADMIN } from '$lib/utils';
 	import VideoMedia from './_VideoMedia.svelte';
 	import MediaUploader from './_MediaUploader.svelte';
 	import Card, { Content, PrimaryAction, Actions, ActionButtons, ActionIcons } from '@smui/card';
@@ -42,7 +43,7 @@
 	let isImageListOpen = false;
 
 	$: user = $session.user;
-	$: isAdmin = $session.role === 'Administrator';
+	$: isAdmin = $session.role === ADMIN;
 	$: leftButton = isEditMode
 		? { label: $_('text.save'), icon: 'save' }
 		: { label: $_('text.edit'), icon: 'edit' };
@@ -133,9 +134,9 @@
 	}
 </script>
 
-<Card class="flex content-between card {className}" style="width: var(--player-w);">
+<Card class="card {className}">
 	<PrimaryAction>
-		<VideoMedia {video} bind:title bind:description {isEditMode} />
+		<VideoMedia {video} bind:title bind:description {isEditMode} curtain />
 		<Content class="mdc-typography--body2">
 			<div class="wrapper flex flex-row justify-between">
 				{#if isAdmin}
@@ -192,7 +193,7 @@
 			</div>
 		</Content>
 	</PrimaryAction>
-	{#if 'Administrator' === $session.role}
+	{#if ADMIN === $session.role}
 		<Actions class="card-actions">
 			<ActionButtons class="action-buttons">
 				<Button

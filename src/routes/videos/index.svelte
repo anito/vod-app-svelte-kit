@@ -5,6 +5,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { sitename } from '$lib/stores';
+	import { ADMIN } from '$lib/utils';
 	import Button, { Group, Label, Icon } from '@smui/button';
 	import { VideoManager, ImageManager, Component } from '$lib/components';
 	import { Header } from '$lib/components';
@@ -13,11 +14,9 @@
 	const TABS = ['videos', 'images'];
 
 	$: tab = ((tab) => TABS.find((itm) => itm === tab))($page.url.searchParams.get('tab')) || TABS[0];
-	$: isAdmin = $session.role === 'Administrator';
+	$: isAdmin = $session.role === ADMIN;
 
-	onMount(() => {
-		// isAdmin && changeTab(tab);
-	});
+	onMount(() => {});
 
 	async function changeTab(tab) {
 		await goto(`/videos?tab=${tab}`);
@@ -30,7 +29,7 @@
 </svelte:head>
 
 {#if isAdmin}
-	<div class="videos-grid {tab}">
+	<div class="media-grid {tab} flex-1">
 		<div class="grid-item one">
 			<Group variant="unelevated">
 				<Button
@@ -83,7 +82,7 @@
 {/if}
 
 <style>
-	.videos-grid {
+	.media-grid {
 		display: grid;
 		grid-template-rows: var(--toolbar-h) auto;
 		grid-template-columns: 1fr;
@@ -92,10 +91,10 @@
 		grid-template-areas:
 			'one'
 			'two';
+		max-width: var(--page-w);
 	}
 	.grid-item {
 		background: var(--back-grid-item);
-		padding-left: 0.4rem;
 	}
 	.one {
 		grid-area: one;
@@ -105,6 +104,5 @@
 	}
 	.two {
 		grid-area: two;
-		overflow: auto;
 	}
 </style>

@@ -2,14 +2,14 @@
 	// @ts-nocheck
 
 	import * as api from '$lib/api';
-	import { session, navigating } from '$app/stores';
-	import { onMount } from 'svelte';
+	import { session } from '$app/stores';
+	import { onDestroy, onMount } from 'svelte';
 	import { Media, MediaContent } from '@smui/card';
 	import Textfield, { Textarea } from '@smui/textfield';
 	import { VideoPlayer } from '$lib/components/Video';
-	import { getMediaImage, getMediaVideo } from '$lib/utils';
+	import { ADMIN, getMediaImage, getMediaVideo } from '$lib/utils';
 	import { users, videoEmitter } from '$lib/stores';
-	import { _, locale } from 'svelte-i18n';
+	import { _ } from 'svelte-i18n';
 
 	export let video;
 	export let title = '';
@@ -23,8 +23,6 @@
 	let canPlay = false;
 	let timeoutId;
 
-	const ADMIN = 'Administrator';
-
 	$: currentUser = $users.find((user) => user.id == $session.user?.id);
 	$: isAdmin = ADMIN === $session.role;
 	$: token = currentUser?.jwt;
@@ -37,9 +35,14 @@
 		clearTimeout(timeoutId);
 		timeoutId = setTimeout((saved) => saved === playhead && savePlayhead(), 500, pauseTime);
 	})(playhead);
-	$: $navigating && ((paused = true), (src = ''), savePlayhead());
 
 	onMount(() => {});
+
+	onDestroy(() => {
+		paused = true;
+		src = '';
+		savePlayhead();
+	});
 
 	// set playhead to the last saved position when the video is ready to play
 	function handleCanPlay(e) {
@@ -124,7 +127,7 @@
 </script>
 
 <Media aspectRatio="16x9">
-	<MediaContent class="flex" style="display: flex; z-index: 0;">
+	<MediaContent class="flex z-10">
 		{#if isAdmin}
 			<div class="editor-wrapper" class:is-edit-mode={isEditMode}>
 				<div class="editor">
@@ -148,9 +151,9 @@
 				</div>
 			</div>
 		{/if}
-		<div class="media-player player-container flex flex-1 bg-black">
+		<div class="media-player player-container flex flex-1 justify-center bg-black">
 			<VideoPlayer
-				class="video-player flex"
+				class="video-player flex flex-1"
 				bind:paused
 				bind:playhead
 				on:player:canplay={handleCanPlay}
@@ -158,7 +161,6 @@
 				on:player:loadeddata={handleLoadedData}
 				on:player:loadstart={handleLoadStart}
 				on:player:aborted={handleAborted}
-				curtain
 				multiplayer
 				{poster}
 				{src}
@@ -189,7 +191,6 @@
 		position: relative;
 	}
 	.media-player {
-		--player-w: 19rem;
 		--curtain-fs-title: 1.3rem;
 		--curtain-fs-descr: 0.7rem;
 		--curtain-lh-title: 1.3rem;

@@ -57,7 +57,14 @@
 	import IconButton from '@smui/icon-button';
 	import Snackbar, { Actions } from '@smui/snackbar';
 	import { Label } from '@smui/common';
-	import { del as logout, createRedirectSlug, proxyEvent, svg, __ticker__ } from '$lib/utils';
+	import {
+		del as logout,
+		createRedirectSlug,
+		proxyEvent,
+		svg,
+		__ticker__,
+		ADMIN
+	} from '$lib/utils';
 	import {
 		fabs,
 		settings,
@@ -97,7 +104,7 @@
 	let snackbar;
 
 	setContext('fab', {
-		setFab: (fab) => $session.role === 'Administrator' && fabs.update(fab),
+		setFab: (fab) => $session.role === ADMIN && fabs.update(fab),
 		restoreFab: () => fabs.restore()
 	});
 
@@ -134,8 +141,7 @@
 	$: person = svg(svg_manifest.person, $theme.primary);
 	$: logo = svg(svg_manifest.logo_vod, $theme.primary);
 	$: root && ((user) => root.classList.toggle('loggedin', user))(!!$session.user);
-	$: root &&
-		((isAdmin) => root.classList.toggle('admin', isAdmin))($session.role === 'Administrator');
+	$: root && ((isAdmin) => root.classList.toggle('admin', isAdmin))($session.role === ADMIN);
 	$: ((seg) => {
 		root && ((seg && root.classList.remove('home')) || (!seg && root.classList.add('home')));
 	})(segment);
@@ -203,28 +209,30 @@
 	 * @param item
 	 */
 	async function put({ data, show }) {
-		const res = await api.put(`videos/${data.id}`, { data, token: $session.user?.jwt });
-		if (show) {
-			let message = res.message || res.data.message;
-			snackbar.isOpen && snackbar.close();
-			configSnackbar(message);
-			snackbar.open();
-		}
-		videos.put(data);
+		await api.put(`videos/${data.id}`, { data, token: $session.user?.jwt }).then((res) => {
+			res.success && videos.put(data);
+
+			if (show) {
+				let message = res.message || res.data.message;
+				snackbar.isOpen && snackbar.close();
+				configSnackbar(message);
+				snackbar.open();
+			}
+		});
 	}
 
 	async function del({ data, show }) {
 		await api.del(`videos/${data.id}`, { token }).then((res) => {
 			if (res.success) {
-				if (show) {
-					let message = res.message || res.data.message;
-					snackbar.isOpen && snackbar.close();
-					configSnackbar(message);
-					snackbar.open();
-				}
-
 				urls.del(data.id);
 				videos.del(data.id);
+			}
+
+			if (show) {
+				let message = res.message || res.data.message;
+				snackbar.isOpen && snackbar.close();
+				configSnackbar(message);
+				snackbar.open();
 			}
 		});
 	}
@@ -335,7 +343,7 @@
 					</NavItem>
 				{/if}
 
-				{#if $session.role === 'Administrator'}
+				{#if $session.role === ADMIN}
 					<NavItem href="/users" title="Administration" segment="users">
 						<Icon class="material-icons" style="vertical-align: middle;">settings</Icon>
 						<Label>Admin</Label>

@@ -3,11 +3,11 @@
 
 	import * as api from '$lib/api';
 	import { page, session, navigating } from '$app/stores';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { sitename, videos, users, videoEmitter } from '$lib/stores';
 	import { VideoPlayer } from '$lib/components/Video';
-	import { getMediaImage, getMediaVideo } from '$lib/utils';
-	import { _, locale } from 'svelte-i18n';
+	import { ADMIN, getMediaImage, getMediaVideo } from '$lib/utils';
+	import { _ } from 'svelte-i18n';
 
 	let paused;
 	let poster = '';
@@ -21,7 +21,7 @@
 	$: currentUser = loggedInUser || currentUser;
 	$: joinData = currentUser?.videos.find((v) => video?.id == v.id)?._joinData;
 	$: token = currentUser?.jwt;
-	$: isAdmin = currentUser?.group.name === 'Administrator';
+	$: isAdmin = currentUser?.role === ADMIN;
 	$: ((time) => {
 		if (!paused || !canPlay) return;
 		let pauseTime = time;
@@ -30,7 +30,7 @@
 	})(playhead);
 	$: video?.image_id && getMediaImage(video.image_id, $session.user).then((v) => (poster = v));
 	$: video?.id && getMediaVideo(video.id, $session.user).then((v) => (src = v));
-	$: $navigating && ((paused = true), (src = ''), savePlayhead());
+	$: $navigating && savePlayhead();
 
 	onMount(() => {});
 
@@ -90,7 +90,7 @@
 				method: 'put',
 				data: { ...video, playhead }
 			});
-		} else if (video) {
+		} else {
 			if (Math.round(joinData.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
 			let associated = currentUser.videos
 				.filter((v) => v.id != video.id)
@@ -121,9 +121,9 @@
 </svelte:head>
 
 {#if video}
-	<div class="single-player flex bg-black">
+	<div class="media-player bg-black flex flex-1">
 		<VideoPlayer
-			class="video-player flex single-player"
+			class="video-player flex flex-1"
 			bind:paused
 			bind:playhead
 			on:player:canplay={handleCanPlay}
@@ -154,8 +154,7 @@
 		font-weight: 600;
 		color: #d8d8d8;
 	}
-	.single-player {
-		--player-w: 100vw;
+	.media-player {
 		--curtain-lh-title: 4rem;
 		--curtain-lh-descr: 2rem;
 		--curtain-fs-title: 4rem;

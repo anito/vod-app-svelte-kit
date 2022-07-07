@@ -6,6 +6,7 @@
 	import UserGraphic from './_UserGraphic.svelte';
 	import Dot from './_Dot.svelte';
 	import { Meta, Item, Text, PrimaryText, SecondaryText } from '@smui/list';
+	import { ADMIN } from '$lib/utils';
 
 	export let selectionUserId;
 	export let user;
@@ -20,7 +21,7 @@
 	<UserGraphic
 		size="40"
 		{user}
-		badge={user.role === 'Administrator' && {
+		badge={user.role === ADMIN && {
 			icon: 'admin_panel_settings',
 			color: 'rgb(206, 4, 4)',
 			position: 'TOP_RIGHT'

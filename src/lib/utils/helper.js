@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import { ADMIN } from './const';
+
 export function sortByTitle(a, b) {
 	let _a = a.title?.toUpperCase() || '';
 	let _b = b.title?.toUpperCase() || '';
@@ -71,7 +73,7 @@ export function createRedirectSlug(url, searchMap) {
 }
 
 export function processRedirect(searchParams, session = {}) {
-	const isAdmin = session.role === 'Administrator';
+	const isAdmin = session.role === ADMIN;
 	let redirect, uid, path;
 	if ((redirect = searchParams.get('redirect'))) {
 		return redirect;
@@ -211,5 +213,3 @@ String.prototype.add = function (val) {
 export const __key__ = {};
 export const __ticker__ = {};
 export const __session__ = {};
-export const INBOX = 'inboxes';
-export const SENT = 'sents';

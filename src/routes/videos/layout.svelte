@@ -18,7 +18,7 @@
 			<slot name="pagebar" />
 		</div>
 	</GridItem>
-	<GridItem name="content" let:inner>
+	<GridItem name="content" let:inner hcenter>
 		<div class={inner}>
 			<slot />
 		</div>

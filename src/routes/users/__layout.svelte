@@ -38,7 +38,7 @@
 	import { fly } from 'svelte/transition';
 	import Layout from './layout.svelte';
 	import { InfoChips, Legal, SimpleUserCard, PageBar, MediaUploader } from '$lib/components';
-	import { proxyEvent } from '$lib/utils';
+	import { ADMIN, proxyEvent } from '$lib/utils';
 	import Button, { Icon as Icon_ } from '@smui/button';
 	import Fab, { Label } from '@smui/fab';
 	import Textfield from '@smui/textfield';
@@ -77,7 +77,7 @@
 
 	$: tab = $page.url.searchParams.get('tab') || defaultTab;
 	$: active = $page.url.searchParams.get('active');
-	$: isAdmin = $session.role === 'Administrator';
+	$: isAdmin = $session.role === ADMIN;
 	$: selectionUserId = $page.params.slug || $session.user?.id;
 	$: currentUser = ((id) => $users.find((usr) => usr.id === id))(selectionUserId);
 	$: ((usr) => {

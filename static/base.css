@@ -39,6 +39,17 @@
     --side-nav: 3rem;
     --player-w: 19rem;
     --poster-w: 260px;
+    --page-w: 700px;
+  }
+}
+@media screen and (min-width: 1024px) {
+  :root {
+    --page-w: 900px;
+  }
+}
+@media screen and (min-width: 1200px) {
+  :root {
+    --page-w: 1040px;
   }
 }
 /*	theme vars */

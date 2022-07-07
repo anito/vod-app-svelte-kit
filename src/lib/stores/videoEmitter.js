@@ -7,7 +7,7 @@ function createStore() {
 	return {
 		subscribe,
 		update,
-		dispatch: (items) => update((old) => items),
+		dispatch: (val) => update(() => val),
 		set
 	};
 }

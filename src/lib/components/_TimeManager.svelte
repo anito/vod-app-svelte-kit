@@ -7,7 +7,7 @@
 	import { page, session } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { onMount, getContext } from 'svelte';
-	import { createRedirectSlug } from '$lib/utils';
+	import { createRedirectSlug, ADMIN } from '$lib/utils';
 	import List, { Item, Graphic, Separator, Text } from '@smui/list';
 	import Button, { Label, Icon as ButtonIcon } from '@smui/button';
 	import IconButton, { Icon } from '@smui/icon-button';
@@ -42,7 +42,6 @@
 		{ title: 'text.3-months', value: 90 },
 		{ title: 'text.custom', value: 'custom' }
 	];
-	const ADMIN = 'Administrator';
 
 	let root;
 	let schedulingVideoId;

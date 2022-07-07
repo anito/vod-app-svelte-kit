@@ -17,12 +17,13 @@
 	import { Info, Legal } from '$lib/components';
 	import { page, session } from '$app/stores';
 	import { goto } from '$app/navigation';
+	import { ADMIN } from '$lib/utils';
 
 	$: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
 </script>
 
 <Layout {segment}>
-	{#if $session.role === 'Administrator'}
+	{#if $session.role === ADMIN}
 		<slot />
 	{:else}
 		<div class="paper-container">

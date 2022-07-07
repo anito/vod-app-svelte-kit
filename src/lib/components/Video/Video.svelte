@@ -32,7 +32,6 @@
 	export let paused = false;
 	export let preload = 'none';
 	export let playhead = 0;
-	export let curtain = false;
 	export { className as class };
 
 	$: customControls = !controls;
@@ -233,26 +232,8 @@
 </script>
 
 <div class="player {className}" class:hydrated>
-	{#if curtain}
-		<div class="curtain" class:paused>
-			<div class="curtain-left bg-black opacity-90">
-				<h2
-					class="mdc-typography--headline6 curtain-title opacity-25"
-					class:opacity-25={!video.title}
-				>
-					{video.title || $_('text.empty-title')}
-				</h2>
-				<h3
-					class="mdc-typography--subtitle2 curtain-desc opacity-25"
-					class:opacity-25={!video.description}
-				>
-					{video.description || $_('text.empty-description')}
-				</h3>
-			</div>
-			<div class="curtain-right bg-black opacity-30" />
-		</div>
-	{/if}
 	<video
+		class="flex-1"
 		bind:this={videoElement}
 		bind:currentTime={playhead}
 		bind:duration
@@ -310,68 +291,10 @@
 		user-select: none;
 	}
 	video {
-		width: 100%;
-		width: var(--player-w);
 		object-position: center;
-		object-fit: contain;
+		object-fit: cover;
 	}
 	.hydrated video {
 		object-fit: contain;
-	}
-	.curtain {
-		pointer-events: none;
-		width: 100%;
-		position: absolute;
-		top: 0;
-		bottom: 0;
-		right: 0;
-		left: 0;
-	}
-	.curtain.paused [class^='curtain-'] {
-		transform: translateX(0);
-	}
-	.curtain-left {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 50%;
-		height: 100%;
-		z-index: 1;
-		padding: 15px;
-		overflow: hidden;
-		transform: translateX(-100%);
-		transform-origin: 0 center;
-		transition-property: transform;
-		transition-duration: 0.3s;
-		transition-timing-function: ease-in-out;
-		background-color: var(--curtain-bg-left);
-		padding: var(--curtain-p);
-	}
-	.curtain-right {
-		position: absolute;
-		top: 0;
-		right: 0;
-		width: 50%;
-		height: 100%;
-		z-index: 1;
-		padding: 15px;
-		overflow: hidden;
-		transform: translateX(100%);
-		transform-origin: 0 center;
-		transition-property: transform;
-		transition-duration: 0.3s;
-		transition-timing-function: ease-in-out;
-		background-color: var(--curtain-bg-right);
-		padding: var(--curtain-p);
-	}
-	.curtain .curtain-title {
-		font-size: var(--curtain-fs-title);
-		line-height: var(--curtain-lh-title, 1rem);
-		color: var(--curtain-c-title, #444444);
-	}
-	.curtain .curtain-desc {
-		font-size: var(--curtain-fs-descr);
-		line-height: var(--curtain-lh-descr, 1rem);
-		color: var(--curtain-c-descr, #444444);
 	}
 </style>

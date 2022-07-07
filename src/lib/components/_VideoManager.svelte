@@ -5,12 +5,14 @@
 	import { goto } from '$app/navigation';
 	import { onMount, getContext } from 'svelte';
 	import { fly } from 'svelte/transition';
+	import List from '@smui/list';
 	import Fab, { Label, Icon } from '@smui/fab';
 	import MediaUploader from './_MediaUploader.svelte';
 	import VideoCard from './_VideoCard.svelte';
 	import Info from './_Info.svelte';
 	import { videos, images, fabs, currentVideo, videoEmitter } from '$lib/stores';
 	import { _ } from 'svelte-i18n';
+	import { ADMIN } from '$lib/utils';
 
 	const { open } = getContext('simple-modal');
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
@@ -34,7 +36,7 @@
 	onMount(() => {
 		snackbar = getSnackbar();
 
-		if ($session.role === 'Administrator') {
+		if ($session.role === ADMIN) {
 			setFab('add-video');
 		}
 	});
@@ -115,18 +117,14 @@
 
 {#if $session.user}
 	{#if $videos.length}
-		<div class="flex flex-wrap flex-row lg:justify-start justify-center">
+		<div class="grid lg:grid-cols-3 md:grid-cols-2 grid-flow-row gap-4">
 			{#each $videos.sort(sortAZ) as video (video.id)}
-				<div class="flex mx-1 my-2">
-					<div>
-						<VideoCard
-							on:Video:posterCreated={posterCreatedHandler}
-							on:Video:selectPoster={selectPosterHandler}
-							on:Video:removePoster={removePosterHandler}
-							{video}
-						/>
-					</div>
-				</div>
+				<VideoCard
+					on:Video:posterCreated={posterCreatedHandler}
+					on:Video:selectPoster={selectPosterHandler}
+					on:Video:removePoster={removePosterHandler}
+					{video}
+				/>
 			{/each}
 		</div>
 	{:else}

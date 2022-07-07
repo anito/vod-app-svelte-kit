@@ -7,7 +7,7 @@
 	import { UserManager, TimeManager, MailManager } from '$lib/components';
 	import Button, { Group, Label, Icon } from '@smui/button';
 	import { users, slim, sitename } from '$lib/stores';
-	import { proxyEvent, INBOX } from '$lib/utils';
+	import { proxyEvent, INBOX, ADMIN } from '$lib/utils';
 	import { _ } from 'svelte-i18n';
 	import { goto } from '$app/navigation';
 
@@ -34,8 +34,7 @@
 		token = user.jwt;
 		magicLink = token && `http://${$page.host}/login?token=${token}`;
 	})(currentUser);
-	$: hidden =
-		$session.role !== 'Administrator' ? true : selectionUserId == $session.user?.id ? true : false;
+	$: hidden = $session.role !== ADMIN ? true : selectionUserId == $session.user?.id ? true : false;
 
 	setContext('siux', {
 		getSIUX: getSimpleUserIndex

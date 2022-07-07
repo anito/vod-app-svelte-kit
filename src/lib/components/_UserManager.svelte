@@ -10,7 +10,7 @@
 	import Header from './_Header.svelte';
 	import { fly } from 'svelte/transition';
 	import { users, flash, theme } from '$lib/stores';
-	import { post, createRedirectSlug, proxyEvent, svg } from '$lib/utils';
+	import { post, createRedirectSlug, proxyEvent, svg, ADMIN } from '$lib/utils';
 	import Textfield from '@smui/textfield';
 	import TextfieldIcon from '@smui/textfield/icon';
 	import HelperText from '@smui/textfield/helper-text';
@@ -90,7 +90,7 @@
 		password ||
 		repeatedPassword;
 	$: (() => resetPassword())(selectionUserId);
-	$: isAdmin = $session.role === 'Administrator';
+	$: isAdmin = $session.role === ADMIN;
 	$: actions = isAdmin ? adminActions : userActions;
 	$: userCan = ((userActions) =>
 		[...actionsLookup].filter((s) => userActions.find((u) => s.action === u)))(actions);
@@ -343,7 +343,7 @@
 									borderColor="--prime"
 									extendedBorderColor="--back-grid-item"
 									extendedBorderSize="10"
-									badge={currentUser?.role === 'Administrator' && {
+									badge={currentUser?.role === ADMIN && {
 										icon: 'admin_panel_settings',
 										color: 'rgb(206, 4, 4)',
 										position: 'BOTTOM_RIGHT',
@@ -581,9 +581,7 @@
 											</Label>
 										</Button>
 										<Button
-											disabled={(group && group.name) === 'Administrator' ||
-												!token ||
-												currentUser.protected}
+											disabled={(group && group.name) === ADMIN || !token || currentUser.protected}
 											label={$_('text.can-not-remove-admin-token')}
 											variant="raised"
 											on:click={() => proxyEvent('INFO:token:Remove', { open: true })}

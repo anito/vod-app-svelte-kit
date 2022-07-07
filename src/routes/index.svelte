@@ -11,7 +11,7 @@
 	import Textfield from '@smui/textfield';
 	import Select, { Option } from '@smui/select';
 	import Button, { Icon } from '@smui/button';
-	import { svg } from '$lib/utils';
+	import { ADMIN, svg } from '$lib/utils';
 	import { svg_manifest } from '$lib/svg_manifest';
 	import { _, locale } from 'svelte-i18n';
 
@@ -27,7 +27,7 @@
 	let snackbar;
 
 	$: src = svg(svg_manifest.logo_hero_vod);
-	$: isAdmin = $session.user?.group?.name === 'Administrator';
+	$: isAdmin = $session.user?.group?.name === ADMIN;
 	$: user = isAdmin ? { name: $session.user?.name, email: $session.user?.email } : { name, email };
 	$: ((user) => {
 		name = user?.name || name;

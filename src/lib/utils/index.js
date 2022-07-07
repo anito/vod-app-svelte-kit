@@ -17,10 +17,9 @@ import {
 	windowSize,
 	__key__,
 	__session__,
-	__ticker__,
-	INBOX,
-	SENT
+	__ticker__
 } from './helper';
+import { INBOX, SENT, ADMIN } from './const';
 import {
 	ellapsedFormatted,
 	hasStarted,
@@ -74,5 +73,6 @@ export {
 	__session__,
 	__ticker__,
 	INBOX,
-	SENT
+	SENT,
+	ADMIN
 };

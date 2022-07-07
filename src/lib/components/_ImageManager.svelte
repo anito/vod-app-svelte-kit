@@ -42,29 +42,26 @@
 		);
 	};
 
-	$: user = $session.user;
-
 	onMount(() => {
 		snackbar = getSnackbar();
 		setFab('add-image');
 	});
 
 	function uploadDone(e) {
-		let detail = e.detail;
-		if (detail.success) {
-			images.add(detail.data);
+		const { data, message, success } = { ...e.detail };
+		if (success) {
+			images.add(data);
 		}
-		if (detail.message) {
-			configSnackbar(e.detail.message);
+		if (message) {
+			configSnackbar(message);
 			snackbar.open();
 		}
 	}
 
 	async function deletePoster(e) {
-		let detail = e.detail;
-		let image = detail.image;
+		const { image } = { ...e.detail };
 		const id = image.id;
-		api.del(`images/${image.id}`, user?.jwt).then((res) => {
+		await api.del(`images/${image.id}`, { token: $session.user?.jwt }).then((res) => {
 			let message = res.message || res.data.message || res.statusText;
 			if (res.success) {
 				urls.del(id);
@@ -83,11 +80,9 @@
 <div class="lg:p-8">
 	{#if $session.user}
 		{#if $images.length}
-			<div class="flex flex-wrap flex-row justify-center lg:justify-start">
+			<div class="grid grid-cols-3 grid-flow-row gap-4">
 				{#each $images as image (image.id)}
-					<div class="flex m-1">
-						<ImageCard on:Image:delete={deletePoster} {image} />
-					</div>
+					<ImageCard on:Image:delete={deletePoster} {image} />
 				{/each}
 			</div>
 		{:else}

@@ -1,39 +1,30 @@
 <script context="module">
 	import * as api from '$lib/api';
 
-	let usersData = [];
-	let videosData = [];
-	let imagesData = [];
 	export async function load({ session }) {
 		const token = session.user?.jwt;
 		await api
 			.get('users', { token })
 			.then((res) => {
-				res.success && (usersData = res.data);
+				res.success && users.update(res.data);
 			})
 			.catch(() => {});
 
 		await api
 			.get('videos', { token })
 			.then((res) => {
-				res.success && (videosData = res.data);
+				res.success && videos.update(res.data);
 			})
 			.catch(() => {});
 
 		await api
 			.get('images', { token })
 			.then((res) => {
-				res.success && (imagesData = res.data);
+				res.success && images.update(res.data);
 			})
 			.catch(() => {});
 
-		return {
-			props: {
-				usersData,
-				videosData,
-				imagesData
-			}
-		};
+		return {};
 	}
 </script>
 
@@ -51,16 +42,9 @@
 	import { images, videos, users } from '$lib/stores';
 	import { _ } from 'svelte-i18n';
 
-	export let usersData = [];
-	export let videosData = [];
-	export let imagesData = [];
-
 	let selectedIndex;
 	let search = '';
 
-	$: users.update(usersData);
-	$: videos.update(videosData);
-	$: images.update(imagesData);
 	$: sidebar = !!$page.params.slug;
 	$: selectionVideoId = $page.params.slug;
 	$: filteredVideos = $videos
@@ -81,7 +65,7 @@
 		<PageBar />
 	</div>
 	<slot />
-	<div class="sidebar" slot="side" style="flex: 1;">
+	<div class="sidebar flex-1" slot="side">
 		<div class="flex flex-col">
 			<Textfield
 				class="search"

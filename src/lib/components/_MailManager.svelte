@@ -35,7 +35,7 @@
 		Actions,
 		InitialFocus
 	} from '@smui/dialog';
-	import { INBOX, SENT } from '$lib/utils';
+	import { INBOX, SENT, ADMIN } from '$lib/utils';
 	import { get } from 'svelte/store';
 
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
@@ -99,7 +99,7 @@
 
 	export let selectionUserId = null;
 
-	$: isAdmin = $session.role === 'Administrator';
+	$: isAdmin = $session.role === ADMIN;
 	$: currentUser = ((id) => $users.filter((usr) => usr.id === id))(selectionUserId)[0];
 	$: selectionUserId && (selectionIndex = -1);
 	$: username = currentUser?.name;
@@ -570,7 +570,7 @@
 							{/if}
 						</Item>
 
-						{#if $session.role === 'Administrator'}
+						{#if $session.role === ADMIN}
 							<Separator />
 							<div class="flex justify-center">
 								<SecondaryText class="p-3" style="align-self: center;"
