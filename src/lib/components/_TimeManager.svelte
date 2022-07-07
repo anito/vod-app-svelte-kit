@@ -35,7 +35,9 @@
 
 	export let selectionUserId;
 
+	const isUnmanagableNoneUserList = false;
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
+	const { setFab } = getContext('fab');
 	const timespanSelections = [
 		{ title: 'text.1-month', value: 30 },
 		{ title: 'text.2-months', value: 60 },
@@ -56,12 +58,15 @@
 	let group;
 	let currentUser;
 	let selectedIndex;
+	let selectedNoneUserIndex;
 	let selectionVideoId;
 	let selectedVideo;
 	let readout;
 	let schedulingVideo = '';
 	let expires;
 	let isExpired;
+	let focusItemAtIndex;
+	let items;
 
 	$: user = $session.user;
 	$: groups = $session.groups || [];
@@ -94,9 +99,10 @@
 	$: endDate = (joinData && joinData.end && parseISO(joinData.end)) || endOfWeek(new Date(0));
 	$: expires = currentUser && currentUser.expires;
 	$: isExpired = (expires && expires * 1000 < +new Date().getTime()) || false;
-	$: noneUserVideos = ((role) => {
-		if (role === ADMIN) return $videos.sort(sortByTitle);
-		else
+	$: noneUserVideos = ((videos) => {
+		if ($session.role === ADMIN) {
+			return videos.sort(sortByTitle);
+		} else {
 			return $videosAll
 				.filter(
 					(v) =>
@@ -107,7 +113,8 @@
 						})
 				)
 				.sort(sortByTitle);
-	})(currentRole);
+		}
+	})($videos);
 	$: isDatapickerOpen = ((id) => {
 		if (!root) return;
 		!id && root.classList.remove('datapicker--open');
@@ -127,6 +134,13 @@
 		root.classList.add('timemanager--open');
 
 		snackbar = getSnackbar();
+
+		if ($session.role === ADMIN) {
+			setFab('add-video');
+		} else {
+			setFab();
+		}
+
 		return () => root.classList.remove('timemanager--open', 'datapicker--open');
 	});
 
@@ -174,7 +188,6 @@
 
 	function itemSelectedHandler(e) {
 		let { video } = e.detail;
-
 		selectionVideoId = video.id == selectionVideoId ? null : video.id;
 	}
 
@@ -273,6 +286,10 @@
 	function toggleDataPicker(id, open) {
 		selectionVideoId = id && root.classList.toggle('datapicker--open', open);
 	}
+
+	function receiveListMethods(e) {
+		({ focusItemAtIndex, items } = { ...e.detail });
+	}
 </script>
 
 <div
@@ -294,7 +311,14 @@
 			</Header>
 		</div>
 		{#if currentUser}
-			<List class="video-list mb-24" threeLine avatarList singleSelection bind:selectedIndex>
+			<List
+				class="video-list mb-24"
+				threeLine
+				avatarList
+				singleSelection
+				bind:selectedIndex
+				on:SMUIList:mount={receiveListMethods}
+			>
 				{#if ADMIN !== currentRole}
 					{#if userVideos?.length}
 						{#each userVideos as video (video.id)}
@@ -377,13 +401,23 @@
 					</div></Header
 				>
 			</div>
-			<List class="video-list mb-24" twoLine avatarList singleSelection>
+			<List
+				class="video-list mb-24"
+				on:SMUIList:mount={receiveListMethods}
+				twoLine
+				avatarList
+				singleSelection
+				bind:selectedIndex={selectedNoneUserIndex}
+			>
 				{#if noneUserVideos?.length}
 					{#each noneUserVideos as video (video.id)}
 						<SimpleVideoCard
+							on:itemSelected={itemSelectedHandler}
 							let:unmanagable
 							class="video"
-							disabled={currentRole === ADMIN || $session.role !== ADMIN}
+							disabled={(currentRole === ADMIN || $session.role !== ADMIN) &&
+								isUnmanagableNoneUserList}
+							selected={selectionVideoId === video.id}
 							{video}
 							{selectionUserId}
 						>

@@ -30,8 +30,9 @@
 	import UserGraphic from './_UserGraphic.svelte';
 	import { _ } from 'svelte-i18n';
 
-	const { getSnackbar, configSnackbar } = getContext('snackbar');
+	const { setFab } = getContext('fab');
 	const { open } = getContext('simple-modal');
+	const { getSnackbar, configSnackbar } = getContext('snackbar');
 	const adminActions = ['edit', 'pass', 'del'];
 	const userActions = ['edit', 'pass'];
 
@@ -110,6 +111,12 @@
 		root.classList.add('profiledata--open');
 
 		snackbar = getSnackbar();
+
+		if ($session.role === ADMIN) {
+			setFab('add-user');
+		} else {
+			setFab();
+		}
 
 		return () => {
 			root.classList.remove('profiledata--open');

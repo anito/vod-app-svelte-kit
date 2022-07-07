@@ -104,7 +104,7 @@
 	let snackbar;
 
 	setContext('fab', {
-		setFab: (fab) => $session.role === ADMIN && fabs.update(fab),
+		setFab: (name) => fabs.update(name),
 		restoreFab: () => fabs.restore()
 	});
 

@@ -18,12 +18,14 @@
 			})
 			.catch(() => {});
 
-		await api
-			.get('videos/all', { token, fetch })
-			.then((res) => {
-				res.success && videosAll.update(res.data);
-			})
-			.catch(() => {});
+		if (session.role !== ADMIN) {
+			await api
+				.get('videos/all', { token, fetch })
+				.then((res) => {
+					res.success && videosAll.update(res.data);
+				})
+				.catch(() => {});
+		}
 
 		return {};
 	}
@@ -34,7 +36,7 @@
 
 	import { page, session } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { onMount, getContext } from 'svelte';
+	import { onMount, getContext, tick } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import Layout from './layout.svelte';
 	import { InfoChips, Legal, SimpleUserCard, PageBar, MediaUploader } from '$lib/components';
@@ -92,12 +94,6 @@
 	$: filteredUsers = $users?.filter(
 		(user) => user.name.toLowerCase().indexOf(search.toLowerCase()) !== -1
 	);
-	$: ((t) => {
-		if (!isAdmin) return;
-		t === 'time' && setFab('add-video');
-		t === 'user' && setFab('add-user');
-		t === 'mail' && setFab();
-	})(tab);
 	$: userInfos = ($infos.has(selectionUserId) && $infos.get(selectionUserId).params) || [];
 	$: userIssues = userInfos.filter((info) => info.type === 'issue');
 	$: searchParams = $page.url.searchParams.toString();
@@ -293,13 +289,6 @@
 
 		if (success) {
 			videos.add(data);
-			// data.forEach((video) => {
-			// 		videoEmitter.dispatch({
-			// 			method: 'put',
-			// 			data: video,
-			// 			token: $session.user?.jwt
-			// 		});
-			// });
 		}
 	}
 </script>

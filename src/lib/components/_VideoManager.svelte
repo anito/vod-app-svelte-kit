@@ -38,6 +38,8 @@
 
 		if ($session.role === ADMIN) {
 			setFab('add-video');
+		} else {
+			setFab();
 		}
 	});
 

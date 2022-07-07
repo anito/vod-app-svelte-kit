@@ -38,8 +38,6 @@
 	import { INBOX, SENT, ADMIN } from '$lib/utils';
 	import { get } from 'svelte/store';
 
-	const { getSnackbar, configSnackbar } = getContext('snackbar');
-	const { setFab } = getContext('fab');
 	const sortAZProtected = (a, b) => {
 		let ap = (a['protected'] && a['name'].toLowerCase()) || 'z';
 		let bp = (b['protected'] && b['name'].toLowerCase()) || 'z';
@@ -69,7 +67,8 @@
 			}
 		}
 	];
-
+	const { getSnackbar, configSnackbar } = getContext('snackbar');
+	const { setFab } = getContext('fab');
 	const defaultActive = INBOX;
 	const mailboxes = [INBOX, SENT];
 	const { getSIUX } = getContext('siux');
@@ -147,6 +146,12 @@
 	onMount(async () => {
 		snackbar = getSnackbar();
 		getTemplates();
+
+		if ($session.role === ADMIN) {
+			activeTemplate && setFab('send-mail');
+		} else {
+			setFab();
+		}
 
 		drawerOpen = drawerOpenOnMount;
 	});
