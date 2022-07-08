@@ -35,7 +35,7 @@
 		let timestamp = now;
 		multiplayer &&
 			players.add({
-				video: videoElement,
+				videoElement,
 				timestamp
 			});
 	});
@@ -50,22 +50,14 @@
 
 	function pausePlayers() {
 		players.forEach((player) => {
-			if (player.video !== videoElement) {
-				if (player.video.promise) {
-					player.video.promise.then(() => {
-						pauseVideo(player.video);
-					});
-				} else {
-					pauseVideo(player.video);
+			if (player.videoElement !== videoElement) {
+				if (player.videoElement.promise !== void 0) {
+					player.videoElement.promise.then(() => player.videoElement.pause());
 				}
 			} else {
 				player.timestamp = new Date().getTime();
 			}
 		});
-	}
-
-	function pauseVideo(v) {
-		!v.paused && v.pause();
 	}
 
 	/**
@@ -75,14 +67,14 @@
 		if (browserName !== 'Chrome') return;
 		var _player, _players;
 		_players = Array.from(players);
-		_players = _players.filter((player) => player.timestamp > now && player.video.paused);
+		_players = _players.filter((player) => player.timestamp > now && player.videoElement.paused);
 		_player = _players
 			.sort((a, b) => b.timestamp - a.timestamp)
 			.slice(MAXSTREAMS - 1)
 			.shift();
 		if (_player) {
-			_player.video.src = '';
-			_player.promise = null;
+			_player.videoElement.src = '';
+			_player.videoElement.promise = void 0;
 		}
 	}
 </script>

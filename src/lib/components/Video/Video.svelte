@@ -19,6 +19,7 @@
 	let target;
 	let mouseAction;
 	let customControls;
+	let _src;
 
 	export let allowScrubbing = false;
 	export let videoElement = null;
@@ -36,6 +37,7 @@
 
 	$: customControls = !controls;
 	$: showControls = paused || mouseAction;
+	$: mouseAction && clearTimeout(controlsTimeout);
 	$: !mouseAction && delayHideControls();
 	$: paused && delayHideControls();
 	$: ((p) => {
@@ -45,17 +47,15 @@
 			reload();
 		}
 	})(poster);
-	$: src && setSource(src);
 
 	onMount(() => {});
 
-	function setSource(src) {
-		if (!videoElement) return;
-
-		let oldSrc = videoElement.getAttribute('src');
-		if (oldSrc !== src) {
-			videoElement.setAttribute('src', src);
+	function setSourceAndLoad() {
+		const curSrc = videoElement.getAttribute('src');
+		if (!curSrc && _src) {
+			videoElement.setAttribute('src', _src);
 		}
+		videoElement.load();
 	}
 
 	function handleMouseenter() {
@@ -100,20 +100,19 @@
 
 	function handlePlayPause(e) {
 		// if we have switched off preload, load first
-		if (preload === 'none' && !duration) {
-			videoElement.load();
+		if (!duration || !videoElement.getAttribute('src')) {
+			setSourceAndLoad();
 		}
-
 		if (paused) {
 			playhead && (videoElement.currentTime = playhead);
 			videoElement.promise = videoElement.play();
 		} else {
 			videoElement.promise
-				.then((_) => {
+				.then(() => {
 					// playback started so we can safely pause
 					videoElement.pause();
 				})
-				.catch((_) => {
+				.catch(() => {
 					console.log('Auto-play was prevented');
 				});
 		}
@@ -186,6 +185,7 @@
 	}
 
 	function handleLoadstart(e) {
+		!_src && (_src = videoElement.getAttribute('src'));
 		hydrating = true;
 		hydrated = false;
 		dispatch('player:loadstart', { ...video });
@@ -203,7 +203,7 @@
 	}
 
 	function handleAborted(e) {
-		setSource(src);
+		hydrated = false;
 		dispatch('player:aborted', { ...video });
 	}
 
@@ -226,8 +226,9 @@
 	async function reload() {
 		if (!duration) return;
 		videoElement.pause();
+		src = '';
 		await tick();
-		setTimeout(() => videoElement.load(), 100);
+		setTimeout(() => setSourceAndLoad(), 100);
 	}
 </script>
 
@@ -245,6 +246,7 @@
 		{controls}
 		{type}
 		{autoplay}
+		{src}
 		on:loadstart={handleLoadstart}
 		on:canplay={handleCanPlay}
 		on:loadeddata={handleLoadedData}
@@ -252,7 +254,6 @@
 		on:abort={handleAborted}
 		on:pause={handlePause}
 		x-webkit-airplay="allow"
-		data-src={src}
 	>
 		<source type="video/{type}" />
 		<track kind="captions" />
