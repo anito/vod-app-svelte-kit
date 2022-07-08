@@ -6,17 +6,19 @@
 	import { sitename } from '$lib/stores';
 	import { _ } from 'svelte-i18n';
 	import { page, session } from '$app/stores';
-	import { INBOX } from '$lib/utils';
+	import { INBOX, TABS } from '$lib/utils';
 
-	const defaultSearch = `?tab=mail&active=${INBOX}`;
+	const defaultTab = 0;
+	const defaultSearch =
+		(defaultTab === 0 && `?tab=${TABS[defaultTab]}`) ||
+		(defaultTab === 1 && `?tab=${TABS[defaultTab]}`) ||
+		(defaultTab === 2 && `?tab=${TABS[defaultTab]}&active=${INBOX}`);
 
 	onMount(() => {
 		let pathname = $page.url.pathname;
-		let tab = $page.url.searchParams.get('tab');
 		let slug = $page.params.slug || $session.user?.id;
 		let search = $page.url.searchParams.search || defaultSearch;
 
-		// console.log(console.log(`${pathname}/${slug}${search}`));
 		setTimeout(() => goto(`${pathname}/${slug}${search}`), 200);
 	});
 </script>

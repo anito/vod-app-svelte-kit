@@ -19,7 +19,7 @@ import {
 	__session__,
 	__ticker__
 } from './helper';
-import { INBOX, SENT, ADMIN } from './const';
+import { INBOX, SENT, ADMIN, TABS } from './const';
 import {
 	ellapsedFormatted,
 	hasStarted,
@@ -74,5 +74,6 @@ export {
 	__ticker__,
 	INBOX,
 	SENT,
-	ADMIN
+	ADMIN,
+	TABS
 };
