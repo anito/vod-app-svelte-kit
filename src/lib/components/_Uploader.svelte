@@ -26,8 +26,7 @@
 	let dropzone;
 	let className = '';
 	let progress = 0;
-	let preview;
-	let template;
+	let previewTemplate;
 	let options;
 	let count = 0;
 
@@ -35,9 +34,9 @@
 	$: closed = !hasFiles;
 	$: if (!hasFiles) progress = 0; // reset progress when removing last file
 
-	let html = (el) => {
+	let template = (el) => {
 		let child = el.childNodes[0];
-		template = el.removeChild(child).outerHTML;
+		previewTemplate = el.removeChild(child).outerHTML;
 	};
 
 	let submit = function (e) {
@@ -92,8 +91,7 @@
 			clickable: true,
 			acceptedFiles,
 			maxFilesize,
-			previewsContainer: preview,
-			previewTemplate: template,
+			previewTemplate,
 			init
 		};
 	});
@@ -102,7 +100,13 @@
 <div class="content {className}">
 	<div class="content-inner relative">
 		<Dropzone style="margin-bottom: 3em" dropzoneEvents={{ init }} let:id {options}>
-			<form {id} on:submit|preventDefault={submit} enctype="multipart/form-data" method="post">
+			<form
+				{id}
+				on:submit|preventDefault={submit}
+				class="items-start flex-wrap justify-start flex"
+				enctype="multipart/form-data"
+				method="post"
+			>
 				<p class:hasFiles class="fileAdded dz-message">
 					{$_('text.drop-your-files-here')}
 				</p>
@@ -114,7 +118,7 @@
 				<LinearProgress class="progressbar" {progress} {closed} />
 			</form>
 		</Dropzone>
-		<div use:html class="files-table files" bind:this={preview}>
+		<div use:template class="files-table files flex flex-row flex-wrap justify-start items-start">
 			<PreviewTemplate />
 		</div>
 	</div>
@@ -124,14 +128,10 @@
 	form {
 		width: 100%;
 		height: 100%;
-		justify-content: center;
-		align-items: center;
-		align-content: center;
-		justify-items: center;
-		display: flex;
 	}
-	form :global(.dropzone) {
-		width: 100%;
+	form:not(.dz-started) {
+		align-items: center;
+		justify-content: center;
 	}
 	form :global(.button-upload) {
 		position: absolute;
@@ -157,9 +157,5 @@
 		top: 0;
 		width: 100%;
 		height: auto;
-		display: flex;
-		flex-flow: row wrap;
-		justify-content: start;
-		align-items: start;
 	}
 </style>
