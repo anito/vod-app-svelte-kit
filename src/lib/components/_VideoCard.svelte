@@ -23,8 +23,9 @@
 
 	export let video;
 	export { className as class };
+	export let key = 'default-modal';
 
-	const { open } = getContext('simple-modal');
+	const uploader = getContext(key);
 
 	let className = '';
 	let cardMenu;
@@ -50,7 +51,7 @@
 	$: rightButton = isEditMode
 		? { label: $_('text.cancel'), icon: 'cancel' }
 		: { label: $_('text.delete'), icon: 'delete' };
-	$: matchingData = (video['_matchingData'] && video['_matchingData']['UsersVideos']) || null;
+	$: matchingData = (video?.['_matchingData'] && video['_matchingData']['UsersVideos']) || null;
 	$: canSave = description !== video.description || title !== video.title;
 	$: image = $images.find((i) => video.image_id === i.id);
 
@@ -86,7 +87,7 @@
 	}
 
 	function createPoster(type) {
-		open(
+		uploader.open(
 			MediaUploader,
 			{
 				type,
@@ -96,7 +97,7 @@
 					maxFiles: 1,
 					maxFilesize: 1024
 				},
-				events: { uploadDone }
+				events: { 'upload:done': uploadDoneHandler }
 			},
 			{
 				transitionWindow: fly,
@@ -117,8 +118,9 @@
 		return res;
 	}
 
-	function uploadDone(e) {
+	function uploadDoneHandler(e) {
 		dispatch('Video:posterCreated', e.detail);
+		uploader.close();
 	}
 
 	function imageListOpenedHandler(e) {

@@ -46,7 +46,7 @@
 	// @ts-nocheck
 
 	import '../app.css';
-
+	import '$lib/components/_notched_outline.scss';
 	import * as api from '$lib/api';
 	import { goto } from '$app/navigation';
 	import { page, session } from '$app/stores';

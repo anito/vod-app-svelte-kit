@@ -203,7 +203,8 @@
     "one-moment": "One moment...",
     "add-user": "Add User",
     "waiting-for-users": "Retrieving user data...",
-    "drop-your-files-here": "Drop your file here or click to upload"
+    "drop-your-files-here": "Drop your file here or click to upload",
+    "editor": "Editor"
   },
   "summary": {
     "copy-link": {

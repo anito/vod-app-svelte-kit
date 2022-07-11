@@ -5,7 +5,7 @@
 	import { onMount, setContext } from 'svelte';
 	import { fade } from 'svelte/transition';
 
-	export let key = 'simple-modal';
+	export let key = 'default-modal';
 	export let closeButton = true;
 	export let closeOnEsc = true;
 	export let closeOnOuterClick = true;

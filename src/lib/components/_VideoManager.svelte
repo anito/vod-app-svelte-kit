@@ -5,16 +5,18 @@
 	import { goto } from '$app/navigation';
 	import { onMount, getContext } from 'svelte';
 	import { fly } from 'svelte/transition';
-	import List from '@smui/list';
 	import Fab, { Label, Icon } from '@smui/fab';
-	import MediaUploader from './_MediaUploader.svelte';
-	import VideoCard from './_VideoCard.svelte';
 	import Info from './_Info.svelte';
+	import VideoCard from './_VideoCard.svelte';
+	import MediaUploader from './_MediaUploader.svelte';
+	import VideoEditorList from './_VideoEditorList.svelte';
+	import Modal from './_Modal.svelte';
 	import { videos, images, fabs, currentVideo, videoEmitter } from '$lib/stores';
 	import { _ } from 'svelte-i18n';
 	import { ADMIN } from '$lib/utils';
 
-	const { open } = getContext('simple-modal');
+	const uploader = getContext('default-modal');
+	const editor = getContext('editor-modal');
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
 	const { setFab } = getContext('fab');
 	const transitionParams = {
@@ -32,6 +34,7 @@
 	};
 
 	let snackbar;
+	let uploadedData;
 
 	onMount(() => {
 		snackbar = getSnackbar();
@@ -44,7 +47,7 @@
 	});
 
 	let openUploader = (type) => {
-		open(
+		uploader.open(
 			MediaUploader,
 			{
 				type,
@@ -56,7 +59,7 @@
 					timeout: 3600 * 1000, // 60min
 					maxFilesize: 1024 // Megabyte
 				},
-				events: { uploadDone }
+				events: { 'upload:done': uploadDoneHandler }
 			},
 			{
 				transitionWindow: fly,
@@ -64,11 +67,12 @@
 					y: -200,
 					duration: 500
 				}
-			}
+			},
+			{ onClosed: openEditor }
 		);
 	};
 
-	function uploadDone(e) {
+	function uploadDoneHandler(e) {
 		const { data, message, success } = { ...e.detail };
 
 		if (message) {
@@ -77,21 +81,37 @@
 		}
 
 		if (success) {
+			uploadedData = data;
 			videos.add(data);
+			$videos;
+			uploader.close();
 		}
+	}
+
+	function openEditor() {
+		editor.open(VideoEditorList, {
+			data: uploadedData,
+			posterCreatedHandler,
+			posterSelectHandler,
+			posterRemoveHandler
+		});
 	}
 
 	function posterCreatedHandler(e) {
 		let uploads = e.detail.data;
 		let newPosterId = uploads.length && uploads[0].id;
-		newPosterId && images.add(uploads), selectPoster(newPosterId);
+		if (newPosterId) {
+			images.add(uploads);
+			selectPoster(newPosterId);
+			uploader.close();
+		}
 	}
 
-	function selectPosterHandler(e) {
+	function posterSelectHandler(e) {
 		selectPoster(e.detail);
 	}
 
-	function removePosterHandler() {
+	function posterRemoveHandler() {
 		let video;
 		if ((video = $currentVideo)) {
 			video.image_id = null;
@@ -123,8 +143,8 @@
 			{#each $videos.sort(sortAZ) as video (video.id)}
 				<VideoCard
 					on:Video:posterCreated={posterCreatedHandler}
-					on:Video:selectPoster={selectPosterHandler}
-					on:Video:removePoster={removePosterHandler}
+					on:Video:selectPoster={posterSelectHandler}
+					on:Video:removePoster={posterRemoveHandler}
 					{video}
 				/>
 			{/each}

@@ -15,7 +15,7 @@
 	import { _, locale } from 'svelte-i18n';
 	import { fabs, urls, sitename, images } from '$lib/stores';
 
-	const { open } = getContext('simple-modal');
+	const { open } = getContext('default-modal');
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
 	const { setFab } = getContext('fab');
 
@@ -30,7 +30,7 @@
 					parallelUploads: 12,
 					maxFiles: 12
 				},
-				events: { uploadDone }
+				events: { 'upload:done': uploadDoneHandler }
 			},
 			{
 				transitionWindow: fly,
@@ -47,7 +47,7 @@
 		setFab('add-image');
 	});
 
-	function uploadDone(e) {
+	function uploadDoneHandler(e) {
 		const { data, message, success } = { ...e.detail };
 		if (success) {
 			images.add(data);

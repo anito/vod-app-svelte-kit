@@ -20,7 +20,6 @@
 	export let timeout = 180 * 1000; // 3min
 	export let uid = '';
 
-	const { close } = getContext('simple-modal');
 	const dispatch = createEventDispatcher();
 
 	let dropzone;
@@ -69,7 +68,6 @@
 		});
 		this.on('complete', (file) => {
 			dropzone.removeFile(file);
-			close();
 		});
 		this.on('maxfilesreached', (files) => {
 			// TODO

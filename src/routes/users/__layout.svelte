@@ -50,9 +50,8 @@
 	import { _, locale } from 'svelte-i18n';
 	import { Component, SvgIcon } from '$lib/components';
 
-	const { open } = getContext('simple-modal');
+	const { open } = getContext('default-modal');
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
-	const defaultTab = 'time';
 
 	$: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1]; // slug (user.id ) in case we start from a specific user e.g. /users/23
 
@@ -75,11 +74,7 @@
 	let redirectDialog;
 	let selectedIndex;
 
-	const { setFab } = getContext('fab');
-
-	$: tab = $page.url.searchParams.get('tab') || defaultTab;
 	$: active = $page.url.searchParams.get('active');
-	$: isAdmin = $session.role === ADMIN;
 	$: selectionUserId = $page.params.slug || $session.user?.id;
 	$: currentUser = ((id) => $users.find((usr) => usr.id === id))(selectionUserId);
 	$: ((usr) => {
@@ -267,7 +262,7 @@
 					timeout: 3600 * 1000, // 60min
 					maxFilesize: 1024 // Megabyte
 				},
-				events: { uploadDone }
+				events: { 'upload:done': uploadDoneHandler }
 			},
 			{
 				transitionWindow: fly,
@@ -279,7 +274,7 @@
 		);
 	};
 
-	function uploadDone(e) {
+	function uploadDoneHandler(e) {
 		const { data, message, success } = { ...e.detail };
 
 		if (message) {

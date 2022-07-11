@@ -32,7 +32,7 @@
 
 	$: images.update(data);
 
-	const { open } = getContext('simple-modal');
+	const { open } = getContext('default-modal');
 	const { setFab } = getContext('fab');
 
 	onMount(() => {

@@ -25,10 +25,6 @@
 	$: acceptedFiles = !acceptedFiles && `${fileTypes}/*`;
 	$: options = { ...options, acceptedFiles, path };
 
-	function init(node) {
-		uploader = node;
-	}
-
 	onMount(() => {
 		snackbar = getSnackbar();
 
@@ -65,11 +61,11 @@
 	}
 
 	function handleUpload(detail) {
-		uploader.dispatchEvent(new CustomEvent('uploadDone', { detail }));
+		uploader.dispatchEvent(new CustomEvent('upload:done', { detail }));
 	}
 </script>
 
-<div class="uploader-wrapper {className}" use:init>
+<div class="uploader-wrapper {className}" bind:this={uploader}>
 	<div class="flex justify-between">
 		<Header h="6" mdc class="upload-header flex justify-between"
 			>{$_('text.upload-type', { values: { type } })}</Header

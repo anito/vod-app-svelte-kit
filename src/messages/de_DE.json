@@ -203,7 +203,8 @@
     "one-moment": "Einen Moment...",
     "add-user": "Neuer Benutzer",
     "waiting-for-users": "Warte auf Benutzerdaten...",
-    "drop-your-files-here": "Hier Ihre Dateien ablegen oder klicken um sie hinzuzufügen"
+    "drop-your-files-here": "Hier Ihre Dateien ablegen oder klicken um sie hinzuzufügen",
+    "editor": "Editor"
   },
   "summary": {
     "copy-link": {

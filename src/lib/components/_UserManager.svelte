@@ -31,7 +31,7 @@
 	import { _ } from 'svelte-i18n';
 
 	const { setFab } = getContext('fab');
-	const { open } = getContext('simple-modal');
+	const { open } = getContext('default-modal');
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
 	const adminActions = ['edit', 'pass', 'del'];
 	const userActions = ['edit', 'pass'];
@@ -133,7 +133,7 @@
 					parallelUploads: 1,
 					maxFiles: 1
 				},
-				events: { uploadDone }
+				events: { 'upload:done': uploadDoneHandler }
 			},
 			{
 				transitionWindow: fly,
@@ -145,7 +145,7 @@
 		);
 	};
 
-	async function uploadDone(e) {
+	async function uploadDoneHandler(e) {
 		let detail = e.detail;
 		let message;
 
