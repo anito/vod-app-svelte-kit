@@ -1,6 +1,6 @@
 <script context="module">
 	import * as api from '$lib/api';
-	import { infos, fabs, users, videos, videosAll, slim, videoEmitter } from '$lib/stores';
+	import { infos, fabs, users, videos, videosAll, slim } from '$lib/stores';
 
 	export async function load({ fetch, session }) {
 		const token = session.user?.jwt;
@@ -39,7 +39,17 @@
 	import { onMount, getContext, tick } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import Layout from './layout.svelte';
-	import { InfoChips, Legal, SimpleUserCard, PageBar, MediaUploader } from '$lib/components';
+	import {
+		InfoChips,
+		Legal,
+		SimpleUserCard,
+		PageBar,
+		MediaUploader,
+		Modal,
+		Component,
+		SvgIcon,
+		VideoEditorList
+	} from '$lib/components';
 	import { ADMIN, proxyEvent } from '$lib/utils';
 	import Button, { Icon as Icon_ } from '@smui/button';
 	import Fab, { Label } from '@smui/fab';
@@ -48,9 +58,9 @@
 	import List from '@smui/list';
 	import Dialog, { Title as DialogTitle, Content, Actions, InitialFocus } from '@smui/dialog';
 	import { _, locale } from 'svelte-i18n';
-	import { Component, SvgIcon } from '$lib/components';
 
-	const { open } = getContext('default-modal');
+	const editor = getContext('editor-modal');
+	const uploader = getContext('default-modal');
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
 
 	$: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1]; // slug (user.id ) in case we start from a specific user e.g. /users/23
@@ -73,6 +83,7 @@
 	let removeTokenDialog;
 	let redirectDialog;
 	let selectedIndex;
+	let uploadedData;
 
 	$: active = $page.url.searchParams.get('active');
 	$: selectionUserId = $page.params.slug || $session.user?.id;
@@ -250,10 +261,10 @@
 	}
 
 	let openUploader = (type) => {
-		open(
+		uploader.open(
 			MediaUploader,
 			{
-				type,
+				commonProps: { type },
 				options: {
 					// acceptedFiles: '.mov .mp4 .m4a .m4v .3gp .3g2 .webm',
 					uploadMultiple: true,
@@ -270,7 +281,8 @@
 					y: -200,
 					duration: 500
 				}
-			}
+			},
+			{ onClosed: openEditor }
 		);
 	};
 
@@ -283,8 +295,19 @@
 		}
 
 		if (success) {
+			uploadedData = data;
 			videos.add(data);
+			uploader.close();
 		}
+	}
+
+	function openEditor() {
+		if (!uploadedData) return;
+
+		editor.open(VideoEditorList, {
+			data: uploadedData
+		});
+		uploadedData = null;
 	}
 </script>
 

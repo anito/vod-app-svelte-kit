@@ -10,13 +10,17 @@
 	import VideoCard from './_VideoCard.svelte';
 	import MediaUploader from './_MediaUploader.svelte';
 	import VideoEditorList from './_VideoEditorList.svelte';
-	import Modal from './_Modal.svelte';
-	import { videos, images, fabs, currentVideo, videoEmitter } from '$lib/stores';
+	import { videos, fabs } from '$lib/stores';
+	import {
+		ADMIN,
+		posterCreatedHandler,
+		posterRemoveHandler,
+		posterSelectedHandler
+	} from '$lib/utils';
 	import { _ } from 'svelte-i18n';
-	import { ADMIN } from '$lib/utils';
 
-	const uploader = getContext('default-modal');
 	const editor = getContext('editor-modal');
+	const uploader = getContext('default-modal');
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
 	const { setFab } = getContext('fab');
 	const transitionParams = {
@@ -50,7 +54,7 @@
 		uploader.open(
 			MediaUploader,
 			{
-				type,
+				commonProps: { type },
 				options: {
 					// acceptedFiles: '.mov .mp4 .m4a .m4v .3gp .3g2 .webm',
 					uploadMultiple: true,
@@ -83,57 +87,17 @@
 		if (success) {
 			uploadedData = data;
 			videos.add(data);
-			$videos;
 			uploader.close();
 		}
 	}
 
 	function openEditor() {
+		if (!uploadedData) return;
+
 		editor.open(VideoEditorList, {
-			data: uploadedData,
-			posterCreatedHandler,
-			posterSelectHandler,
-			posterRemoveHandler
+			data: uploadedData
 		});
-	}
-
-	function posterCreatedHandler(e) {
-		let uploads = e.detail.data;
-		let newPosterId = uploads.length && uploads[0].id;
-		if (newPosterId) {
-			images.add(uploads);
-			selectPoster(newPosterId);
-			uploader.close();
-		}
-	}
-
-	function posterSelectHandler(e) {
-		selectPoster(e.detail);
-	}
-
-	function posterRemoveHandler() {
-		let video;
-		if ((video = $currentVideo)) {
-			video.image_id = null;
-			videoEmitter.dispatch({
-				method: 'put',
-				data: video,
-				show: true
-			});
-		}
-	}
-
-	function selectPoster(id) {
-		let video;
-		if ((video = $currentVideo)) {
-			video.image_id != id &&
-				(video.image_id = id) &&
-				videoEmitter.dispatch({
-					method: 'put',
-					data: video,
-					show: true
-				});
-		}
+		uploadedData = null;
 	}
 </script>
 
@@ -143,7 +107,7 @@
 			{#each $videos.sort(sortAZ) as video (video.id)}
 				<VideoCard
 					on:Video:posterCreated={posterCreatedHandler}
-					on:Video:selectPoster={posterSelectHandler}
+					on:Video:selectedPoster={posterSelectedHandler}
 					on:Video:removePoster={posterRemoveHandler}
 					{video}
 				/>

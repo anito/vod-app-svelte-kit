@@ -44,6 +44,7 @@ export { default as UserCard } from './_UserCard.svelte';
 export { default as UserGraphic } from './_UserGraphic.svelte';
 export { default as UserManager } from './_UserManager.svelte';
 export { default as VideoCard } from './_VideoCard.svelte';
+export { default as VideoEditorList } from './_VideoEditorList.svelte';
 export { default as VideoManager } from './_VideoManager.svelte';
 
 export { default as DateRangePicker } from './DateRangePicker/index.js';

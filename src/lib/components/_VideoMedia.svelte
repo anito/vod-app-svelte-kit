@@ -130,9 +130,9 @@
 	<MediaContent class="flex z-10">
 		{#if isAdmin}
 			<div class="editor-wrapper" class:is-edit-mode={isEditMode}>
-				<div class="editor">
+				<div class="editor p-2">
 					<Textfield
-						class="mb-4"
+						class="mb-3"
 						variant="outlined"
 						dense
 						bind:value={title}
@@ -182,7 +182,7 @@
 	.editor {
 		display: flex;
 		flex-direction: column;
-		margin: 5px;
+		height: 100%;
 	}
 	.editor-wrapper.is-edit-mode {
 		display: inline-block;

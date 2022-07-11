@@ -183,7 +183,7 @@
     "authentication-required": "Please sign in to view this area",
     "empty-title": "Title",
     "empty-description": "Description",
-    "max-file-count": "{count} max.",
+    "max-files": "{maxFiles} max.",
     "file-queue": "Queue {count}",
     "no-videos": "No Videos available",
     "title": "Title",
@@ -204,7 +204,8 @@
     "add-user": "Add User",
     "waiting-for-users": "Retrieving user data...",
     "drop-your-files-here": "Drop your file here or click to upload",
-    "editor": "Editor"
+    "editor": "Editor",
+    "edit-uploaded-content": "Edit uploaded content"
   },
   "summary": {
     "copy-link": {

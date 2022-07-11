@@ -4,8 +4,12 @@
 	// Version 0.4.1
 	import { onMount, setContext } from 'svelte';
 	import { fade } from 'svelte/transition';
+	import Component from './_Component.svelte';
+	import Header from './_Header.svelte';
+	import { _ } from 'svelte-i18n';
 
 	export let key = 'default-modal';
+	export let header = 'Header';
 	export let closeButton = true;
 	export let closeOnEsc = true;
 	export let closeOnOuterClick = true;
@@ -31,8 +35,9 @@
 	};
 	let state = { ...defaultState };
 
-	let Component = null;
+	let _Component = null;
 	let props = null;
+	let commonProps = null;
 
 	let background;
 	let wrap;
@@ -47,16 +52,22 @@
 	$: cssContent = toCssString(state.styleContent);
 	$: currentTransitionBg = state.transitionBg;
 	$: currentTransitionWindow = state.transitionWindow;
+	$: translatedHeader =
+		header === typeof 'string' ? header : $_(header.name, { values: { ...commonProps } });
+	$: console.log($_(header.name, { values: { ...commonProps } }));
+	$: console.log(translatedHeader);
 
 	const toVoid = () => {};
+
 	let onOpen = toVoid;
 	let onClose = toVoid;
 	let onOpened = toVoid;
 	let onClosed = toVoid;
 
 	const open = (NewComponent, newProps = {}, options = {}, callback = {}) => {
-		Component = NewComponent;
-		props = newProps;
+		_Component = NewComponent;
+		commonProps = newProps.commonProps || {};
+		props = { ...newProps, ...commonProps };
 		state = { ...defaultState, ...options };
 		onOpen = callback.onOpen || toVoid;
 		onClose = callback.onClose || toVoid;
@@ -67,12 +78,12 @@
 	const close = (callback = {}) => {
 		onClose = callback.onClose || onClose;
 		onClosed = callback.onClosed || onClosed;
-		Component = null;
+		_Component = null;
 		props = null;
 	};
 
 	const handleKeyup = (event) => {
-		if (state.closeOnEsc && Component && event.key === 'Escape') {
+		if (state.closeOnEsc && _Component && event.key === 'Escape') {
 			event.preventDefault();
 			close();
 		}
@@ -91,7 +102,7 @@
 
 <svelte:window on:keyup={handleKeyup} />
 
-{#if Component}
+{#if _Component}
 	<div
 		class="bg"
 		on:click={handleOuterClick}
@@ -110,9 +121,16 @@
 				style={cssWindow}
 			>
 				{#if state.closeButton}<button on:click={close} class="close" />{/if}
-				<div class="content" style={cssContent}>
-					<svelte:component this={Component} {...props} />
-				</div>
+				<Component variant="sm">
+					<div slot="header">
+						<Header mdc h="5" style="text-transform: uppercase">
+							{translatedHeader}
+						</Header>
+					</div>
+					<div class="content" style={cssContent}>
+						<svelte:component this={_Component} {...props} />
+					</div>
+				</Component>
 			</div>
 		</div>
 	</div>
@@ -147,7 +165,7 @@
 		max-width: 100%;
 		max-height: 100%;
 		margin: 2rem auto;
-		color: black;
+		color: inherit;
 		border-radius: 0.2rem;
 		background: white;
 	}
@@ -171,10 +189,10 @@
 		width: 1.5rem;
 		height: 1.5rem;
 		border: 0;
-		color: black;
+		color: var(--on-prime);
 		border-radius: 1.5rem;
-		background: white;
-		box-shadow: 0 0 0 1px black;
+		background: var(--prime);
+		box-shadow: 0 0 0 1px var(--on-prime);
 		transition: transform 0.2s cubic-bezier(0.25, 0.1, 0.25, 1),
 			background 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
 		-webkit-appearance: none;
@@ -189,7 +207,7 @@
 		top: 50%;
 		width: 1rem;
 		height: 1px;
-		background: black;
+		background: var(--on-prime);
 		transform-origin: center;
 		transition: height 0.2s cubic-bezier(0.25, 0.1, 0.25, 1),
 			background 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -210,13 +228,14 @@
 	}
 
 	.close:hover {
-		background: black;
+		color: var(--prime);
+		background: var(--on-prime);
 	}
 
 	.close:hover:before,
 	.close:hover:after {
 		height: 2px;
-		background: white;
+		background: var(--prime);
 	}
 
 	.close:focus {

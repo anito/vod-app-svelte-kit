@@ -327,85 +327,87 @@
 
 <Icons />
 
-<Modal>
-	{#if $session && $i18n}
-		<form
-			class="main-menu"
-			on:submit|stopPropagation|preventDefault={submit}
-			method="post"
-			action="/login"
-		>
-			<Nav {segment} {page} {logo}>
-				{#if $session.user}
-					<NavItem href="/videos" title="Videothek" segment="videos">
-						<Icon class="material-icons" style="vertical-align: middle;">video_library</Icon>
-						<Label>{$_('nav.library')}</Label>
-					</NavItem>
-				{/if}
+{#if $session && $i18n}
+	<Modal header={{ name: 'text.upload-type' }}>
+		<Modal header={{ name: 'text.edit-uploaded-content' }} key="editor-modal">
+			<form
+				class="main-menu"
+				on:submit|stopPropagation|preventDefault={submit}
+				method="post"
+				action="/login"
+			>
+				<Nav {segment} {page} {logo}>
+					{#if $session.user}
+						<NavItem href="/videos" title="Videothek" segment="videos">
+							<Icon class="material-icons" style="vertical-align: middle;">video_library</Icon>
+							<Label>{$_('nav.library')}</Label>
+						</NavItem>
+					{/if}
 
-				{#if $session.role === ADMIN}
-					<NavItem href="/users" title="Administration" segment="users">
-						<Icon class="material-icons" style="vertical-align: middle;">settings</Icon>
-						<Label>Admin</Label>
-					</NavItem>
-				{/if}
+					{#if $session.role === ADMIN}
+						<NavItem href="/users" title="Administration" segment="users">
+							<Icon class="material-icons" style="vertical-align: middle;">settings</Icon>
+							<Label>Admin</Label>
+						</NavItem>
+					{/if}
 
-				{#if $session.user}
-					<NavItem segment="login">
-						<Button
-							variant="raised"
-							class="sign-in-out button-logout v-emph v-emph-bounce {emphasize}"
-							on:mouseenter={() => (emphasize = 'v-emph-active')}
-							on:mouseleave={() => (emphasize = '')}
-						>
-							<span class="button-first-line v-emph-primary v-emph-down">Logout</span>
-							<Label class="no-break v-emph-secondary v-emph-up">
-								{@html loggedInButtonTextSecondLine}
-							</Label>
-						</Button>
-					</NavItem>
-				{:else}
-					<NavItem href="/login{search}">
-						<Button color="secondary" variant="raised" class="sign-in-out button-login">
-							<Label>{$_('nav.login')}</Label>
-						</Button>
-					</NavItem>
-				{/if}
+					{#if $session.user}
+						<NavItem segment="login">
+							<Button
+								variant="raised"
+								class="sign-in-out button-logout v-emph v-emph-bounce {emphasize}"
+								on:mouseenter={() => (emphasize = 'v-emph-active')}
+								on:mouseleave={() => (emphasize = '')}
+							>
+								<span class="button-first-line v-emph-primary v-emph-down">Logout</span>
+								<Label class="no-break v-emph-secondary v-emph-up">
+									{@html loggedInButtonTextSecondLine}
+								</Label>
+							</Button>
+						</NavItem>
+					{:else}
+						<NavItem href="/login{search}">
+							<Button color="secondary" variant="raised" class="sign-in-out button-login">
+								<Label>{$_('nav.login')}</Label>
+							</Button>
+						</NavItem>
+					{/if}
 
-				{#if $session.user}
-					<NavItem title="Avatar" href="/users/{$session.user?.id}?tab=user">
-						<UserGraphic
-							borderSize="3"
-							borderColor="--prime"
-							dense
-							size="40"
-							user={$session.user}
-							badge={{
-								icon: 'settings',
-								color: '--prime',
-								size: 'small',
-								position: 'BOTTOM_RIGHT'
-							}}
-						/>
-					</NavItem>
-				{:else}
-					<NavItem title="Avatar">
-						<UserGraphic borderSize="3" borderColor="--prime" dense size="40" fallback={person} />
-					</NavItem>
-				{/if}
+					{#if $session.user}
+						<NavItem title="Avatar" href="/users/{$session.user?.id}?tab=user">
+							<UserGraphic
+								borderSize="3"
+								borderColor="--prime"
+								dense
+								size="40"
+								user={$session.user}
+								badge={{
+									icon: 'settings',
+									color: '--prime',
+									size: 'small',
+									position: 'BOTTOM_RIGHT'
+								}}
+							/>
+						</NavItem>
+					{:else}
+						<NavItem title="Avatar">
+							<UserGraphic borderSize="3" borderColor="--prime" dense size="40" fallback={person} />
+						</NavItem>
+					{/if}
 
-				<NavItem title={$_('text.choose-locale')}>
-					<LocaleSwitcher />
-				</NavItem>
+					<NavItem title={$_('text.choose-locale')}>
+						<LocaleSwitcher />
+					</NavItem>
 
-				<NavItem title={$_('text.choose-framework')} style="vertical-align: sub;">
-					<FrameworkSwitcher />
-				</NavItem>
-			</Nav>
-		</form>
-		<slot />
-	{/if}
-</Modal>
+					<NavItem title={$_('text.choose-framework')} style="vertical-align: sub;">
+						<FrameworkSwitcher />
+					</NavItem>
+				</Nav>
+			</form>
+			<slot />
+		</Modal>
+	</Modal>
+{/if}
 <LoadingModal backgroundColor="#ffffff" opacity=".45" wait="0">
 	<Jumper size="200" color="var(--flash)" unit="px" />
 </LoadingModal>

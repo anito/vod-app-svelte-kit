@@ -37,7 +37,7 @@
 	import List from '@smui/list';
 	import Textfield from '@smui/textfield';
 	import Icon from '@smui/textfield/icon';
-	import { Legal, PageBar, SimpleVideoCard, Component } from '$lib/components';
+	import { Legal, PageBar, SimpleVideoCard, Component, Modal } from '$lib/components';
 	import { proxyEvent, sortByTitle } from '$lib/utils';
 	import { images, videos, users } from '$lib/stores';
 	import { _ } from 'svelte-i18n';

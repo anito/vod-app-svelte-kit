@@ -90,7 +90,7 @@
 		uploader.open(
 			MediaUploader,
 			{
-				type,
+				commonProps: { type },
 				options: {
 					uploadMultiple: false,
 					parallelUploads: 1,
@@ -271,7 +271,7 @@
 										<ImageAspectContainer>
 											<Image
 												class="preview-image"
-												on:click={() => dispatch('Video:selectPoster', image.id)}
+												on:click={() => dispatch('Video:selectedPoster', image.id)}
 												{src}
 											/>
 										</ImageAspectContainer>

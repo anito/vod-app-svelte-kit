@@ -127,7 +127,7 @@
 		open(
 			MediaUploader,
 			{
-				type: 'avatar',
+				commonProps: { type: 'avatar' },
 				uid: currentUser.id,
 				options: {
 					parallelUploads: 1,
@@ -146,17 +146,15 @@
 	};
 
 	async function uploadDoneHandler(e) {
-		let detail = e.detail;
-		let message;
+		const { success, message, data } = { ...e.detail };
 
-		message = detail.message || detail.data.message;
-		if (detail.success) {
-			const user = detail.data;
+		if (success) {
+			const user = data;
 			users.put(user);
 
 			// also reflect the change in the session cookie
-			if ($session.user.id === detail.data.id) {
-				$session.user = detail.data;
+			if ($session.user.id === data.id) {
+				$session.user = data;
 
 				await post('/auth/save', { user });
 			}
@@ -166,18 +164,20 @@
 	}
 
 	async function deleteAvatar() {
-		const res = await api.del(`avatars/${currentUser.avatar.id}`, { token: user?.jwt });
-		message = res.message || res.data.message;
-		if (res.success) {
-			users.put(res.data);
+		await api.del(`avatars/${currentUser.avatar.id}`, { token: user?.jwt }).then(async (res) => {
+			message = res.message || res.data.message;
+			if (res.success) {
+				users.put(res.data);
 
-			// also reflect the change in the session cookie
-			if ($session.user.id === currentUser.id) {
-				await post('/auth/save', {
-					user: currentUser
-				});
+				// also reflect the change in the session cookie
+				if ($session.user.id === currentUser.id) {
+					await post('/auth/save', {
+						user: currentUser
+					});
+				}
 			}
-		}
+		});
+
 		configSnackbar(message);
 		snackbar.open();
 	}

@@ -24,7 +24,7 @@
 		open(
 			MediaUploader,
 			{
-				type: 'image',
+				commonProps: { type: 'image' },
 				options: {
 					uploadMultiple: true,
 					parallelUploads: 12,

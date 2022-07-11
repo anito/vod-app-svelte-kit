@@ -3,7 +3,6 @@
 
 	import { onMount, getContext } from 'svelte';
 	import Uploader from './_Uploader.svelte';
-	import Header from './_Header.svelte';
 	import { _ } from 'svelte-i18n';
 
 	export { className as class };
@@ -67,14 +66,11 @@
 
 <div class="uploader-wrapper {className}" bind:this={uploader}>
 	<div class="flex justify-between">
-		<Header h="6" mdc class="upload-header flex justify-between"
-			>{$_('text.upload-type', { values: { type } })}</Header
-		>
 		<div class="subheader p-2 pb-3 mr-10">
 			<span>{$_('text.file-queue', { values: { count } })}</span>
 			<span
-				>({$_('text.max-file-count', {
-					values: { count: options.maxFiles }
+				>({$_('text.max-files', {
+					values: { ...options }
 				})})</span
 			>
 		</div>

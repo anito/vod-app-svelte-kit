@@ -43,7 +43,7 @@
 		open(
 			MediaUploader,
 			{
-				type,
+				commonProps: { type },
 				options: {
 					parallelUploads: 12,
 					maxFiles: $currentVideo ? 1 : 12

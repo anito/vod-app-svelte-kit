@@ -183,7 +183,7 @@
     "empty-title": "Titel",
     "empty-description": "Beschreibung",
     "upload-type": "{type} hochladen",
-    "max-file-count": "max. {count}",
+    "max-files": "max. {maxFiles}",
     "file-queue": "Warteschlange {count}",
     "no-videos": "Keine Videos verfügbar",
     "title": "Titel",
@@ -204,7 +204,8 @@
     "add-user": "Neuer Benutzer",
     "waiting-for-users": "Warte auf Benutzerdaten...",
     "drop-your-files-here": "Hier Ihre Dateien ablegen oder klicken um sie hinzuzufügen",
-    "editor": "Editor"
+    "editor": "Editor",
+    "edit-uploaded-content": "Editor für hochgeladenen Inhalt"
   },
   "summary": {
     "copy-link": {

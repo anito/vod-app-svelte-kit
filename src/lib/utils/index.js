@@ -33,6 +33,7 @@ import { getMedia, getExt, getMediaAvatar, getMediaImage, getMediaVideo } from '
 import { localeFormat } from './locale-format';
 import { get, post, put, del } from './http';
 import { getAuxSession } from './session';
+import { posterCreatedHandler, posterSelectedHandler, posterRemoveHandler } from './video';
 
 export {
 	convert,
@@ -56,6 +57,9 @@ export {
 	parseSearchParams,
 	placeholderDotComAvatar,
 	post,
+	posterCreatedHandler,
+	posterRemoveHandler,
+	posterSelectedHandler,
 	proxyEvent,
 	put,
 	processRedirect,
