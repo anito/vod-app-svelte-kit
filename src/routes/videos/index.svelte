@@ -5,7 +5,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { sitename } from '$lib/stores';
-	import { ADMIN } from '$lib/utils';
+	import { ADMIN, SUPERUSER } from '$lib/utils';
 	import Button, { Group, Label, Icon } from '@smui/button';
 	import { VideoManager, ImageManager, Component } from '$lib/components';
 	import { Header } from '$lib/components';
@@ -14,7 +14,7 @@
 	const TABS = ['videos', 'images'];
 
 	$: tab = ((tab) => TABS.find((itm) => itm === tab))($page.url.searchParams.get('tab')) || TABS[0];
-	$: isAdmin = $session.role === ADMIN;
+	$: hasPrivileges = $session.user?.role === ADMIN || $session.user?.role === SUPERUSER;
 
 	onMount(() => {});
 
@@ -28,7 +28,7 @@
 	<title>{$sitename} | Video-Kurse</title>
 </svelte:head>
 
-{#if isAdmin}
+{#if hasPrivileges}
 	<div class="media-grid {tab} flex-1">
 		<div class="grid-item one">
 			<Group variant="unelevated">

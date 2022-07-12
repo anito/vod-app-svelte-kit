@@ -35,7 +35,7 @@
 		Actions,
 		InitialFocus
 	} from '@smui/dialog';
-	import { INBOX, SENT, ADMIN } from '$lib/utils';
+	import { INBOX, SENT, ADMIN, SUPERUSER } from '$lib/utils';
 	import { get } from 'svelte/store';
 
 	const sortAZProtected = (a, b) => {
@@ -98,7 +98,7 @@
 
 	export let selectionUserId = null;
 
-	$: isAdmin = $session.role === ADMIN;
+	$: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
 	$: currentUser = ((id) => $users.filter((usr) => usr.id === id))(selectionUserId)[0];
 	$: selectionUserId && (selectionIndex = -1);
 	$: username = currentUser?.name;
@@ -111,7 +111,7 @@
 	$: activeTemplate = matchesTemplate(activeListItem);
 	$: dynamicTemplateData = currentUser && getTemplateData(activeTemplate);
 	$: currentTemplate = $templates.find((tmpl) => tmpl.slug === activeTemplate) || null;
-	$: currentTemplate && isAdmin ? setFab('send-mail') : setFab('');
+	$: currentTemplate && hasPrivileges ? setFab('send-mail') : setFab('');
 	$: dynamicTemplatePath = (slug) => {
 		currentUser;
 		return createTemplatePath(slug);
@@ -147,7 +147,7 @@
 		snackbar = getSnackbar();
 		getTemplates();
 
-		if ($session.role === ADMIN) {
+		if (hasPrivileges) {
 			activeTemplate && setFab('send-mail');
 		} else {
 			setFab();
@@ -575,7 +575,7 @@
 							{/if}
 						</Item>
 
-						{#if $session.role === ADMIN}
+						{#if hasPrivileges}
 							<Separator />
 							<div class="flex justify-center">
 								<SecondaryText class="p-3" style="align-self: center;"

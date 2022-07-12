@@ -54,8 +54,6 @@
 	$: currentTransitionWindow = state.transitionWindow;
 	$: translatedHeader =
 		header === typeof 'string' ? header : $_(header.name, { values: { ...commonProps } });
-	$: console.log($_(header.name, { values: { ...commonProps } }));
-	$: console.log(translatedHeader);
 
 	const toVoid = () => {};
 

@@ -6,7 +6,7 @@
 	import { onMount, tick } from 'svelte';
 	import { sitename, videos, users, videoEmitter } from '$lib/stores';
 	import { VideoPlayer } from '$lib/components/Video';
-	import { ADMIN, getMediaImage, getMediaVideo } from '$lib/utils';
+	import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo } from '$lib/utils';
 	import { _ } from 'svelte-i18n';
 
 	let paused;
@@ -19,9 +19,9 @@
 	$: video = $videos.find((v) => v.id === $page.params.slug);
 	$: loggedInUser = $users.find((user) => user.id == $session.user?.id);
 	$: currentUser = loggedInUser || currentUser;
+	$: hasPrivileges = currentUser?.role === ADMIN || currentUser?.role === SUPERUSER;
 	$: joinData = currentUser?.videos.find((v) => video?.id == v.id)?._joinData;
 	$: token = currentUser?.jwt;
-	$: isAdmin = currentUser?.role === ADMIN;
 	$: ((time) => {
 		if (!paused || !canPlay) return;
 		let pauseTime = time;
@@ -38,7 +38,7 @@
 	function handleCanPlay(e) {
 		if (canPlay) return;
 		canPlay = true;
-		playhead = isAdmin ? video.playhead : joinData.playhead;
+		playhead = hasPrivileges ? video.playhead : joinData.playhead;
 	}
 
 	function handleEmptied(e) {
@@ -84,7 +84,7 @@
 
 	async function savePlayhead() {
 		if (!canPlay) return;
-		if (isAdmin) {
+		if (hasPrivileges) {
 			if (Math.round(video.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
 			videoEmitter.dispatch({
 				method: 'put',

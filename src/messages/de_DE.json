@@ -205,7 +205,9 @@
     "waiting-for-users": "Warte auf Benutzerdaten...",
     "drop-your-files-here": "Hier Ihre Dateien ablegen oder klicken um sie hinzuzufügen",
     "editor": "Editor",
-    "edit-uploaded-content": "Editor für hochgeladenen Inhalt"
+    "edit-uploaded-content": "Editor für hochgeladenen Inhalt",
+    "unprotect-user": "Schutz aufheben",
+    "protect-user": "Benutzer schützen"
   },
   "summary": {
     "copy-link": {

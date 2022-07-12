@@ -18,7 +18,7 @@
 			})
 			.catch(() => {});
 
-		if (session.role !== ADMIN) {
+		if (session.role !== ADMIN && session.role !== SUPERUSER) {
 			await api
 				.get('videos/all', { token, fetch })
 				.then((res) => {
@@ -50,7 +50,7 @@
 		SvgIcon,
 		VideoEditorList
 	} from '$lib/components';
-	import { ADMIN, proxyEvent } from '$lib/utils';
+	import { ADMIN, proxyEvent, SUPERUSER } from '$lib/utils';
 	import Button, { Icon as Icon_ } from '@smui/button';
 	import Fab, { Label } from '@smui/fab';
 	import Textfield from '@smui/textfield';
@@ -166,25 +166,28 @@
 	}
 
 	async function removeToken() {
-		const res = await api.del(`tokens/${tokenId}`, $session.user?.jwt);
-		if (res?.success) {
-			users.put({ ...currentUser, ...res.data });
-		}
-		configSnackbar(res.message);
-		snackbar.open();
+		await api.del(`tokens/${tokenId}`, { token: $session.user?.jwt }).then((res) => {
+			if (res?.success) {
+				users.put({ ...currentUser, ...res.data });
+			}
+			configSnackbar(res.message);
+			snackbar.open();
+		});
 	}
 
 	async function activateUser(state = {}) {
 		let data = 'active' in state ? state : { active: !active };
-		const res = await api.put(`users/${selectionUserId}`, { data, token: $session.user?.jwt });
+		await api.put(`users/${selectionUserId}`, { data, token: $session.user?.jwt }).then((res) => {
+			message = res.message || res.data.message || res.statusText;
 
-		message = res.message || res.data.message || res.statusText;
-
-		if (res) {
-			(res.success && users.put({ ...currentUser, ...data })) || (active = !active);
+			if (res.success) {
+				users.put({ ...currentUser, ...data });
+			} else {
+				active = !active;
+			}
 			configSnackbar(message);
 			snackbar.open();
-		}
+		});
 	}
 
 	function resolveAll() {

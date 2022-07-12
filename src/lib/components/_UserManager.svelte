@@ -10,7 +10,7 @@
 	import Header from './_Header.svelte';
 	import { fly } from 'svelte/transition';
 	import { users, flash, theme } from '$lib/stores';
-	import { post, createRedirectSlug, proxyEvent, svg, ADMIN } from '$lib/utils';
+	import { post, createRedirectSlug, proxyEvent, ADMIN, SUPERUSER } from '$lib/utils';
 	import Textfield from '@smui/textfield';
 	import TextfieldIcon from '@smui/textfield/icon';
 	import HelperText from '@smui/textfield/helper-text';
@@ -41,8 +41,6 @@
 
 	let code;
 	let root;
-	let currentUser;
-	let group;
 	let invalidEmail = false;
 	let password = '';
 	let repeatedPassword = '';
@@ -52,6 +50,7 @@
 	let avatarMenuAnchor;
 	let token = '';
 	let activeLabel;
+	let protectedLabel;
 	let textAreaMagicLink;
 	let copyTimeoutId;
 	let copyButton = (node) => console.log(node);
@@ -60,44 +59,52 @@
 	let name = '';
 	let email = '';
 	let active = false;
+	let __protected = false;
 
-	$: user = $session.user;
 	$: groups = $session.groups || [];
 	$: currentUser = ((id) => {
 		const user = $users.filter((usr) => usr?.id === id)[0];
 		if (user) copy(user);
 		return user;
 	})(selectionUserId);
+	$: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
+	$: isSuperUser = $session.role === SUPERUSER;
+	$: hasCurrentPrivileges =
+		isSuperUser || currentUser?.role === ADMIN || currentUser?.role === SUPERUSER;
+	$: isCurrentSuperUser = currentUser?.role === SUPERUSER;
 	$: userNotFound = selectionUserId && undefined === $users.find((u) => u.id === selectionUserId);
 	$: _name = ((usr) => usr?.name || '')(selectedMode !== 'add' ? currentUser : false);
 	$: _active = ((usr) => usr?.active || false)(selectedMode !== 'add' ? currentUser : false);
+	$: _protected = ((usr) => usr?.protected || false)(selectedMode !== 'add' ? currentUser : false);
 	$: _email = ((usr) => usr?.email || '')(selectedMode !== 'add' ? currentUser : false);
 	$: _group_id = ((usr) => usr?.group_id || '')(selectedMode !== 'add' ? currentUser : false);
-	$: group = ((usr) => usr?.group || '')(selectedMode !== 'add' ? currentUser : false);
+	$: role = ((usr) => usr?.role || '')(selectedMode !== 'add' ? currentUser : false);
 	$: invalidPassword = password.length < 8;
 	$: invalidRepeatedPassword = password !== repeatedPassword || invalidPassword;
 	$: canSave =
 		selectedMode === 'add'
 			? name && group_id && !invalidEmail && !invalidRepeatedPassword
 			: active !== _active ||
+			  __protected !== _protected ||
 			  name !== _name ||
 			  group_id != _group_id ||
 			  (email !== _email && !invalidEmail);
 	$: canReset =
 		active !== _active ||
+		__protected !== _protected ||
 		name !== _name ||
 		email !== _email ||
 		group_id != _group_id ||
 		password ||
 		repeatedPassword;
 	$: (() => resetPassword())(selectionUserId);
-	$: isAdmin = $session.role === ADMIN;
-	$: actions = isAdmin ? adminActions : userActions;
+	$: actions = hasPrivileges ? adminActions : userActions;
 	$: userCan = ((userActions) =>
 		[...actionsLookup].filter((s) => userActions.find((u) => s.action === u)))(actions);
 	$: ((user) => {
 		token = user?.jwt || '';
 		activeLabel = (active && $_('text.deactivate-user')) || $_('text.activate-user');
+		protectedLabel = (__protected && $_('text.unprotect-user')) || $_('text.protect-user');
 	})(currentUser);
 	$: magicLink = (token && `http://${$page.url.host}/login?token=${token}`) || '';
 	$: actionsLookup = new Set([
@@ -112,7 +119,7 @@
 
 		snackbar = getSnackbar();
 
-		if ($session.role === ADMIN) {
+		if (hasPrivileges) {
 			setFab('add-user');
 		} else {
 			setFab();
@@ -164,19 +171,21 @@
 	}
 
 	async function deleteAvatar() {
-		await api.del(`avatars/${currentUser.avatar.id}`, { token: user?.jwt }).then(async (res) => {
-			message = res.message || res.data.message;
-			if (res.success) {
-				users.put(res.data);
+		await api
+			.del(`avatars/${currentUser.avatar.id}`, { token: $session.user?.jwt })
+			.then(async (res) => {
+				message = res.message || res.data.message;
+				if (res.success) {
+					users.put(res.data);
 
-				// also reflect the change in the session cookie
-				if ($session.user.id === currentUser.id) {
-					await post('/auth/save', {
-						user: currentUser
-					});
+					// also reflect the change in the session cookie
+					if ($session.user.id === currentUser.id) {
+						await post('/auth/save', {
+							user: currentUser
+						});
+					}
 				}
-			}
-		});
+			});
 
 		configSnackbar(message);
 		snackbar.open();
@@ -184,7 +193,7 @@
 
 	async function activateUser() {
 		await api
-			.put(`users/${selectionUserId}`, { data: { active }, token: user?.jwt })
+			.put(`users/${selectionUserId}`, { data: { active }, token: $session.user?.jwt })
 			.then((res) => {
 				if (res) {
 					message = res.message || res.data.message || res.statusText;
@@ -204,8 +213,33 @@
 			});
 	}
 
+	async function changeProtection() {
+		await api
+			.put(`users/${selectionUserId}`, {
+				data: { protected: __protected },
+				token: $session.user?.jwt
+			})
+			.then((res) => {
+				if (res) {
+					message = res.message || res.data.message || res.statusText;
+					code = (res.data && res.data.code) || res.status;
+
+					if (res.success) {
+						users.put({ ...currentUser, protected: __protected });
+					} else if (200 < code && code < 500) {
+						// Sample Users are protected
+						reset();
+					}
+
+					configSnackbar(message);
+					snackbar.isOpen && snackbar.close();
+					snackbar.open();
+				}
+			});
+	}
+
 	function copy(user) {
-		({ name, email, active, group_id } = { ...user });
+		({ name, email, active, group_id, __protected } = { ...user, __protected: user.protected });
 	}
 
 	async function submit(event) {
@@ -216,17 +250,17 @@
 		switch (mode) {
 			case 'add':
 				data = { active, email, name, password, group_id };
-				res = await api.post(`users/add`, { data, token: user?.jwt });
+				res = await api.post(`users/add`, { data, token: $session.user?.jwt });
 				break;
 			case 'edit':
 				data = { active, email, name, group_id };
 			case 'pass':
 				data = data || { password, token };
-				res = await api.put(`users/${selectionUserId}`, { data, token: user?.jwt });
+				res = await api.put(`users/${selectionUserId}`, { data, token: $session.user?.jwt });
 				break;
 			case 'del':
 				if (!confirm($_('messages.permanently-remove-user', { values: { name } }))) return;
-				res = await api.del(`users/${selectionUserId}`, { token: user?.jwt });
+				res = await api.del(`users/${selectionUserId}`, { token: $session.user?.jwt });
 				break;
 			default:
 				return;
@@ -242,7 +276,7 @@
 				switch (selectedMode) {
 					case 'add':
 						// fetch users and offer to jump to new user
-						const resUsers = await api.get('users', { token: user?.jwt });
+						const resUsers = await api.get('users', { token: $session.user?.jwt });
 						if (resUsers.success) {
 							users.update(resUsers.data);
 							reset();
@@ -284,6 +318,7 @@
 	}
 
 	function reset() {
+		__protected = _protected;
 		active = _active;
 		email = _email;
 		name = _name;
@@ -398,17 +433,33 @@
 											{/each}
 										</Select>
 									</div>
-									{#if isAdmin && selectedMode === 'edit'}
-										<div class="item flex items-center">
-											<div class="ml-3" style="flex: 0.5;">
-												<FormField>
-													<Switch
-														class="user-activation"
-														bind:checked={active}
-														on:SMUISwitch:change={() => activateUser()}
-													/>
-													<span slot="label" class="switch-label">{activeLabel}</span>
-												</FormField>
+									{#if selectedMode === 'edit' && hasPrivileges}
+										<div class="p-3 switches-wrapper">
+											<div class="item flex flex-col items-center">
+												<div class="ml-3" style="flex: 0.5;">
+													<FormField>
+														<Switch
+															class="user-activation"
+															bind:checked={active}
+															on:SMUISwitch:change={() => activateUser()}
+														/>
+														<span slot="label" class="switch-label">{activeLabel}</span>
+													</FormField>
+												</div>
+												{#if isSuperUser}
+													<div class="item flex items-center">
+														<div class="ml-3" style="flex: 0.5;">
+															<FormField>
+																<Switch
+																	class="user-protection"
+																	bind:checked={__protected}
+																	on:SMUISwitch:change={() => changeProtection()}
+																/>
+																<span slot="label" class="switch-label">{protectedLabel}</span>
+															</FormField>
+														</div>
+													</div>
+												{/if}
 											</div>
 										</div>
 									{/if}
@@ -455,7 +506,7 @@
 
 								<div class="item">
 									<Select
-										disabled={!isAdmin}
+										disabled={!hasPrivileges}
 										bind:value={group_id}
 										label={$_('text.user-role')}
 										class="select-width"
@@ -571,7 +622,7 @@
 						</div>
 					</form>
 				{/if}
-				{#if currentUser && isAdmin}
+				{#if currentUser && hasPrivileges}
 					<div class="table-wrapper">
 						<div class="token-factory" class:no-token={!token}>
 							<div class="main-info">
@@ -580,6 +631,7 @@
 										<Button
 											class="magic-link"
 											variant="raised"
+											disabled={!(isSuperUser || hasPrivileges)}
 											on:click={() => proxyEvent('INFO:token:Generate', { open: !!token })}
 										>
 											<Icon class="material-icons">link</Icon>
@@ -588,7 +640,7 @@
 											</Label>
 										</Button>
 										<Button
-											disabled={(group && group.name) === ADMIN || !token || currentUser.protected}
+											disabled={!(isSuperUser || hasPrivileges) || !token}
 											label={$_('text.can-not-remove-admin-token')}
 											variant="raised"
 											on:click={() => proxyEvent('INFO:token:Remove', { open: true })}
@@ -606,9 +658,10 @@
 								</div>
 								<div class="item">
 									{#if token}
-										<div class="button-group magic-link-group token-action-buttons flex">
+										<div class="button-group magic-link-group token-action-buttons flex mb-3">
 											<Group style="max-width: 100%;">
 												<Button
+													disabled={!(isSuperUser || hasPrivileges)}
 													class="action-magic-link"
 													on:click={() => proxyEvent('INFO:token:Redirect')}
 													variant="outlined"
@@ -618,8 +671,7 @@
 												</Button>
 												<Button
 													href={`${$page.url.pathname}?tab=mail&active=template:magic-link`}
-													class="action-email"
-													disabled={!token}
+													class="action-email flex-1"
 													variant="unelevated"
 												>
 													<Icon class="material-icons">send</Icon>
@@ -630,7 +682,7 @@
 												<Button
 													class="input"
 													use={[(node) => (textAreaMagicLink = node)]}
-													disabled={!token}
+													disabled={!(isSuperUser || hasPrivileges) || !token}
 													variant="outlined"
 												>
 													<input type="text" value={magicLink} />
@@ -638,7 +690,7 @@
 												<Button
 													use={[setCopyButton]}
 													class="action-copy"
-													disabled={!token}
+													disabled={!(isSuperUser || hasPrivileges) || !token}
 													variant="unelevated"
 													on:click={(e) => copyToClipBoard(e)}
 												>
@@ -720,7 +772,7 @@
 		display: flex;
 		flex-direction: column;
 	}
-	.item {
+	.item:not(:last-child) {
 		margin-bottom: 1.1rem;
 	}
 	:global(.item > label) {
@@ -760,6 +812,9 @@
 	}
 	.token-factory > *:nth-child(2) {
 		padding-top: 0;
+	}
+	.token-factory .item:last-child {
+		margin-bottom: 2em;
 	}
 	.token-factory.no-token :global(button.magic-link) {
 		background-color: var(--error);
@@ -802,10 +857,15 @@
 	.button-close {
 		display: none;
 	}
+	.switches-wrapper {
+		background-color: var(--surface);
+		border-radius: 2px;
+		border: 1px solid #c8dbe3;
+	}
 	.switch-label {
 		display: block;
-		max-width: 90px;
-		width: 90px;
+		max-width: 100%;
+		width: 140px;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -815,9 +875,9 @@
 		min-height: 90px;
 		align-items: center;
 		font-size: 0.9em;
-		border: 1px solid #ddf9ff;
-		background: aliceblue;
-		color: #c4e3ff;
+		border: 1px solid #c8dbe3;
+		background: var(--surface);
+		color: #c8dbe3;
 	}
 	:global(.add-user-view--open) .button-close {
 		display: block;

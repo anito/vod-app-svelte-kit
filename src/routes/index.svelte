@@ -5,15 +5,15 @@
 	import * as api from '$lib/api';
 	import { getContext, onMount } from 'svelte';
 	import { session } from '$app/stores';
-	import { theme, sitename } from '$lib/stores';
+	import { sitename } from '$lib/stores';
 	import Layout from './layout.svelte';
 	import { Blurb, Hero } from '$lib/components';
 	import Textfield from '@smui/textfield';
 	import Select, { Option } from '@smui/select';
 	import Button, { Icon } from '@smui/button';
-	import { ADMIN, svg } from '$lib/utils';
+	import { ADMIN, SUPERUSER, svg } from '$lib/utils';
 	import { svg_manifest } from '$lib/svg_manifest';
-	import { _, locale } from 'svelte-i18n';
+	import { _ } from 'svelte-i18n';
 
 	export let segment;
 
@@ -27,8 +27,10 @@
 	let snackbar;
 
 	$: src = svg(svg_manifest.logo_hero_vod);
-	$: isAdmin = $session.user?.group?.name === ADMIN;
-	$: user = isAdmin ? { name: $session.user?.name, email: $session.user?.email } : { name, email };
+	$: hasPrivileges = $session.user?.role === ADMIN || $session.user?.role === SUPERUSER;
+	$: user = hasPrivileges
+		? { name: $session.user?.name, email: $session.user?.email }
+		: { name, email };
 	$: ((user) => {
 		name = user?.name || name;
 		email = user?.email || email;
@@ -60,7 +62,7 @@
 					subject: options.find((option) => option.key === selected).label,
 					content
 				},
-				token: isAdmin && $session.user?.jwt
+				token: hasPrivileges && $session.user?.jwt
 			})
 			.then((res) => {
 				if (res?.success) {

@@ -7,7 +7,7 @@
 	import { Media, MediaContent } from '@smui/card';
 	import Textfield, { Textarea } from '@smui/textfield';
 	import { VideoPlayer } from '$lib/components/Video';
-	import { ADMIN, getMediaImage, getMediaVideo } from '$lib/utils';
+	import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo } from '$lib/utils';
 	import { users, videoEmitter } from '$lib/stores';
 	import { _ } from 'svelte-i18n';
 
@@ -24,7 +24,7 @@
 	let timeoutId;
 
 	$: currentUser = $users.find((user) => user.id == $session.user?.id);
-	$: isAdmin = ADMIN === $session.role;
+	$: hasPrivileges = $session.user?.role === ADMIN || $session.user?.role === SUPERUSER;
 	$: token = currentUser?.jwt;
 	$: joinData = currentUser && currentUser.videos.find((v) => v.id == video.id)?._joinData;
 	$: video.image_id && getMediaImage(video.image_id, $session.user).then((v) => (poster = v));
@@ -48,7 +48,7 @@
 	function handleCanPlay(e) {
 		if (canPlay) return;
 		canPlay = true;
-		playhead = isAdmin ? video.playhead : joinData.playhead;
+		playhead = hasPrivileges ? video.playhead : joinData.playhead;
 	}
 
 	function handleEmptied(e) {
@@ -94,7 +94,7 @@
 
 	async function savePlayhead() {
 		if (!canPlay) return;
-		if (isAdmin) {
+		if (hasPrivileges) {
 			if (Math.round(video.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
 			videoEmitter.dispatch({
 				method: 'put',
@@ -128,7 +128,7 @@
 
 <Media aspectRatio="16x9">
 	<MediaContent class="flex z-10">
-		{#if isAdmin}
+		{#if hasPrivileges}
 			<div class="editor-wrapper" class:is-edit-mode={isEditMode}>
 				<div class="editor p-2">
 					<Textfield

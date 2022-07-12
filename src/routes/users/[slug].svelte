@@ -7,7 +7,7 @@
 	import { UserManager, TimeManager, MailManager } from '$lib/components';
 	import Button, { Group, Label, Icon } from '@smui/button';
 	import { users, slim, sitename } from '$lib/stores';
-	import { proxyEvent, INBOX, ADMIN, TABS } from '$lib/utils';
+	import { proxyEvent, INBOX, ADMIN, SUPERUSER, TABS } from '$lib/utils';
 	import { _ } from 'svelte-i18n';
 	import { goto } from '$app/navigation';
 
@@ -28,16 +28,29 @@
 	$: currentUser = ((id) => $users.length && $users.filter((usr) => usr.id === id)[0])(
 		selectionUserId
 	);
+	$: hasPrivileges = $session.user?.role === ADMIN || $session.user?.role === SUPERUSER;
+	$: isCurrentSuperUser = currentUser?.role === SUPERUSER;
 	$: username = currentUser?.name || '';
 	$: tab = ((t) => TABS.find((itm) => itm === t))($page.url.searchParams.get('tab'));
 	$: ((user) => {
-		if (!user) return;
-		userExpires = user.expires;
-		hasExpired = (userExpires && userExpires * 1000 < +new Date().getTime()) || false;
-		token = user.jwt;
-		magicLink = token && `http://${$page.host}/login?token=${token}`;
+		if (!user || isCurrentSuperUser) {
+			userExpires = null;
+			hasExpired = null;
+			token = '';
+			magicLink = '';
+		} else {
+			userExpires = user.expires;
+			hasExpired = (userExpires && userExpires * 1000 < +new Date().getTime()) || false;
+			token = user.jwt;
+			magicLink = token && `http://${$page.host}/login?token=${token}`;
+		}
 	})(currentUser);
-	$: hidden = $session.role !== ADMIN ? true : selectionUserId == $session.user?.id ? true : false;
+	$: hidden =
+		!hasPrivileges || isCurrentSuperUser
+			? true
+			: selectionUserId == $session.user?.id
+			? true
+			: false;
 
 	setContext('siux', {
 		getSIUX: getSimpleUserIndex

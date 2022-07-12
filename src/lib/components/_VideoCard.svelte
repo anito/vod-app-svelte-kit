@@ -9,7 +9,7 @@
 	import { fly } from 'svelte/transition';
 	import { images, videoEmitter, currentVideo } from '$lib/stores';
 	import { getMedia } from '$lib/utils/media';
-	import { ADMIN } from '$lib/utils';
+	import { ADMIN, SUPERUSER } from '$lib/utils';
 	import VideoMedia from './_VideoMedia.svelte';
 	import MediaUploader from './_MediaUploader.svelte';
 	import Card, { Content, PrimaryAction, Actions, ActionButtons, ActionIcons } from '@smui/card';
@@ -44,7 +44,7 @@
 	let isImageListOpen = false;
 
 	$: user = $session.user;
-	$: isAdmin = $session.role === ADMIN;
+	$: hasPrivileges = user.role === ADMIN || user.role === SUPERUSER;
 	$: leftButton = isEditMode
 		? { label: $_('text.save'), icon: 'save' }
 		: { label: $_('text.edit'), icon: 'edit' };
@@ -141,7 +141,7 @@
 		<VideoMedia {video} bind:title bind:description {isEditMode} curtain />
 		<Content class="mdc-typography--body2">
 			<div class="wrapper flex flex-row justify-between">
-				{#if isAdmin}
+				{#if hasPrivileges}
 					<div class="flex flex-col" style="flex-basis: 50%; max-width: 50%">
 						<div class="text-xs text-inherit">
 							<Icon class="material-icons">cloud_upload</Icon>
@@ -195,7 +195,7 @@
 			</div>
 		</Content>
 	</PrimaryAction>
-	{#if ADMIN === $session.role}
+	{#if hasPrivileges}
 		<Actions class="card-actions">
 			<ActionButtons class="action-buttons">
 				<Button

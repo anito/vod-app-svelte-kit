@@ -13,6 +13,7 @@
 	import { videos, fabs } from '$lib/stores';
 	import {
 		ADMIN,
+		SUPERUSER,
 		posterCreatedHandler,
 		posterRemoveHandler,
 		posterSelectedHandler
@@ -40,10 +41,12 @@
 	let snackbar;
 	let uploadedData;
 
+	$: hasPrivileges = $session.user?.role === ADMIN || $session.user?.role === SUPERUSER;
+
 	onMount(() => {
 		snackbar = getSnackbar();
 
-		if ($session.role === ADMIN) {
+		if (hasPrivileges) {
 			setFab('add-video');
 		} else {
 			setFab();

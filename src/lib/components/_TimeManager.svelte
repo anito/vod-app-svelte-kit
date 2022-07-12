@@ -7,7 +7,7 @@
 	import { page, session } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { onMount, getContext } from 'svelte';
-	import { createRedirectSlug, ADMIN } from '$lib/utils';
+	import { createRedirectSlug, ADMIN, SUPERUSER } from '$lib/utils';
 	import List, { Item, Graphic, Separator, Text } from '@smui/list';
 	import Button, { Label, Icon as ButtonIcon } from '@smui/button';
 	import IconButton, { Icon } from '@smui/icon-button';
@@ -68,12 +68,10 @@
 	let focusItemAtIndex;
 	let items;
 
-	$: user = $session.user;
-	$: groups = $session.groups || [];
 	$: dateFormat = $locale.indexOf('de') != -1 ? 'dd. MMM yyyy' : 'yyyy-MM-dd';
 	$: currentUserIndex = ((id) => $users.findIndex((usr) => usr.id === id))(selectionUserId);
 	$: userVideos = ((idx) => {
-		if ($session.role === ADMIN) {
+		if (hasPrivileges) {
 			return $users[idx]?.videos.sort(sortByEndDate);
 		} else {
 			return $users[idx]?.videos
@@ -91,7 +89,7 @@
 		filtered.length &&
 		filtered[0];
 	$: username = currentUser?.name || '';
-	$: currentRole = currentUser?.group?.name;
+	$: currentRole = currentUser?.role;
 	$: joinData =
 		(selectedVideo = currentUser?.videos?.find((v) => v.id === selectionVideoId)) &&
 		selectedVideo._joinData;
@@ -100,7 +98,7 @@
 	$: expires = currentUser && currentUser.expires;
 	$: isExpired = (expires && expires * 1000 < +new Date().getTime()) || false;
 	$: noneUserVideos = ((videos) => {
-		if ($session.role === ADMIN) {
+		if (hasPrivileges) {
 			return videos.sort(sortByTitle);
 		} else {
 			return $videosAll
@@ -128,6 +126,8 @@
 		($infos.has(selectionUserId) &&
 			$infos.get(selectionUserId).params.filter((info) => info.type === 'issue')) ||
 		[];
+	$: hasPrivileges = $session.user?.role === ADMIN || $session.user?.role === SUPERUSER;
+	$: hasCurrentPrivileges = currentRole === ADMIN || currentRole === SUPERUSER;
 
 	onMount(() => {
 		root = document.documentElement;
@@ -135,7 +135,7 @@
 
 		snackbar = getSnackbar();
 
-		if ($session.role === ADMIN) {
+		if (hasPrivileges) {
 			setFab('add-video');
 		} else {
 			setFab();
@@ -249,7 +249,10 @@
 	}
 
 	function saveUser(data) {
-		return api.put(`users/${selectionUserId}?locale=${$locale}`, { data, token: user?.jwt });
+		return api.put(`users/${selectionUserId}?locale=${$locale}`, {
+			data,
+			token: $session.user?.jwt
+		});
 	}
 
 	function handleSuccess(res, msg) {
@@ -295,7 +298,7 @@
 <div
 	class="grid-item user-videos"
 	class:no-user-selected={!currentUser}
-	class:no-videos={!userVideos?.length || currentRole === ADMIN}
+	class:no-videos={!userVideos?.length || hasCurrentPrivileges}
 >
 	<Component variant="sm">
 		<div slot="header">
@@ -319,7 +322,7 @@
 				bind:selectedIndex
 				on:SMUIList:mount={receiveListMethods}
 			>
-				{#if ADMIN !== currentRole}
+				{#if hasCurrentPrivileges}
 					{#if userVideos?.length}
 						{#each userVideos as video (video.id)}
 							<SimpleVideoCard
@@ -343,7 +346,7 @@
 								>
 									<Icon class="material-icons">smart_display</Icon>
 								</IconButton>
-								{#if ADMIN === $session.role}
+								{#if hasPrivileges}
 									<Button
 										class="close-action-button button-shaped-round flex self-center"
 										variant="unelevated"
@@ -415,13 +418,12 @@
 							on:itemSelected={itemSelectedHandler}
 							let:unmanagable
 							class="video"
-							disabled={(currentRole === ADMIN || $session.role !== ADMIN) &&
-								isUnmanagableNoneUserList}
+							disabled={(hasCurrentPrivileges || hasPrivileges) && isUnmanagableNoneUserList}
 							selected={selectionVideoId === video.id}
 							{video}
 							{selectionUserId}
 						>
-							{#if $session.role === ADMIN}
+							{#if hasPrivileges}
 								<IconButton
 									class="self-center mr-2"
 									color="primary"

@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { ADMIN } from './const';
+import { ADMIN, SUPERUSER } from './const';
 
 export function sortByTitle(a, b) {
 	let _a = a.title?.toUpperCase() || '';
@@ -73,13 +73,13 @@ export function createRedirectSlug(url, searchMap) {
 }
 
 export function processRedirect(searchParams, session = {}) {
-	const isAdmin = session.role === ADMIN;
+	const hasPrivileges = session?.role === ADMIN || session?.role === SUPERUSER;
 	let redirect, uid, path;
 	if ((redirect = searchParams.get('redirect'))) {
 		return redirect;
 	} else {
 		uid = session.user?.id;
-		path = isAdmin ? `/users/${uid}` : '/videos';
+		path = hasPrivileges ? `/users/${uid}` : '/videos';
 		return path.concat(parseSearchParams(searchParams));
 	}
 }

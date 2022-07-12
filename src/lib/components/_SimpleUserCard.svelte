@@ -6,7 +6,7 @@
 	import UserGraphic from './_UserGraphic.svelte';
 	import Dot from './_Dot.svelte';
 	import { Meta, Item, Text, PrimaryText, SecondaryText } from '@smui/list';
-	import { ADMIN } from '$lib/utils';
+	import { ADMIN, SUPERUSER } from '$lib/utils';
 
 	export let selectionUserId;
 	export let user;
@@ -15,15 +15,17 @@
 	let className = '';
 
 	$: _infos = ($infos.has(user.id) && $infos.get(user.id).params) || [];
+	$: hasPrivileges = user.role === ADMIN || user.role === SUPERUSER;
+	$: isSuperUser = user.role === SUPERUSER;
 </script>
 
 <Item class={className} selected={selectionUserId == user.id}>
 	<UserGraphic
 		size="40"
 		{user}
-		badge={user.role === ADMIN && {
+		badge={hasPrivileges && {
 			icon: 'admin_panel_settings',
-			color: 'rgb(206, 4, 4)',
+			color: isSuperUser ? 'rgb(26, 4, 4)' : 'rgb(206, 4, 4)',
 			position: 'TOP_RIGHT'
 		}}
 		borderSize="1"

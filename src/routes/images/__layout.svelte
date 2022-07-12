@@ -17,13 +17,14 @@
 	import { Info, Legal } from '$lib/components';
 	import { page, session } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { ADMIN } from '$lib/utils';
+	import { ADMIN, SUPERUSER } from '$lib/utils';
 
 	$: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
+	$: hasPrivileges = $session.user?.role === ADMIN || $session.user?.role === SUPERUSER;
 </script>
 
 <Layout {segment}>
-	{#if $session.role === ADMIN}
+	{#if hasPrivileges}
 		<slot />
 	{:else}
 		<div class="paper-container">

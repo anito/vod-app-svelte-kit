@@ -63,7 +63,8 @@
 		proxyEvent,
 		svg,
 		__ticker__,
-		ADMIN
+		ADMIN,
+		SUPERUSER
 	} from '$lib/utils';
 	import {
 		fabs,
@@ -140,8 +141,9 @@
 	$: token = $session.user?.jwt;
 	$: person = svg(svg_manifest.person, $theme.primary);
 	$: logo = svg(svg_manifest.logo_vod, $theme.primary);
+	$: hasPrivileges = $session.user?.role === ADMIN || $session.user?.role === SUPERUSER;
 	$: root && ((user) => root.classList.toggle('loggedin', user))(!!$session.user);
-	$: root && ((isAdmin) => root.classList.toggle('admin', isAdmin))($session.role === ADMIN);
+	$: root && ((isPrivileged) => root.classList.toggle('admin', isPrivileged))(hasPrivileges);
 	$: ((seg) => {
 		root && ((seg && root.classList.remove('home')) || (!seg && root.classList.add('home')));
 	})(segment);
@@ -344,7 +346,7 @@
 						</NavItem>
 					{/if}
 
-					{#if $session.role === ADMIN}
+					{#if hasPrivileges}
 						<NavItem href="/users" title="Administration" segment="users">
 							<Icon class="material-icons" style="vertical-align: middle;">settings</Icon>
 							<Label>Admin</Label>
