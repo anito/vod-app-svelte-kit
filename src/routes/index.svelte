@@ -27,7 +27,7 @@
 	let snackbar;
 
 	$: src = svg(svg_manifest.logo_hero_vod);
-	$: hasPrivileges = $session.user?.role === ADMIN || $session.user?.role === SUPERUSER;
+	$: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
 	$: user = hasPrivileges
 		? { name: $session.user?.name, email: $session.user?.email }
 		: { name, email };

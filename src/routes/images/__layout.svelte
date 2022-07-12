@@ -20,7 +20,7 @@
 	import { ADMIN, SUPERUSER } from '$lib/utils';
 
 	$: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
-	$: hasPrivileges = $session.user?.role === ADMIN || $session.user?.role === SUPERUSER;
+	$: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
 </script>
 
 <Layout {segment}>

@@ -126,7 +126,7 @@
 		($infos.has(selectionUserId) &&
 			$infos.get(selectionUserId).params.filter((info) => info.type === 'issue')) ||
 		[];
-	$: hasPrivileges = $session.user?.role === ADMIN || $session.user?.role === SUPERUSER;
+	$: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
 	$: hasCurrentPrivileges = currentRole === ADMIN || currentRole === SUPERUSER;
 
 	onMount(() => {

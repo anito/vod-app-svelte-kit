@@ -28,7 +28,7 @@
 	$: currentUser = ((id) => $users.length && $users.filter((usr) => usr.id === id)[0])(
 		selectionUserId
 	);
-	$: hasPrivileges = $session.user?.role === ADMIN || $session.user?.role === SUPERUSER;
+	$: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
 	$: isCurrentSuperUser = currentUser?.role === SUPERUSER;
 	$: username = currentUser?.name || '';
 	$: tab = ((t) => TABS.find((itm) => itm === t))($page.url.searchParams.get('tab'));

@@ -141,7 +141,7 @@
 	$: token = $session.user?.jwt;
 	$: person = svg(svg_manifest.person, $theme.primary);
 	$: logo = svg(svg_manifest.logo_vod, $theme.primary);
-	$: hasPrivileges = $session.user?.role === ADMIN || $session.user?.role === SUPERUSER;
+	$: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
 	$: root && ((user) => root.classList.toggle('loggedin', user))(!!$session.user);
 	$: root && ((isPrivileged) => root.classList.toggle('admin', isPrivileged))(hasPrivileges);
 	$: ((seg) => {

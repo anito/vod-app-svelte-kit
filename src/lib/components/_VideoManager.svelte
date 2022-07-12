@@ -41,7 +41,7 @@
 	let snackbar;
 	let uploadedData;
 
-	$: hasPrivileges = $session.user?.role === ADMIN || $session.user?.role === SUPERUSER;
+	$: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
 
 	onMount(() => {
 		snackbar = getSnackbar();
