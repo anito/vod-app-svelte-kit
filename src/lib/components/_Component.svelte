@@ -95,7 +95,6 @@
 	.component .content {
 		flex-shrink: 1;
 		overflow: auto;
-		max-height: 40rem;
 	}
 	.component.extended .content {
 		padding: 60px;
