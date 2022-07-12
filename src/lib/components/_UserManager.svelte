@@ -434,7 +434,7 @@
 										</Select>
 									</div>
 									{#if selectedMode === 'edit' && hasPrivileges}
-										<div class="p-3 switches-wrapper">
+										<div class="switches-wrapper">
 											<div class="item flex flex-col items-center">
 												<div class="ml-3" style="flex: 0.5;">
 													<FormField>
@@ -856,11 +856,6 @@
 	}
 	.button-close {
 		display: none;
-	}
-	.switches-wrapper {
-		background-color: var(--surface);
-		border-radius: 2px;
-		border: 1px solid #c8dbe3;
 	}
 	.switch-label {
 		display: block;
