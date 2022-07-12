@@ -322,7 +322,7 @@
 				bind:selectedIndex
 				on:SMUIList:mount={receiveListMethods}
 			>
-				{#if hasCurrentPrivileges}
+				{#if !hasCurrentPrivileges}
 					{#if userVideos?.length}
 						{#each userVideos as video (video.id)}
 							<SimpleVideoCard
@@ -433,7 +433,7 @@
 									<Icon class="material-icons">smart_display</Icon>
 								</IconButton>
 								<IconButton
-									disabled={unmanagable || video.teaser}
+									disabled={hasCurrentPrivileges || unmanagable || video.teaser}
 									class="add-action-button add primary"
 									on:click={() => openScheduleDialog(video)}
 								>
