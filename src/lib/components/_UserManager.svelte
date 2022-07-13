@@ -28,7 +28,7 @@
 	import { _ } from 'svelte-i18n';
 
 	const { setFab } = getContext('fab');
-	const { open } = getContext('default-modal');
+	const { open, close } = getContext('default-modal');
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
 	const privilegedActions = ['edit', 'pass', 'del'];
 	const userActions = ['edit', 'pass'];
@@ -158,32 +158,32 @@
 			// also reflect the change in the session cookie
 			if ($session.user.id === data.id) {
 				$session.user = data;
-
-				await post('/auth/save', { user });
 			}
 		}
+		close();
 		configSnackbar(message);
 		snackbar.open();
 	}
 
 	async function deleteAvatar() {
+		let msg;
 		await api
-			.del(`avatars/${currentUser.avatar.id}`, { token: $session.user?.jwt })
+			.del(`avatars/${currentUser.avatar.id}`, { token: $session.user?.jwt, fetch })
 			.then(async (res) => {
-				message = res.message || res.data.message;
-				if (res.success) {
-					users.put(res.data);
+				const { data, success, message } = { ...res };
+				msg = message || res.data?.message;
+
+				if (success) {
+					users.put(data);
 
 					// also reflect the change in the session cookie
 					if ($session.user.id === currentUser.id) {
-						await post('/auth/save', {
-							user: currentUser
-						});
+						$session.user.avatar = data.avatar;
 					}
 				}
 			});
 
-		configSnackbar(message);
+		configSnackbar(msg);
 		snackbar.open();
 	}
 

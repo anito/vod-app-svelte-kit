@@ -11,7 +11,9 @@ export function get(endpoint, options) {
 		headers: {
 			'Content-Type': 'application/json'
 		}
-	}).then((r) => r.json());
+	})
+		.then((r) => r.json())
+		.catch((reason) => console.log(reason));
 }
 
 export function post(endpoint, data = {}) {
@@ -21,7 +23,9 @@ export function post(endpoint, data = {}) {
 		headers: {
 			'Content-Type': 'application/json'
 		}
-	}).then((r) => r.json());
+	})
+		.then((r) => r.json())
+		.catch((reason) => console.log(reason));
 }
 
 export function del(endpoint, id) {
@@ -32,7 +36,9 @@ export function del(endpoint, id) {
 		headers: {
 			'Content-Type': 'application/json'
 		}
-	}).then((r) => r.json());
+	})
+		.then((r) => r.json())
+		.catch((reason) => console.log(reason));
 }
 
 export function put(endpoint, data = {}) {
@@ -43,5 +49,7 @@ export function put(endpoint, data = {}) {
 		headers: {
 			'Content-Type': 'application/json'
 		}
-	}).then((r) => r.json());
+	})
+		.then((r) => r.json())
+		.catch((reason) => console.log(reason));
 }
