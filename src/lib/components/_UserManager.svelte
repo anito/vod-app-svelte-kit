@@ -68,10 +68,9 @@
 		return user;
 	})(selectionUserId);
 	$: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
-	$: isSuperUser = $session.role === SUPERUSER;
-	$: hasCurrentPrivileges =
-		isSuperUser || currentUser?.role === ADMIN || currentUser?.role === SUPERUSER;
-	$: isCurrentSuperUser = currentUser?.role === SUPERUSER;
+	$: isSuperuser = $session.role === SUPERUSER;
+	$: isCurrentSuperuser = currentUser?.role === SUPERUSER;
+	$: isProtected = isCurrentSuperuser ? (!isSuperuser ? true : false) : !hasPrivileges;
 	$: userNotFound = selectionUserId && undefined === $users.find((u) => u.id === selectionUserId);
 	$: _name = ((usr) => usr?.name || '')(selectedMode !== 'add' ? currentUser : false);
 	$: _active = ((usr) => usr?.active || false)(selectedMode !== 'add' ? currentUser : false);
@@ -446,7 +445,7 @@
 														<span slot="label" class="switch-label">{activeLabel}</span>
 													</FormField>
 												</div>
-												{#if isSuperUser}
+												{#if isSuperuser}
 													<div class="item flex items-center">
 														<div class="ml-3" style="flex: 0.5;">
 															<FormField>
@@ -593,9 +592,9 @@
 							{/if}
 							{#if selectedMode === 'del'}
 								<div class="item">
-									<div class="alert" role="alert">
+									<div class="alert mt-3" role="alert">
 										<div class="mdc-theme-error-bg rounded-t px-4 py-2">
-											{$_('text.attention')}
+											{$_('text.caution')}
 										</div>
 										<div
 											class="border border-t-0 rounded-b bg-warning-100 px-4 py-3 mdc-theme-error-color"
@@ -631,8 +630,9 @@
 										<Button
 											class="magic-link"
 											variant="raised"
-											disabled={!(isSuperUser || hasPrivileges)}
-											on:click={() => proxyEvent('INFO:token:Generate', { open: !!token })}
+											disabled={isProtected}
+											on:click={() =>
+												isProtected || proxyEvent('INFO:token:Generate', { open: !!token })}
 										>
 											<Icon class="material-icons">link</Icon>
 											<Label class="token-button-label">
@@ -640,10 +640,11 @@
 											</Label>
 										</Button>
 										<Button
-											disabled={!(isSuperUser || hasPrivileges) || !token}
+											disabled={isProtected || !token}
 											label={$_('text.can-not-remove-admin-token')}
 											variant="raised"
-											on:click={() => proxyEvent('INFO:token:Remove', { open: true })}
+											on:click={() =>
+												isProtected || proxyEvent('INFO:token:Remove', { open: true })}
 										>
 											<Icon class="material-icons">link_off</Icon>
 											<Label class="token-button-label">{$_('text.remove-token')}</Label>
@@ -661,9 +662,9 @@
 										<div class="button-group magic-link-group token-action-buttons flex mb-3">
 											<Group style="max-width: 100%;">
 												<Button
-													disabled={!(isSuperUser || hasPrivileges)}
+													disabled={isProtected}
 													class="action-magic-link"
-													on:click={() => proxyEvent('INFO:token:Redirect')}
+													on:click={() => isProtected || proxyEvent('INFO:token:Redirect')}
 													variant="outlined"
 												>
 													<Icon class="material-icons">link</Icon>
@@ -682,17 +683,17 @@
 												<Button
 													class="input"
 													use={[(node) => (textAreaMagicLink = node)]}
-													disabled={!(isSuperUser || hasPrivileges) || !token}
+													disabled={isProtected || !token}
 													variant="outlined"
 												>
-													<input type="text" value={magicLink} />
+													<input type="text" value={isProtected ? '' : magicLink} />
 												</Button>
 												<Button
 													use={[setCopyButton]}
 													class="action-copy"
-													disabled={!(isSuperUser || hasPrivileges) || !token}
+													disabled={isProtected || !token}
 													variant="unelevated"
-													on:click={(e) => copyToClipBoard(e)}
+													on:click={(e) => isProtected || copyToClipBoard(e)}
 												>
 													<Icon class="material-icons">file_copy</Icon>
 													<Label class="token-button-label">
