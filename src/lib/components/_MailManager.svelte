@@ -2,19 +2,22 @@
 	// @ts-nocheck
 
 	import './_drawer.scss';
+	import './_list.scss';
 	import * as api from '$lib/api';
 	import { onMount, tick, getContext } from 'svelte';
 	import { page, session } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { fabs, sents, inboxes, templates, users, slim } from '$lib/stores';
-	import MailViewer from './_MailViewer.svelte';
-	import MailList from './_MailList.svelte';
-	import MailToolbar from './_MailToolbar.svelte';
-	import MailTemplateToolbar from './_MailTemplateToolbar.svelte';
-	import MailTemplate from './_MailTemplate.svelte';
-	import Badge from './_Badge.svelte';
-	import BadgeGroup from './_BadgeGroup.svelte';
-	import Dot from './_Dot.svelte';
+	import {
+		MailViewer,
+		MailList,
+		MailToolbar,
+		MailTemplateToolbar,
+		MailTemplate,
+		Badge,
+		BadgeGroup,
+		Dot
+	} from '$lib/components';
 	import { _ } from 'svelte-i18n';
 	import Drawer, { AppContent, Content, Header, Title, Subtitle } from '@smui/drawer';
 	import Button, { Group, Icon } from '@smui/button';
@@ -546,7 +549,7 @@
 					<Subtitle>{email}</Subtitle>
 				</Header>
 				<Content>
-					<List>
+					<List class="mailbox-list">
 						<Item
 							href={dynamicTemplatePath(INBOX)}
 							on:click={() => (selectionIndex = -1)}
@@ -616,6 +619,7 @@
 
 							{#each $templates.sort(sortAZProtected) as template (template.id)}
 								<Item
+									class="template-list-item"
 									sveltekit:prefetch
 									href={dynamicTemplatePath(templateStringFromSlug(template.slug))}
 									activated={activeListItem === `template:${template.slug}`}

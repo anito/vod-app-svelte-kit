@@ -1,0 +1,13 @@
+@use '@material/list/mixins';
+
+.template-list-item {
+  .mdc-deprecated-list-item__graphic {
+  &.material-icons {
+		/// @param {Number} $width - Width value for icon-button.
+		/// @param {Number} $height - Height value for icon-button. (default: $width)
+		/// @param {Number} $padding - Padding value for icon-button. (default: max($width, $height) / 2)
+		font-size: 12px;
+	}
+}
+
+}

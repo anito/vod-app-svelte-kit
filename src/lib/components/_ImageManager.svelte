@@ -9,11 +9,9 @@
 	import Fab, { Icon } from '@smui/fab';
 	import { Label } from '@smui/common';
 	import Paper, { Title, Subtitle, Content } from '@smui/paper';
-	import ImageCard from './_ImageCard.svelte';
-	import MediaUploader from './_MediaUploader.svelte';
-	import Info from './_Info.svelte';
-	import { _, locale } from 'svelte-i18n';
+	import { ImageCard, MediaUploader, Info } from '$lib/components';
 	import { fabs, urls, sitename, images } from '$lib/stores';
+	import { _ } from 'svelte-i18n';
 
 	const { open } = getContext('default-modal');
 	const { getSnackbar, configSnackbar } = getContext('snackbar');

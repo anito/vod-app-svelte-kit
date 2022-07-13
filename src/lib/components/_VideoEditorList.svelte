@@ -3,10 +3,7 @@
 
 	import { getContext, onMount } from 'svelte';
 	import { videos } from '../stores';
-	import Component from './_Component.svelte';
-	import Header from './_Header.svelte';
-	import Modal from './_Modal.svelte';
-	import VideoCard from './_VideoCard.svelte';
+	import { Modal, VideoCard } from '$lib/components';
 	import { posterCreatedHandler, posterRemoveHandler, posterSelectedHandler } from '$lib/utils';
 	import { _ } from 'svelte-i18n';
 

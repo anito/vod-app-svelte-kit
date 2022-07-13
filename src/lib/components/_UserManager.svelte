@@ -3,13 +3,14 @@
 
 	import './_switch.scss';
 	import './_button.scss';
+	import './_icon_size.scss';
 	import * as api from '$lib/api';
 	import { page, session } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { getContext, onMount } from 'svelte';
 	import Header from './_Header.svelte';
 	import { fly } from 'svelte/transition';
-	import { users, flash, theme } from '$lib/stores';
+	import { users, flash } from '$lib/stores';
 	import { post, createRedirectSlug, proxyEvent, ADMIN, SUPERUSER } from '$lib/utils';
 	import Textfield from '@smui/textfield';
 	import TextfieldIcon from '@smui/textfield/icon';
@@ -23,17 +24,13 @@
 	import Menu from '@smui/menu';
 	import { Anchor } from '@smui/menu-surface';
 	import List, { Item, Separator, Text } from '@smui/list';
-	import Component from './_Component.svelte';
-	import InfoChips from './_InfoChips.svelte';
-	import TokenInfo from './_TokenInfo.svelte';
-	import MediaUploader from './_MediaUploader.svelte';
-	import UserGraphic from './_UserGraphic.svelte';
+	import { Component, InfoChips, TokenInfo, MediaUploader, UserGraphic } from '$lib/components';
 	import { _ } from 'svelte-i18n';
 
 	const { setFab } = getContext('fab');
 	const { open } = getContext('default-modal');
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
-	const adminActions = ['edit', 'pass', 'del'];
+	const privilegedActions = ['edit', 'pass', 'del'];
 	const userActions = ['edit', 'pass'];
 
 	export let selectionUserId = null;
@@ -68,6 +65,7 @@
 		return user;
 	})(selectionUserId);
 	$: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
+	$: hasCurrentPrivileges = currentUser?.role === ADMIN || currentUser?.role === SUPERUSER;
 	$: isSuperuser = $session.role === SUPERUSER;
 	$: isCurrentSuperuser = currentUser?.role === SUPERUSER;
 	$: isProtected = isCurrentSuperuser ? (!isSuperuser ? true : false) : !hasPrivileges;
@@ -77,27 +75,26 @@
 	$: _protected = ((usr) => usr?.protected || false)(selectedMode !== 'add' ? currentUser : false);
 	$: _email = ((usr) => usr?.email || '')(selectedMode !== 'add' ? currentUser : false);
 	$: _group_id = ((usr) => usr?.group_id || '')(selectedMode !== 'add' ? currentUser : false);
-	$: role = ((usr) => usr?.role || '')(selectedMode !== 'add' ? currentUser : false);
 	$: invalidPassword = password.length < 8;
 	$: invalidRepeatedPassword = password !== repeatedPassword || invalidPassword;
 	$: canSave =
 		selectedMode === 'add'
 			? name && group_id && !invalidEmail && !invalidRepeatedPassword
-			: active !== _active ||
-			  __protected !== _protected ||
-			  name !== _name ||
-			  group_id != _group_id ||
-			  (email !== _email && !invalidEmail);
+			: name !== _name ||
+			  (email !== _email && !invalidEmail) ||
+			  active !== _active ||
+			  group_id !== _group_id ||
+			  __protected !== _protected;
 	$: canReset =
-		active !== _active ||
-		__protected !== _protected ||
 		name !== _name ||
 		email !== _email ||
-		group_id != _group_id ||
+		active !== _active ||
+		group_id !== _group_id ||
+		__protected !== _protected ||
 		password ||
 		repeatedPassword;
 	$: (() => resetPassword())(selectionUserId);
-	$: actions = hasPrivileges ? adminActions : userActions;
+	$: actions = hasPrivileges ? privilegedActions : userActions;
 	$: userCan = ((userActions) =>
 		[...actionsLookup].filter((s) => userActions.find((u) => s.action === u)))(actions);
 	$: ((user) => {
@@ -238,7 +235,7 @@
 	}
 
 	function copy(user) {
-		({ name, email, active, group_id, __protected } = { ...user, __protected: user.protected });
+		({ name, email, active, group_id, __protected } = { ...user, __protected: !!user.protected });
 	}
 
 	async function submit(event) {
@@ -384,12 +381,13 @@
 									borderColor="--prime"
 									extendedBorderColor="--back-grid-item"
 									extendedBorderSize="10"
-									badge={currentUser?.role === ADMIN && {
+									badge={hasCurrentPrivileges && {
 										icon: 'admin_panel_settings',
-										color: 'rgb(206, 4, 4)',
-										position: 'BOTTOM_RIGHT',
-										size: 'large'
+										color: isCurrentSuperuser ? 'rgb(26, 4, 4)' : 'rgb(206, 4, 4)',
+										size: 'large',
+										position: 'BOTTOM_RIGHT'
 									}}
+									title
 								/>
 								<Menu
 									bind:this={avatarMenu}
@@ -494,8 +492,7 @@
 										<TextfieldIcon
 											slot="leadingIcon"
 											class="material-icons"
-											style="font-size: 1em; line-height: normal; vertical-align: middle;"
-											>email</TextfieldIcon
+											style="line-height: normal; vertical-align: middle;">email</TextfieldIcon
 										>
 										<HelperText slot="helper" id="helper-text-email" validationMsg
 											>{$_('text.invalid-email')}</HelperText

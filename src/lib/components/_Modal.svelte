@@ -4,8 +4,7 @@
 	// Version 0.4.1
 	import { onMount, setContext } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import Component from './_Component.svelte';
-	import Header from './_Header.svelte';
+	import { Component, Header } from '$lib/components';
 	import { _ } from 'svelte-i18n';
 
 	export let key = 'default-modal';
@@ -52,8 +51,6 @@
 	$: cssContent = toCssString(state.styleContent);
 	$: currentTransitionBg = state.transitionBg;
 	$: currentTransitionWindow = state.transitionWindow;
-	$: translatedHeader =
-		header === typeof 'string' ? header : $_(header.name, { values: { ...commonProps } });
 
 	const toVoid = () => {};
 
@@ -94,6 +91,10 @@
 		}
 	};
 
+	function translateHeader() {
+		return $_(header.name, { values: { ...commonProps } });
+	}
+
 	onMount(() => {});
 	setContext(key, { open, close });
 </script>
@@ -122,7 +123,7 @@
 				<Component variant="sm">
 					<div slot="header">
 						<Header mdc h="5" style="text-transform: uppercase">
-							{translatedHeader}
+							{typeof header === 'string' ? header : translateHeader()}
 						</Header>
 					</div>
 					<div class="content" style={cssContent}>
@@ -139,7 +140,6 @@
 	* {
 		box-sizing: border-box;
 	}
-
 	.bg {
 		position: fixed;
 		z-index: 1000;
@@ -150,13 +150,11 @@
 		height: 100vh;
 		background: rgba(0, 0, 0, 0.66);
 	}
-
 	.window-wrap {
 		position: relative;
 		margin: 2rem;
 		max-height: 100%;
 	}
-
 	.window {
 		position: relative;
 		width: 40rem;
@@ -167,14 +165,12 @@
 		border-radius: 0.2rem;
 		background: white;
 	}
-
 	.content {
 		position: relative;
 		padding: 1rem;
 		max-height: calc(100vh - 4rem);
 		overflow: auto;
 	}
-
 	.close {
 		display: block;
 		box-sizing: border-box;
@@ -195,7 +191,6 @@
 			background 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
 		-webkit-appearance: none;
 	}
-
 	.close:before,
 	.close:after {
 		content: '';
@@ -210,41 +205,34 @@
 		transition: height 0.2s cubic-bezier(0.25, 0.1, 0.25, 1),
 			background 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
 	}
-
 	.close:before {
 		-webkit-transform: translate(0, -50%) rotate(45deg);
 		-moz-transform: translate(0, -50%) rotate(45deg);
 		transform: translate(0, -50%) rotate(45deg);
 		left: 0.25rem;
 	}
-
 	.close:after {
 		-webkit-transform: translate(0, -50%) rotate(-45deg);
 		-moz-transform: translate(0, -50%) rotate(-45deg);
 		transform: translate(0, -50%) rotate(-45deg);
 		left: 0.25rem;
 	}
-
 	.close:hover {
 		color: var(--prime);
 		background: var(--on-prime);
 	}
-
 	.close:hover:before,
 	.close:hover:after {
 		height: 2px;
 		background: var(--prime);
 	}
-
 	.close:focus {
 		border-color: #3399ff;
 		box-shadow: 0 0 0 2px #3399ff;
 	}
-
 	.close:active {
 		transform: scale(0.9);
 	}
-
 	.close:hover,
 	.close:focus,
 	.close:active {

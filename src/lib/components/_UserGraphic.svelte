@@ -16,6 +16,7 @@
 	export let badge = {};
 	export let style = '';
 	export let fallback = '';
+	export let title = false;
 
 	const width = size;
 	const height = size;
@@ -67,7 +68,7 @@
 	$: badge.icon && (badge.position = badgePosition[badge.position] || badgePosition['TOP_RIGHT']);
 </script>
 
-<div class="user-graphics-outer" class:dense {style}>
+<div class="user-graphics-outer" class:dense {style} title={title ? user?.role : ''}>
 	{#if src}
 		<Graphic
 			class="user-graphics relative"

@@ -10,8 +10,7 @@
 	import { images, videoEmitter, currentVideo } from '$lib/stores';
 	import { getMedia } from '$lib/utils/media';
 	import { ADMIN, SUPERUSER } from '$lib/utils';
-	import VideoMedia from './_VideoMedia.svelte';
-	import MediaUploader from './_MediaUploader.svelte';
+	import { VideoMedia, MediaUploader } from '$lib/components';
 	import Card, { Content, PrimaryAction, Actions, ActionButtons, ActionIcons } from '@smui/card';
 	import Button, { Label } from '@smui/button';
 	import IconButton, { Icon } from '@smui/icon-button';
@@ -44,7 +43,7 @@
 	let isImageListOpen = false;
 
 	$: user = $session.user;
-	$: hasPrivileges = user.role === ADMIN || user.role === SUPERUSER;
+	$: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
 	$: leftButton = isEditMode
 		? { label: $_('text.save'), icon: 'save' }
 		: { label: $_('text.edit'), icon: 'edit' };
@@ -53,7 +52,6 @@
 		: { label: $_('text.delete'), icon: 'delete' };
 	$: matchingData = (video?.['_matchingData'] && video['_matchingData']['UsersVideos']) || null;
 	$: canSave = description !== video.description || title !== video.title;
-	$: image = $images.find((i) => video.image_id === i.id);
 
 	function save() {
 		video.title = title;
@@ -141,8 +139,12 @@
 		<VideoMedia {video} bind:title bind:description {isEditMode} curtain />
 		<Content class="mdc-typography--body2">
 			<div class="wrapper flex flex-row justify-between">
-				{#if hasPrivileges}
-					<div class="flex flex-col" style="flex-basis: 50%; max-width: 50%">
+				<div class="flex flex-col" style="flex-basis: 50%; max-width: 50%">
+					<div class="text-xs text-inherit inline-flex">
+						<Icon class="material-icons">movie</Icon>
+						<span class="ellipsed pl-2">{video.title || $_('text.no-title')}</span>
+					</div>
+					{#if hasPrivileges}
 						<div class="text-xs text-inherit">
 							<Icon class="material-icons">cloud_upload</Icon>
 							<span class="ellipsed pl-2"
@@ -153,22 +155,7 @@
 								})}</span
 							>
 						</div>
-						<div class="opacity-25">
-							<div class="flex text-xs text-inherit">
-								<Icon class="material-icons">image</Icon>
-								<span class="pl-2 pr-2">Poster:</span>
-								<span class="ellipsed max-w-1/2"
-									>{(image && image.src) || $_('text.no-poster')}</span
-								>
-							</div>
-						</div>
-					</div>
-				{:else}
-					<div class="flex flex-col" style="flex-basis: 50%; max-width: 50%">
-						<div class="text-xs text-inherit inline-flex">
-							<Icon class="material-icons">movie</Icon>
-							<span class="ellipsed pl-2">{video.title || $_('text.no-title')}</span>
-						</div>
+					{:else}
 						<div class="flex text-xs text-inherit">
 							<Icon class="material-icons">timer</Icon>
 							<span class="ellipsed pl-2"
@@ -181,8 +168,8 @@
 								})}</span
 							>
 						</div>
-					</div>
-				{/if}
+					{/if}
+				</div>
 				<div class="flex justify-end" style="flex-basis: 50%; max-width: 50%">
 					<IconButton
 						on:click={() => goto(`/videos/${video.id}`)}

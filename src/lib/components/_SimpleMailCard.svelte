@@ -65,7 +65,7 @@
 	selected={selection?.id === mail.id}
 	><div class="staggered">
 		{#each userItems as user, i}
-			<UserGraphic size="30" {user} borderSize style={`z-index: ${10 - i};`} />
+			<UserGraphic size="30" {user} borderSize style={`z-index: ${10 - i};`} title />
 		{/each}
 	</div>
 	<Text style="flex: 1; align-self: auto;">

@@ -1,6 +1,6 @@
 <script context="module">
 	import * as api from '$lib/api';
-	import { infos, fabs, users, videos, videosAll, slim } from '$lib/stores';
+	import { infos, fabs, users, videos, images, videosAll, slim } from '$lib/stores';
 
 	export async function load({ fetch, session }) {
 		const token = session.user?.jwt;
@@ -17,6 +17,15 @@
 				res.success && videos.update(res.data);
 			})
 			.catch(() => {});
+
+		if (session.role === ADMIN || session.role === SUPERUSER) {
+			await api
+				.get('images', { token, fetch })
+				.then((res) => {
+					res.success && images.update(res.data);
+				})
+				.catch(() => {});
+		}
 
 		if (session.role !== ADMIN && session.role !== SUPERUSER) {
 			await api

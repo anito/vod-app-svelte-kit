@@ -6,8 +6,7 @@
 	import { slim } from '$lib/stores';
 	import { INBOX, SENT } from '$lib/utils';
 	import List from '@smui/list';
-	import SimpleMailCard from './_SimpleMailCard.svelte';
-	import SvgIcon from './_SvgIcon.svelte';
+	import { SimpleMailCard, SvgIcon } from '$lib/components';
 	import { _ } from 'svelte-i18n';
 
 	export let selection = false;

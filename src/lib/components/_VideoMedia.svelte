@@ -141,6 +141,7 @@
 						input$aria-describedby="helper-text-title"
 					/>
 					<Textfield
+						class="flex-1"
 						textarea
 						variant="outlined"
 						bind:value={description}

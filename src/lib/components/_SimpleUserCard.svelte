@@ -3,8 +3,7 @@
 
 	import './_meta.scss';
 	import { infos } from '$lib/stores';
-	import UserGraphic from './_UserGraphic.svelte';
-	import Dot from './_Dot.svelte';
+	import { UserGraphic, Dot } from '$lib/components';
 	import { Meta, Item, Text, PrimaryText, SecondaryText } from '@smui/list';
 	import { ADMIN, SUPERUSER } from '$lib/utils';
 
@@ -16,7 +15,7 @@
 
 	$: _infos = ($infos.has(user.id) && $infos.get(user.id).params) || [];
 	$: hasPrivileges = user.role === ADMIN || user.role === SUPERUSER;
-	$: isSuperUser = user.role === SUPERUSER;
+	$: isSuperuser = user.role === SUPERUSER;
 </script>
 
 <Item class={className} selected={selectionUserId == user.id}>
@@ -25,11 +24,12 @@
 		{user}
 		badge={hasPrivileges && {
 			icon: 'admin_panel_settings',
-			color: isSuperUser ? 'rgb(26, 4, 4)' : 'rgb(206, 4, 4)',
+			color: isSuperuser ? 'rgb(26, 4, 4)' : 'rgb(206, 4, 4)',
 			position: 'TOP_RIGHT'
 		}}
 		borderSize="1"
 		borderColor="#c5c5c5"
+		title
 	/>
 	<Text>
 		<PrimaryText>{user.name}</PrimaryText>

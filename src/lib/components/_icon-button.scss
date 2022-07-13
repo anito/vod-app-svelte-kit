@@ -1,3 +1,4 @@
+@use '@material/icon-button/mixins';
 
 @import "@material/icon-button";
 
@@ -11,6 +12,9 @@
 	}
 
 	.material-icons {
-		font-size: 24px;
+		/// @param {Number} $width - Width value for icon-button.
+		/// @param {Number} $height - Height value for icon-button. (default: $width)
+		/// @param {Number} $padding - Padding value for icon-button. (default: max($width, $height) / 2)
+		@include icon-size(19px);
 	}
 }

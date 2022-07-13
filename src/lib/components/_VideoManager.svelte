@@ -6,10 +6,7 @@
 	import { onMount, getContext } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import Fab, { Label, Icon } from '@smui/fab';
-	import Info from './_Info.svelte';
-	import VideoCard from './_VideoCard.svelte';
-	import MediaUploader from './_MediaUploader.svelte';
-	import VideoEditorList from './_VideoEditorList.svelte';
+	import { Info, VideoCard, MediaUploader, VideoEditorList } from '$lib/components';
 	import { videos, fabs } from '$lib/stores';
 	import {
 		ADMIN,

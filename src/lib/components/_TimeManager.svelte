@@ -12,10 +12,13 @@
 	import Button, { Label, Icon as ButtonIcon } from '@smui/button';
 	import IconButton, { Icon } from '@smui/icon-button';
 	import { videos, videosAll, users, flash, infos } from '$lib/stores';
-	import SimpleVideoCard from './SimpleVideoCard';
-	import DateRangePicker from './DateRangePicker';
-	import Header from './_Header.svelte';
-	import Component from './_Component.svelte';
+	import {
+		SimpleVideoCard,
+		DateRangePicker,
+		Header,
+		Component,
+		VideoEditorList
+	} from '$lib/components';
 	import {
 		startOfDay,
 		endOfDay,
@@ -37,6 +40,7 @@
 
 	const isUnmanagableNoneUserList = false;
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
+	const { open, close } = getContext('editor-modal');
 	const { setFab } = getContext('fab');
 	const timespanSelections = [
 		{ title: 'text.1-month', value: 30 },
@@ -293,6 +297,12 @@
 	function receiveListMethods(e) {
 		({ focusItemAtIndex, items } = { ...e.detail });
 	}
+
+	function editVideo(video) {
+		open(VideoEditorList, {
+			data: [video]
+		});
+	}
 </script>
 
 <div
@@ -424,6 +434,14 @@
 							{selectionUserId}
 						>
 							{#if hasPrivileges}
+								<IconButton
+									class="self-center mr-2"
+									color="primary"
+									style=""
+									on:click={() => editVideo(video)}
+								>
+									<Icon class="material-icons">edit</Icon>
+								</IconButton>
 								<IconButton
 									class="self-center mr-2"
 									color="primary"
