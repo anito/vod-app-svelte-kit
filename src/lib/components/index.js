@@ -24,7 +24,7 @@ export { default as MailList } from './_MailList.svelte';
 export { default as MailManager } from './_MailManager.svelte';
 export { default as MailTemplate } from './_MailTemplate.svelte';
 export { default as MailToolbar } from './_MailToolbar.svelte';
-export { default as MailTemplateToolbar } from './_MailToolbar.svelte';
+export { default as MailTemplateToolbar } from './_MailTemplateToolbar.svelte';
 export { default as MailViewer } from './_MailViewer.svelte';
 export { default as MediaUploader } from './_MediaUploader.svelte';
 export { default as MediaImagePreview } from './_MediaImagePreview.svelte';

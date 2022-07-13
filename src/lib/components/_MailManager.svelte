@@ -114,6 +114,7 @@
 	$: activeTemplate = matchesTemplate(activeListItem);
 	$: dynamicTemplateData = currentUser && getTemplateData(activeTemplate);
 	$: currentTemplate = $templates.find((tmpl) => tmpl.slug === activeTemplate) || null;
+	$: console.log(currentTemplate);
 	$: currentTemplate && hasPrivileges ? setFab('send-mail') : setFab('');
 	$: dynamicTemplatePath = (slug) => {
 		currentUser;
