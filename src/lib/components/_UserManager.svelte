@@ -174,7 +174,7 @@
 				msg = message || res.data?.message;
 
 				if (success) {
-					users.put(data);
+					users.put({ id: data.id, avatar: data.avatar });
 
 					// also reflect the change in the session cookie
 					if ($session.user.id === currentUser.id) {
