@@ -626,9 +626,7 @@
 									on:mouseover={(e) => overEditable(e)}
 									on:mouseleave={(e) => leaveEditable(e)}
 								>
-									<Graphic class="material-icons" aria-hidden="true"
-										>{template.protected ? 'lock' : 'bookmark'}</Graphic
-									>
+									<Graphic class="material-icons" aria-hidden="true">bookmark</Graphic>
 									<Text class={!template.protected && 'editable'}>{template.name}</Text>
 									{#if !template.protected}
 										{#if editor.id === template.id}
@@ -644,6 +642,8 @@
 												class="material-icons-outlined edit">edit</Meta
 											>
 										{/if}
+									{:else}
+										<Meta class="material-icons-outlined">lock</Meta>
 									{/if}
 									{#if currentUser && !validateData(template)}
 										<Meta>
