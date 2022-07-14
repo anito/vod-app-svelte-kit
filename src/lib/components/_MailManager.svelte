@@ -101,8 +101,8 @@
 
 	export let selectionUserId = null;
 
-	$: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
 	$: currentUser = ((id) => $users.filter((usr) => usr.id === id))(selectionUserId)[0];
+	$: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
 	$: selectionUserId && (selectionIndex = -1);
 	$: username = currentUser?.name;
 	$: email = currentUser?.email;
