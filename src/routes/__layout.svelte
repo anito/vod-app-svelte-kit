@@ -290,32 +290,33 @@
 		snackbar?.open();
 	}
 
-	function tickerEndHandler(e) {
-		$session.user = null;
-		$session.groups = null;
-		$session.role = null;
-		$session._expires = null;
+	async function tickerEndHandler(e) {
+		if ($session.user) {
+			$session.user = null;
+			$session.groups = null;
+			$session.role = null;
+			$session._expires = null;
 
-		proxyEvent('ticker:ended');
+			await logout(`/auth/logout`).then((res) => {
+				if (res) {
+					message = res.message || res.data?.message;
+
+					configSnackbar(message);
+					snackbar = getSnackbar();
+					snackbar?.open();
+				}
+			});
+		}
+		proxyEvent('ticker:ended', e.detail);
 	}
 
 	async function tickerEndedHandler(e) {
-		await logout(`/auth/logout`).then((res) => {
-			if (res) {
-				message = res.message || res.data?.message;
-
-				configSnackbar(message);
-				snackbar = getSnackbar();
-				snackbar?.open();
-			}
-		});
-
 		setTimeout(
 			(path, searchMap) => {
 				goto(`${path}${createRedirectSlug($page.url, searchMap)}`);
 			},
-			1000,
-			'/',
+			100,
+			e.detail.path || '/',
 			new Map([['sessionend', 'true']])
 		);
 	}

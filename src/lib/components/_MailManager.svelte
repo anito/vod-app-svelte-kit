@@ -646,7 +646,7 @@
 										<Meta class="material-icons-outlined">lock</Meta>
 									{/if}
 									{#if currentUser && !validateData(template)}
-										<Meta>
+										<Meta class="absolute" style="left: 0;">
 											<Dot size="5" />
 										</Meta>
 									{/if}

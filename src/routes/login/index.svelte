@@ -86,7 +86,7 @@
 				setTimeout(dispatcher, 100, { type: 'start', data });
 				flash.update({ type: 'success', ...data, timeout: 2000 });
 			} else {
-				setTimeout(dispatcher, 100, { type: 'end', data: { path: 'login' } });
+				setTimeout(dispatcher, 4000, { type: 'end', data: { path: '/login' } });
 				flash.update({ type: 'error', ...data, timeout: 5000 });
 			}
 		}
