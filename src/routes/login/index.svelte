@@ -84,10 +84,9 @@
 			if (success) {
 				// start session before flash store has updated (and redirects)
 				setTimeout(dispatcher, 100, { type: 'start', data });
-				flash.update({ type: 'success', ...data, timeout: 2000 });
+				flash.update({ type: 'success', ...data, expires: 2000 });
 			} else {
-				setTimeout(dispatcher, 4000, { type: 'end', data: { path: '/login' } });
-				flash.update({ type: 'error', ...data, timeout: 5000 });
+				flash.update({ type: 'error', ...data, expires: 2000 });
 			}
 		}
 		return () => {};
@@ -100,6 +99,8 @@
 	async function introendHandler() {
 		if ($session.user) {
 			setTimeout(() => goto(processRedirect($page.url.searchParams, $session)), 1000);
+		} else {
+			setTimeout(() => goto('/login'), 1000);
 		}
 	}
 </script>

@@ -11,11 +11,11 @@ function createStore() {
 		subscribe,
 		update: (item) =>
 			update((_) => {
-				const { timeout } = { ...item };
+				const { expires } = { ...item };
 				clearTimeout(timeoutId);
-				// removing the message after timeout
-				if (!isNaN(timeout)) {
-					timeoutId = setTimeout((msg) => set(msg), timeout, {
+				// removing the message after expiration time
+				if (!isNaN(expires)) {
+					timeoutId = setTimeout((msg) => set(msg), expires, {
 						message
 					});
 				}

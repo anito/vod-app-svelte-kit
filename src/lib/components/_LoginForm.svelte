@@ -68,7 +68,7 @@
 			flash.update({
 				type,
 				message,
-				timeout: 2000
+				expires: 2000
 			});
 			configSnackbar(message);
 			snackbar.open();
