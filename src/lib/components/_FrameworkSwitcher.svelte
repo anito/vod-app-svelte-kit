@@ -51,7 +51,7 @@
 
 <span class="menu-anchor lg:-mr-8" bind:this={menuAnchor} use:Anchor>
 	<IconButton
-		class="material-icons on-surface"
+		class="material-icons on-surface items-stretch"
 		on:click={handleClick}
 		aria-label={$_('text.more-options')}
 		title={$_('text.more-options')}>more_vert</IconButton

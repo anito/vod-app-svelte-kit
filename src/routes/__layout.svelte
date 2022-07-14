@@ -401,7 +401,7 @@
 						<LocaleSwitcher />
 					</NavItem>
 
-					<NavItem title={$_('text.choose-framework')} style="vertical-align: sub;">
+					<NavItem title={$_('text.choose-framework')} style="vertical-align: middle;">
 						<FrameworkSwitcher />
 					</NavItem>
 				</Nav>
