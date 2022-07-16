@@ -135,7 +135,7 @@
 </script>
 
 <Card class="card {className}">
-	<PrimaryAction>
+	<PrimaryAction onclick={(e) => $currentVideo.set(video)}>
 		<VideoMedia {video} bind:title bind:description {isEditMode} curtain />
 		<Content class="mdc-typography--body2">
 			<div class="wrapper flex flex-row justify-between">
