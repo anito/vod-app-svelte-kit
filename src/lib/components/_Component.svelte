@@ -95,6 +95,7 @@
 	.component .content {
 		flex-shrink: 1;
 		overflow: auto;
+		-webkit-overflow-scrolling: touch;
 	}
 	.component.extended .content {
 		padding: 60px;
