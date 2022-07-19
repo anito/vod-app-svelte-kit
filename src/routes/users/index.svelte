@@ -1,4 +1,6 @@
 <script>
+	// @ts-nocheck
+
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { sitename, users } from '$lib/stores';
@@ -23,7 +25,7 @@
 			? `?tab=${TABS[defaultTab]}&active=${INBOX}`
 			: '';
 
-	$: users.update(_users);
+	// $: users.update(_users);
 
 	onMount(() => {
 		let pathname = $page.url.pathname;

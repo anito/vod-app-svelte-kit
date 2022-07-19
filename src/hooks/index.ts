@@ -12,9 +12,9 @@ export const handle = handleSession(
 	async ({ event, resolve }) => {
 		dev && (process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0);
 
-		event.locals.usersRepo = new UsersRepo(event, 'users');
-		event.locals.videosRepo = new VideosRepo(event, 'videos');
-		event.locals.imagesRepo = new ImagesRepo(event, 'images');
+		// event.locals.usersRepo = new UsersRepo(event, 'users');
+		// event.locals.videosRepo = new VideosRepo(event, 'videos');
+		// event.locals.imagesRepo = new ImagesRepo(event, 'images');
 
 		return await resolve(event);
 	}

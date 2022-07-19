@@ -1,4 +1,6 @@
 <script>
+	// @ts-nocheck
+
 	import * as api from '$lib/api';
 	import { page, session } from '$app/stores';
 	import { onMount, setContext } from 'svelte';
@@ -44,7 +46,7 @@
 	 */
 	let _users = [];
 
-	$: users.update(_users);
+	// $: users.update(_users);
 	$: selectionUserId = $page.params.slug;
 	$: currentUser = ((id) => $users.length && $users.filter((usr) => usr.id === id)[0])(
 		selectionUserId

@@ -25,8 +25,8 @@
 
 	$: tab = ((tab) => TABS.find((itm) => itm === tab))($page.url.searchParams.get('tab')) || TABS[0];
 	$: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
-	$: videos.update(_videos);
-	$: images.update(_images);
+	// $: videos.update(_videos);
+	// $: images.update(_images);
 
 	onMount(() => {});
 
