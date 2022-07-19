@@ -1,0 +1,31 @@
+import * as api from '$lib/api';
+import type { RequestEvent } from '@sveltejs/kit';
+
+type Response = {
+	data: [],
+	message: string,
+	success: boolean
+};
+
+export class VideosRepo {
+	request: Request;
+	token: string;
+	endpoint: string;
+
+	constructor({ request, locals }: RequestEvent, endpoint: string) {
+		this.request = request;
+		this.token = locals.session.data.user?.jwt;
+		this.endpoint = endpoint;
+	}
+	getAll = async ({
+		limit,
+		match = {}
+	}: {
+		limit: number,
+		match?: Record<string, unknown>
+	}): Promise<Response> => {
+		return await api.get(this.endpoint, { fetch, token: this.token }).then((res) => {
+			return res.data;
+		});
+	};
+}

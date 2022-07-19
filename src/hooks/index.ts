@@ -1,8 +1,9 @@
-// @ts-nocheck
-
 import { dev } from '$app/env';
 import { handleSession } from 'svelte-kit-cookie-session';
 import { getAuxSession } from '$lib/utils';
+import { UsersRepo } from '$lib/repos/users';
+import { VideosRepo } from '$lib/repos/videos';
+import { ImagesRepo } from '$lib/repos/images';
 
 export const handle = handleSession(
 	{
@@ -11,20 +12,23 @@ export const handle = handleSession(
 	async ({ event, resolve }) => {
 		dev && (process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0);
 
-		// console.log('HANDLE::locals', event);
+		event.locals.usersRepo = new UsersRepo(event, 'users');
+		event.locals.videosRepo = new VideosRepo(event, 'videos');
+		event.locals.imagesRepo = new ImagesRepo(event, 'images');
 
 		return await resolve(event);
 	}
 );
 
+// own implementaion (deactivated)
 export const _getSession = getAuxSession();
 
-export async function externalFetch(request) {
+export async function externalFetch(request: { status: number }) {
 	// console.log('#externalFetch', request);
 	request.status = 200;
 	return request;
 }
-// original implementaion deactivated
+
 export const getSession = ({ locals }) => {
 	return locals.session.data;
 };

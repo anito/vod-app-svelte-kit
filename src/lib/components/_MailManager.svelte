@@ -41,7 +41,10 @@
 	import { INBOX, SENT, ADMIN, SUPERUSER } from '$lib/utils';
 	import { get } from 'svelte/store';
 
-	const sortAZProtected = (a, b) => {
+	const sortAZProtected = (
+		/** @type {{ [x: string]: string; }} */ a,
+		/** @type {{ [x: string]: string; }} */ b
+	) => {
 		let ap = (a['protected'] && a['name'].toLowerCase()) || 'z';
 		let bp = (b['protected'] && b['name'].toLowerCase()) || 'z';
 		let an = a['name'].toLowerCase();
@@ -75,31 +78,70 @@
 	const { getSnackbar, configSnackbar } = getContext('snackbar');
 	const defaultActive = INBOX;
 	const mailboxes = [INBOX, SENT];
-	const getStoreByEndpoint = (endpoint) =>
+	const getStoreByEndpoint = (/** @type {string} */ endpoint) =>
 		endpoint === INBOX ? inboxes : endpoint === SENT ? sents : null;
 
 	let sort = 'DESC';
 	let drawer;
+	/**
+	 * @type {{ open: () => void; }}
+	 */
 	let snackbar;
+	/**
+	 * @type {boolean | undefined}
+	 */
 	let drawerOpen;
 	let drawerOpenOnMount = true;
+	/**
+	 * @type {boolean | undefined}
+	 */
 	let selection;
 	let unreadInboxes = 0;
 	let activeTemplate = false;
+	/**
+	 * @type {boolean}
+	 */
 	let canSave;
+	/**
+	 * @type {{} | undefined}
+	 */
 	let working;
+	/**
+	 * @type {MailTemplate}
+	 */
 	let templateComponent;
+	/**
+	 * @type {import("@smui/dialog").DialogComponentDev}
+	 */
 	let unsavedChangesDialog;
+	/**
+	 * @type {{ classList: { add: (arg0: string) => any; remove: (arg0: string) => any; }; getElementsByClassName: (arg0: string) => { (): any; new (): any; length: any; }; }}
+	 */
 	let editable;
 	let editor = {};
+	/**
+	 * @type {undefined}
+	 */
 	let pendingActiveTemplate;
+	/**
+	 * @type {string}
+	 */
 	let activeListItem;
+	/**
+	 * @type {number}
+	 */
 	let selectionIndex;
 	let totalInboxes = 0;
 	let totalSents = 0;
+	/**
+	 * @type {string}
+	 */
 	let currentSlug;
 
-	export let selectionUserId = null;
+	export /**
+	 * @type {null}
+	 */
+	let selectionUserId = null;
 
 	$: currentUser = ((id) => $users.filter((usr) => usr.id === id))(selectionUserId)[0];
 	$: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
@@ -128,17 +170,17 @@
 	$: waitForData =
 		currentSlug &&
 		getSIUX()
-			.then((res) => {
+			.then((/** @type {{ success: any; data: any; }} */ res) => {
 				if (res.success) {
 					slim.update(res.data);
 					$slim; // doesn't work w/o subscribing
 				}
 				return getMail(mailboxes[0]);
 			})
-			.then((inboxes) => {
+			.then(() => {
 				return getMail(mailboxes[1]);
 			})
-			.then((sents) => {
+			.then((/** @type {any} */ sents) => {
 				return new Promise((resolve, reject) => {
 					// Don't really need the data, at this point they are already in the store.
 					// Just resolve the Promise after showing a little loading animation
@@ -159,18 +201,21 @@
 		drawerOpen = drawerOpenOnMount;
 	});
 
+	/**
+	 * @param {string} endpoint
+	 */
 	async function getMail(endpoint) {
-		endpoint = validateMailboxName(endpoint);
-		if (!endpoint)
-			return new Promise((res, rej) => rej(`The mailbox "${endpoint}" doesn'nt exist`)).catch(
-				(reason) => console.log(reason)
+		const ep = validateMailboxName(endpoint);
+		if (!ep)
+			return new Promise((res, rej) => rej(`The mailbox "${ep}" doesn'nt exist`)).catch((reason) =>
+				console.log(reason)
 			);
 		const id = $page.params.slug;
 		return await api
-			.get(`${endpoint}/get/${id}`, { token: $session.user?.jwt, fetch })
+			.get(`${ep}/get/${id}`, { token: $session.user?.jwt, fetch })
 			.then((res) => {
 				if (res.success) {
-					let store = getStoreByEndpoint(endpoint);
+					let store = getStoreByEndpoint(ep);
 					if (store) store.update(res.data);
 					return res.data;
 				}
@@ -200,6 +245,9 @@
 		snackbar.open();
 	}
 
+	/**
+	 * @param {string} name
+	 */
 	function validateMailboxName(name) {
 		if (!name) return;
 		const stripped = name.replace('template:', '');

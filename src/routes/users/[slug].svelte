@@ -1,6 +1,4 @@
 <script>
-	// @ts-nocheck
-
 	import * as api from '$lib/api';
 	import { page, session } from '$app/stores';
 	import { onMount, setContext } from 'svelte';
@@ -11,19 +9,42 @@
 	import { _ } from 'svelte-i18n';
 	import { goto } from '$app/navigation';
 
+	export { _users as users };
+
 	const defaultTab = 2;
 	const defaultSearch =
-		(defaultTab === 0 && `?tab=${TABS[defaultTab]}`) ||
-		(defaultTab === 1 && `?tab=${TABS[defaultTab]}`) ||
-		(defaultTab === 2 && `?tab=${TABS[defaultTab]}&active=${INBOX}`);
+		defaultTab === 0
+			? `?tab=${TABS[defaultTab]}`
+			: defaultTab === 1
+			? `?tab=${TABS[defaultTab]}`
+			: defaultTab === 2
+			? `?tab=${TABS[defaultTab]}&active=${INBOX}`
+			: '';
 
 	let userExpires;
+	/**
+	 * @type {null}
+	 */
 	let hasExpired;
 	let token;
+	/**
+	 * @type {string}
+	 */
 	let magicLink;
+	/**
+	 * @type {{ role: string; name: any; }}
+	 */
 	let currentUser;
+	/**
+	 * @type {any}
+	 */
 	let username;
+	/**
+	 * @type {never[]}
+	 */
+	let _users = [];
 
+	$: users.update(_users);
 	$: selectionUserId = $page.params.slug;
 	$: currentUser = ((id) => $users.length && $users.filter((usr) => usr.id === id)[0])(
 		selectionUserId
@@ -58,7 +79,7 @@
 
 	onMount(() => {
 		let pathname = $page.url.pathname;
-		let search = $page.url.searchParams.search || defaultSearch;
+		let search = $page.url.searchParams.toString() || defaultSearch;
 
 		if (!tab) {
 			setTimeout(() => goto(`${pathname}${search}`), 100);
@@ -132,8 +153,8 @@
 			on:token:Remove
 			on:user:Activate
 			on:open:InfoDialog
-			{selectionUserId}
 			selectedMode="edit"
+			{selectionUserId}
 		/>
 	{/if}
 	{#if tab === TABS[2]}

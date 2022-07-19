@@ -1,10 +1,8 @@
 <script>
-	// @ts-nocheck
-
 	import { page, session } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { sitename } from '$lib/stores';
+	import { images, sitename, videos } from '$lib/stores';
 	import { ADMIN, SUPERUSER } from '$lib/utils';
 	import Button, { Group, Label, Icon } from '@smui/button';
 	import { VideoManager, ImageManager, Component } from '$lib/components';
@@ -13,11 +11,28 @@
 
 	const TABS = ['videos', 'images'];
 
+	/**
+	 * @type {never[]}
+	 */
+	let _videos = [];
+	/**
+	 * @type {never[]}
+	 */
+	let _images = [];
+
+	export { _videos as videos };
+	export { _images as images };
+
 	$: tab = ((tab) => TABS.find((itm) => itm === tab))($page.url.searchParams.get('tab')) || TABS[0];
 	$: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
+	$: videos.update(_videos);
+	$: images.update(_images);
 
 	onMount(() => {});
 
+	/**
+	 * @param {string} tab
+	 */
 	async function changeTab(tab) {
 		await goto(`/videos?tab=${tab}`);
 		return false;
@@ -35,7 +50,7 @@
 				<Button
 					class="focus:outline-none focus:shadow-outline"
 					on:click={() => changeTab(TABS[0])}
-					variant={tab === TABS[0] ? 'unelevated' : ''}
+					variant={tab === TABS[0] ? 'unelevated' : 'outlined'}
 				>
 					<Icon class="material-icons">video_settings</Icon>
 					<Label>Videos</Label>
@@ -44,7 +59,7 @@
 				<Button
 					class="focus:outline-none focus:shadow-outline"
 					on:click={() => changeTab(TABS[1])}
-					variant={tab === TABS[1] ? 'unelevated' : ''}
+					variant={tab === TABS[1] ? 'unelevated' : 'outlined'}
 				>
 					<Icon class="material-icons">collections</Icon>
 					<Label>Posters</Label>

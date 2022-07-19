@@ -1,7 +1,7 @@
 <script context="module">
 	import * as api from '$lib/api';
 
-	export async function load({ session }) {
+	export async function _load({ session }) {
 		const token = session.user?.jwt;
 		await api
 			.get('users', { token })

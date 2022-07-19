@@ -1,23 +1,34 @@
 <script>
-	// @ts-nocheck
-
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { sitename } from '$lib/stores';
+	import { sitename, users } from '$lib/stores';
 	import { _ } from 'svelte-i18n';
 	import { page, session } from '$app/stores';
 	import { INBOX, TABS } from '$lib/utils';
 
-	const defaultTab = 0;
+	export { _users as users };
+
+	/**
+	 * @type {never[]}
+	 */
+	let _users = [];
+
+	const defaultTab = 2;
 	const defaultSearch =
-		(defaultTab === 0 && `?tab=${TABS[defaultTab]}`) ||
-		(defaultTab === 1 && `?tab=${TABS[defaultTab]}`) ||
-		(defaultTab === 2 && `?tab=${TABS[defaultTab]}&active=${INBOX}`);
+		defaultTab === 0
+			? `?tab=${TABS[defaultTab]}`
+			: defaultTab === 1
+			? `?tab=${TABS[defaultTab]}`
+			: defaultTab === 2
+			? `?tab=${TABS[defaultTab]}&active=${INBOX}`
+			: '';
+
+	$: users.update(_users);
 
 	onMount(() => {
 		let pathname = $page.url.pathname;
 		let slug = $page.params.slug || $session.user?.id;
-		let search = $page.url.searchParams.search || defaultSearch;
+		let search = $page.url.searchParams.toString() || defaultSearch;
 
 		setTimeout(() => goto(`${pathname}/${slug}${search}`), 200);
 	});

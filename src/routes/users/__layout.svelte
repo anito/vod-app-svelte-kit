@@ -2,7 +2,7 @@
 	import * as api from '$lib/api';
 	import { infos, fabs, users, videos, images, videosAll, slim } from '$lib/stores';
 
-	export async function load({ fetch, session }) {
+	export async function _load({ fetch, session }) {
 		const token = session.user?.jwt;
 		await api
 			.get('users', { token, fetch })
@@ -54,7 +54,6 @@
 		SimpleUserCard,
 		PageBar,
 		MediaUploader,
-		Modal,
 		Component,
 		SvgIcon,
 		VideoEditorList
