@@ -81,7 +81,7 @@
 
 	onMount(() => {
 		let pathname = $page.url.pathname;
-		let search = $page.url.searchParams.toString() || defaultSearch;
+		let search = $page.url.search || defaultSearch;
 
 		if (!tab) {
 			setTimeout(() => goto(`${pathname}${search}`), 100);

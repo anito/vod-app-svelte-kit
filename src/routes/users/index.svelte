@@ -30,7 +30,7 @@
 	onMount(() => {
 		let pathname = $page.url.pathname;
 		let slug = $page.params.slug || $session.user?.id;
-		let search = $page.url.searchParams.toString() || defaultSearch;
+		let search = $page.url.search || defaultSearch;
 
 		setTimeout(() => goto(`${pathname}/${slug}${search}`), 200);
 	});
