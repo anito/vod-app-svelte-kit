@@ -111,7 +111,7 @@
 				variant={tab === TABS[0] ? 'unelevated' : 'outlined'}
 			>
 				<Icon class="material-icons">video_settings</Icon>
-				<Label>{$_('text.classes')}</Label>
+				<Label>{$_('text.videos')}</Label>
 			</Button>
 			<Button
 				class="focus:outline-none focus:shadow-outline"

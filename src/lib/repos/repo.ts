@@ -3,10 +3,8 @@ import * as api from '$lib/api';
 export class Repo {
 	endpoint: string;
 	token: string;
-	cache: Map<any, any>;
 
 	constructor() {
-		console.log('Repo constructor');
 		this.token = '';
 		this.endpoint = '';
 	}
@@ -27,7 +25,6 @@ export class Repo {
 	}): Promise<Response> => {
 		const lt = (limit && '?limit=' + limit) || '';
 		let endpoint = this.endpoint + lt;
-		console.log('fetching Users API...');
 		return await api.get(endpoint, { fetch, token: this.token }).then((res) => {
 			return res.data;
 		});

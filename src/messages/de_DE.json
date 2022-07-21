@@ -207,7 +207,8 @@
     "editor": "Editor",
     "edit-uploaded-content": "Editor für hochgeladenen Inhalt",
     "unprotect-user": "Schutz aufheben",
-    "protect-user": "Benutzer schützen"
+    "protect-user": "Benutzer schützen",
+    "videos": "Videos"
   },
   "summary": {
     "copy-link": {
