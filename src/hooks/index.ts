@@ -1,9 +1,7 @@
 import { dev } from '$app/env';
 import { handleSession } from 'svelte-kit-cookie-session';
 import { getAuxSession } from '$lib/utils';
-import { UsersRepo } from '$lib/repos/users';
-import { VideosRepo } from '$lib/repos/videos';
-import { ImagesRepo } from '$lib/repos/images';
+import { UsersRepo, VideosRepo, ImagesRepo, VideosAllRepo } from '$lib/repos';
 
 export const handle = handleSession(
 	{
@@ -12,9 +10,15 @@ export const handle = handleSession(
 	async ({ event, resolve }) => {
 		dev && (process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0);
 
-		// event.locals.usersRepo = new UsersRepo(event, 'users');
-		// event.locals.videosRepo = new VideosRepo(event, 'videos');
-		// event.locals.imagesRepo = new ImagesRepo(event, 'images');
+		const token = event.locals.session.data.user?.jwt;
+		const usersRepo = UsersRepo.getInstance().setToken(token);
+		const videosRepo = VideosRepo.getInstance().setToken(token);
+		const imagesRepo = ImagesRepo.getInstance().setToken(token);
+		const videosAllRepo = VideosAllRepo.getInstance().setToken(token);
+		event.locals.usersRepo = usersRepo;
+		event.locals.videosRepo = videosRepo;
+		event.locals.imagesRepo = imagesRepo;
+		event.locals.videosAllRepo = videosAllRepo;
 
 		return await resolve(event);
 	}
@@ -24,7 +28,7 @@ export const handle = handleSession(
 export const _getSession = getAuxSession();
 
 export async function externalFetch(request: { status: number }) {
-	// console.log('#externalFetch', request);
+	console.log('#externalFetch', request);
 	request.status = 200;
 	return request;
 }

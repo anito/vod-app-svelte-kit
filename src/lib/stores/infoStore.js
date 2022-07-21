@@ -58,16 +58,16 @@ function createStore() {
 		}
 	];
 
-	return derived(users, (_users, set) => {
-		for (let _user of _users) {
+	return derived(users, ($users, set) => {
+		for (let user of $users) {
 			let res = [];
 			for (const def of DEFS) {
-				def.value(_user) && res.push(def.key);
+				def.value(user) && res.push(def.key);
 			}
-			let item = infos.get(_user.id);
-			(item && ((res.length && (item.params = [...res])) || infos.delete(_user.id))) ||
+			let item = infos.get(user.id);
+			(item && ((res.length && (item.params = [...res])) || infos.delete(user.id))) ||
 				(res.length &&
-					infos.set(_user.id, {
+					infos.set(user.id, {
 						params: res
 					}));
 		}

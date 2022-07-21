@@ -1,32 +1,19 @@
-import * as api from '$lib/api';
-import type { RequestEvent } from '@sveltejs/kit';
+import { Repo } from './repo';
 
-type Response = {
-	data: [],
-	message: string,
-	success: boolean
-};
-
-export class ImagesRepo {
-	request: Request;
-	token: string;
+export class ImagesRepo extends Repo {
 	endpoint: string;
 
-	constructor({ request, locals }: RequestEvent, endpoint: string) {
-		this.request = request;
-		this.token = locals.session.data.user?.jwt;
-		this.endpoint = endpoint;
+  private static instance: ImagesRepo;
+
+	constructor() {
+		super();
+		this.endpoint = 'images';
 	}
-	getAll = async ({
-		limit,
-		match = {}
-	}: {
-		limit: number,
-		match?: Record<string, unknown>
-	}): Promise<Response> => {
-		const lt = limit ? '?limit=' + limit : '';
-		return await api.get(this.endpoint, { fetch, token: this.token }).then((res) => {
-			return res.data;
-		});
-	};
+
+  public static getInstance(): ImagesRepo {
+    if (!ImagesRepo.instance) {
+      ImagesRepo.instance = new ImagesRepo()
+    }
+    return ImagesRepo.instance
+  }
 }

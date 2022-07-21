@@ -23,10 +23,10 @@
 	export { _videos as videos };
 	export { _images as images };
 
+	$: videos.update(_videos);
+	$: images.update(_images);
 	$: tab = ((tab) => TABS.find((itm) => itm === tab))($page.url.searchParams.get('tab')) || TABS[0];
 	$: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
-	// $: videos.update(_videos);
-	// $: images.update(_images);
 
 	onMount(() => {});
 

@@ -3,37 +3,43 @@
 	import { infos, fabs, users, videos, images, videosAll, slim } from '$lib/stores';
 
 	export async function load({ fetch, session }) {
-		const token = session.user?.jwt;
-		await api
-			.get('users', { token, fetch })
-			.then((res) => {
-				res.success && users.update(res.data);
+		const headers = new Headers({
+			Accept: 'application/json'
+		});
+		await fetch('/users', { headers })
+			.then(async (res) => {
+				if (!res.ok) {
+					return { status: res.status };
+				}
+				return await res.json();
 			})
-			.catch(() => {});
-
-		await api
-			.get('videos', { token, fetch })
 			.then((res) => {
-				res.success && videos.update(res.data);
+				users.update(res.users);
+			});
+
+		await fetch('/videos', { headers })
+			.then(async (res) => {
+				if (!res.ok) {
+					return { status: res.status };
+				}
+				return await res.json();
 			})
-			.catch(() => {});
+			.then((res) => {
+				videos.update(res.videos);
+				images.update(res.images);
+			});
 
-		if (session.role === ADMIN || session.role === SUPERUSER) {
-			await api
-				.get('images', { token, fetch })
-				.then((res) => {
-					res.success && images.update(res.data);
+		if (session.role === USER) {
+			await fetch('/videos/all', { headers })
+				.then(async (res) => {
+					if (!res.ok) {
+						return { status: res.status };
+					}
+					return await res.json();
 				})
-				.catch(() => {});
-		}
-
-		if (session.role !== ADMIN && session.role !== SUPERUSER) {
-			await api
-				.get('videos/all', { token, fetch })
 				.then((res) => {
-					res.success && videosAll.update(res.data);
-				})
-				.catch(() => {});
+					videosAll.update(res.videos);
+				});
 		}
 
 		return {};
@@ -58,7 +64,7 @@
 		SvgIcon,
 		VideoEditorList
 	} from '$lib/components';
-	import { ADMIN, proxyEvent, SUPERUSER } from '$lib/utils';
+	import { ADMIN, proxyEvent, SUPERUSER, USER } from '$lib/utils';
 	import Button, { Icon as Icon_ } from '@smui/button';
 	import Fab, { Label } from '@smui/fab';
 	import Textfield from '@smui/textfield';
@@ -347,7 +353,7 @@
 					>
 				</Textfield>
 			</div>
-			{#if $users.length}
+			{#if filteredUsers.length}
 				<List class="users-list mb-24" twoLine avatarList singleSelection bind:selectedIndex>
 					{#each filteredUsers as user (user.id)}
 						<a sveltekit:prefetch href={`/users/${user.id}${query}`}>

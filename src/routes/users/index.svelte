@@ -8,12 +8,12 @@
 	import { page, session } from '$app/stores';
 	import { INBOX, TABS } from '$lib/utils';
 
-	export { _users as users };
-
 	/**
 	 * @type {never[]}
 	 */
 	let _users = [];
+
+	export { _users as users };
 
 	const defaultTab = 2;
 	const defaultSearch =
@@ -25,7 +25,7 @@
 			? `?tab=${TABS[defaultTab]}&active=${INBOX}`
 			: '';
 
-	// $: users.update(_users);
+	$: users.update(_users);
 
 	onMount(() => {
 		let pathname = $page.url.pathname;

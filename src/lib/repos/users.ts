@@ -1,33 +1,19 @@
-import * as api from '$lib/api';
-import type { RequestEvent } from '@sveltejs/kit';
-import { lt } from 'date-fns/locale';
+import { Repo } from './repo';
 
-type Response = {
-	data: [],
-	message: string,
-	success: boolean
-};
-
-export class UsersRepo {
-	request: Request;
-	token: string;
+export class UsersRepo extends Repo {
 	endpoint: string;
 
-	constructor({ request, locals }: RequestEvent, endpoint: string) {
-		this.request = request;
-		this.token = locals.session.data.user?.jwt;
-		this.endpoint = endpoint;
+  private static instance: UsersRepo;
+
+	constructor() {
+    super();
+		this.endpoint = 'users';
 	}
-	getAll = async ({
-		limit,
-		match = {}
-	}: {
-		limit: number,
-		match?: Record<string, unknown>
-	}): Promise<Response> => {
-		const lt = (limit && '?limit=' + limit) || '';
-		return await api.get(`${this.endpoint}${lt}`, { fetch, token: this.token }).then((res) => {
-			return res.data;
-		});
-	};
+
+  public static getInstance(): UsersRepo {
+    if (!UsersRepo.instance) {
+      UsersRepo.instance = new UsersRepo()
+    }
+    return UsersRepo.instance
+  }
 }

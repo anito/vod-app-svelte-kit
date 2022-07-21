@@ -1,6 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
 
-export const get: RequestHandler = async ({ request, locals: { usersRepo }, url }) => {
+export const get: RequestHandler = async ({ locals: { usersRepo }, url }) => {
 	const limit = parseInt(url.searchParams.get('limit') || '50');
 	const users = await usersRepo.getAll({ limit });
 

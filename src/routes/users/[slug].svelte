@@ -11,8 +11,6 @@
 	import { _ } from 'svelte-i18n';
 	import { goto } from '$app/navigation';
 
-	export { _users as users };
-
 	const defaultTab = 2;
 	const defaultSearch =
 		defaultTab === 0
@@ -41,12 +39,7 @@
 	 * @type {any}
 	 */
 	let username;
-	/**
-	 * @type {never[]}
-	 */
-	let _users = [];
 
-	// $: users.update(_users);
 	$: selectionUserId = $page.params.slug;
 	$: currentUser = ((id) => $users.length && $users.filter((usr) => usr.id === id)[0])(
 		selectionUserId
@@ -80,10 +73,15 @@
 	});
 
 	onMount(() => {
-		let pathname = $page.url.pathname;
-		let search = $page.url.search || defaultSearch;
+		const pathname = $page.url.pathname;
+		const search = $page.url.search || defaultSearch;
 
-		if (!tab) {
+		if (!currentUser && $session.user) {
+			// Fix not exsiting User-ID
+			let path = pathname.replace(/^(\/users\/)([\S]+)$/g, `$1${$session.user.id}`);
+			setTimeout(() => goto(`${path}${search}`), 100);
+		} else if (!tab) {
+			// Preselect a tab if there is none
 			setTimeout(() => goto(`${pathname}${search}`), 100);
 		}
 	});
