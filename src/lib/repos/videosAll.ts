@@ -1,19 +1,19 @@
 import { Repo } from './repo';
 
 export class VideosAllRepo extends Repo {
-	endpoint: string;
+  endpoint: string;
 
   private static instance: VideosAllRepo;
 
-	constructor() {
+  constructor() {
     super();
-		this.endpoint = 'videos/all';
-	}
+    this.endpoint = 'videos/all';
+  }
 
   public static getInstance(): VideosAllRepo {
     if (!VideosAllRepo.instance) {
-      VideosAllRepo.instance = new VideosAllRepo()
+      VideosAllRepo.instance = new VideosAllRepo();
     }
-    return VideosAllRepo.instance
+    return VideosAllRepo.instance;
   }
 }

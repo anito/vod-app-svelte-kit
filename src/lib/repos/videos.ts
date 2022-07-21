@@ -1,14 +1,14 @@
 import { Repo } from './repo';
 
 export class VideosRepo extends Repo {
-	endpoint: string;
+  endpoint: string;
 
   private static instance: VideosRepo;
 
-	constructor() {
+  constructor() {
     super();
-		this.endpoint = 'videos';
-	}
+    this.endpoint = 'videos';
+  }
 
   public static getInstance(): VideosRepo {
     if (!VideosRepo.instance) {

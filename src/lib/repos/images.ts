@@ -1,14 +1,14 @@
 import { Repo } from './repo';
 
 export class ImagesRepo extends Repo {
-	endpoint: string;
+  endpoint: string;
 
   private static instance: ImagesRepo;
 
-	constructor() {
-		super();
-		this.endpoint = 'images';
-	}
+  constructor() {
+    super();
+    this.endpoint = 'images';
+  }
 
   public static getInstance(): ImagesRepo {
     if (!ImagesRepo.instance) {
