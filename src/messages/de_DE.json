@@ -208,7 +208,8 @@
     "edit-uploaded-content": "Editor für hochgeladenen Inhalt",
     "unprotect-user": "Schutz aufheben",
     "protect-user": "Benutzer schützen",
-    "videos": "Videos"
+    "videos": "Videos",
+    "login-with-facebook": "Login mit Facebook"
   },
   "summary": {
     "copy-link": {

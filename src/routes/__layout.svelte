@@ -1,460 +1,460 @@
 <script context="module">
-	import {
-		register,
-		waitLocale,
-		init as init_i18n,
-		_,
-		locale as i18n,
-		getLocaleFromNavigator
-	} from 'svelte-i18n';
-	import { browser } from '$app/env';
+  import {
+    register,
+    waitLocale,
+    init as init_i18n,
+    _,
+    locale as i18n,
+    getLocaleFromNavigator
+  } from 'svelte-i18n';
+  import { browser } from '$app/env';
 
-	const fallbackLocale = 'en-US';
+  const fallbackLocale = 'en-US';
 
-	register('de-DE', () => import('../messages/de_DE.json'));
-	register('en-US', () => import('../messages/en_US.json'));
+  register('de-DE', () => import('../messages/de_DE.json'));
+  register('en-US', () => import('../messages/en_US.json'));
 
-	export async function load({ fetch }) {
-		async function getLocaleFromSession() {
-			return await fetch('/session/recover/locale')
-				.then((res) => {
-					return res.json();
-				})
-				.then((res) => {
-					return res.data;
-				});
-		}
+  export async function load({ fetch }) {
+    async function getLocaleFromSession() {
+      return await fetch('/session/recover/locale')
+        .then((res) => {
+          return res.json();
+        })
+        .then((res) => {
+          return res.data;
+        });
+    }
 
-		if (browser) {
-			init_i18n({
-				fallbackLocale,
-				initialLocale: await getLocaleFromSession()
-			});
-		} else {
-			init_i18n({
-				fallbackLocale,
-				initialLocale: await getLocaleFromNavigator()
-			});
-		}
+    if (browser) {
+      init_i18n({
+        fallbackLocale,
+        initialLocale: await getLocaleFromSession()
+      });
+    } else {
+      init_i18n({
+        fallbackLocale,
+        initialLocale: await getLocaleFromNavigator()
+      });
+    }
 
-		await waitLocale();
-		return {};
-	}
+    await waitLocale();
+    return {};
+  }
 </script>
 
 <script>
-	// @ts-nocheck
+  // @ts-nocheck
 
-	import '../app.css';
-	import '$lib/components/_notched_outline.scss';
-	import * as api from '$lib/api';
-	import { goto } from '$app/navigation';
-	import { page, session } from '$app/stores';
-	import { getContext, onMount, setContext } from 'svelte';
-	import isMobile from 'ismobilejs';
-	import { Icons } from '$lib/components';
-	import Button, { Icon } from '@smui/button';
-	import IconButton from '@smui/icon-button';
-	import Snackbar, { Actions } from '@smui/snackbar';
-	import { Label } from '@smui/common';
-	import {
-		del as logout,
-		createRedirectSlug,
-		proxyEvent,
-		svg,
-		__ticker__,
-		ADMIN,
-		SUPERUSER
-	} from '$lib/utils';
-	import {
-		fabs,
-		settings,
-		theme,
-		ticker,
-		urls,
-		videos,
-		videoEmitter,
-		inboxes,
-		sents
-	} from '$lib/stores';
-	import { Modal } from '$lib/components';
-	import { Jumper } from 'svelte-loading-spinners';
-	import {
-		UserGraphic,
-		LoadingModal,
-		LocaleSwitcher,
-		FrameworkSwitcher,
-		Nav,
-		NavItem
-	} from '$lib/components';
-	import { svg_manifest } from '$lib/svg_manifest';
-	import { serverConfig } from '$lib/config';
+  import '../app.css';
+  import '$lib/components/_notched_outline.scss';
+  import * as api from '$lib/api';
+  import { goto } from '$app/navigation';
+  import { page, session } from '$app/stores';
+  import { getContext, onMount, setContext } from 'svelte';
+  import isMobile from 'ismobilejs';
+  import { Icons } from '$lib/components';
+  import Button, { Icon } from '@smui/button';
+  import IconButton from '@smui/icon-button';
+  import Snackbar, { Actions } from '@smui/snackbar';
+  import { Label } from '@smui/common';
+  import {
+    del as logout,
+    createRedirectSlug,
+    proxyEvent,
+    svg,
+    __ticker__,
+    ADMIN,
+    SUPERUSER
+  } from '$lib/utils';
+  import {
+    fabs,
+    settings,
+    theme,
+    ticker,
+    urls,
+    videos,
+    videoEmitter,
+    inboxes,
+    sents
+  } from '$lib/stores';
+  import { Modal } from '$lib/components';
+  import { Jumper } from 'svelte-loading-spinners';
+  import {
+    UserGraphic,
+    LoadingModal,
+    LocaleSwitcher,
+    FrameworkSwitcher,
+    Nav,
+    NavItem
+  } from '$lib/components';
+  import { svg_manifest } from '$lib/svg_manifest';
+  import { serverConfig } from '$lib/config';
 
-	const snackbarLifetimeDefault = 4000;
-	const redirectDelay = 300;
+  const snackbarLifetimeDefault = 4000;
+  const redirectDelay = 300;
 
-	let root;
-	let message = '';
-	let action = '';
-	let path = '';
-	let timeoutId;
-	let isMobileDevice;
-	let loggedInButtonTextSecondLine;
-	let unsubscribeVideoEmitter;
-	let emphasize;
-	let snackbar;
+  let root;
+  let message = '';
+  let action = '';
+  let path = '';
+  let timeoutId;
+  let isMobileDevice;
+  let loggedInButtonTextSecondLine;
+  let unsubscribeVideoEmitter;
+  let emphasize;
+  let snackbar;
 
-	setContext('fab', {
-		setFab: (name) => fabs.update(name),
-		restoreFab: () => fabs.restore()
-	});
+  setContext('fab', {
+    setFab: (name) => fabs.update(name),
+    restoreFab: () => fabs.restore()
+  });
 
-	setContext('snackbar', {
-		getSnackbar: () => snackbar,
-		configSnackbar
-	});
+  setContext('snackbar', {
+    getSnackbar: () => snackbar,
+    configSnackbar
+  });
 
-	const { getSnackbar } = getContext('snackbar');
+  const { getSnackbar } = getContext('snackbar');
 
-	ticker.subscribe((val) => {
-		// console.log(
-		// 	'%c TICKER %c %s',
-		// 	'background: #ffd54f; color: #000000; padding:4px 6px 3px 0;',
-		// 	'background: #ffff81; color: #000000; padding:4px 6px 3px 0;',
-		// 	`${(!isNaN(val) && parseInt(val / 1000) + ' s') || '--'}`
-		// );
-		if (val === 0) {
-			proxyEvent('ticker:end');
-		}
-	});
+  ticker.subscribe((val) => {
+    // console.log(
+    // 	'%c TICKER %c %s',
+    // 	'background: #ffd54f; color: #000000; padding:4px 6px 3px 0;',
+    // 	'background: #ffff81; color: #000000; padding:4px 6px 3px 0;',
+    // 	`${(!isNaN(val) && parseInt(val / 1000) + ' s') || '--'}`
+    // );
+    if (val === 0) {
+      proxyEvent('ticker:end');
+    }
+  });
 
-	unsubscribeVideoEmitter = videoEmitter.subscribe((t) => {
-		if ('put' === t.method) {
-			put(t);
-		}
-		if ('del' === t.method) {
-			del(t);
-		}
-	});
+  unsubscribeVideoEmitter = videoEmitter.subscribe((t) => {
+    if ('put' === t.method) {
+      put(t);
+    }
+    if ('del' === t.method) {
+      del(t);
+    }
+  });
 
-	$: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
-	$: token = $session.user?.jwt;
-	$: person = svg(svg_manifest.person, $theme.primary);
-	$: logo = svg(svg_manifest.logo_vod, $theme.primary);
-	$: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
-	$: root && ((user) => root.classList.toggle('loggedin', user))(!!$session.user);
-	$: root && ((isPrivileged) => root.classList.toggle('admin', isPrivileged))(hasPrivileges);
-	$: ((seg) => {
-		root && ((seg && root.classList.remove('home')) || (!seg && root.classList.add('home')));
-	})(segment);
-	$: isMobileDevice = isMobile.any;
-	$: snackbarLifetime = action ? 6000 : snackbarLifetimeDefault;
-	$: $session.user &&
-		(loggedInButtonTextSecondLine = $_('text.logged-in-button-second-line', {
-			values: { name: $session.user?.name }
-		}));
-	$: searchParams = $page.url.searchParams.toString();
-	$: search = searchParams && `?${searchParams}`;
+  $: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
+  $: token = $session.user?.jwt;
+  $: person = svg(svg_manifest.person, $theme.primary);
+  $: logo = svg(svg_manifest.logo_vod, $theme.primary);
+  $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
+  $: root && ((user) => root.classList.toggle('loggedin', user))(!!$session.user);
+  $: root && ((isPrivileged) => root.classList.toggle('admin', isPrivileged))(hasPrivileges);
+  $: ((seg) => {
+    root && ((seg && root.classList.remove('home')) || (!seg && root.classList.add('home')));
+  })(segment);
+  $: isMobileDevice = isMobile.any;
+  $: snackbarLifetime = action ? 6000 : snackbarLifetimeDefault;
+  $: $session.user &&
+    (loggedInButtonTextSecondLine = $_('text.logged-in-button-second-line', {
+      values: { name: $session.user?.name }
+    }));
+  $: searchParams = $page.url.searchParams.toString();
+  $: search = searchParams && `?${searchParams}`;
 
-	onMount(() => {
-		root = document.documentElement;
-		snackbar = getSnackbar();
+  onMount(() => {
+    root = document.documentElement;
+    snackbar = getSnackbar();
 
-		serverConfig().then(() => proxyEvent('ticker:extend'));
-		initListener();
-		initClasses();
-		initStyles();
+    serverConfig().then(() => proxyEvent('ticker:extend'));
+    initListener();
+    initClasses();
+    initStyles();
 
-		return () => {
-			removeListener();
-			removeSubscribers();
-			removeClasses();
-		};
-	});
+    return () => {
+      removeListener();
+      removeSubscribers();
+      removeClasses();
+    };
+  });
 
-	function initListener() {
-		window.addEventListener('ticker:start', tickerStartHandler);
-		window.addEventListener('ticker:end', tickerEndHandler);
-		window.addEventListener('ticker:ended', tickerEndedHandler);
-		window.addEventListener('ticker:extend', tickerExtendHandler);
-	}
+  function initListener() {
+    window.addEventListener('ticker:start', tickerStartHandler);
+    window.addEventListener('ticker:end', tickerEndHandler);
+    window.addEventListener('ticker:ended', tickerEndedHandler);
+    window.addEventListener('ticker:extend', tickerExtendHandler);
+  }
 
-	function initClasses() {
-		isMobileDevice && root.classList.add('ismobile');
-	}
+  function initClasses() {
+    isMobileDevice && root.classList.add('ismobile');
+  }
 
-	function initStyles() {
-		let styles = window.getComputedStyle(root);
-		theme.set({
-			primary: styles.getPropertyValue('--prime'),
-			secondary: styles.getPropertyValue('--second')
-		});
-	}
+  function initStyles() {
+    let styles = window.getComputedStyle(root);
+    theme.set({
+      primary: styles.getPropertyValue('--prime'),
+      secondary: styles.getPropertyValue('--second')
+    });
+  }
 
-	function removeListener() {
-		window.removeEventListener('ticker:start', tickerStartHandler);
-		window.removeEventListener('ticker:end', tickerEndHandler);
-		window.removeEventListener('ticker:ended', tickerEndedHandler);
-		window.removeEventListener('ticker:extend', tickerExtendHandler);
-	}
+  function removeListener() {
+    window.removeEventListener('ticker:start', tickerStartHandler);
+    window.removeEventListener('ticker:end', tickerEndHandler);
+    window.removeEventListener('ticker:ended', tickerEndedHandler);
+    window.removeEventListener('ticker:extend', tickerExtendHandler);
+  }
 
-	function removeSubscribers() {
-		unsubscribeVideoEmitter();
-	}
+  function removeSubscribers() {
+    unsubscribeVideoEmitter();
+  }
 
-	function removeClasses() {
-		root.classList.remove('ismobile');
-	}
+  function removeClasses() {
+    root.classList.remove('ismobile');
+  }
 
-	/**
-	 * Saves video changes and deletions
-	 * @param item
-	 */
-	async function put({ data, show }) {
-		await api.put(`videos/${data.id}`, { data, token: $session.user?.jwt }).then((res) => {
-			res.success && videos.put(data);
+  /**
+   * Saves video changes and deletions
+   * @param item
+   */
+  async function put({ data, show }) {
+    await api.put(`videos/${data.id}`, { data, token: $session.user?.jwt }).then((res) => {
+      res.success && videos.put(data);
 
-			if (show) {
-				let message = res.message || res.data.message;
-				snackbar.isOpen && snackbar.close();
-				configSnackbar(message);
-				snackbar.open();
-			}
-		});
-	}
+      if (show) {
+        let message = res.message || res.data.message;
+        snackbar.isOpen && snackbar.close();
+        configSnackbar(message);
+        snackbar.open();
+      }
+    });
+  }
 
-	async function del({ data, show }) {
-		await api.del(`videos/${data.id}`, { token }).then((res) => {
-			if (res.success) {
-				urls.del(data.id);
-				videos.del(data.id);
-			}
+  async function del({ data, show }) {
+    await api.del(`videos/${data.id}`, { token }).then((res) => {
+      if (res.success) {
+        urls.del(data.id);
+        videos.del(data.id);
+      }
 
-			if (show) {
-				let message = res.message || res.data.message;
-				snackbar.isOpen && snackbar.close();
-				configSnackbar(message);
-				snackbar.open();
-			}
-		});
-	}
+      if (show) {
+        let message = res.message || res.data.message;
+        snackbar.isOpen && snackbar.close();
+        configSnackbar(message);
+        snackbar.open();
+      }
+    });
+  }
 
-	function submit(e) {
-		if ($session.user) {
-			loggedInButtonTextSecondLine = $_('text.one-moment');
-			proxyEvent('ticker:end', { user: $session.user });
-		}
-	}
+  function submit(e) {
+    if ($session.user) {
+      loggedInButtonTextSecondLine = $_('text.one-moment');
+      proxyEvent('ticker:end', { user: $session.user });
+    }
+  }
 
-	function configSnackbar(msg, link) {
-		try {
-			snackbar.close();
-		} catch (e) {}
-		configureAction(msg, link);
-	}
+  function configSnackbar(msg, link) {
+    try {
+      snackbar.close();
+    } catch (e) {}
+    configureAction(msg, link);
+  }
 
-	function configureAction(msg = '', link) {
-		message = msg;
-		action = path = '';
-		if (typeof link === 'object') {
-			path = link.path;
-			action = link.action;
-		} else {
-			path = link;
-		}
-		!action && path && (message = `${message}...`);
-	}
+  function configureAction(msg = '', link) {
+    message = msg;
+    action = path = '';
+    if (typeof link === 'object') {
+      path = link.path;
+      action = link.action;
+    } else {
+      path = link;
+    }
+    !action && path && (message = `${message}...`);
+  }
 
-	function handleOpened() {
-		clearTimeout(timeoutId);
-		timeoutId = setTimeout(() => !action && path && goto(path), redirectDelay);
-	}
+  function handleOpened() {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => !action && path && goto(path), redirectDelay);
+  }
 
-	function handleClosed() {}
+  function handleClosed() {}
 
-	function tickerStartHandler(e) {
-		const { user, groups, renewed } = { ...e.detail };
+  function tickerStartHandler(e) {
+    const { user, groups, renewed } = { ...e.detail };
 
-		$session.user = user;
-		$session.role = user.role;
-		$session.groups = groups;
+    $session.user = user;
+    $session.role = user.role;
+    $session.groups = groups;
 
-		proxyEvent('ticker:extend');
+    proxyEvent('ticker:extend');
 
-		renewed && localStorage.setItem('renewed', renewed);
-		configSnackbar(
-			$_('text.external-login-welcome-message', {
-				values: { name: user.name }
-			})
-		);
-		snackbar?.open();
-	}
+    renewed && localStorage.setItem('renewed', renewed);
+    configSnackbar(
+      $_('text.external-login-welcome-message', {
+        values: { name: user.name }
+      })
+    );
+    snackbar?.open();
+  }
 
-	async function tickerEndHandler(e) {
-		if ($session.user) {
-			$session.user = null;
-			$session.groups = null;
-			$session.role = null;
-			$session._expires = null;
+  async function tickerEndHandler(e) {
+    if ($session.user) {
+      $session.user = null;
+      $session.groups = null;
+      $session.role = null;
+      $session._expires = null;
 
-			await logout(`/auth/logout`).then((res) => {
-				if (res) {
-					message = res.message || res.data?.message;
+      await logout(`/auth/logout`).then((res) => {
+        if (res) {
+          message = res.message || res.data?.message;
 
-					configSnackbar(message);
-					snackbar = getSnackbar();
-					snackbar?.open();
-				}
-			});
-		}
-		proxyEvent('ticker:ended', e.detail);
-	}
+          configSnackbar(message);
+          snackbar = getSnackbar();
+          snackbar?.open();
+        }
+      });
+    }
+    proxyEvent('ticker:ended', e.detail);
+  }
 
-	async function tickerEndedHandler(e) {
-		setTimeout(
-			(path, searchMap) => {
-				goto(`${path}${createRedirectSlug($page.url, searchMap)}`);
-			},
-			100,
-			e.detail.path || '/',
-			new Map([['sessionend', 'true']])
-		);
-	}
+  async function tickerEndedHandler(e) {
+    setTimeout(
+      (path, searchMap) => {
+        goto(`${path}${createRedirectSlug($page.url, searchMap)}`);
+      },
+      100,
+      e.detail.path || '/',
+      new Map([['sessionend', 'true']])
+    );
+  }
 
-	async function tickerExtendHandler() {
-		if ($session.user) {
-			$session._expires = new Date(Date.now() + parseInt($settings.Session?.lifetime));
-		}
-	}
+  async function tickerExtendHandler() {
+    if ($session.user) {
+      $session._expires = new Date(Date.now() + parseInt($settings.Session?.lifetime));
+    }
+  }
 </script>
 
 <Icons />
 
 {#if $session && $i18n}
-	<Modal header={{ name: 'text.upload-type' }}>
-		<Modal header={{ name: 'text.edit-uploaded-content' }} key="editor-modal">
-			<form
-				class="main-menu"
-				on:submit|stopPropagation|preventDefault={submit}
-				method="post"
-				action="/login"
-			>
-				<Nav {segment} {page} {logo}>
-					{#if $session.user}
-						<NavItem href="/videos" title="Videothek" segment="videos">
-							<Icon class="material-icons" style="vertical-align: middle;">video_library</Icon>
-							<Label>{$_('nav.library')}</Label>
-						</NavItem>
-					{/if}
+  <Modal header={{ name: 'text.upload-type' }}>
+    <Modal header={{ name: 'text.edit-uploaded-content' }} key="editor-modal">
+      <form
+        class="main-menu"
+        on:submit|stopPropagation|preventDefault={submit}
+        method="post"
+        action="/login"
+      >
+        <Nav {segment} {page} {logo}>
+          {#if $session.user}
+            <NavItem href="/videos" title="Videothek" segment="videos">
+              <Icon class="material-icons" style="vertical-align: middle;">video_library</Icon>
+              <Label>{$_('nav.library')}</Label>
+            </NavItem>
+          {/if}
 
-					{#if hasPrivileges}
-						<NavItem href="/users" title="Administration" segment="users">
-							<Icon class="material-icons" style="vertical-align: middle;">settings</Icon>
-							<Label>Admin</Label>
-						</NavItem>
-					{/if}
+          {#if hasPrivileges}
+            <NavItem href="/users" title="Administration" segment="users">
+              <Icon class="material-icons" style="vertical-align: middle;">settings</Icon>
+              <Label>Admin</Label>
+            </NavItem>
+          {/if}
 
-					{#if $session.user}
-						<NavItem segment="login">
-							<Button
-								variant="raised"
-								class="sign-in-out button-logout v-emph v-emph-bounce {emphasize}"
-								on:mouseenter={() => (emphasize = 'v-emph-active')}
-								on:mouseleave={() => (emphasize = '')}
-							>
-								<span class="button-first-line v-emph-primary v-emph-down">Logout</span>
-								<Label class="no-break v-emph-secondary v-emph-up">
-									{@html loggedInButtonTextSecondLine}
-								</Label>
-							</Button>
-						</NavItem>
-					{:else}
-						<NavItem href="/login{search}">
-							<Button color="secondary" variant="raised" class="sign-in-out button-login">
-								<Label>{$_('nav.login')}</Label>
-							</Button>
-						</NavItem>
-					{/if}
+          {#if $session.user}
+            <NavItem segment="login">
+              <Button
+                variant="raised"
+                class="sign-in-out button-logout v-emph v-emph-bounce {emphasize}"
+                on:mouseenter={() => (emphasize = 'v-emph-active')}
+                on:mouseleave={() => (emphasize = '')}
+              >
+                <span class="button-first-line v-emph-primary v-emph-down">Logout</span>
+                <Label class="no-break v-emph-secondary v-emph-up">
+                  {@html loggedInButtonTextSecondLine}
+                </Label>
+              </Button>
+            </NavItem>
+          {:else}
+            <NavItem href="/login{search}">
+              <Button color="secondary" variant="raised" class="sign-in-out button-login">
+                <Label>{$_('nav.login')}</Label>
+              </Button>
+            </NavItem>
+          {/if}
 
-					{#if $session.user}
-						<NavItem title="Avatar" href="/users/{$session.user?.id}?tab=user">
-							<UserGraphic
-								borderSize="3"
-								borderColor="--prime"
-								dense
-								size="40"
-								user={$session.user}
-								badge={{
-									icon: 'settings',
-									color: '--prime',
-									size: 'small',
-									position: 'BOTTOM_RIGHT'
-								}}
-							/>
-						</NavItem>
-					{:else}
-						<NavItem title="Avatar">
-							<UserGraphic borderSize="3" borderColor="--prime" dense size="40" fallback={person} />
-						</NavItem>
-					{/if}
+          {#if $session.user}
+            <NavItem title="Avatar" href="/users/{$session.user?.id}?tab=user">
+              <UserGraphic
+                borderSize="3"
+                borderColor="--prime"
+                dense
+                size="40"
+                user={$session.user}
+                badge={{
+                  icon: 'settings',
+                  color: '--prime',
+                  size: 'small',
+                  position: 'BOTTOM_RIGHT'
+                }}
+              />
+            </NavItem>
+          {:else}
+            <NavItem title="Avatar">
+              <UserGraphic borderSize="3" borderColor="--prime" dense size="40" fallback={person} />
+            </NavItem>
+          {/if}
 
-					<NavItem title={$_('text.choose-locale')}>
-						<LocaleSwitcher />
-					</NavItem>
+          <NavItem title={$_('text.choose-locale')}>
+            <LocaleSwitcher />
+          </NavItem>
 
-					<NavItem title={$_('text.choose-framework')} style="vertical-align: middle;">
-						<FrameworkSwitcher />
-					</NavItem>
-				</Nav>
-			</form>
-			<slot />
-		</Modal>
-	</Modal>
+          <NavItem title={$_('text.choose-framework')} style="vertical-align: middle;">
+            <FrameworkSwitcher />
+          </NavItem>
+        </Nav>
+      </form>
+      <slot />
+    </Modal>
+  </Modal>
 {/if}
 <LoadingModal backgroundColor="#ffffff" opacity=".45" wait="0">
-	<Jumper size="200" color="var(--flash)" unit="px" />
+  <Jumper size="200" color="var(--flash)" unit="px" />
 </LoadingModal>
 
 <Snackbar
-	bind:this={snackbar}
-	snackbarLifetimeMs={snackbarLifetime}
-	labelText={message}
-	on:MDCSnackbar:closed={handleClosed}
-	on:MDCSnackbar:opened={handleOpened}
+  bind:this={snackbar}
+  snackbarLifetimeMs={snackbarLifetime}
+  labelText={message}
+  on:MDCSnackbar:closed={handleClosed}
+  on:MDCSnackbar:opened={handleOpened}
 >
-	<Label />
-	<Actions>
-		{#if action}
-			<Button on:click={() => goto(path)}>{action}</Button>
-		{/if}
-		<IconButton class="material-icons" title="Dismiss">close</IconButton>
-	</Actions>
+  <Label />
+  <Actions>
+    {#if action}
+      <Button on:click={() => goto(path)}>{action}</Button>
+    {/if}
+    <IconButton class="material-icons" title="Dismiss">close</IconButton>
+  </Actions>
 </Snackbar>
 
 <style>
-	.button-first-line {
-		position: absolute;
-		width: 84%;
-		text-overflow: ellipsis;
-		display: inline-block;
-		overflow: hidden;
-		white-space: nowrap;
-	}
-	.main-menu :global(button.sign-in-out) {
-		height: 74px;
-		width: 130px;
-	}
-	:global(.is-login-page) .main-menu :global(button.sign-in-out) {
-		transform: translateY(-60px);
-		transition: all 0.4s ease-out;
-	}
-	.main-menu :global(button.sign-in-out) {
-		transform: translateY(0px);
-		transition: all 0.4s ease-in;
-	}
-	.main-menu :global(button.sign-in-out .no-break) {
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
+  .button-first-line {
+    position: absolute;
+    width: 84%;
+    text-overflow: ellipsis;
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .main-menu :global(button.sign-in-out) {
+    height: 74px;
+    width: 130px;
+  }
+  :global(.is-login-page) .main-menu :global(button.sign-in-out) {
+    transform: translateY(-60px);
+    transition: all 0.4s ease-out;
+  }
+  .main-menu :global(button.sign-in-out) {
+    transform: translateY(0px);
+    transition: all 0.4s ease-in;
+  }
+  .main-menu :global(button.sign-in-out .no-break) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 </style>

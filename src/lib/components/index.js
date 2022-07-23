@@ -7,6 +7,8 @@ export { default as Blurb } from './_Blurb.svelte';
 export { default as Component } from './_Component.svelte';
 export { default as Display } from './_Display.svelte';
 export { default as Dot } from './_Dot.svelte';
+export { default as FacebookLoginButton } from './_FacebookLoginButton.svelte';
+export { default as GoogleLoginButton } from './_GoogleLoginButton.svelte';
 export { default as FrameworkSwitcher } from './_FrameworkSwitcher.svelte';
 export { default as Hero } from './_Hero.svelte';
 export { default as ImageCard } from './_ImageCard.svelte';

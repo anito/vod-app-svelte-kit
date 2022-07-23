@@ -208,7 +208,8 @@
     "edit-uploaded-content": "Edit uploaded content",
     "unprotect-user": "Unprotect User",
     "protect-user": "Protect User",
-    "videos": "Videos"
+    "videos": "Videos",
+    "login-with-facebook": "Login with Facebook"
   },
   "summary": {
     "copy-link": {
