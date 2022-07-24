@@ -19,7 +19,7 @@
   $: selectionVideoId = $page.params.slug;
   $: filteredVideos = $videos
     .filter?.((video) => video.title?.toLowerCase().indexOf(search.toLowerCase()) !== -1)
-    .sort(sortByTitle);
+    .sort?.(sortByTitle);
 
   function itemSelectedHandler(e) {
     let { video } = e.detail;
