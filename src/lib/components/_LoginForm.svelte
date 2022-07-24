@@ -5,9 +5,7 @@
 <script>
   // @ts-nocheck
 
-  import * as api from '$lib/api';
   import { onMount, getContext, tick } from 'svelte';
-  import { goto } from '$app/navigation';
   import { post, proxyEvent } from '$lib/utils';
   import { flash, formGuard as frozen } from '$lib/stores';
   import Button from '@smui/button';
@@ -15,12 +13,12 @@
   import Icon from '@smui/textfield/icon';
   import { Label } from '@smui/common';
   import Dialog, { Title as DialogTitle, Content, Actions, InitialFocus } from '@smui/dialog';
-  import { _ } from 'svelte-i18n';
   import { dev } from '$app/env';
-  import FacebookLoginButton from './_FacebookLoginButton.svelte';
+  import { FacebookLoginButton, GoogleLoginButton } from '$lib/components';
+  import { _ } from 'svelte-i18n';
 
-  const client_id = import.meta.env.VITE_CLIENT_ID;
-  const appId = import.meta.env.VITE_APP_ID;
+  const client_id = import.meta.env.VITE_CLIENT_ID; // Ggogle Client ID
+  const appId = import.meta.env.VITE_APP_ID; // Facebook App ID
 
   const { getSnackbar, configSnackbar } = getContext('snackbar');
   const toplevel = dev ? 'dev' : 'de';
@@ -40,8 +38,6 @@
   onMount(() => {
     defreeze();
     snackbar = getSnackbar();
-
-    (window.google && googleSignIn()) || window.addEventListener('load', googleSignIn);
 
     return () => defreeze();
   });
@@ -108,37 +104,6 @@
   function invalidTokenDialogCloseHandler(e) {
     loginAttempts = 0;
   }
-
-  function googleSignIn() {
-    google.accounts.id.initialize({
-      client_id,
-      callback: googleHandleCredentialResponse
-    });
-    renderGoogleButton();
-  }
-
-  async function googleHandleCredentialResponse(response) {
-    decodeJwtResponse(response.credential);
-  }
-
-  async function decodeJwtResponse(token) {
-    flash.update({ message: $_('text.one-moment') });
-
-    await api.post('users/google_login', { token }).then(async (res) => {
-      if (res.success) {
-        await goto(`/login/redirect/?token=${res.data.token}`);
-      }
-      setTimeout(() => renderGoogleButton(), 500);
-    });
-  }
-
-  function renderGoogleButton() {
-    google.accounts.id.renderButton(
-      document.getElementById('googleButton'),
-      { theme: 'outline', size: 'large' } // customization attributes
-    );
-    google.accounts.id.prompt(); // display the One Tap dialog
-  }
 </script>
 
 <form on:submit|preventDefault={submit} method="post" class:frozen={$frozen}>
@@ -203,8 +168,7 @@
       </Button>
     </div>
     <div class="button-area-fore flex relative">
-      <div id="googleButton" class="flex-1 absolute" />
-      <slot name="gb" />
+      <GoogleLoginButton {client_id} />
     </div>
     <div class="button-area-five flex relative">
       <FacebookLoginButton {appId} />

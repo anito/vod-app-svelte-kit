@@ -9,7 +9,7 @@
   import Icon from '@smui/textfield/icon';
   import { Legal, PageBar, SimpleVideoCard, Component, Modal } from '$lib/components';
   import { proxyEvent, sortByTitle } from '$lib/utils';
-  import { images, videos, users } from '$lib/stores';
+  import { videos } from '$lib/stores';
   import { _ } from 'svelte-i18n';
 
   let selectedIndex;
@@ -18,7 +18,7 @@
   $: sidebar = !!$page.params.slug;
   $: selectionVideoId = $page.params.slug;
   $: filteredVideos = $videos
-    .filter((video) => video.title?.toLowerCase().indexOf(search.toLowerCase()) !== -1)
+    .filter?.((video) => video.title?.toLowerCase().indexOf(search.toLowerCase()) !== -1)
     .sort(sortByTitle);
 
   function itemSelectedHandler(e) {
