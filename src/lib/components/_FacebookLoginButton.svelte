@@ -13,6 +13,7 @@
 
   let status;
   let src;
+  let authResponse = null;
 
   onMount(() => {
     init();
@@ -23,7 +24,7 @@
     e.preventDefault();
     e.stopPropagation();
     if (status === 'connected') {
-      logout();
+      authResponse && fbAPI({ ...authResponse, redirect: true });
     } else {
       login();
     }
@@ -46,7 +47,8 @@
     });
   }
 
-  function statusChangeHandler({ authResponse, status: _status }) {
+  function statusChangeHandler({ authResponse: _authResponse, status: _status }) {
+    authResponse = _authResponse;
     status = _status;
     if (status === 'connected') {
       // Logged into your webpage and Facebook.
