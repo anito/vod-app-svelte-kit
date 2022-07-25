@@ -71,19 +71,20 @@
     };
   };
 
-  // Testing Graph API after login. See statusChangeCallback() for when this call is made.
   function fbAPI({ userID, redirect }) {
-    FB.api(`/${userID}?fields=id,name,email,picture`, async ({ email, id, name, picture }) => {
-      src = picture.data?.url;
-      await api
-        .post(`users/facebook_login/${id}`, { data: { email, name, picture } })
-        .then(async (res) => {
-          if (res.success && redirect) {
-            setTimeout(async () => {
-              await goto(`/login/redirect/?token=${res.data.token}`);
-            }, 200);
-          }
-        });
+    FB.api(`/${userID}?fields=id,name,email`, async ({ email, id, name }) => {
+      FB.api(`/${userID}/picture`, 'GET', { type: 'large', redirect: false }, async ({ data }) => {
+        src = data.url;
+        await api
+          .post(`users/facebook_login/${id}`, { data: { email, name, picture: { ...data } } })
+          .then(async (res) => {
+            if (res.success && redirect) {
+              setTimeout(async () => {
+                await goto(`/login/redirect/?token=${res.data.token}`);
+              }, 200);
+            }
+          });
+      });
     });
   }
 </script>
