@@ -25,9 +25,17 @@ export class Repo {
   }): Promise<Response> => {
     const lt = (limit && '?limit=' + limit) || '';
     let endpoint = this.endpoint + lt;
-    return await api.get(endpoint, { fetch, token: this.token }).then((res) => {
-      return res.data;
-    });
+    return await api
+      .get(endpoint, { fetch, token: this.token })
+      .then((res) => {
+        if (res.success) {
+          return res.data;
+        }
+        return [];
+      })
+      .catch((reason) => {
+        console.log(reason);
+      });
   };
 
   setToken = (token: string) => {
