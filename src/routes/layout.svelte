@@ -1,15 +1,13 @@
 <script>
-	// @ts-nocheck
+  // @ts-nocheck
 
-	import { GridItem, LayoutGrid } from '$lib/components';
-
-	export let segment;
+  import { GridItem, LayoutGrid } from '$lib/components';
 </script>
 
-<LayoutGrid fullscreen {segment}>
-	<GridItem name="content" let:inner>
-		<div class={inner}>
-			<slot />
-		</div>
-	</GridItem>
+<LayoutGrid fullscreen>
+  <GridItem name="content" let:inner>
+    <div class={inner}>
+      <slot />
+    </div>
+  </GridItem>
 </LayoutGrid>

@@ -1,125 +1,125 @@
 <script>
-	// @ts-nocheck
+  // @ts-nocheck
 
-	import { page } from '$app/stores';
-	import { onMount, tick } from 'svelte';
-	import { slim } from '$lib/stores';
-	import { INBOX, SENT } from '$lib/utils';
-	import List from '@smui/list';
-	import { SimpleMailCard, SvgIcon } from '$lib/components';
-	import { _ } from 'svelte-i18n';
+  import { page } from '$app/stores';
+  import { onMount, tick } from 'svelte';
+  import { slim } from '$lib/stores';
+  import { INBOX, SENT } from '$lib/utils';
+  import List from '@smui/list';
+  import { SimpleMailCard, SvgIcon } from '$lib/components';
+  import { _ } from 'svelte-i18n';
 
-	export let selection = false;
-	export let sort = 'DESC';
-	export let selectionIndex;
-	export let waitForData;
-	export let currentStore;
+  export let selection = null;
+  export let sort = 'DESC';
+  export let selectionIndex;
+  export let waitForData;
+  export let currentStore;
 
-	const sortByDate = (a, b) => sortBit * (new Date(a.created) - new Date(b.created));
+  const sortByDate = (a, b) => sortBit * (new Date(a.created) - new Date(b.created));
 
-	let list;
-	let focusItemAtIndex;
-	let items;
+  let list;
+  let focusItemAtIndex;
+  let items;
 
-	$: userId = $page.params.slug;
-	$: sortBit = sort === 'DESC' ? -1 : sort === 'ASC' ? 1 : 0;
-	$: activeItem = $page.url.searchParams.get('active');
+  $: userId = $page.params.slug;
+  $: sortBit = sort === 'DESC' ? -1 : sort === 'ASC' ? 1 : 0;
+  $: activeItem = $page.url.searchParams.get('active');
 
-	onMount(() => {});
+  onMount(() => {});
 
-	/**
-	 * Find the user for each email address in the email
-	 * @param addressees
-	 */
-	const parseUsernames = (addressees) => {
-		let item,
-			items = [];
-		addressees.forEach((email) => {
-			item = $slim?.find((user) => user.email === email);
-			items.push(item ? { ...item } : { email });
-		});
-		return items;
-	};
+  /**
+   * Find the user for each email address in the email
+   * @param addressees
+   */
+  const parseUsernames = (addressees) => {
+    let item,
+      items = [];
+    addressees.forEach((email) => {
+      item = $slim?.find((user) => user.email === email);
+      items.push(item ? { ...item } : { email });
+    });
+    return items;
+  };
 
-	function parseMail(mail) {
-		if (activeItem === INBOX) return parseInbox(mail);
-		if (activeItem === SENT) return parseSent(mail);
-	}
+  function parseMail(mail) {
+    if (activeItem === INBOX) return parseInbox(mail);
+    if (activeItem === SENT) return parseSent(mail);
+  }
 
-	function parseInbox(mail) {
-		let message = JSON.parse(mail.message);
-		return {
-			id: mail.id,
-			_from: parseUsernames([mail._from]),
-			_to: [userId],
-			message: message.message,
-			subject: message.subject,
-			_read: mail._read,
-			created: mail.created
-		};
-	}
+  function parseInbox(mail) {
+    let message = JSON.parse(mail.message);
+    return {
+      id: mail.id,
+      _from: parseUsernames([mail._from]),
+      _to: [userId],
+      message: message.message,
+      subject: message.subject,
+      _read: mail._read,
+      created: mail.created
+    };
+  }
 
-	function parseSent(mail) {
-		let message = JSON.parse(mail.message);
-		let _to = mail._to.split(';');
-		return {
-			id: mail.id,
-			_from: mail._from,
-			_to: parseUsernames(_to),
-			message: message.message,
-			subject: message.subject,
-			created: mail.created,
-			_read: true
-		};
-	}
+  function parseSent(mail) {
+    let message = JSON.parse(mail.message);
+    let _to = mail._to.split(';');
+    return {
+      id: mail.id,
+      _from: mail._from,
+      _to: parseUsernames(_to),
+      message: message.message,
+      subject: message.subject,
+      created: mail.created,
+      _read: true
+    };
+  }
 
-	async function afterMailDestroyedHandler(e) {
-		await tick();
-		if (!list) return;
+  async function afterMailDestroyedHandler(e) {
+    await tick();
+    if (!list) return;
 
-		let index = list.getSelectedIndex();
-		if (items.length >= index + 1) {
-			selectionIndex = index;
-		} else {
-			selectionIndex = index - 1;
-		}
-		focusItemAtIndex(selectionIndex);
-	}
+    let index = list.getSelectedIndex();
+    if (items.length >= index + 1) {
+      selectionIndex = index;
+    } else {
+      selectionIndex = index - 1;
+    }
+    focusItemAtIndex(selectionIndex);
+  }
 
-	function receiveListMethods(e) {
-		({ focusItemAtIndex, items } = { ...e.detail });
-	}
+  function receiveListMethods(e) {
+    ({ focusItemAtIndex, items } = { ...e.detail });
+  }
 </script>
 
 {#if currentStore}
-	{#await waitForData}
-		<div class="loader flex justify-center">
-			<SvgIcon name="animated-loader-3" size="50" fillColor="var(--prime)" class="mr-2" />
-		</div>
-	{:then mails}
-		<List
-			bind:this={list}
-			class="mails-list list-{activeItem}"
-			on:SMUIList:mount={receiveListMethods}
-			bind:selectedIndex={selectionIndex}
-			twoLine
-			avatarList
-			singleSelection
-		>
-			{#each sort && $currentStore.sort(sortByDate) as mail (mail.id)}
-				<SimpleMailCard
-					on:mail:delete
-					on:mail:toggleRead
-					on:mail:destroyed={(e) => afterMailDestroyedHandler(e)}
-					bind:selection
-					mail={parseMail(mail)}
-					type={activeItem}
-				/>
-			{/each}
-		</List>
-	{:catch reason}
-		{reason}
-	{/await}
+  {#await waitForData}
+    <div class="loader flex justify-center">
+      <SvgIcon name="animated-loader-3" size="50" fillColor="var(--prime)" class="mr-2" />
+    </div>
+  {:then mails}
+    <List
+      bind:this={list}
+      class="mails-list list-{activeItem}"
+      on:SMUIList:mount={receiveListMethods}
+      bind:selectedIndex={selectionIndex}
+      twoLine
+      avatarList
+      singleSelection
+    >
+      {#each sort && $currentStore.sort(sortByDate) as mail (mail.id)}
+        <SimpleMailCard
+          on:mail:delete
+          on:mail:toggleRead
+          on:mail:destroyed={(e) => afterMailDestroyedHandler(e)}
+          bind:selection
+          mail={parseMail(mail)}
+          type={activeItem}
+        />
+      {/each}
+    </List>
+  {:catch reason}
+    {reason}
+  {/await}
 {/if}
 
 <style>

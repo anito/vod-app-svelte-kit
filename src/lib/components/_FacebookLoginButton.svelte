@@ -12,6 +12,8 @@
   export let appId;
 
   let status;
+  let _name = '';
+  let _email = '';
   let src;
   let authResponse = null;
 
@@ -57,7 +59,7 @@
   }
 
   const init = () => {
-    window.fbAsyncInit = function () {
+    window.fbAsyncInit = () => {
       FB.init({
         appId,
         cookie: true, // Enable cookies to allow the server to access the session.
@@ -73,6 +75,8 @@
 
   function fbAPI({ userID, redirect }) {
     FB.api(`/${userID}?fields=id,name,email`, async ({ email, id, name }) => {
+      _name = name;
+      _email = email;
       FB.api(`/${userID}/picture`, 'GET', { type: 'large', redirect: false }, async ({ data }) => {
         src = data.url;
         await api
@@ -90,15 +94,73 @@
 </script>
 
 <Button
-  class="absolute min-w-full fb-button flex justify-start overflow-clip"
+  class="min-w-full fb-button flex overflow-clip {status === 'connected'
+    ? 'connected justify-between'
+    : 'justify-center flex-row-reverse'}"
+  style="height: 40px;"
   on:click={(e) => handleLogin(e)}
 >
-  <SvgIcon name="facebook" class="mr-1" />
-  <Label style="font-weight: 600;">{$_('text.login-with-facebook')}</Label>
-  {#if status === 'connected'}
-    <!-- svelte-ignore a11y-missing-attribute -->
-    <img width="36" height="36" class="relative" style="right: -8px;" {src} />
-  {/if}
+  <div class="flex" style="width: 80%;">
+    {#if status === 'connected'}
+      <div class="image-wrapper self-center">
+        <!-- svelte-ignore a11y-missing-attribute -->
+        <img
+          alt={$_('text.profile_image', { values: { name: _name } })}
+          class="relative image"
+          {src}
+        />
+      </div>
+    {/if}
+    <div class="label-wrapper flex flex-col overflow-hidden">
+      <div style="font-weight: 500;">{$_('text.login-with-facebook')}</div>
+      {#if _email}
+        <div style="font-weight: 300; ">{_email}</div>
+      {/if}
+    </div>
+  </div>
+  <div class="logo" style="width: 20%;">
+    <SvgIcon name="facebook" class="mr-1" />
+  </div>
 </Button>
 
 <div class="absolute hidden" style="bottom: -90px;">{status}</div>
+
+<style>
+  .label-wrapper {
+    line-height: 1.2em;
+    font-family: Roboto;
+    text-transform: initial;
+    text-align: start;
+  }
+  .label-wrapper > div {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .image-wrapper {
+    margin-left: 4px;
+    margin-right: 4px;
+  }
+  :global(button) .logo {
+    margin-left: 15px;
+  }
+  :global(button:not(.connected)) .logo {
+    margin-left: -15px;
+    margin-right: 5px;
+    min-width: 36px;
+    width: 36px;
+    align-self: center;
+  }
+  .image {
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    height: 20px;
+    margin-left: -4px;
+    margin-right: 8px;
+    min-width: 20px;
+    width: 20px;
+  }
+</style>

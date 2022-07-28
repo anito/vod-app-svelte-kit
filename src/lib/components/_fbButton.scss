@@ -2,12 +2,16 @@
 @import '@material/shape/variables';
 
 .fb-button {
-  --fontSize: 0.7em;
   --fill: #1877f2;
-  @include mdc-button-shape-radius(3px);
+  @include mdc-button-shape-radius(999px);
   @include mdc-button-container-fill-color(var(--fill));
   @include mdc-button-ink-color(surface);
   @include mdc-button-label-overflow-ellipsis();
   @include mdc-button-density(0);
-  font-size: var(--fontSize);
+  width: 221px;
+  max-width: 400px;
+  font-size: 0.9em;
+  &.connected {
+    font-size: 0.7em;
+  }
 }

@@ -309,13 +309,6 @@ samp {
 *:focus {
   outline: none !important;
 }
-.frozen *,
-input.frozen,
-a.frozen,
-button.frozen {
-  pointer-events: none;
-  cursor: not-allowed;
-}
 code {
   position: relative;
   border-radius: 0.3em;

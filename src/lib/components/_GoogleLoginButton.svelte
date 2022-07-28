@@ -8,6 +8,8 @@
 
   export let client_id;
 
+  let signInButton;
+
   onMount(() => {
     (window.google && googleSignIn()) || window.addEventListener('load', googleSignIn);
   });
@@ -17,7 +19,7 @@
       client_id,
       callback: googleHandleCredentialResponse
     });
-    renderGoogleButton();
+    renderSignIn();
   }
 
   async function googleHandleCredentialResponse(response) {
@@ -30,19 +32,26 @@
     await api.post('users/google_login', { token }).then(async (res) => {
       if (res.success) {
         goto(`/login/redirect/?token=${res.data.token}`).then(() => {
-          setTimeout(() => renderGoogleButton(), 500);
+          setTimeout(() => renderSignIn(), 500);
         });
       }
     });
   }
 
-  function renderGoogleButton() {
+  function renderSignIn() {
     google.accounts.id.renderButton(
-      document.getElementById('googleButton'),
-      { theme: 'outline', size: 'large' } // customization attributes
+      signInButton,
+      {
+        theme: 'filled_blue',
+        size: 'large',
+        shape: 'pill',
+        text: 'continue_with',
+        logo_alignment: 'right',
+        width: '221'
+      } // customization attributes
     );
     google.accounts.id.prompt(); // display the One Tap dialog
   }
 </script>
 
-<div id="googleButton" class="flex-1 absolute" />
+<button bind:this={signInButton} />

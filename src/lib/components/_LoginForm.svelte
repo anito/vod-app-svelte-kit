@@ -7,7 +7,7 @@
 
   import { onMount, getContext, tick } from 'svelte';
   import { post, proxyEvent } from '$lib/utils';
-  import { flash, formGuard as frozen } from '$lib/stores';
+  import { flash } from '$lib/stores';
   import Button from '@smui/button';
   import Textfield from '@smui/textfield';
   import Icon from '@smui/textfield/icon';
@@ -30,35 +30,37 @@
   const userEmail = `sampleuser@webpremiere.${toplevel}`;
   const userPassword = 'Angela@005';
 
+  let root;
   let password = '';
   let email = '';
   let snackbar;
   let invalidTokenUserDialog;
 
   onMount(() => {
-    defreeze();
+    root = document.documentElement;
+    unblock();
     snackbar = getSnackbar();
 
-    return () => defreeze();
+    return () => unblock();
   });
 
   async function submit() {
-    freeze();
+    block();
     flash.update({ message: $_('text.one-moment') });
 
     await post('/auth/login', { email, password }).then(async (res) => {
+      const message = res.data.message;
       let type;
-      let message = res.data.message;
 
-      defreeze();
       if (res.success) {
         type = 'success';
         proxyEvent('ticker:start', { ...res.data });
         await tick();
         reset();
       } else {
-        reset();
+        unblock();
         type = 'error';
+        reset();
 
         if (++loginAttempts > 3) invalidTokenUserDialog.setOpen(true);
       }
@@ -81,12 +83,12 @@
     password = '';
   }
 
-  function freeze() {
-    frozen.update('frozen');
+  function block() {
+    root.classList.add('signing-in');
   }
 
-  function defreeze() {
-    frozen.update(false);
+  function unblock() {
+    root.classList.remove('signing-in');
   }
 
   function setFields(type) {
@@ -106,7 +108,7 @@
   }
 </script>
 
-<form on:submit|preventDefault={submit} method="post" class:frozen={$frozen}>
+<form on:submit|preventDefault={submit} method="post">
   <div class="login-grid">
     <span class="email-area flex flex-col">
       <Textfield
@@ -168,10 +170,10 @@
       </Button>
     </div>
     <div class="button-area-fore flex relative">
-      <GoogleLoginButton {client_id} />
+      <FacebookLoginButton {appId} />
     </div>
     <div class="button-area-five flex relative">
-      <FacebookLoginButton {appId} />
+      <GoogleLoginButton {client_id} />
     </div>
   </div>
 </form>
@@ -195,6 +197,11 @@
 </Dialog>
 
 <style>
+  :global(.signing-in form button) {
+    pointer-events: none;
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
   .login-grid {
     display: grid;
     grid-gap: 15px;

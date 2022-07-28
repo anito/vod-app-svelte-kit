@@ -1,11 +1,9 @@
 <script context="module">
-  import { browser } from '$app/env';
-  import { post } from '$lib/utils';
-
-  export async function load({ url, session }) {
+  export async function load({ url, session, fetch }) {
     const token = url.searchParams.get('token');
-    if (browser && token) {
-      return await post(`/auth/login`, { token }).then((res) => {
+    if (token) {
+      return await fetch(`/auth/login?token=${token}`).then(async (res) => {
+        res = await res.json();
         return {
           props: { ...res }
         };
@@ -25,17 +23,14 @@
   import { page, session } from '$app/stores';
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
-  import { ListMessages, ListErrors, LoginForm, FacebookLoginButton } from '$lib/components';
+  import { ListMessages, ListErrors, LoginForm } from '$lib/components';
   import { flash } from '$lib/stores';
   import { sitename } from '$lib/stores';
   import { fly } from 'svelte/transition';
-  import { processRedirect, proxyEvent } from '$lib/utils';
+  import { processRedirect, proxyEvent, post } from '$lib/utils';
   import Paper, { Content } from '@smui/paper';
   import { _ } from 'svelte-i18n';
 
-  /**
-   * Token logins -> load function has received data from backend server
-   */
   export let data = null;
   export let success = false;
   export let sessionExists = null;

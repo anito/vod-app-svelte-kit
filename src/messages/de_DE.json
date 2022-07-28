@@ -209,7 +209,8 @@
     "unprotect-user": "Schutz aufheben",
     "protect-user": "Benutzer schützen",
     "videos": "Videos",
-    "login-with-facebook": "Login mit Facebook"
+    "login-with-facebook": "Login mit Facebook",
+    "profile_image": "{name}s Profilbild"
   },
   "summary": {
     "copy-link": {
