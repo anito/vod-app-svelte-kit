@@ -118,8 +118,10 @@
       {/if}
     </div>
   </div>
-  <div class="logo" style="width: 20%;">
-    <SvgIcon name="facebook" class="mr-1" />
+  <div class="logo-wrapper" style="width: 20%;">
+    <div class="logo flex items-center justify-center">
+      <SvgIcon name="facebook" class="mr-1" fillColor="#3578E5" />
+    </div>
   </div>
 </Button>
 
@@ -141,16 +143,6 @@
     margin-left: 4px;
     margin-right: 4px;
   }
-  :global(button) .logo {
-    margin-left: 15px;
-  }
-  :global(button:not(.connected)) .logo {
-    margin-left: -15px;
-    margin-right: 5px;
-    min-width: 36px;
-    width: 36px;
-    align-self: center;
-  }
   .image {
     -webkit-border-radius: 50%;
     border-radius: 50%;
@@ -162,5 +154,19 @@
     margin-right: 8px;
     min-width: 20px;
     width: 20px;
+  }
+  .logo {
+    border-radius: 18px;
+    background-color: #ffffff;
+    height: 36px;
+    width: 36px;
+    min-width: 36px;
+    align-self: center;
+    margin-left: -6px;
+    margin-right: 5px;
+    line-height: 2.3em;
+  }
+  :global(.connected) .logo {
+    margin-left: 11px;
   }
 </style>

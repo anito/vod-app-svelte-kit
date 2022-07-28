@@ -6,40 +6,40 @@
 -----------------------------------------------
 -->
 <script>
-	// @ts-nocheck
+  // @ts-nocheck
 
-	import { onMount } from 'svelte';
+  import { onMount } from 'svelte';
 
-	// @ts-nocheck
+  // @ts-nocheck
 
-	export let name;
-	export let fillColor = 'none';
-	export let size = 20;
-	export { className as class };
+  export let name;
+  export let fillColor = 'none';
+  export let size = 20;
+  export { className as class };
 
-	let className = '';
+  let className = '';
 
-	onMount(() => {});
+  onMount(() => {});
 </script>
 
 <svg class={className} width={size} height={size} style="fill: {fillColor}">
-	<use xlink:href="#{name}" />
+  <use xlink:href="#{name}" />
 </svg>
 
 <style>
-	svg {
-		display: inline;
-		position: relative;
-		overflow: hidden;
-		vertical-align: middle;
-		-o-object-fit: contain;
-		object-fit: contain;
-		-webkit-transform-origin: center center;
-		transform-origin: center center;
-		stroke: currentColor;
-		stroke-width: 2;
-		stroke-linecap: round;
-		stroke-linejoin: round;
-		fill: none;
-	}
+  svg {
+    display: inline;
+    position: relative;
+    overflow: hidden;
+    vertical-align: middle;
+    -o-object-fit: contain;
+    object-fit: contain;
+    -webkit-transform-origin: center center;
+    transform-origin: center center;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+  }
 </style>
