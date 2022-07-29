@@ -9,12 +9,14 @@
   import { post, proxyEvent } from '$lib/utils';
   import { flash } from '$lib/stores';
   import Button from '@smui/button';
+  import TabBar from '@smui/tab-bar';
+  import Tab, { Label as TabLabel } from '@smui/tab';
   import Textfield from '@smui/textfield';
   import Icon from '@smui/textfield/icon';
   import { Label } from '@smui/common';
   import Dialog, { Title as DialogTitle, Content, Actions, InitialFocus } from '@smui/dialog';
-  import { dev } from '$app/env';
-  import { FacebookLoginButton, GoogleLoginButton } from '$lib/components';
+  import { browser, dev } from '$app/env';
+  import { FacebookLoginButton, GoogleLoginButton, Header } from '$lib/components';
   import { _ } from 'svelte-i18n';
 
   const client_id = import.meta.env.VITE_CLIENT_ID; // Ggogle Client ID
@@ -29,12 +31,36 @@
   // const userEmail = `sampleuser@webpremiere.${toplevel}`;
   const userEmail = `sampleuser@webpremiere.${toplevel}`;
   const userPassword = 'Angela@005';
+  const ONE = 'one-row';
+  const TWO = 'two-rows';
+  const tabMap = new Map([
+    ['Default', { rows: TWO, locale: 'text.default' }],
+    ['Sample', { rows: ONE, locale: 'text.sample' }],
+    ['Social', { rows: ONE, locale: 'text.social' }]
+  ]);
+  const tabs = {
+    getNames: () => {
+      const names = [];
+      tabMap.forEach((val, key) => {
+        names.push(key);
+      });
+      return names;
+    },
+    getRows: (key) => tabMap.get(key).rows,
+    getLocale: (key) => tabMap.get(key).locale
+  };
+  const tabNames = tabs.getNames();
 
   let root;
   let password = '';
   let email = '';
   let snackbar;
   let invalidTokenUserDialog;
+  let active = (browser && localStorage.getItem('activeSignIn')) || 'Sample';
+
+  $: rows = active && tabs.getRows(active);
+  $: active && browser && localStorage.setItem('activeSignIn', active);
+  $: names = $_ && tabs.getNames();
 
   onMount(() => {
     root = document.documentElement;
@@ -108,75 +134,95 @@
   }
 </script>
 
-<form on:submit|preventDefault={submit} method="post">
-  <div class="login-grid">
-    <span class="email-area flex flex-col">
-      <Textfield
-        variant="outlined"
-        bind:value={email}
-        label="Email"
-        autocomplete="user-email"
-        input$aria-controls="helper-text-outlined-email"
-        input$aria-describedby="helper-text-outlined-email"
-      >
-        <Icon class="material-icons" slot="leadingIcon">mail</Icon>
-      </Textfield>
-    </span>
-    <span class="pass-area flex flex-col">
-      <Textfield
-        variant="outlined"
-        type="password"
-        label={$_('text.password')}
-        autocomplete="user-password"
-        bind:value={password}
-        input$aria-controls="helper-text-outlined-password"
-        input$aria-describedby="helper-text-outlined-password"
-      >
-        <Icon class="material-icons" slot="leadingIcon">login</Icon>
-      </Textfield>
-    </span>
-    <div class="button-area-one flex">
-      <Button
-        disabled={!(email && password)}
-        class="login-button flex-1"
-        type="submit"
-        variant="raised"
-      >
-        <Label>Login</Label>
-      </Button>
-    </div>
-    <div class="button-area-two flex">
-      <Button
-        on:click={() => setFields('admin')}
-        color=""
-        class="login-button flex-1"
-        type="submit"
-        variant="raised"
-      >
-        <Icon class="material-icons">supervisor_account</Icon>
-        <Label>Sample Admin</Label>
-      </Button>
-    </div>
-    <div class="button-area-three flex">
-      <Button
-        on:click={() => setFields('user')}
-        color=""
-        class="login-button flex-1"
-        type="submit"
-        variant="raised"
-      >
-        <Icon class="material-icons">person</Icon>
-        <Label>Sample User</Label>
-      </Button>
-    </div>
-    <div class="button-area-fore flex relative">
-      <FacebookLoginButton {appId} />
-    </div>
-    <div class="button-area-five flex relative">
-      <GoogleLoginButton {client_id} />
-    </div>
+<div class="flex flex-col">
+  <div class="mb-5 flex self-center justify-center sign-in-hint">
+    {$_('text.select-signin-mode')}
   </div>
-</form>
+</div>
+<div class="flex flex-col form-wrapper">
+  <div class="mb-5">
+    <TabBar tabs={names} let:tab bind:active>
+      <Tab {tab}>
+        <Label>{$_(tabs.getLocale(tab))}</Label>
+      </Tab>
+    </TabBar>
+  </div>
+  <form on:submit|preventDefault={submit} method="post">
+    <div class="login-grid {rows}">
+      {#if active === tabNames[0]}
+        <span class="one flex flex-col">
+          <Textfield
+            variant="outlined"
+            bind:value={email}
+            label="Email"
+            autocomplete="user-email"
+            input$aria-controls="helper-text-outlined-email"
+            input$aria-describedby="helper-text-outlined-email"
+          >
+            <Icon class="material-icons" slot="leadingIcon">mail</Icon>
+          </Textfield>
+        </span>
+        <span class="two flex flex-col">
+          <Textfield
+            variant="outlined"
+            type="password"
+            label={$_('text.password')}
+            autocomplete="user-password"
+            bind:value={password}
+            input$aria-controls="helper-text-outlined-password"
+            input$aria-describedby="helper-text-outlined-password"
+          >
+            <Icon class="material-icons" slot="leadingIcon">login</Icon>
+          </Textfield>
+        </span>
+        <div class="three flex">
+          <Button
+            disabled={!(email && password)}
+            class="login-button flex-1"
+            type="submit"
+            variant="raised"
+          >
+            <Label>Login</Label>
+          </Button>
+        </div>
+      {/if}
+      {#if active === tabNames[1]}
+        <div class="one flex">
+          <Button
+            on:click={() => setFields('admin')}
+            color=""
+            class="login-button flex-1"
+            type="submit"
+            variant="raised"
+          >
+            <Icon class="material-icons">supervisor_account</Icon>
+            <Label>Sample Admin</Label>
+          </Button>
+        </div>
+        <div class="two flex">
+          <Button
+            on:click={() => setFields('user')}
+            color=""
+            class="login-button flex-1"
+            type="submit"
+            variant="raised"
+          >
+            <Icon class="material-icons">person</Icon>
+            <Label>Sample User</Label>
+          </Button>
+        </div>
+      {/if}
+      {#if active === tabNames[2]}
+        <div class="one flex relative">
+          <FacebookLoginButton {appId} />
+        </div>
+        <div class="two flex relative">
+          <GoogleLoginButton {client_id} />
+        </div>
+      {/if}
+    </div>
+  </form>
+</div>
 <Dialog
   bind:this={invalidTokenUserDialog}
   aria-labelledby="info-title"
@@ -197,6 +243,11 @@
 </Dialog>
 
 <style>
+  .form-wrapper {
+    padding: 10px;
+    border: 1px solid rgb(173 20 87 / 5%);
+    border-radius: 5px;
+  }
   :global(.signing-in form button) {
     pointer-events: none;
     cursor: not-allowed;
@@ -209,53 +260,48 @@
     grid-template-columns: 1fr;
     grid-template-rows: repeat(2, 1fr);
     grid-template-areas:
-      'email'
-      'pass'
-      'button1'
-      'button2'
-      'button3'
-      'button4'
-      'button5';
+      'one'
+      'two'
+      'three';
   }
-  .email-area {
-    grid-area: email;
+  .one {
+    grid-area: one;
   }
-  .pass-area {
-    grid-area: pass;
+  .two {
+    grid-area: two;
   }
-  .button-area-one {
-    grid-area: button1;
-  }
-  .button-area-two {
-    grid-area: button2;
-  }
-  .button-area-three {
-    grid-area: button3;
-  }
-  .button-area-fore {
-    grid-area: button4;
-  }
-  .button-area-five {
-    grid-area: button5;
+  .three {
+    grid-area: three;
   }
 
   @media screen and (min-width: 840px) {
     .login-grid {
       grid-template-areas:
-        'email pass'
-        'button1 button1'
-        'button2 button3'
-        'button4 button5';
+        'one two'
+        'three three';
       grid-template-columns: repeat(2, 1fr);
-      grid-template-rows: 2fr 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
       grid-row-gap: 1rem;
     }
-
-    .button-area-two :global(.login-button:only-child) {
-      margin: 0;
+    .login-grid.one-row {
+      grid-template-rows: 1fr;
+      grid-template-areas: 'one two';
     }
-    .button-area-two :global(.login-button:nth-child(even)) {
-      margin-left: 10px;
+    .login-grid.two-rows {
+      grid-template-rows: repeat(2, 1fr);
+      grid-template-areas:
+        'one two'
+        'three three';
     }
+  }
+  .sign-in-hint {
+    background-color: rgb(173 20 87 / 10%);
+    padding: 0px 8px;
+    height: 30px;
+    border-radius: 15px;
+    color: var(--prime);
+    font-size: 12px;
+    flex-basis: 20%;
+    width: 50%;
   }
 </style>

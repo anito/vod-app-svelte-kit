@@ -97,7 +97,7 @@
   class="min-w-full fb-button flex overflow-clip {status === 'connected'
     ? 'connected justify-between'
     : 'justify-center flex-row-reverse'}"
-  style="height: 40px;"
+  style="height: 41px;"
   on:click={(e) => handleLogin(e)}
 >
   <div class="flex" style="width: 80%;">
@@ -118,7 +118,7 @@
       {/if}
     </div>
   </div>
-  <div class="logo-wrapper" style="width: 20%;">
+  <div class="logo-wrapper" style="width: 41px;">
     <div class="logo flex items-center justify-center">
       <SvgIcon name="facebook" class="mr-1" fillColor="#3578E5" />
     </div>

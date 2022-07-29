@@ -13,7 +13,7 @@
     "welcome-message": "Willkommen, {name}",
     "external-login-welcome-message": "Herzlich Willkommen {name}",
     "logged-in-button-second-line": "Hallo, {name}",
-    "login-text": "Bitte einloggen",
+    "login-text": "Bitte anmelden",
     "search-user": "Benutzer suchen",
     "mail-subject": "Ihr Zugangslink zu Ihrem Online-Kurs",
     "viaEmailTo": "per Email an {name}",
@@ -210,7 +210,12 @@
     "protect-user": "Benutzer schützen",
     "videos": "Videos",
     "login-with-facebook": "Login mit Facebook",
-    "profile_image": "{name}s Profilbild"
+    "profile_image": "{name}s Profilbild",
+    "select-signin-mode": "Wähle Deinen Anmelde-Modus",
+    "preset": "Voreinstellung",
+    "social": "Social",
+    "default": "Standard",
+    "sample": "Beispiel"
   },
   "summary": {
     "copy-link": {

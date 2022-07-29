@@ -210,7 +210,12 @@
     "protect-user": "Protect User",
     "videos": "Videos",
     "login-with-facebook": "Login with Facebook",
-    "profile_image": "{name}s Profileimage"
+    "profile_image": "{name}s Profileimage",
+    "select-signin-mode": "Select Your Sign-In Mode",
+    "preset": "Preset",
+    "social": "Social",
+    "default": "Default",
+    "sample": "Sample"
   },
   "summary": {
     "copy-link": {

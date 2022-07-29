@@ -103,13 +103,9 @@
   <title>{$sitename} | Login</title>
 </svelte:head>
 
-<div
-  in:fly={{ x: -200, duration: 800 }}
-  out:fly={{ x: 200 }}
-  class="flex flex-1 justify-center m-8"
->
-  <div class="flex flex-col justify-center">
-    <Paper elevation="20">
+<div in:fly={{ x: -200, duration: 800 }} out:fly={{ x: 200 }} class="flex flex-1 justify-center">
+  <div class="lg:min-w-47 min-w-full" style="_min-width: 520px;">
+    <Paper elevation="20" style="margin-top: calc(100vh / 6);">
       <div class="flyer">
         {#if $flash.message}
           <div
