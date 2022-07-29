@@ -94,9 +94,9 @@
 </script>
 
 <Button
-  class="min-w-full fb-button flex overflow-clip {status === 'connected'
-    ? 'connected justify-between'
-    : 'justify-center flex-row-reverse'}"
+  class="min-w-full fb-button flex overflow-clip justify-between {status === 'connected'
+    ? 'connected'
+    : 'flex-row-reverse'}"
   style="height: 41px;"
   on:click={(e) => handleLogin(e)}
 >
