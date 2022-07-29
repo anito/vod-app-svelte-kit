@@ -273,7 +273,7 @@
     grid-area: three;
   }
 
-  @media screen and (min-width: 840px) {
+  @media (min-width: 868px) {
     .login-grid {
       grid-template-areas:
         'one two'

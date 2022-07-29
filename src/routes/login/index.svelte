@@ -104,7 +104,7 @@
 </svelte:head>
 
 <div in:fly={{ x: -200, duration: 800 }} out:fly={{ x: 200 }} class="flex flex-1 justify-center">
-  <div class="lg:min-w-45 lg:w-45 min-w-full">
+  <div class="wrapper">
     <Paper elevation="20" style="margin-top: calc(100vh / 6);">
       <div class="flyer">
         {#if $flash.message}
@@ -177,5 +177,10 @@
   }
   :global(.success).message {
     color: var(--success) !important;
+  }
+  @media (min-width: 768px) {
+    .wrapper {
+      width: 522px;
+    }
   }
 </style>
