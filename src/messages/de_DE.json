@@ -215,7 +215,8 @@
     "preset": "Voreinstellung",
     "social": "Social",
     "default": "Standard",
-    "sample": "Beispiel"
+    "sample": "Beispiel",
+    "revoke_app_from_user": "Diese App widerrufen ({name})"
   },
   "summary": {
     "copy-link": {

@@ -215,7 +215,8 @@
     "preset": "Preset",
     "social": "Social",
     "default": "Default",
-    "sample": "Sample"
+    "sample": "Sample",
+    "revoke_app_from_user": "Revoke this App ({name})"
   },
   "summary": {
     "copy-link": {

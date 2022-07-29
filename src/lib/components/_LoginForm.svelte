@@ -7,7 +7,7 @@
 
   import { onMount, getContext, tick } from 'svelte';
   import { post, proxyEvent } from '$lib/utils';
-  import { flash } from '$lib/stores';
+  import { flash, googleUser } from '$lib/stores';
   import Button from '@smui/button';
   import TabBar from '@smui/tab-bar';
   import Tab, { Label as TabLabel } from '@smui/tab';

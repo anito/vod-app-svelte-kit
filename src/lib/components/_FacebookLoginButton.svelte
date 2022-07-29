@@ -45,6 +45,8 @@
   function logout() {
     FB.logout(({ status: _status, authResponse }) => {
       src = null;
+      _name = null;
+      _email = null;
       status = _status;
     });
   }
@@ -93,37 +95,42 @@
   }
 </script>
 
-<Button
-  class="min-w-full fb-button flex overflow-clip justify-between {status === 'connected'
-    ? 'connected'
-    : 'flex-row-reverse'}"
-  style="height: 41px;"
-  on:click={(e) => handleLogin(e)}
->
-  <div class="flex" style="width: 80%;">
-    {#if status === 'connected'}
-      <div class="image-wrapper self-center">
-        <!-- svelte-ignore a11y-missing-attribute -->
-        <img
-          alt={$_('text.profile_image', { values: { name: _name } })}
-          class="relative image"
-          {src}
-        />
-      </div>
-    {/if}
-    <div class="label-wrapper flex flex-col overflow-hidden">
-      <div style="font-weight: 500;">{$_('text.login-with-facebook')}</div>
-      {#if _email}
-        <div style="font-weight: 300; ">{_email}</div>
+<div class="relative flex flex-col">
+  <Button
+    class="min-w-full fb-button flex overflow-clip justify-between {status === 'connected'
+      ? 'connected'
+      : 'flex-row-reverse'}"
+    style="height: 41px;"
+    on:click={(e) => handleLogin(e)}
+  >
+    <div class="flex" style="width: 80%;">
+      {#if status === 'connected'}
+        <div class="image-wrapper self-center">
+          <!-- svelte-ignore a11y-missing-attribute -->
+          <img
+            alt={$_('text.profile_image', { values: { name: _name } })}
+            class="relative image"
+            {src}
+          />
+        </div>
       {/if}
+      <div class="label-wrapper flex flex-col overflow-hidden">
+        <div style="font-weight: 500;">{$_('text.login-with-facebook')}</div>
+        {#if _email}
+          <div style="font-weight: 300; ">{_email}</div>
+        {/if}
+      </div>
     </div>
-  </div>
-  <div class="logo-wrapper" style="width: 41px;">
-    <div class="logo flex items-center justify-center">
-      <SvgIcon name="facebook" class="mr-1" fillColor="#3578E5" />
+    <div class="logo-wrapper" style="width: 41px;">
+      <div class="logo flex items-center justify-center">
+        <SvgIcon name="facebook" class="mr-1" fillColor="#3578E5" />
+      </div>
     </div>
-  </div>
-</Button>
+  </Button>
+  {#if status === 'connected'}
+    <a href="#" class="logout-link" on:click={() => logout()}>Logout from Facebook</a>
+  {/if}
+</div>
 
 <div class="absolute hidden" style="bottom: -90px;">{status}</div>
 
@@ -168,5 +175,11 @@
   }
   :global(.connected) .logo {
     margin-left: 11px;
+  }
+  .logout-link {
+    bottom: -7px;
+    font-size: 0.6em;
+    margin: 0 auto;
+    line-height: 0.5em;
   }
 </style>
