@@ -244,9 +244,8 @@
 
 <style>
   .form-wrapper {
-    padding: 10px;
-    border: 1px solid rgb(173 20 87 / 5%);
-    border-radius: 5px;
+    padding-top: 10px;
+    border-top: 1px solid rgb(173 20 87 / 5%);
   }
   :global(.signing-in form button) {
     pointer-events: none;
