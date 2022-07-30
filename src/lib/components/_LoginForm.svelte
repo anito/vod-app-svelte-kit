@@ -56,15 +56,15 @@
   let email = '';
   let snackbar;
   let invalidTokenUserDialog;
-  let active = (browser && localStorage.getItem('activeSignIn')) || 'Sample';
+  let active;
 
   $: rows = active && tabs.getRows(active);
   $: active && browser && localStorage.setItem('activeSignIn', active);
-  $: names = $_ && tabs.getNames();
 
   onMount(() => {
     root = document.documentElement;
     unblock();
+    active = localStorage.getItem('activeSignIn') || 'Sample';
     snackbar = getSnackbar();
 
     return () => unblock();
@@ -141,7 +141,7 @@
 </div>
 <div class="flex flex-col form-wrapper">
   <div class="mb-5">
-    <TabBar tabs={names} let:tab bind:active>
+    <TabBar tabs={tabNames} let:tab bind:active>
       <Tab {tab}>
         <Label>{$_(tabs.getLocale(tab))}</Label>
       </Tab>
