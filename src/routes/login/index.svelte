@@ -136,7 +136,7 @@
           </div>
         {/if}
       </div>
-      <Paper elevation="0">
+      <Paper elevation="0" style="padding-top: 0;">
         <Content>
           <LoginForm />
         </Content>

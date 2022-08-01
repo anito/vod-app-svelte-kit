@@ -216,7 +216,8 @@
     "social": "Social",
     "default": "Standard",
     "sample": "Beispiel",
-    "revoke_app_from_user": "Diese App widerrufen ({name})"
+    "revoke_app_from_user": "Diese App widerrufen ({name})",
+    "language_is_now": "Sprache geändert auf {locale}"
   },
   "summary": {
     "copy-link": {
