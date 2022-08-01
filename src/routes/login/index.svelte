@@ -62,12 +62,11 @@
      * DISPLAYING RESULT MESSAGES
      * There are two steps:
      *
-     * Message 1: The flashStore handles the timeout time the first message should stay visible until the servers result message appears
-     * after the timeout the message will be reset empty and will therefore be unmounted.
+     * Step 1: The flashStore handles the expiration time the first message should stay visible (e.g. after the servers result is received)
      *
-     * Message 2: After specified timeout a second message will be triggered by the store.
-     * This second message will be either a welcome message (on success) or
-     * a default message (on first appearance)
+     * Step 2: After specified expiration time the message will be invalidated by the store and
+     * depending on outroended flag the second message should be animated.
+     * Once this animation is completed the introendHandler should run
      */
     if (sessionExists) {
       // valid session already exists, jump straight to outroend message

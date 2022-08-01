@@ -128,7 +128,7 @@
     </div>
   </Button>
   {#if status === 'connected'}
-    <a href="#" class="logout-link" on:click={() => logout()}>Logout from Facebook</a>
+    <a href="." class="logout-link" on:click={() => logout()}>Logout from Facebook</a>
   {/if}
 </div>
 
