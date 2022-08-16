@@ -80,10 +80,6 @@
   --border-w: 0.1875rem; /* border-width  */
   --border-r: 0.25rem; /* border-radius */
 
-  --font: "BellGothic", sans-serif;
-  --caption-font: "Material Icons Outlined", sans-serif;
-  --font-mono: "Fira Mono", monospace;
-
   --mdc-typography-font-family: var(--font);
 
   --mdc-theme-primary: var(--prime);
@@ -146,7 +142,7 @@
   src: local("BellGothic Light "), local("BellGothic Light"),
     url("/fonts/bell-gothic/BellGothicStd-Light.woff2") format("woff2");
 }
-/* overpass-600normal - latin */
+/* bell-gothic-600normal - latin */
 @font-face {
   font-family: "BellGothic";
   font-style: normal;
@@ -154,7 +150,7 @@
   src: local("BellGothic Bold "), local("BellGothic Bold"),
     url("/fonts/bell-gothic/BellGothicStd-Bold.woff2") format("woff2");
 }
-/* overpass-600normal - latin */
+/* bell-gothic-600normal - latin */
 @font-face {
   font-family: "BellGothic";
   font-style: normal;
