@@ -66,17 +66,7 @@
     ADMIN,
     SUPERUSER
   } from '$lib/utils';
-  import {
-    fabs,
-    settings,
-    theme,
-    ticker,
-    urls,
-    videos,
-    videoEmitter,
-    inboxes,
-    sents
-  } from '$lib/stores';
+  import { fabs, settings, theme, ticker, urls, videos, videoEmitter } from '$lib/stores';
   import { Modal } from '$lib/components';
   import { Jumper } from 'svelte-loading-spinners';
   import {

@@ -6,19 +6,10 @@
   import { onMount, setContext } from 'svelte';
   import { UserManager, TimeManager, MailManager } from '$lib/components';
   import Button, { Group, Label, Icon } from '@smui/button';
-  import { users, slim, sitename } from '$lib/stores';
+  import { users, slim, sitename, settings } from '$lib/stores';
   import { proxyEvent, INBOX, ADMIN, SUPERUSER, TABS, DEFAULT_TAB } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import { goto } from '$app/navigation';
-
-  const defaultSearch =
-    DEFAULT_TAB === 0
-      ? `?tab=${TABS[DEFAULT_TAB]}`
-      : DEFAULT_TAB === 1
-      ? `?tab=${TABS[DEFAULT_TAB]}`
-      : DEFAULT_TAB === 2
-      ? `?tab=${TABS[DEFAULT_TAB]}&active=${INBOX}`
-      : '';
 
   let userExpires;
   /**
@@ -38,6 +29,10 @@
    * @type {any}
    */
   let username;
+  /**
+   * @type {bool}
+   */
+  let waitForSettings = false;
 
   $: selectionUserId = $page.params.slug;
   $: currentUser = ((id) => $users.length && $users.filter((usr) => usr.id === id)[0])(
@@ -57,7 +52,7 @@
       userExpires = user.expires;
       hasExpired = (userExpires && userExpires * 1000 < +new Date().getTime()) || false;
       token = user.jwt;
-      magicLink = token && `http://${$page.host}/login?token=${token}`;
+      magicLink = token && `${$page.url.origin}/login?token=${token}`;
     }
   })(currentUser);
   $: hidden =
@@ -66,24 +61,42 @@
       : selectionUserId == $session.user?.id
       ? true
       : false;
+  $: waitForSettings &&
+    ((tab) => {
+      if (!isNaN(parseInt(tab))) {
+        const search =
+          tab === 0
+            ? `?tab=${TABS[tab]}`
+            : tab === 1
+            ? `?tab=${TABS[tab]}`
+            : tab === 2
+            ? `?tab=${TABS[tab]}&active=${INBOX}`
+            : '';
+        redirect(search);
+      }
+    })($settings.Site?.defaultUserTab);
 
   setContext('siux', {
     getSIUX: getSimpleUserIndex
   });
 
   onMount(() => {
-    const pathname = $page.url.pathname;
-    const search = $page.url.searchParams.has('tab') ? $page.url.search : defaultSearch;
-
-    if (!currentUser && $session.user) {
-      // Fix not exsiting User-ID
-      let path = pathname.replace(/^(\/users\/)([\S]+)$/g, `$1${$session.user.id}`);
-      setTimeout(() => goto(`${path}${search}`), 100);
-    } else if (!tab) {
-      // Preselect a tab if there is none
-      setTimeout(() => goto(`${pathname}${search}`), 100);
+    if ($page.url.searchParams.has('tab')) {
+      const search = $page.url.search;
+      redirect(search);
+    } else {
+      waitForSettings = true;
     }
   });
+
+  function redirect(search) {
+    let pathname = $page.url.pathname;
+    if (!currentUser && $session.user) {
+      // Fix not exsiting User-ID
+      pathname = pathname.replace(/^(\/users\/)([\S]+)$/g, `$1${$session.user.id}`);
+    }
+    setTimeout(() => goto(`${pathname}${search}`), 100);
+  }
 
   async function getSimpleUserIndex() {
     if ($slim) return Promise.resolve($slim);
