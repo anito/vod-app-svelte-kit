@@ -7,18 +7,17 @@
   import { UserManager, TimeManager, MailManager } from '$lib/components';
   import Button, { Group, Label, Icon } from '@smui/button';
   import { users, slim, sitename } from '$lib/stores';
-  import { proxyEvent, INBOX, ADMIN, SUPERUSER, TABS } from '$lib/utils';
+  import { proxyEvent, INBOX, ADMIN, SUPERUSER, TABS, DEFAULT_TAB } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import { goto } from '$app/navigation';
 
-  const defaultTab = 1;
   const defaultSearch =
-    defaultTab === 0
-      ? `?tab=${TABS[defaultTab]}`
-      : defaultTab === 1
-      ? `?tab=${TABS[defaultTab]}`
-      : defaultTab === 2
-      ? `?tab=${TABS[defaultTab]}&active=${INBOX}`
+    DEFAULT_TAB === 0
+      ? `?tab=${TABS[DEFAULT_TAB]}`
+      : DEFAULT_TAB === 1
+      ? `?tab=${TABS[DEFAULT_TAB]}`
+      : DEFAULT_TAB === 2
+      ? `?tab=${TABS[DEFAULT_TAB]}&active=${INBOX}`
       : '';
 
   let userExpires;

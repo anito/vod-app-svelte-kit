@@ -4,3 +4,4 @@ export const ADMIN = 'Administrator';
 export const SUPERUSER = 'Superuser';
 export const USER = 'User';
 export const TABS = ['time', 'user', 'mail'];
+export const DEFAULT_TAB = 1;
