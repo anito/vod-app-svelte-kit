@@ -6,7 +6,7 @@
   import { sitename, users, settings } from '$lib/stores';
   import { _ } from 'svelte-i18n';
   import { page, session } from '$app/stores';
-  import { INBOX, TABS } from '$lib/utils';
+  import { createRedirectSlug, INBOX, TABS } from '$lib/utils';
 
   /**
    * @type {bool}
@@ -45,8 +45,12 @@
   });
 
   function redirect(search) {
-    let slug = $session.user?.id || '';
-    setTimeout(() => goto(`${$page.url.pathname}/${slug}${search}`), 100);
+    let slug = $session.user?.id;
+    if (slug) {
+      setTimeout(() => goto(`${$page.url.pathname}/${slug}${search}`), 100);
+    } else {
+      setTimeout(() => goto(`/login${createRedirectSlug($page.url)}`), 100);
+    }
   }
 </script>
 

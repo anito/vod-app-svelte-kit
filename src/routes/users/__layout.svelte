@@ -64,7 +64,7 @@
     SvgIcon,
     VideoEditorList
   } from '$lib/components';
-  import { ADMIN, proxyEvent, SUPERUSER, USER } from '$lib/utils';
+  import { proxyEvent, USER } from '$lib/utils';
   import Button, { Icon as Icon_ } from '@smui/button';
   import Fab, { Label } from '@smui/fab';
   import Textfield from '@smui/textfield';
@@ -113,7 +113,7 @@
   })(currentUser);
   $: filteredUsers =
     $users?.filter((user) => user.name.toLowerCase().indexOf(search.toLowerCase()) !== -1) || [];
-  $: userInfos = ($infos.has(selectionUserId) && $infos.get(selectionUserId).params) || [];
+  $: userInfos = ($infos?.has(selectionUserId) && $infos.get(selectionUserId).params) || [];
   $: userIssues = userInfos.filter((info) => info.type === 'issue');
   $: searchParams = $page.url.searchParams.toString();
   $: query = searchParams && `?${searchParams}`;
