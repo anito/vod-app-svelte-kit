@@ -7,7 +7,7 @@
   import { UserManager, TimeManager, MailManager } from '$lib/components';
   import Button, { Group, Label, Icon } from '@smui/button';
   import { users, slim, sitename, settings } from '$lib/stores';
-  import { proxyEvent, INBOX, ADMIN, SUPERUSER, TABS, DEFAULT_TAB } from '$lib/utils';
+  import { proxyEvent, INBOX, ADMIN, SUPERUSER, TABS, createRedirectSlug } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import { goto } from '$app/navigation';
 
@@ -91,7 +91,10 @@
 
   function redirect(search) {
     let pathname = $page.url.pathname;
-    if (!currentUser && $session.user) {
+    if (!$session.user) {
+      pathname = '/login';
+      search = createRedirectSlug($page.url);
+    } else if (!currentUser) {
       // Fix not exsiting User-ID
       pathname = pathname.replace(/^(\/users\/)([\S]+)$/g, `$1${$session.user.id}`);
     }
