@@ -16,6 +16,6 @@ _Special thanks to the creators of:_
 
 [Svelte Material UI](https://sveltematerialui.com/) - Hunter Perrin [@SciActive](https://twitter.com/SciActive)
 
-# Backend
+# API
 
 The [API](https://github.com/anito/vod-backend) for this application was made with [CakePHP](https://cakephp.org)
