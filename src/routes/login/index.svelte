@@ -45,6 +45,7 @@
   let message = '';
   let outroended = false;
 
+  $: loggedin = !!$session.user;
   $: message = $session.user
     ? $_('text.welcome-message', { values: { name: $session.user.name } })
     : $page.url.searchParams.has('token')
@@ -102,7 +103,11 @@
   <title>{$sitename} | Login</title>
 </svelte:head>
 
-<div in:fly={{ x: -200, duration: 800 }} out:fly={{ x: 200 }} class="flex flex-1 justify-center">
+<div
+  in:fly={{ x: -200, duration: 800 }}
+  out:fly={{ x: 200 }}
+  class="flex flex-1 justify-center paper-wrapper"
+>
   <div class="wrapper">
     <Paper elevation="20" style="margin-top: calc(100vh / 6);">
       <div class="flyer">
@@ -135,11 +140,13 @@
           </div>
         {/if}
       </div>
-      <Paper elevation="0" style="padding-top: 0;">
-        <Content>
-          <LoginForm />
-        </Content>
-      </Paper>
+      <div class="login-form loggedin" class:loggedin>
+        <Paper elevation="0" style="padding-top: 0;">
+          <Content>
+            <LoginForm />
+          </Content>
+        </Paper>
+      </div>
     </Paper>
   </div>
 </div>
@@ -150,6 +157,15 @@
 </div>
 
 <style>
+  .login-form {
+    transition: 0.5s;
+    opacity: 1;
+  }
+  .login-form.loggedin {
+    transition: 0.5s;
+    opacity: 0.5;
+    pointer-events: none;
+  }
   .flyer {
     height: 50px;
     overflow: hidden;
