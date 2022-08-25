@@ -64,7 +64,8 @@
     svg,
     __ticker__,
     ADMIN,
-    SUPERUSER
+    SUPERUSER,
+    TABS
   } from '$lib/utils';
   import { fabs, settings, theme, ticker, urls, videos, videoEmitter } from '$lib/stores';
   import { Modal } from '$lib/components';
@@ -145,6 +146,15 @@
     }));
   $: searchParams = $page.url.searchParams.toString();
   $: search = searchParams && `?${searchParams}`;
+  $: tab = $page.url.searchParams.has('tab')
+    ? `?tab=${$page.url.searchParams.get('tab')}`
+    : ((index) => {
+        if (!isNaN(parseInt(index))) {
+          return `?tab=${TABS[index]}`;
+        }
+        return '';
+      })($settings.Site?.defaultUserTab);
+  $: uid = $page.params?.slug || $session.user?.id;
 
   onMount(() => {
     root = document.documentElement;
@@ -346,7 +356,7 @@
           {/if}
 
           {#if hasPrivileges}
-            <NavItem href="/users" title="Administration" segment="users">
+            <NavItem href={`/users/${uid}${tab}`} title="Administration" segment="users">
               <Icon class="material-icons" style="vertical-align: middle;">settings</Icon>
               <Label>Admin</Label>
             </NavItem>
