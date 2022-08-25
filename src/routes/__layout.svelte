@@ -255,12 +255,12 @@
     !action && path && (message = `${message}...`);
   }
 
-  function handleOpened() {
+  function handleSnackbarOpened() {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => !action && path && goto(path), redirectDelay);
   }
 
-  function handleClosed() {}
+  function handleSnackbarClosed() {}
 
   function tickerStartHandler(e) {
     const { user, groups, renewed } = { ...e.detail };
@@ -282,20 +282,7 @@
 
   async function tickerEndHandler(e) {
     if ($session.user) {
-      $session.user = null;
-      $session.groups = null;
-      $session.role = null;
-      $session._expires = null;
-
-      await logout(`/auth/logout`).then((res) => {
-        if (res) {
-          message = res.message || res.data?.message;
-
-          configSnackbar(message);
-          snackbar = getSnackbar();
-          snackbar?.open();
-        }
-      });
+      killSession();
     }
     proxyEvent('ticker:ended', e.detail);
   }
@@ -315,6 +302,27 @@
     if ($session.user) {
       $session._expires = new Date(Date.now() + parseInt($settings.Session?.lifetime));
     }
+  }
+
+  function unloadHandler(e) {
+    killSession();
+  }
+
+  async function killSession(showSnackbar) {
+    $session.user = null;
+    $session.groups = null;
+    $session.role = null;
+    $session._expires = null;
+
+    await logout(`/auth/logout`).then((res) => {
+      if (showSnackbar && res) {
+        message = res.message || res.data?.message;
+
+        configSnackbar(message);
+        snackbar = getSnackbar();
+        snackbar?.open();
+      }
+    });
   }
 </script>
 
@@ -409,8 +417,8 @@
   bind:this={snackbar}
   snackbarLifetimeMs={snackbarLifetime}
   labelText={message}
-  on:MDCSnackbar:closed={handleClosed}
-  on:MDCSnackbar:opened={handleOpened}
+  on:MDCSnackbar:closed={handleSnackbarClosed}
+  on:MDCSnackbar:opened={handleSnackbarOpened}
 >
   <Label />
   <Actions>
