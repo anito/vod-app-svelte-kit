@@ -146,14 +146,15 @@
     }));
   $: searchParams = $page.url.searchParams.toString();
   $: search = searchParams && `?${searchParams}`;
-  $: tab = $page.url.searchParams.has('tab')
-    ? `?tab=${$page.url.searchParams.get('tab')}`
-    : ((index) => {
-        if (!isNaN(parseInt(index))) {
-          return `?tab=${TABS[index]}`;
-        }
-        return '';
-      })($settings.Site?.defaultUserTab);
+  $: usersTab =
+    segment === 'users' && $page.url.searchParams.has('tab')
+      ? `?tab=${$page.url.searchParams.get('tab')}`
+      : ((index) => {
+          if (!isNaN(parseInt(index))) {
+            return `?tab=${TABS[index]}`;
+          }
+          return '';
+        })($settings.Site?.defaultUserTab);
   $: uid = $page.params?.slug || $session.user?.id;
 
   onMount(() => {
@@ -356,7 +357,7 @@
           {/if}
 
           {#if hasPrivileges}
-            <NavItem href={`/users/${uid}${tab}`} title="Administration" segment="users">
+            <NavItem href={`/users/${uid}${usersTab}`} title="Administration" segment="users">
               <Icon class="material-icons" style="vertical-align: middle;">settings</Icon>
               <Label>Admin</Label>
             </NavItem>
