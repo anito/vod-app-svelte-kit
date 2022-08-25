@@ -393,7 +393,11 @@
           {/if}
         {:else}
           <div class="flex flex-1 flex-col self-center text-center">
-            <div class="m-5">{$_('text.admins-have-full-access')}</div>
+            <div class="m-5">
+              {@html $_('text.full-access-user', {
+                values: { role: currentRole, name: username }
+              })}
+            </div>
           </div>
         {/if}
       </List>
