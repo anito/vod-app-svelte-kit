@@ -95,10 +95,12 @@
       pathname = '/login';
       search = createRedirectSlug($page.url);
     } else if (!currentUser) {
-      // Fix not exsiting User-ID
+      // Fix non exsiting user Id
       pathname = pathname.replace(/^(\/users\/)([\S]+)$/g, `$1${$session.user.id}`);
     }
-    setTimeout(() => goto(`${pathname}${search}`), 100);
+    if (!$page.url.href.endsWith(`${pathname}${search}`)) {
+      setTimeout(() => goto(`${pathname}${search}`), 100);
+    }
   }
 
   async function getSimpleUserIndex() {
