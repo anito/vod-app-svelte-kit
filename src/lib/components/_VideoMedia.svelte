@@ -15,7 +15,7 @@
   export let title = '';
   export let description = '';
   export let isEditMode = false;
-  export let emptyPoster = 'empty-poster.jpg';
+  export let emptyPoster = '/empty-poster.jpg';
 
   let paused = true;
   let poster = emptyPoster;
