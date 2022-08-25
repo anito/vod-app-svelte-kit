@@ -346,6 +346,7 @@
                   )}
                 on:itemSelected={itemSelectedHandler}
                 selected={selectionVideoId === video.id}
+                emptyPoster="/empty-poster.jpg"
                 {video}
                 {selectionUserId}
               >
@@ -434,6 +435,7 @@
               class="video"
               disabled={(hasCurrentPrivileges || hasPrivileges) && isUnmanagableNoneUserList}
               selected={selectionVideoId === video.id}
+              emptyPoster="/empty-poster.jpg"
               {video}
               {selectionUserId}
             >

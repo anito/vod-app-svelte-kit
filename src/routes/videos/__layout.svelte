@@ -61,6 +61,7 @@
             <SimpleVideoCard
               class="video"
               selected={selectionVideoId === video.id}
+              emptyPoster="/empty-poster.jpg"
               on:itemSelected={itemSelectedHandler}
               on:click={() => proxyEvent('ticker:extend')}
               {video}
