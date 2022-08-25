@@ -27,7 +27,7 @@
   $: currentUser = $users.find((user) => user.id == $session.user?.id);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: token = currentUser?.jwt;
-  $: joinData = currentUser && currentUser.videos.find((v) => v.id == video.id)?._joinData;
+  $: joinData = currentUser?.videos.find((v) => v.id == video.id)?._joinData;
   $: (video.image_id && getMediaImage(video.image_id, $session.user).then((v) => (poster = v))) ||
     (poster = emptyPoster);
   $: video.id && getMediaVideo(video.id, $session.user).then((v) => (src = v));
