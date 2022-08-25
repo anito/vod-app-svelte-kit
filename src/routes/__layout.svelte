@@ -68,7 +68,7 @@
   } from '$lib/utils';
   import { fabs, settings, theme, ticker, urls, videos, videoEmitter } from '$lib/stores';
   import { Modal } from '$lib/components';
-  import { Jumper } from 'svelte-loading-spinners';
+  import { DoubleBounce } from 'svelte-loading-spinners';
   import {
     UserGraphic,
     LoadingModal,
@@ -409,8 +409,8 @@
     </Modal>
   </Modal>
 {/if}
-<LoadingModal backgroundColor="#ffffff" opacity=".45" wait="0">
-  <Jumper size="200" color="var(--flash)" unit="px" />
+<LoadingModal backgroundColor="#ffffff" opacity=".45" wait="1000">
+  <DoubleBounce color="var(--flash)" unit="px" size="200" />
 </LoadingModal>
 
 <Snackbar

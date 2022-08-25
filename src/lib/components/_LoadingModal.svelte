@@ -6,7 +6,7 @@
   import { onMount } from 'svelte';
   import { convert } from '$lib/utils';
 
-  export let wait = 250;
+  export let wait = 500;
   export let backgroundColor = '#222222';
   export let opacity = 0.5;
 
@@ -19,6 +19,7 @@
 
   let root;
   let disabled = false;
+  let timeoutId;
   let omitt = new Map([
     [
       SUPRESS_SEARCHES_KEY,
@@ -58,7 +59,15 @@
     root = document.documentElement;
   });
 
-  $: !disabled && setTimeout(() => root?.classList.toggle('navigating', $navigating), wait);
+  $: ((nav) => {
+    if (disabled) return;
+    if (nav) {
+      timeoutId = setTimeout(() => root?.classList.add('navigating'), wait);
+    } else {
+      clearTimeout(timeoutId);
+      root?.classList.remove('navigating');
+    }
+  })($navigating);
   $: _step1 = backgroundColor.slice(0, 7);
   $: bgColor = `${_step1}${(_step1.length === 7 && opacityToHex) || ''}`;
   $: opacityToHex = convert.dec2Hex(parseFloat(opacity), true);
