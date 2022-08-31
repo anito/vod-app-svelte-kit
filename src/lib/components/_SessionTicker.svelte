@@ -103,10 +103,11 @@
     transition: opacity 1s ease-out;
   }
   .container.show {
-    opacity: 1;
-    transition: opacity 0.15s ease-in;
+    opacity: 0.7;
+    transition: opacity 0.4s ease-in;
   }
   .container.show.isWarning {
+    transition: opacity 0.4s ease-in;
     opacity: 1;
   }
 </style>
