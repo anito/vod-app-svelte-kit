@@ -11,9 +11,9 @@
 
   export let prefix = '';
   export { className as class };
-  export let warning = 0;
+  export let warning = 60;
   export let warningOnly = false;
-  export let forceOnExtend = false;
+  export let forceOnExtend = 5;
 
   const FAILS = 2;
 
@@ -26,7 +26,7 @@
 
   prefix === true && (prefix = '');
 
-  $: clName = warning && $ticker / 1000 <= warning ? 'warning' : className;
+  $: clName = !isNaN(warning) && $ticker / 1000 <= warning ? 'warning' : className;
   $: isWarning = clName === 'warning';
   $: isVisible = !warningOnly || isWarning;
   $: indefinite = fails < FAILS;
@@ -103,7 +103,7 @@
     transition: opacity 1s ease-out;
   }
   .container.show {
-    opacity: 0.5;
+    opacity: 1;
     transition: opacity 0.15s ease-in;
   }
   .container.show.isWarning {
