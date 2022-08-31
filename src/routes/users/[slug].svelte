@@ -10,8 +10,8 @@
   import { proxyEvent, INBOX, ADMIN, SUPERUSER, TABS, createRedirectSlug } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import { goto } from '$app/navigation';
-  import { fly } from 'svelte/transition';
 
+  let selectedMode = 'edit';
   let userExpires;
   /**
    * @type {null}
@@ -88,7 +88,23 @@
     } else {
       waitForSettings = true;
     }
+
+    window.addEventListener('User:add', addUserHandler);
+
+    return () => {
+      window.removeEventListener('User:add', addUserHandler);
+    };
   });
+
+  async function addUserHandler(e) {
+    const searchParams = new URLSearchParams($page.url.searchParams.toString());
+    if (!searchParams.has('mode')) {
+      searchParams.append('mode', 'add');
+    } else {
+      searchParams.set('mode', 'add');
+    }
+    await goto(`${$page.url.pathname}?${searchParams.toString()}`);
+  }
 
   function redirect(search) {
     let pathname = $page.url.pathname;
@@ -171,7 +187,7 @@
       on:token:Remove
       on:user:Activate
       on:open:InfoDialog
-      selectedMode="edit"
+      {selectedMode}
       {selectionUserId}
     />
   {/if}

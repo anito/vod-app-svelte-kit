@@ -115,7 +115,7 @@
     $users?.filter((user) => user.name.toLowerCase().indexOf(search.toLowerCase()) !== -1) || [];
   $: userInfos = ($infos?.has(selectionUserId) && $infos.get(selectionUserId).params) || [];
   $: userIssues = userInfos.filter((info) => info.type === 'issue');
-  $: searchParams = $page.url.searchParams.toString();
+  $: searchParams = getSearchParams();
   $: query = searchParams && `?${searchParams}`;
 
   onMount(() => {
@@ -151,7 +151,7 @@
   users.subscribe((items) => slim.set(null));
 
   async function addUser() {
-    await goto('/users/add');
+    proxyEvent('User:add');
   }
 
   async function generateToken(config = {}) {
@@ -324,6 +324,15 @@
       data: uploadedData
     });
     uploadedData = null;
+  }
+
+  function getSearchParams() {
+    const omit = ['mode'];
+    const searchParams = new URLSearchParams($page.url.searchParams.toString());
+    omit.forEach((key) => {
+      searchParams.has(key) && searchParams.delete(key);
+    });
+    return searchParams.toString();
   }
 </script>
 

@@ -38,6 +38,7 @@
 
   let code;
   let root;
+  let mode = 'edit';
   let invalidEmail = false;
   let password = '';
   let repeatedPassword = '';
@@ -58,10 +59,24 @@
   let active = false;
   let __protected = false;
 
+  $: selectedMode = $page.url.searchParams.has('mode')
+    ? $page.url.searchParams.get('mode')
+    : selectedMode;
+  $: ((m) => {
+    if (hasPrivileges && m === 'edit') {
+      setFab('add-user');
+    } else {
+      setTimeout(() => reset(), 100);
+      setFab();
+    }
+  })(selectedMode);
+  $: selectedMode = mode;
+  $: root?.classList.toggle('add-user-view--open', selectedMode === 'add');
+  $: root?.classList.toggle('profile-view--open', selectedMode === 'edit');
   $: groups = $session.groups || [];
   $: currentUser = ((id) => {
     const user = $users.filter((usr) => usr?.id === id)[0];
-    if (user) copy(user);
+    if (user && selectedMode !== 'add') copy(user);
     return user;
   })(selectionUserId);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
@@ -111,19 +126,7 @@
 
   onMount(() => {
     root = document.documentElement;
-    root.classList.add('profiledata--open');
-
     snackbar = getSnackbar();
-
-    if (hasPrivileges) {
-      setFab('add-user');
-    } else {
-      setFab();
-    }
-
-    return () => {
-      root.classList.remove('profiledata--open');
-    };
   });
 
   let openUploader = () => {
@@ -238,12 +241,11 @@
     ({ name, email, active, group_id, __protected } = { ...user, __protected: !!user.protected });
   }
 
-  async function submit(event) {
+  async function submit() {
     let res, data, path, action;
     snackbar.isOpen && snackbar.close();
-    let mode = selectedMode;
 
-    switch (mode) {
+    switch (selectedMode) {
       case 'add':
         data = { active, email, name, password, group_id };
         res = await api.post(`users/add`, { data, token: $session.user?.jwt });
@@ -342,6 +344,18 @@
       }
     }
   }
+
+  async function closeAddUserHandler() {
+    const searchParams = new URLSearchParams($page.url.searchParams.toString());
+    if (searchParams.has('mode')) {
+      searchParams.set('mode', 'edit');
+    } else {
+      searchParams.append('mode', 'edit');
+    }
+    const search = searchParams.toString();
+
+    await goto(`${$page.url.pathname}?${search}`);
+  }
 </script>
 
 {#if $session.user}
@@ -351,12 +365,12 @@
         <div class="">
           <Header h="5" mdc>
             <span>
-              {#if currentUser}
-                {currentUser.name}
-              {:else if selectedMode === 'add'}{$_('text.create-new-user')}{/if}
+              {#if selectedMode === 'add'}
+                {$_('text.create-new-user')}
+              {:else if currentUser}{currentUser.name}{/if}
             </span>
           </Header>
-          <button on:click={() => goto('/users')} class="button-close" variant="outlined">
+          <button on:click={() => closeAddUserHandler()} class="button-close" variant="outlined">
             <Icon class="material-icons" style="vertical-align: middle;">close</Icon>
           </button>
         </div>
@@ -371,7 +385,7 @@
             </div>
           </div>
         {:else}
-          {#if selectionUserId}
+          {#if selectionUserId && selectedMode !== 'add'}
             <div class="avatar-container" on:click={() => avatarMenu.setOpen(true)}>
               <div bind:this={avatarMenuAnchor} use:Anchor>
                 <UserGraphic
@@ -417,14 +431,14 @@
                 <div class="flex justify-between flex-wrap">
                   <div class="select-item item">
                     <Select
-                      bind:value={selectedMode}
+                      bind:value={mode}
                       label={$_('text.select-mode')}
                       class="select-width"
                       menu$class="select-width"
                       variant="filled"
                     >
                       {#each userCan as can}
-                        <Option value={can.action} selected={selectedMode === can.action}>
+                        <Option value={can.action} selected={mode === can.action}>
                           {$_(can.name)}
                         </Option>
                       {/each}
@@ -577,7 +591,7 @@
                         disabled={!canReset}
                         type="reset"
                         color="primary"
-                        on:click={reset}
+                        on:click={() => reset()}
                         variant="unelevated"
                       >
                         <Label>{$_('text.reset')}</Label>
@@ -618,7 +632,7 @@
             </div>
           </form>
         {/if}
-        {#if currentUser && hasPrivileges}
+        {#if currentUser && hasPrivileges && selectedMode !== 'add'}
           <div class="table-wrapper">
             <div class="token-factory" class:no-token={!token}>
               <div class="main-info">
