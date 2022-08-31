@@ -89,7 +89,7 @@
   $: _active = ((usr) => usr?.active || false)(selectedMode !== 'add' ? currentUser : false);
   $: _protected = ((usr) => usr?.protected || false)(selectedMode !== 'add' ? currentUser : false);
   $: _email = ((usr) => usr?.email || '')(selectedMode !== 'add' ? currentUser : false);
-  $: _group_id = ((usr) => usr?.group_id || '')(selectedMode !== 'add' ? currentUser : false);
+  $: _group_id = ((usr) => usr?.group_id || void 0)(selectedMode !== 'add' ? currentUser : false);
   $: invalidPassword = password.length < 8;
   $: invalidRepeatedPassword = password !== repeatedPassword || invalidPassword;
   $: canSave =
@@ -806,6 +806,7 @@
     position: absolute;
     right: 50px;
     top: 20px;
+    cursor: pointer;
     z-index: 1;
   }
   .avatar-container :global(img) {

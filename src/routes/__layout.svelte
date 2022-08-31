@@ -301,7 +301,6 @@
     } else {
       path = link;
     }
-    !action && path && (message = `${message}...`);
   }
 
   function handleSnackbarOpened() {

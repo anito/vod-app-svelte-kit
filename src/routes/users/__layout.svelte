@@ -117,7 +117,6 @@
   $: userIssues = userInfos.filter((info) => info.type === 'issue');
   $: searchParams = $page && getSearchParams();
   $: query = searchParams && `?${searchParams}`;
-  $: console.log(query);
 
   onMount(() => {
     snackbar = getSnackbar();
