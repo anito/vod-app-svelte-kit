@@ -115,8 +115,9 @@
     $users?.filter((user) => user.name.toLowerCase().indexOf(search.toLowerCase()) !== -1) || [];
   $: userInfos = ($infos?.has(selectionUserId) && $infos.get(selectionUserId).params) || [];
   $: userIssues = userInfos.filter((info) => info.type === 'issue');
-  $: searchParams = getSearchParams();
+  $: searchParams = $page && getSearchParams();
   $: query = searchParams && `?${searchParams}`;
+  $: console.log(query);
 
   onMount(() => {
     snackbar = getSnackbar();
@@ -328,7 +329,8 @@
 
   function getSearchParams() {
     const omit = ['mode'];
-    const searchParams = new URLSearchParams($page.url.searchParams.toString());
+    const searchParamsString = $page.url.searchParams.toString();
+    const searchParams = new URLSearchParams(searchParamsString);
     omit.forEach((key) => {
       searchParams.has(key) && searchParams.delete(key);
     });
