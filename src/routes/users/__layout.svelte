@@ -628,6 +628,7 @@
 <style>
   .fab {
     position: absolute;
+    z-index: 999;
   }
   :global(.datapicker--open) .fab,
   :global(.add-user-view--open) .fab {

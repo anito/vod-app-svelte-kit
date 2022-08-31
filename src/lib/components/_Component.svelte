@@ -95,7 +95,7 @@
     font-size: 3em;
   }
   .component .content {
-    z-index: 1;
+    z-index: 2;
     flex-shrink: 1;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
