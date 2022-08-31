@@ -75,17 +75,24 @@
   $: dateFormat = $locale.indexOf('de') != -1 ? 'dd. MMM yyyy' : 'yyyy-MM-dd';
   $: currentUserIndex = ((id) => $users.findIndex((usr) => usr.id === id))(selectionUserId);
   $: userVideos = ((idx) => {
-    if (hasPrivileges) {
-      return $users[idx]?.videos.sort(sortByEndDate);
-    } else {
-      return $users[idx]?.videos
-        .filter((v) => {
-          return (
-            new Date(v._joinData.start) <= new Date() && new Date(v._joinData.end) >= new Date()
-          );
-        })
-        .sort(sortByEndDate);
-    }
+    const vids = () => {
+      if (hasPrivileges) {
+        return $users[idx]?.videos.sort(sortByEndDate);
+      } else {
+        return $users[idx]?.videos
+          .filter((v) => {
+            return (
+              new Date(v._joinData.start) <= new Date() && new Date(v._joinData.end) >= new Date()
+            );
+          })
+          .sort(sortByEndDate);
+      }
+    };
+    return vids()?.map((v) => {
+      const globalVideoImageId = $videos.find((globalV) => globalV.id === v.id)?.image_id;
+      v.image_id = globalVideoImageId;
+      return v;
+    });
   })(currentUserIndex);
   $: (() => (selectionVideoId = null))(selectionUserId);
   $: currentUser =

@@ -10,6 +10,7 @@
   import { proxyEvent, INBOX, ADMIN, SUPERUSER, TABS, createRedirectSlug } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import { goto } from '$app/navigation';
+  import { fly } from 'svelte/transition';
 
   let userExpires;
   /**

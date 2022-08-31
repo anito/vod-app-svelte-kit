@@ -8,7 +8,7 @@ export async function get({ locals, params }) {
     body = { data: data[slug] };
   } else {
     status = 302;
-    body = { data: '' };
+    body = { data: null };
   }
 
   return {

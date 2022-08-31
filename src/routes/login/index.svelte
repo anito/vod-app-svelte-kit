@@ -158,11 +158,11 @@
 
 <style>
   .login-form {
-    transition: 0.5s;
+    transition: opacity 0.4s ease-in;
     opacity: 1;
   }
   .login-form.loggedin {
-    transition: 0.5s;
+    transition: opacity 0.4s ease-in;
     opacity: 0.5;
     pointer-events: none;
   }

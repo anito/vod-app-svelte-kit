@@ -15,6 +15,7 @@ export async function get({ locals, url }) {
 
           await locals.session.destroy();
           await locals.session.set({
+            start: new Date().toISOString(),
             user: { id, name, jwt, avatar },
             role,
             groups,
@@ -38,7 +39,6 @@ export async function get({ locals, url }) {
 }
 
 export async function post({ locals, request, url }) {
-  const token = url.searchParams.get('token');
   const data = await request.json();
   const lang = read(locale);
 
@@ -48,6 +48,7 @@ export async function post({ locals, request, url }) {
 
       await locals.session.destroy();
       await locals.session.set({
+        start: new Date().toISOString(),
         user: { id, name, jwt, avatar },
         role,
         groups,

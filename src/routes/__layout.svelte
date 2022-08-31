@@ -16,7 +16,7 @@
 
   export async function load({ fetch }) {
     async function getLocaleFromSession() {
-      return await fetch('/session/recover/locale')
+      return await fetch('/session/locale')
         .then((res) => {
           return res.json();
         })
@@ -24,6 +24,17 @@
           return res.data;
         });
     }
+    async function getSessionStart() {
+      return await fetch('/session/start')
+        .then((res) => {
+          return res.json();
+        })
+        .then((res) => {
+          return res.data;
+        });
+    }
+
+    const start = await getSessionStart();
 
     if (browser) {
       init_i18n({
@@ -38,7 +49,9 @@
     }
 
     await waitLocale();
-    return {};
+    return {
+      props: { start }
+    };
   }
 </script>
 
@@ -65,7 +78,8 @@
     __ticker__,
     ADMIN,
     SUPERUSER,
-    TABS
+    TABS,
+    post
   } from '$lib/utils';
   import { fabs, settings, theme, ticker, urls, videos, videoEmitter } from '$lib/stores';
   import { Modal } from '$lib/components';
@@ -80,6 +94,8 @@
   } from '$lib/components';
   import { svg_manifest } from '$lib/svg_manifest';
   import { serverConfig } from '$lib/config';
+
+  export let start = 0;
 
   const snackbarLifetimeDefault = 4000;
   const redirectDelay = 300;
@@ -161,7 +177,21 @@
     root = document.documentElement;
     snackbar = getSnackbar();
 
-    serverConfig().then(() => proxyEvent('ticker:extend'));
+    serverConfig().then((res) => {
+      settings.update({ ...res.data });
+      const { lifetime } = $settings.Session;
+      const now = Date.now();
+      const elapsed = now - new Date(start);
+      const remaining = parseInt(lifetime) - elapsed;
+      if (remaining > 0) {
+        proxyEvent('ticker:extend');
+      } else {
+        const pathname = $page.url.pathname;
+        proxyEvent('ticker:end', {
+          path: pathname == '/' ? pathname : '/login'
+        });
+      }
+    });
     initListener();
     initClasses();
     initStyles();
@@ -311,7 +341,9 @@
 
   async function tickerExtendHandler() {
     if ($session.user) {
-      $session._expires = new Date(Date.now() + parseInt($settings.Session?.lifetime));
+      const now = new Date().toISOString();
+      await post('/session/extend', now);
+      $session._expires = new Date(new Date(now).getTime() + parseInt($settings.Session?.lifetime));
     }
   }
 
@@ -343,7 +375,7 @@
   <Modal header={{ name: 'text.upload-type' }}>
     <Modal header={{ name: 'text.edit-uploaded-content' }} key="editor-modal">
       <form
-        class="main-menu"
+        class="main-menu login-form"
         on:submit|stopPropagation|preventDefault={submit}
         method="post"
         action="/login"
@@ -378,8 +410,8 @@
               </Button>
             </NavItem>
           {:else}
-            <NavItem href="/login{search}">
-              <Button color="secondary" variant="raised" class="sign-in-out button-login">
+            <NavItem href="/login{search}" class="sign-in-out-item">
+              <Button color="secondary" variant="raised" class="sign-in-out">
                 <Label>{$_('nav.login')}</Label>
               </Button>
             </NavItem>
@@ -449,21 +481,33 @@
     overflow: hidden;
     white-space: nowrap;
   }
-  .main-menu :global(button.sign-in-out) {
+  :global(.is-login-page .sign-in-out-item a) {
+    pointer-events: none;
+  }
+  :global(button.sign-in-out) {
     height: 74px;
     width: 130px;
   }
-  :global(.is-login-page) .main-menu :global(button.sign-in-out) {
+  :global(.is-login-page button.sign-in-out) {
     transform: translateY(-60px);
     transition: all 0.4s ease-out;
   }
-  .main-menu :global(button.sign-in-out) {
+  :global(button.sign-in-out) {
     transform: translateY(0px);
     transition: all 0.4s ease-in;
   }
-  .main-menu :global(button.sign-in-out .no-break) {
+  :global(button .no-break) {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+  :global(button.sign-in-out) {
+    transition: all 0.4s ease-in;
+    opacity: 1;
+  }
+  :global(.signing-in button.sign-in-out) {
+    pointer-events: none;
+    cursor: not-allowed;
+    opacity: 0.5;
   }
 </style>

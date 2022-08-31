@@ -11,7 +11,7 @@
   import Header from './_Header.svelte';
   import { fly } from 'svelte/transition';
   import { users, flash } from '$lib/stores';
-  import { post, createRedirectSlug, proxyEvent, ADMIN, SUPERUSER } from '$lib/utils';
+  import { createRedirectSlug, proxyEvent, ADMIN, SUPERUSER } from '$lib/utils';
   import Textfield from '@smui/textfield';
   import TextfieldIcon from '@smui/textfield/icon';
   import HelperText from '@smui/textfield/helper-text';

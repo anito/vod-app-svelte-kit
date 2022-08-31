@@ -147,7 +147,7 @@
       </Tab>
     </TabBar>
   </div>
-  <form on:submit|preventDefault={submit} method="post">
+  <form on:submit|preventDefault={submit} method="post" class="login-form">
     <div class="login-grid {rows}">
       {#if active === tabNames[0]}
         <span class="one flex flex-col">
@@ -246,11 +246,6 @@
   .form-wrapper {
     padding-top: 10px;
     border-top: 1px solid rgb(173 20 87 / 5%);
-  }
-  :global(.signing-in form button) {
-    pointer-events: none;
-    cursor: not-allowed;
-    opacity: 0.5;
   }
   .login-grid {
     display: grid;
