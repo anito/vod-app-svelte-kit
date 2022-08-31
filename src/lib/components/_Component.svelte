@@ -35,7 +35,7 @@
   .component .header {
     display: flex;
     position: absolute;
-    z-index: 0;
+    z-index: auto;
     justify-content: center;
     flex-direction: column;
     width: 100%;
@@ -47,7 +47,6 @@
     margin-top: 0px;
     background-color: var(--prime, rgb(179, 116, 1));
     position: relative;
-    z-index: 0;
   }
   :global(.transparent).component::before {
     color: inherit;
@@ -95,7 +94,7 @@
     font-size: 3em;
   }
   .component .content {
-    z-index: 2;
+    z-index: auto;
     flex-shrink: 1;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
