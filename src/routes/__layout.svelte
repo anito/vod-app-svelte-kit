@@ -15,8 +15,8 @@
   register('en-US', () => import('../messages/en_US.json'));
 
   export async function load({ fetch }) {
-    async function getLocaleFromSession() {
-      return await fetch('/session/locale')
+    async function getSessionData() {
+      return await fetch('/session')
         .then((res) => {
           return res.json();
         })
@@ -24,22 +24,26 @@
           return res.data;
         });
     }
-    async function getSessionStart() {
-      return await fetch('/session/start')
+    async function getConfig() {
+      return await fetch('/config')
         .then((res) => {
-          return res.json();
+          if (res.ok) return res.json();
+          else throw 'Error loading config';
         })
         .then((res) => {
           return res.data;
+        })
+        .catch((reason) => {
+          console.log(reason);
         });
     }
-
-    const start = await getSessionStart();
+    const sessiondata = await getSessionData();
+    const config = (await getConfig()) || {};
 
     if (browser) {
       init_i18n({
         fallbackLocale,
-        initialLocale: await getLocaleFromSession()
+        initialLocale: sessiondata.locale
       });
     } else {
       init_i18n({
@@ -50,7 +54,7 @@
 
     await waitLocale();
     return {
-      props: { start }
+      props: { sessiondata, config }
     };
   }
 </script>
@@ -93,9 +97,11 @@
     NavItem
   } from '$lib/components';
   import { svg_manifest } from '$lib/svg_manifest';
-  import { serverConfig } from '$lib/config';
 
-  export let start = 0;
+  export let sessiondata;
+  export let config;
+
+  settings.update(config);
 
   const snackbarLifetimeDefault = 4000;
   const redirectDelay = 300;
@@ -177,22 +183,8 @@
     root = document.documentElement;
     snackbar = getSnackbar();
 
-    serverConfig().then((res) => {
-      settings.update({ ...res.data });
-      const { lifetime } = $settings.Session;
-      const now = Date.now();
-      const elapsed = now - new Date(start);
-      const remaining = parseInt(lifetime) - elapsed;
-      if (remaining > 0) {
-        proxyEvent('ticker:extend');
-      } else {
-        const pathname = $page.url.pathname;
-        proxyEvent('ticker:end', {
-          path: pathname == '/' ? pathname : '/login'
-        });
-      }
-    });
     initListener();
+    initSession();
     initClasses();
     initStyles();
 
@@ -208,6 +200,22 @@
     window.addEventListener('ticker:end', tickerEndHandler);
     window.addEventListener('ticker:ended', tickerEndedHandler);
     window.addEventListener('ticker:extend', tickerExtendHandler);
+  }
+
+  function initSession() {
+    const now = Date.now();
+    const { start } = { start: 0, ...sessiondata };
+    const { lifetime } = $settings.Session;
+    const elapsed = now - new Date(start);
+    const remaining = parseInt(lifetime) - elapsed;
+    if (remaining > 0) {
+      proxyEvent('ticker:extend', { remaining });
+    } else {
+      const pathname = $page.url.pathname;
+      proxyEvent('ticker:end', {
+        path: pathname == '/' ? pathname : '/login'
+      });
+    }
   }
 
   function initClasses() {
@@ -342,8 +350,9 @@
   async function tickerExtendHandler() {
     if ($session.user) {
       const now = new Date().toISOString();
+      const expires = new Date(new Date(now).getTime() + parseInt($settings.Session?.lifetime));
       await post('/session/extend', now);
-      $session._expires = new Date(new Date(now).getTime() + parseInt($settings.Session?.lifetime));
+      $session._expires = expires;
     }
   }
 

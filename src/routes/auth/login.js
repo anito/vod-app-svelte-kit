@@ -38,7 +38,7 @@ export async function get({ locals, url }) {
   };
 }
 
-export async function post({ locals, request, url }) {
+export async function post({ locals, request }) {
   const data = await request.json();
   const lang = read(locale);
 

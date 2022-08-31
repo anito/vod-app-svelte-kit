@@ -18,7 +18,7 @@ function createStore() {
         for (let item in val) {
           ret[item] = (cur = current[item] || {}) && { ...cur, ...val[item] };
         }
-        return ret;
+        return { ...defaults, ...ret };
       }),
     set
   };
