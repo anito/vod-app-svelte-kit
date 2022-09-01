@@ -122,7 +122,10 @@
   class="item {className}"
   disabled={unmanagable}
   bind:this={item}
-  on:SMUI:action={() => dispatch('itemSelected', { video })}
+  on:SMUI:action={(e) => {
+    const ulId = e.target.closest('ul')?.getAttribute('id');
+    setTimeout(() => dispatch('itemSelected', { video, ulId }), 10);
+  }}
   {selected}
 >
   <Graphic

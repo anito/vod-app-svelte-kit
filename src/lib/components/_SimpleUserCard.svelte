@@ -2,6 +2,8 @@
   // @ts-nocheck
 
   import './_meta.scss';
+  import { goto } from '$app/navigation';
+  import { createEventDispatcher } from 'svelte';
   import { infos } from '$lib/stores';
   import { UserGraphic, Dot } from '$lib/components';
   import { Meta, Item, Text, PrimaryText, SecondaryText } from '@smui/list';
@@ -9,16 +11,24 @@
 
   export let selectionUserId;
   export let user;
+  export let query;
   export { className as class };
 
   let className = '';
 
+  const dispatch = createEventDispatcher();
+
   $: _infos = ($infos?.has(user.id) && $infos.get(user.id).params) || [];
   $: hasPrivileges = user.role === ADMIN || user.role === SUPERUSER;
   $: isSuperuser = user.role === SUPERUSER;
+
+  function itemSelectHandler(e) {
+    setTimeout(() => dispatch('itemSelected', { user, target: e.target }), 10);
+    goto(`/users/${user.id}${query}`);
+  }
 </script>
 
-<Item class={className} selected={selectionUserId == user.id}>
+<Item class={className} selected={selectionUserId == user.id} on:SMUI:action={itemSelectHandler}>
   <UserGraphic
     size="40"
     {user}

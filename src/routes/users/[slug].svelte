@@ -204,27 +204,27 @@
     align-items: center;
     grid-template-areas:
       'toolbar toolbar'
-      'one one';
+      'main main';
     grid-template-columns: 4fr 4fr;
     align-items: initial;
   }
   :global(.user).user-grid {
     grid-template-areas:
       'toolbar toolbar'
-      'one one';
+      'main main';
     grid-template-columns: 1fr 1fr;
   }
   :global(.time).user-grid {
     grid-template-areas:
       'toolbar toolbar'
-      'one two';
+      'main main';
     grid-template-columns: 4fr 4fr;
     align-items: initial;
   }
   :global(.mail).user-grid {
     grid-template-areas:
       'toolbar toolbar'
-      'one one';
+      'main main';
     grid-template-columns: 4fr 4fr;
     align-items: initial;
   }

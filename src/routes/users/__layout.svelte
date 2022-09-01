@@ -98,9 +98,13 @@
   let redirectDialog;
   let selectedIndex;
   let uploadedData;
+  let focusItemAtIndex;
+  let items;
+  let list;
 
   $: active = $page.url.searchParams.get('active');
   $: selectionUserId = $page.params.slug || $session.user?.id;
+  $: selectionUserId && items && scrollIntoView();
   $: currentUser = ((id) => $users?.find((usr) => usr.id === id))(selectionUserId);
   $: ((usr) => {
     username = usr?.name;
@@ -335,6 +339,24 @@
     });
     return searchParams.toString();
   }
+
+  function receiveListMethods({ detail }) {
+    ({ focusItemAtIndex, items } = { ...detail });
+  }
+
+  function itemSelectedHandler({ detail }) {
+    const { target } = detail;
+    // target.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function scrollIntoView() {
+    const options = { block: 'nearest', behavior: 'smooth' };
+    setTimeout(() => {
+      const item = items.find((item) => item.selected);
+      item?.element.scrollIntoView(options);
+      // item.selected && focusItemAtIndex(index)
+    }, 100);
+  }
 </script>
 
 <Layout sidebar {segment}>
@@ -363,11 +385,22 @@
         </Textfield>
       </div>
       {#if filteredUsers.length}
-        <List class="users-list mb-24" twoLine avatarList singleSelection bind:selectedIndex>
+        <List
+          class="mb-24"
+          twoLine
+          avatarList
+          singleSelection
+          bind:this={list}
+          on:SMUIList:mount={receiveListMethods}
+        >
           {#each filteredUsers as user (user.id)}
-            <a sveltekit:prefetch href={`/users/${user.id}${query}`}>
-              <SimpleUserCard class="flex" {selectionUserId} {user} />
-            </a>
+            <SimpleUserCard
+              class="flex"
+              on:itemSelected={itemSelectedHandler}
+              {selectionUserId}
+              {user}
+              {query}
+            />
           {/each}
         </List>
       {:else}

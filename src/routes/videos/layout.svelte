@@ -1,6 +1,7 @@
 <script>
   // @ts-nocheck
 
+  import { fly } from 'svelte/transition';
   import { GridItem, LayoutGrid } from '$lib/components';
   import { page } from '$app/stores';
 
@@ -17,7 +18,7 @@
     </div>
   </GridItem>
   <GridItem name="content" let:inner hcenter>
-    <div class={inner}>
+    <div in:fly={{ duration: 800, opacity: 0 }} class={inner}>
       <slot />
     </div>
   </GridItem>

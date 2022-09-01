@@ -6,7 +6,7 @@
   import './_date-range-picker.scss';
   import { page, session } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { onMount, getContext } from 'svelte';
+  import { onMount, getContext, tick } from 'svelte';
   import { createRedirectSlug, ADMIN, SUPERUSER } from '$lib/utils';
   import List, { Item, Graphic, Separator, Text } from '@smui/list';
   import Button, { Label, Icon as ButtonIcon } from '@smui/button';
@@ -35,6 +35,7 @@
   import Dialog, { Title, Content, Actions, InitialFocus } from '@smui/dialog';
   import Radio from '@smui/radio';
   import { _, locale } from 'svelte-i18n';
+  import { list } from 'postcss';
 
   export let selectionUserId;
 
@@ -48,8 +49,10 @@
     { title: 'text.3-months', value: 90 },
     { title: 'text.custom', value: 'custom' }
   ];
+  const lists = new Set();
 
   let root;
+  let mainEl;
   let schedulingVideoId;
   let scheduleDialog;
   let removeDialog;
@@ -69,8 +72,7 @@
   let schedulingVideo = '';
   let expires;
   let isExpired;
-  let focusItemAtIndex;
-  let items;
+  let itemsList = {};
 
   $: dateFormat = $locale.indexOf('de') != -1 ? 'dd. MMM yyyy' : 'yyyy-MM-dd';
   $: currentUserIndex = ((id) => $users.findIndex((usr) => usr.id === id))(selectionUserId);
@@ -197,9 +199,10 @@
     }
   }
 
-  function itemSelectedHandler(e) {
-    let { video } = e.detail;
+  function itemSelectedHandler({ detail }) {
+    const { video } = detail;
     selectionVideoId = video.id == selectionVideoId ? null : video.id;
+    scrollIntoView();
   }
 
   function onApplyHandler({ detail }) {
@@ -293,16 +296,17 @@
     }
   }
 
-  function onSelection(e) {
-    //
+  function onDateRangeSelected(e) {
+    // console.log('onDateRangeSelected');
   }
 
   function toggleDataPicker(id, open) {
     selectionVideoId = id && root.classList.toggle('datapicker--open', open);
   }
 
-  function receiveListMethods(e) {
-    ({ focusItemAtIndex, items } = { ...e.detail });
+  function receiveListMethods({ items, listName }) {
+    lists.add(listName);
+    itemsList[listName] = items;
   }
 
   function editVideo(video) {
@@ -310,224 +314,245 @@
       data: [video]
     });
   }
+
+  function setMainElement(el) {
+    mainEl = el;
+  }
+
+  function scrollIntoView() {
+    const options = { block: 'nearest', behavior: 'smooth' };
+    setTimeout(() => {
+      lists.forEach((name) => {
+        let item;
+        item = itemsList[name].find((item) => item.selected);
+        item?.element.scrollIntoView(options);
+      });
+    }, 100);
+  }
 </script>
 
-<div
-  class="grid-item user-videos"
-  class:no-user-selected={!currentUser}
-  class:no-videos={!userVideos?.length || hasCurrentPrivileges}
->
-  <Component variant="sm">
-    <div slot="header">
-      <Header mdc h="5">
-        {#if currentUser}
-          <div class="flex">
-            <span><strong>{username}</strong></span>
-            <span class="uppercase flex-auto" style="font-weight: 400; text-align: right;"
-              >| {$_('text.booked-classes')}</span
-            >
-          </div>
-        {/if}
-      </Header>
-    </div>
-    {#if currentUser}
-      <List
-        class="video-list mb-24"
-        threeLine
-        avatarList
-        singleSelection
-        bind:selectedIndex
-        on:SMUIList:mount={receiveListMethods}
-      >
-        {#if !hasCurrentPrivileges}
-          {#if userVideos?.length}
-            {#each userVideos as video (video.id)}
+<div class="main-grid" use:setMainElement>
+  <div
+    class="grid-item user-videos"
+    class:no-user-selected={!currentUser}
+    class:no-videos={!userVideos?.length || hasCurrentPrivileges}
+  >
+    <Component variant="sm">
+      <div slot="header">
+        <Header mdc h="5">
+          {#if currentUser}
+            <div class="flex">
+              <span><strong>{username}</strong></span>
+              <span class="uppercase flex-auto" style="font-weight: 400; text-align: right;"
+                >| {$_('text.booked-classes')}</span
+              >
+            </div>
+          {/if}
+        </Header>
+      </div>
+      {#if currentUser}
+        <List
+          class="video-list mb-24"
+          threeLine
+          avatarList
+          singleSelection
+          bind:selectedIndex
+          on:SMUIList:mount={(e) =>
+            receiveListMethods({ ...e.detail, listName: 'user-video-list' })}
+        >
+          {#if !hasCurrentPrivileges}
+            {#if userVideos?.length}
+              {#each userVideos as video (video.id)}
+                <SimpleVideoCard
+                  isUserVideo
+                  threeLine
+                  class="user-video video-list-item"
+                  on:datapicker={(e) =>
+                    toggleDataPicker(
+                      e.detail.id,
+                      selectionVideoId != e.detail.id ||
+                        !root.classList.contains('datapicker--open')
+                    )}
+                  on:itemSelected={itemSelectedHandler}
+                  selected={selectionVideoId === video.id}
+                  emptyPoster="/empty-poster.jpg"
+                  {video}
+                  {selectionUserId}
+                >
+                  <IconButton
+                    class="self-center mr-2"
+                    color="primary"
+                    on:click={async () => await goto(`/videos/${video.id}`)}
+                  >
+                    <Icon class="material-icons">smart_display</Icon>
+                  </IconButton>
+                  {#if hasPrivileges}
+                    <Button
+                      class="close-action-button button-shaped-round flex self-center"
+                      variant="unelevated"
+                      on:click={() =>
+                        toggleDataPicker(
+                          video.id,
+                          selectionVideoId != video.id ||
+                            !root.classList.contains('datapicker--open')
+                        )}
+                    >
+                      <Icon class="material-icons">
+                        {isDatapickerOpen && selectionVideoId == video.id
+                          ? 'close'
+                          : 'insert_invitation'}
+                      </Icon>
+                      <Label>{$_('text.scheduler')}</Label>
+                    </Button>
+                    <IconButton
+                      class="delete-action-button delete ml-2"
+                      on:click={(e) => openRemoveDialog(e, video)}
+                    >
+                      <Icon class="material-icons">remove_circle</Icon>
+                    </IconButton>
+                  {/if}
+                </SimpleVideoCard>
+              {/each}
+            {:else if currentUser}
+              <div class="flex flex-1 flex-col self-center text-center">
+                <div class="m-5">
+                  {@html $_('text.user-has-no-videos', {
+                    values: { name: username }
+                  })}
+                </div>
+              </div>
+            {/if}
+          {:else}
+            <div class="flex flex-1 flex-col self-center text-center">
+              <div class="m-5">
+                {@html $_('text.full-access-user', {
+                  values: { role: currentRole, name: username }
+                })}
+              </div>
+            </div>
+          {/if}
+        </List>
+      {:else}
+        <div class="flex-1 flex-col">
+          <span class="empty-selection no-user-selection">{$_('text.empty-user-selection')}</span>
+        </div>
+      {/if}
+    </Component>
+  </div>
+  {#if !isDatapickerOpen}
+    <div class="grid-item videos" class:no-videos={!noneUserVideos.length}>
+      <Component variant="sm">
+        <div slot="header">
+          <Header mdc h="5">
+            <div class="uppercase" style="font-weight: 400; text-align: right;">
+              {$_('text.more-classes')}
+            </div></Header
+          >
+        </div>
+        <List
+          class="video-list mb-24"
+          on:SMUIList:mount={(e) =>
+            receiveListMethods({ ...e.detail, listName: 'non-user-video-list' })}
+          twoLine
+          avatarList
+          singleSelection
+          bind:selectedIndex={selectedNoneUserIndex}
+        >
+          {#if noneUserVideos?.length}
+            {#each noneUserVideos as video (video.id)}
               <SimpleVideoCard
-                isUserVideo
-                threeLine
-                class="user-video video-list-item"
-                on:datapicker={(e) =>
-                  toggleDataPicker(
-                    e.detail.id,
-                    selectionVideoId != e.detail.id || !root.classList.contains('datapicker--open')
-                  )}
                 on:itemSelected={itemSelectedHandler}
+                let:unmanagable
+                class="video"
+                disabled={(hasCurrentPrivileges || hasPrivileges) && isUnmanagableNoneUserList}
                 selected={selectionVideoId === video.id}
                 emptyPoster="/empty-poster.jpg"
                 {video}
                 {selectionUserId}
               >
-                <IconButton
-                  class="self-center mr-2"
-                  color="primary"
-                  on:click={async () => await goto(`/videos/${video.id}`)}
-                >
-                  <Icon class="material-icons">smart_display</Icon>
-                </IconButton>
                 {#if hasPrivileges}
-                  <Button
-                    class="close-action-button button-shaped-round flex self-center"
-                    variant="unelevated"
-                    on:click={() =>
-                      toggleDataPicker(
-                        video.id,
-                        selectionVideoId != video.id || !root.classList.contains('datapicker--open')
-                      )}
-                  >
-                    <Icon class="material-icons">
-                      {isDatapickerOpen && selectionVideoId == video.id
-                        ? 'close'
-                        : 'insert_invitation'}
-                    </Icon>
-                    <Label>{$_('text.scheduler')}</Label>
-                  </Button>
                   <IconButton
-                    class="delete-action-button delete ml-2"
-                    on:click={(e) => openRemoveDialog(e, video)}
+                    class="self-center mr-2"
+                    color="primary"
+                    style=""
+                    on:click={() => editVideo(video)}
                   >
-                    <Icon class="material-icons">remove_circle</Icon>
+                    <Icon class="material-icons">edit</Icon>
+                  </IconButton>
+                  <IconButton
+                    class="self-center mr-2"
+                    color="primary"
+                    style=""
+                    on:click={async () => await goto(`/videos/${video.id}`)}
+                  >
+                    <Icon class="material-icons">smart_display</Icon>
+                  </IconButton>
+                  <IconButton
+                    disabled={hasCurrentPrivileges || unmanagable || video.teaser}
+                    class="add-action-button add primary"
+                    on:click={() => openScheduleDialog(video)}
+                  >
+                    <Icon class="material-icons">add_circle</Icon>
                   </IconButton>
                 {/if}
               </SimpleVideoCard>
             {/each}
-          {:else if currentUser}
-            <div class="flex flex-1 flex-col self-center text-center">
-              <div class="m-5">
-                {@html $_('text.user-has-no-videos', {
-                  values: { name: username }
-                })}
-              </div>
-            </div>
+          {:else}
+            <li class="flex flex-1 flex-col self-center text-center">
+              <div class="m-5">{$_('text.no-more-videos-available')}</div>
+            </li>
           {/if}
-        {:else}
-          <div class="flex flex-1 flex-col self-center text-center">
-            <div class="m-5">
-              {@html $_('text.full-access-user', {
-                values: { role: currentRole, name: username }
-              })}
-            </div>
-          </div>
-        {/if}
-      </List>
-    {:else}
-      <div class="flex-1 flex-col">
-        <span class="empty-selection no-user-selection">{$_('text.empty-user-selection')}</span>
-      </div>
-    {/if}
-  </Component>
-</div>
-{#if !isDatapickerOpen}
-  <div class="grid-item videos" class:no-videos={!noneUserVideos.length}>
-    <Component variant="sm">
-      <div slot="header">
-        <Header mdc h="5">
-          <div class="uppercase" style="font-weight: 400; text-align: right;">
-            {$_('text.more-classes')}
-          </div></Header
-        >
-      </div>
-      <List
-        class="video-list mb-24"
-        on:SMUIList:mount={receiveListMethods}
-        twoLine
-        avatarList
-        singleSelection
-        bind:selectedIndex={selectedNoneUserIndex}
-      >
-        {#if noneUserVideos?.length}
-          {#each noneUserVideos as video (video.id)}
-            <SimpleVideoCard
-              on:itemSelected={itemSelectedHandler}
-              let:unmanagable
-              class="video"
-              disabled={(hasCurrentPrivileges || hasPrivileges) && isUnmanagableNoneUserList}
-              selected={selectionVideoId === video.id}
-              emptyPoster="/empty-poster.jpg"
-              {video}
-              {selectionUserId}
+        </List>
+      </Component>
+    </div>
+  {:else}
+    <div class="grid-item time">
+      <Component variant="sm">
+        <div slot="header">
+          <div class="">
+            <Header mdc h="5">{readout}</Header>
+            <button
+              on:click={() => toggleDataPicker(selectionVideoId, false)}
+              class="button-close"
+              variant="unelevated"
             >
-              {#if hasPrivileges}
-                <IconButton
-                  class="self-center mr-2"
-                  color="primary"
-                  style=""
-                  on:click={() => editVideo(video)}
-                >
-                  <Icon class="material-icons">edit</Icon>
-                </IconButton>
-                <IconButton
-                  class="self-center mr-2"
-                  color="primary"
-                  style=""
-                  on:click={async () => await goto(`/videos/${video.id}`)}
-                >
-                  <Icon class="material-icons">smart_display</Icon>
-                </IconButton>
-                <IconButton
-                  disabled={hasCurrentPrivileges || unmanagable || video.teaser}
-                  class="add-action-button add primary"
-                  on:click={() => openScheduleDialog(video)}
-                >
-                  <Icon class="material-icons">add_circle</Icon>
-                </IconButton>
-              {/if}
-            </SimpleVideoCard>
-          {/each}
-        {:else}
-          <li class="flex flex-1 flex-col self-center text-center">
-            <div class="m-5">{$_('text.no-more-videos-available')}</div>
-          </li>
-        {/if}
-      </List>
-    </Component>
-  </div>
-{:else}
-  <div class="grid-item time">
-    <Component variant="sm">
-      <div slot="header">
-        <div class="">
-          <Header mdc h="5">{readout}</Header>
-          <button
-            on:click={() => toggleDataPicker(selectionVideoId, false)}
-            class="button-close"
-            variant="unelevated"
-          >
-            <Icon class="material-icons" style="vertical-align: middle;">close</Icon>
-          </button>
+              <Icon class="material-icons" style="vertical-align: middle;">close</Icon>
+            </button>
+          </div>
         </div>
-      </div>
-      <DateRangePicker
-        on:apply={onApplyHandler}
-        on:selection={onSelection}
-        bind:readout
-        {firstDayOfWeek}
-        {startDate}
-        {endDate}
-        minDate={subYears(startOfYear(new Date()), 2)}
-        maxDate={addYears(endOfYear(new Date()), 2)}
-        {dateFormat}
-        {localeObject}
-        customHeaderHeight
-        class="sm-header"
-        disabled={!selectionVideoId}
-        resetTrigger={selectionVideoId}
-        monthDropdown={true}
-        weekGuides
-        weekNumbers
-        todayBtn
-        twoPages
-        resetViewBtn
-        timePicker
-        timePickerSeconds
-        timePickerControls
-        todayBtnText={$_('text.today')}
-        cancelBtnText={$_('text.reset')}
-        applyBtnText={$_('text.apply')}
-        actionBtnClass="picker-btn mdc-button mdc-ripple-upgraded mdc-button--unelevated"
-      />
-    </Component>
-  </div>
-{/if}
+        <DateRangePicker
+          on:apply={onApplyHandler}
+          on:selection={onDateRangeSelected}
+          bind:readout
+          {firstDayOfWeek}
+          {startDate}
+          {endDate}
+          minDate={subYears(startOfYear(new Date()), 2)}
+          maxDate={addYears(endOfYear(new Date()), 2)}
+          {dateFormat}
+          {localeObject}
+          customHeaderHeight
+          class="sm-header"
+          disabled={!selectionVideoId}
+          resetTrigger={selectionVideoId}
+          monthDropdown={true}
+          weekGuides
+          weekNumbers
+          todayBtn
+          twoPages
+          resetViewBtn
+          timePicker
+          timePickerSeconds
+          timePickerControls
+          todayBtnText={$_('text.today')}
+          cancelBtnText={$_('text.reset')}
+          applyBtnText={$_('text.apply')}
+          actionBtnClass="picker-btn mdc-button mdc-ripple-upgraded mdc-button--unelevated"
+        />
+      </Component>
+    </div>
+  {/if}
+</div>
 <Dialog
   bind:this={scheduleDialog}
   aria-labelledby="list-selection-title"
@@ -601,6 +626,19 @@
 </Dialog>
 
 <style>
+  .main-grid {
+    grid-area: main;
+    display: grid;
+    grid-template-rows: var(--toolbar-h) auto;
+    grid-gap: var(--grid-gap);
+    align-items: center;
+    grid-template-areas: 'one two';
+    grid-template-columns: 4fr 4fr;
+    grid-template-rows: auto;
+    align-items: initial;
+    background-color: var(--back);
+    overflow: auto;
+  }
   .grid-item {
     background: var(--back-grid-item);
   }
