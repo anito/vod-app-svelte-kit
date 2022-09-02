@@ -1,6 +1,4 @@
 <script>
-  // @ts-nocheck
-
   import './_meta.scss';
   import { goto } from '$app/navigation';
   import { createEventDispatcher } from 'svelte';
@@ -9,9 +7,18 @@
   import { Meta, Item, Text, PrimaryText, SecondaryText } from '@smui/list';
   import { ADMIN, SUPERUSER } from '$lib/utils';
 
-  export let selectionUserId;
-  export let user;
-  export let query;
+  export /**
+   * @type {any}
+   */
+  let selectionUserId;
+  export /**
+   * @type {{id: any, role: string}}
+   */
+  let user;
+  export /**
+   * @type {any}
+   */
+  let query;
   export { className as class };
 
   let className = '';
@@ -30,14 +37,14 @@
 
 <Item class={className} selected={selectionUserId == user.id} on:SMUI:action={itemSelectHandler}>
   <UserGraphic
-    size="40"
+    size={40}
     {user}
     badge={hasPrivileges && {
       icon: 'admin_panel_settings',
       color: isSuperuser ? 'rgb(26, 4, 4)' : 'rgb(206, 4, 4)',
       position: 'TOP_RIGHT'
     }}
-    borderSize="1"
+    borderSize={1}
     borderColor="#c5c5c5"
     title
   />
@@ -50,7 +57,7 @@
   {/if}
   <div class="infos">
     {#each _infos as _info}
-      <Dot size="5" color={_info.flag} />
+      <Dot size={5} color={_info.flag} />
     {/each}
   </div>
 </Item>

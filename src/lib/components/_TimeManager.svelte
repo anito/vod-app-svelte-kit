@@ -50,6 +50,8 @@
     { title: 'text.custom', value: 'custom' }
   ];
   const lists = new Set();
+  const USERVIDEOSLIST = 'user-video-list';
+  const NONUSERVIDEOSLIST = 'non-user-videos-list';
 
   let root;
   let mainEl;
@@ -61,9 +63,6 @@
   let firstDayOfWeek = 'monday';
   let snackbar;
   let message;
-  let filtered;
-  let group;
-  let currentUser;
   let selectedIndex;
   let selectedNoneUserIndex;
   let selectionVideoId;
@@ -74,7 +73,7 @@
   let isExpired;
   let itemsList = {};
 
-  $: dateFormat = $locale.indexOf('de') != -1 ? 'dd. MMM yyyy' : 'yyyy-MM-dd';
+  $: dateFormat = $locale.startsWith('de') ? 'dd. MMM yyyy' : 'yyyy-MM-dd';
   $: currentUserIndex = ((id) => $users.findIndex((usr) => usr.id === id))(selectionUserId);
   $: userVideos = ((idx) => {
     const vids = () => {
@@ -91,24 +90,23 @@
       }
     };
     return vids()?.map((v) => {
-      const globalVideoImageId = $videos.find((globalV) => globalV.id === v.id)?.image_id;
-      v.image_id = globalVideoImageId;
+      const videoImageId = $videos.find((video) => video.id === v.id)?.image_id;
+      v.image_id = videoImageId;
       return v;
     });
   })(currentUserIndex);
   $: (() => (selectionVideoId = null))(selectionUserId);
-  $: currentUser =
-    (filtered = ((id) => $users.filter((usr) => usr.id === id))(selectionUserId)) &&
-    filtered.length &&
-    filtered[0];
-  $: username = currentUser?.name || '';
-  $: currentRole = currentUser?.role;
+  $: currentUser = ((id) => $users.find((usr) => usr.id === id))(selectionUserId);
+  $: name = currentUser?.name || '';
+  $: role = currentUser?.role;
+  $: jwt = currentUser?.jwt;
+  $: active = currentUser?.active;
   $: joinData =
     (selectedVideo = currentUser?.videos?.find((v) => v.id === selectionVideoId)) &&
     selectedVideo._joinData;
   $: startDate = (joinData && joinData.start && parseISO(joinData.start)) || endOfWeek(new Date(0));
   $: endDate = (joinData && joinData.end && parseISO(joinData.end)) || endOfWeek(new Date(0));
-  $: expires = currentUser && currentUser.expires;
+  $: expires = currentUser?.expires;
   $: isExpired = (expires && expires * 1000 < +new Date().getTime()) || false;
   $: noneUserVideos = ((videos) => {
     if (hasPrivileges) {
@@ -140,7 +138,7 @@
       $infos.get(selectionUserId).params.filter((info) => info.type === 'issue')) ||
     [];
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
-  $: hasCurrentPrivileges = currentRole === ADMIN || currentRole === SUPERUSER;
+  $: hasCurrentPrivileges = role === ADMIN || role === SUPERUSER;
 
   onMount(() => {
     root = document.documentElement;
@@ -216,8 +214,8 @@
 
   async function saveTime(id, start, end) {
     let associated = userVideos.filter((v) => v.id != id).map((v) => ({ id: v.id }));
-    let currentVideo = userVideos.filter((v) => v.id == id);
-    let joinData = (currentVideo.length && currentVideo[0]._joinData) || {};
+    let currentVideo = userVideos.find((v) => v.id == id);
+    let joinData = currentVideo?._joinData || {};
 
     let data = {
       videos: [
@@ -230,8 +228,14 @@
     };
 
     await saveUser(data).then((res) => {
+      let idx;
+
       if (res?.success) {
         handleSuccess(res, $_('text.time-slot-updated'));
+        setTimeout(() => {
+          idx = userVideos.findIndex((v) => v.id == selectionVideoId);
+          idx !== -1 && itemsList[USERVIDEOSLIST].focusItemAtIndex(idx);
+        }, 500);
       } else {
         startDate = startDate;
         handleError(res);
@@ -304,9 +308,9 @@
     selectionVideoId = id && root.classList.toggle('datapicker--open', open);
   }
 
-  function receiveListMethods({ items, listName }) {
+  function receiveListMethods({ focusItemAtIndex, items, listName }) {
     lists.add(listName);
-    itemsList[listName] = items;
+    itemsList[listName] = { items, focusItemAtIndex };
   }
 
   function editVideo(video) {
@@ -323,8 +327,7 @@
     const options = { block: 'nearest', behavior: 'smooth' };
     setTimeout(() => {
       lists.forEach((name) => {
-        let item;
-        item = itemsList[name].find((item) => item.selected);
+        let item = itemsList[name].items.find((item) => item.selected);
         item?.element.scrollIntoView(options);
       });
     }, 100);
@@ -342,7 +345,7 @@
         <Header mdc h="5">
           {#if currentUser}
             <div class="flex">
-              <span><strong>{username}</strong></span>
+              <span><strong>{name}</strong></span>
               <span class="uppercase flex-auto" style="font-weight: 400; text-align: right;"
                 >| {$_('text.booked-classes')}</span
               >
@@ -357,8 +360,7 @@
           avatarList
           singleSelection
           bind:selectedIndex
-          on:SMUIList:mount={(e) =>
-            receiveListMethods({ ...e.detail, listName: 'user-video-list' })}
+          on:SMUIList:mount={(e) => receiveListMethods({ ...e.detail, listName: USERVIDEOSLIST })}
         >
           {#if !hasCurrentPrivileges}
             {#if userVideos?.length}
@@ -417,7 +419,7 @@
               <div class="flex flex-1 flex-col self-center text-center">
                 <div class="m-5">
                   {@html $_('text.user-has-no-videos', {
-                    values: { name: username }
+                    values: { name: name }
                   })}
                 </div>
               </div>
@@ -426,7 +428,7 @@
             <div class="flex flex-1 flex-col self-center text-center">
               <div class="m-5">
                 {@html $_('text.full-access-user', {
-                  values: { role: currentRole, name: username }
+                  values: { role, name }
                 })}
               </div>
             </div>
@@ -452,7 +454,7 @@
         <List
           class="video-list mb-24"
           on:SMUIList:mount={(e) =>
-            receiveListMethods({ ...e.detail, listName: 'non-user-video-list' })}
+            receiveListMethods({ ...e.detail, listName: NONUSERVIDEOSLIST })}
           twoLine
           avatarList
           singleSelection
@@ -570,7 +572,7 @@
           <Text>{$_(timespan.title)}</Text>
         </Item>
       {/each}
-      {#if !currentUser.jwt || isExpired || !currentUser.active}
+      {#if !jwt || isExpired || !active}
         <div class="mt-3">
           <Icon class="material-icons leading">warning</Icon>
           <p>

@@ -1,6 +1,4 @@
 <script>
-  // @ts-nocheck
-
   import * as api from '$lib/api';
   import { page, session } from '$app/stores';
   import { onMount, setContext } from 'svelte';
@@ -12,18 +10,24 @@
   import { goto } from '$app/navigation';
 
   let selectedMode = 'edit';
+  /**
+   * @type {any}
+   */
   let userExpires;
   /**
-   * @type {null}
+   * @type {boolean}
    */
   let hasExpired;
-  let token;
+  /**
+   * @type {string}
+   */
+  let jwt;
   /**
    * @type {string}
    */
   let magicLink;
   /**
-   * @type {{ role: string; name: any; }}
+   * @type {{ role: string; name: any; jwt: string; expires: boolean}}
    */
   let currentUser;
   /**
@@ -31,7 +35,7 @@
    */
   let username;
   /**
-   * @type {bool}
+   * @type {boolean}
    */
   let waitForSettings = false;
 
@@ -46,14 +50,14 @@
   $: ((user) => {
     if (!user || isCurrentSuperUser) {
       userExpires = null;
-      hasExpired = null;
-      token = '';
+      hasExpired = true;
+      jwt = '';
       magicLink = '';
     } else {
       userExpires = user.expires;
       hasExpired = (userExpires && userExpires * 1000 < +new Date().getTime()) || false;
-      token = user.jwt;
-      magicLink = token && `${$page.url.origin}/login?token=${token}`;
+      jwt = user.jwt;
+      magicLink = jwt && `${$page.url.origin}/login?token=${jwt}`;
     }
   })(currentUser);
   $: hidden =
@@ -64,7 +68,7 @@
       : false;
   $: waitForSettings &&
     ((tab) => {
-      if (!isNaN(parseInt(tab))) {
+      if (!isNaN(tab)) {
         const search =
           tab === 0
             ? `?tab=${TABS[tab]}`
@@ -96,6 +100,9 @@
     };
   });
 
+  /**
+   * @param {any} e
+   */
   async function addUserHandler(e) {
     const searchParams = new URLSearchParams($page.url.searchParams.toString());
     if (!searchParams.has('mode')) {
@@ -106,6 +113,9 @@
     await goto(`${$page.url.pathname}?${searchParams.toString()}`);
   }
 
+  /**
+   * @param {string} search
+   */
   function redirect(search) {
     let pathname = $page.url.pathname;
     if (!$session.user) {
@@ -116,7 +126,7 @@
       pathname = pathname.replace(/^(\/users\/)([\S]+)$/g, `$1${$session.user.id}`);
     }
     if (!$page.url.href.endsWith(`${pathname}${search}`)) {
-      setTimeout(() => goto(`${pathname}${search}`), 100);
+      setTimeout(() => goto(`${pathname}${search}`), 1500);
     }
   }
 

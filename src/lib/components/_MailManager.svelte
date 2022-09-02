@@ -1,6 +1,4 @@
 <script>
-  // @ts-nocheck
-
   import './_drawer.scss';
   import './_list.scss';
   import * as api from '$lib/api';
@@ -78,7 +76,7 @@
   const { getSnackbar, configSnackbar } = getContext('snackbar');
   const defaultActive = INBOX;
   const mailboxes = [INBOX, SENT];
-  const getStoreByEndpoint = (/** @type {string} */ endpoint) =>
+  const getStoreByEndpoint = (/** @type {string | null} */ endpoint) =>
     endpoint === INBOX ? inboxes : endpoint === SENT ? sents : null;
 
   let sort = 'DESC';
@@ -93,15 +91,19 @@
   let drawerOpen;
   let drawerOpenOnMount = true;
   /**
-   * @type {boolean | undefined}
+   * @type {null | undefined}
    */
   let selection;
   let unreadInboxes = 0;
-  let activeTemplate = false;
+  /**
+   * @type {string}
+   */
+  let activeTemplate = '';
   /**
    * @type {boolean}
    */
   let canSave;
+
   /**
    * @type {{} | undefined}
    */
@@ -109,22 +111,30 @@
   /**
    * @type {MailTemplate}
    */
-  let templateComponent;
+  let mailTemplate;
   /**
    * @type {import("@smui/dialog").DialogComponentDev}
    */
   let unsavedChangesDialog;
   /**
-   * @type {{ classList: { add: (arg0: string) => any; remove: (arg0: string) => any; }; getElementsByClassName: (arg0: string) => { (): any; new (): any; length: any; }; }}
+   * @type {HTMLElement}
    */
   let editable;
-  let editor = {};
   /**
-   * @type {undefined}
+   * @type {{id: any, node: HTMLElement | null, value: string, editable: HTMLElement | null} }
+   */
+  let editor = {
+    id: '',
+    node: null,
+    value: '',
+    editable: null
+  };
+  /**
+   * @type {string | null | undefined}
    */
   let pendingActiveTemplate;
   /**
-   * @type {string}
+   * @type {string | null}
    */
   let activeListItem;
   /**
@@ -139,7 +149,7 @@
   let currentSlug;
 
   export /**
-   * @type {null}
+   * @type {string | null}
    */
   let selectionUserId = null;
 
@@ -157,7 +167,7 @@
   $: dynamicTemplateData = currentUser && getTemplateData(activeTemplate);
   $: currentTemplate = $templates.find((tmpl) => tmpl.slug === activeTemplate) || null;
   $: currentTemplate && hasPrivileges ? setFab('send-mail') : setFab('');
-  $: dynamicTemplatePath = (slug) => {
+  $: dynamicTemplatePath = (/** @type {any} */ slug) => {
     currentUser;
     return createTemplatePath(slug);
   };
@@ -165,7 +175,7 @@
     ...dynamicTemplateData,
     ...dynamicTemplateData.validate(currentTemplate)
   };
-  $: currentStore = getStoreByEndpoint(activeItem);
+  $: currentStore = getStoreByEndpoint(/** @type {string} */ activeItem);
   $: currentSlug = (currentSlug !== $page.params.slug && $page.params.slug) || currentSlug; // because $page.param.slug triggers even on no obvious change!
   $: waitForData =
     currentSlug &&
@@ -254,6 +264,9 @@
     return mailboxes.find((box) => box === stripped);
   }
 
+  /**
+   * @param {string} slug
+   */
   function createTemplatePath(slug) {
     // don't operate directly on $page since its reactive and causes infinite load requests!
     // instead stringify URLSearchParams before manipulating
@@ -262,12 +275,18 @@
     return `${$page.url.pathname}?${params.toString()}`;
   }
 
+  /**
+   * @param {string} active
+   */
   async function gotoActiveBox(active) {
     if (!active) active = defaultActive;
     // fix non-existing page slug and append mailbox path to url
     return await goto(createTemplatePath(active));
   }
 
+  /**
+   * @param {string | null} value
+   */
   function setActiveListItem(value) {
     if (activeListItem != matchesTemplate(value) && canSave) {
       pendingActiveTemplate = value;
@@ -277,6 +296,9 @@
     }
   }
 
+  /**
+   * @param {CustomEvent} e
+   */
   async function toggleRead(e) {
     let selected = e.detail.selection;
     let _read = e.detail._read || !selected._read;
@@ -293,17 +315,28 @@
       });
   }
 
+  /**
+   * @param {import("svelte/store").Readable<any>} store
+   * @param {{ [x: string]: any; id: any; }} otherItem
+   * @param {string | any[]} keys
+   */
   function updateStoreFromOtherItem(store, otherItem, keys) {
     if (!keys) return;
     if (typeof keys === 'string') keys = [keys];
-    let newItem = {};
-    let storeItem = get(store).find((item) => item.id === otherItem.id);
+    /** @type {any} */
+    const newItem = {};
+    const storeItem = get(store).find(
+      (/** @type {{ id: any; }} */ item) => item.id === otherItem.id
+    );
     keys.forEach((key) => {
       newItem[key] = otherItem[key];
     });
     inboxes.put({ ...storeItem, ...newItem });
   }
 
+  /**
+   * @param {CustomEvent} e
+   */
   async function deleteMail(e) {
     const id = e.detail.selection?.id;
     if (!id) return;
@@ -331,15 +364,18 @@
   }
 
   function resetTemplate() {
-    templateComponent.resetTemplate();
+    mailTemplate.resetTemplate();
   }
 
   async function addTemplate() {
     if (!$templates.length) return;
-    let { name, slug } = generateName();
-    let items = [];
+    const { name, slug } = generateName();
+    /**
+     * @type {{ content: string; field_id: any; field: any; }[]}
+     */
+    const items = [];
     let template = $templates[0];
-    template.items.map((item) => {
+    template.items.map((/** @type {{ field: { id: any; }; }} */ item) => {
       items.push({
         content: '',
         field_id: item.field.id,
@@ -360,12 +396,18 @@
   }
 
   async function saveTemplate() {
+    /**
+     * @type {{ id: any; content: any; }[]}
+     */
     let items = [];
-    currentTemplate.items.map((item) => {
-      let content = working[item.field.name];
-      item.content = content;
-      items.push({ id: item.id, content });
-    });
+    currentTemplate.items.map(
+      (/** @type {{ field: { name: string | number; }; content: any; id: any; }} */ item) => {
+        // @ts-ignore
+        let content = working[item.field.name];
+        item.content = content;
+        items.push({ id: item.id, content });
+      }
+    );
     const res = await api.put(`templates/${currentTemplate.id}`, {
       data: { items },
       token: $session.user?.jwt
@@ -373,21 +415,27 @@
     configSnackbar(res.message);
     if (res.success) {
       templates.put({ ...currentTemplate });
-      templateComponent.createWorkingCopy();
+      mailTemplate.createWorkingCopy();
     }
     snackbar.open();
   }
 
   async function duplicateTemplate() {
     let { name, slug } = generateName(currentTemplate.name);
+    /**
+     * @type {{ content: any; field_id: any; field: any; }[]}
+     */
     let items = [];
-    currentTemplate.items.map((item) => {
-      items.push({
-        content: working[item.field.name],
-        field_id: item.field.id,
-        field: item.field
-      });
-    });
+    currentTemplate.items.map(
+      (/** @type {{ field: { name: string | number; id: any; }; }} */ item) => {
+        items.push({
+          // @ts-ignore
+          content: working[item.field.name],
+          field_id: item.field.id,
+          field: item.field
+        });
+      }
+    );
 
     let newTemplate = { name, slug, items };
     const res = await api.post('templates', {
@@ -411,14 +459,22 @@
     snackbar.open();
   }
 
+  /**
+   * @param {string} slug
+   */
   function getTemplateData(slug) {
     let data;
+    // @ts-ignore
     if ((data = templateSlugData.find((i) => i[slug])) && typeof data[slug] === 'function') {
+      // @ts-ignore
       return data[slug]();
     }
     return false;
   }
 
+  /**
+   * @param {{ detail: { action: string; }; }} e
+   */
   function unsavedChangesDialogCloseHandler(e) {
     if (e.detail.action === 'discard') {
       pendingActiveTemplate && (activeListItem = pendingActiveTemplate);
@@ -426,37 +482,54 @@
     }
   }
 
-  function overEditable(e) {
+  /**
+   * @param {MouseEvent | CustomEvent} e
+   */
+  function overEditable(/** @type { {currentTarget: HTMLElement}  | any} */ e) {
     editable = e.currentTarget;
-    editable && editable.classList.add('hover');
+    editable?.classList.add('hover');
   }
 
+  /**
+   * @param {Event} e
+   */
   function leaveEditable(e) {
-    if (editable && editable.getElementsByClassName('editor').length) return;
-    editable && editable.classList.remove('hover');
+    if (editable?.getElementsByClassName('editor').length) return;
+    editable?.classList.remove('hover');
   }
 
+  /**
+   * @param {CustomEvent<any>} e
+   * @param {any} id
+   */
   function makeEditable(e, id) {
     cancelEvent(e);
-    let range = document.createRange();
-    let selection = window.getSelection();
-    let children = editable.getElementsByClassName('editable');
-    let node = children.length && children[0];
+    const range = document.createRange();
+    const selection = window.getSelection();
+    /** @type  {HTMLCollectionOf<HTMLElement> | HTMLCollectionOf<Element> } */
+    const children = editable.getElementsByClassName('editable') || [];
+    if (children.length) {
+      /** @type {HTMLElement} */
+      // @ts-ignore
+      const node = children[0];
+      editor.node?.classList.remove('editor');
 
-    editor.node && editor.node.classList.remove('editor');
-
-    editor = { id, node, value: node.innerText, editable };
-    editor.node.classList.add('editor');
-    editor.node.setAttribute('contenteditable', 'true');
-    editor.node.addEventListener('keydown', keyListener);
-    editor.node.addEventListener('click', cancelEvent);
-    editor.node.focus();
-    range.selectNodeContents(editor.node);
-    range.collapse(false);
-    selection.removeAllRanges();
-    selection.addRange(range);
+      editor = { ...editor, id, node, value: node?.innerText, editable };
+      editor?.node.classList.add('editor');
+      editor?.node.setAttribute('contenteditable', 'true');
+      editor?.node.addEventListener('keydown', keyListener);
+      editor?.node.addEventListener('click', cancelEvent);
+      editor?.node.focus();
+      range.selectNodeContents(editor?.node);
+      range.collapse(false);
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    }
   }
 
+  /**
+   * @param {KeyboardEvent} e
+   */
   function keyListener(e) {
     e.stopPropagation();
     // console.log('code', e.code);
@@ -473,12 +546,18 @@
     }
   }
 
+  /**
+   * @param {MouseEvent | KeyboardEvent | CustomEvent} e
+   */
   function cancelEvent(e) {
     e.cancelBubble = true;
     if (e.stopPropagation) e.stopPropagation();
     if (e.preventDefault) e.preventDefault();
   }
 
+  /**
+   * @param {MouseEvent | KeyboardEvent | CustomEvent} e
+   */
   async function saveEditable(e) {
     cancelEvent(e);
     let success;
@@ -495,6 +574,9 @@
     editor.id = void 0;
   }
 
+  /**
+   * @param {MouseEvent | KeyboardEvent | CustomEvent} e
+   */
   function cancelEditable(e) {
     cancelEvent(e);
 
@@ -545,16 +627,23 @@
     return false;
   }
 
+  /**
+   * @param {string | any[] | undefined} [name]
+   * @return {any}
+   */
   function generateName(name) {
     let slug,
       newName = (name && name.concat($_('text.new-copy-label'))) || $_('text.new');
     if ($templates.find((tmpl) => tmpl.name === newName)) {
       return generateName(newName);
     }
-    slug = generateSlug(newName);
+    slug = generateSlug();
     return { name: newName, slug };
   }
 
+  /**
+   * @return {any}
+   */
   function generateSlug() {
     let slug = crypto.randomUUID();
     if ($templates.find((tmpl) => tmpl.slug === slug)) {
@@ -563,18 +652,30 @@
     return slug;
   }
 
+  /**
+   * @param {string | null} [value]
+   * @return {any}
+   */
   function matchesTemplate(value) {
     if (!value) return;
     let matches = value.match(/(template):([\w-:\d]+)/);
     if (matches) return matches[2];
   }
 
+  /**
+   * @param {string} [slug]
+   * @return {any}
+   */
   function templateStringFromSlug(slug) {
     return `template:${slug}`;
   }
 
+  /**
+   * @param {any} [template]
+   * @return {any}
+   */
   function validateData(template) {
-    let data = getTemplateData(template.slug);
+    let data = getTemplateData(template?.slug);
     if (data) {
       return data.validate();
     }
@@ -676,7 +777,7 @@
                     on:mouseleave={(e) => leaveEditable(e)}
                   >
                     <Graphic class="material-icons" aria-hidden="true">bookmark</Graphic>
-                    <Text class={!template.protected && 'editable'}>{template.name}</Text>
+                    <Text class={!template.protected ? 'editable' : ''}>{template.name}</Text>
                     {#if !template.protected}
                       {#if editor.id === template.id}
                         <Meta
@@ -697,7 +798,7 @@
                     {/if}
                     {#if currentUser && !validateData(template)}
                       <Meta class="absolute" style="left: 0;">
-                        <Dot size="5" />
+                        <Dot size={5} />
                       </Meta>
                     {/if}
                   </Item>
@@ -721,18 +822,18 @@
                 {#if currentTemplate}
                   <MailTemplateToolbar
                     {canSave}
-                    on:template:reset={(e) => resetTemplate(e)}
-                    on:template:save={(e) => saveTemplate(e)}
+                    on:template:reset={(e) => resetTemplate()}
+                    on:template:save={(e) => saveTemplate()}
                   />
                 {:else}
                   <MailToolbar
                     bind:selection
                     type={activeListItem}
                     {sort}
-                    on:mail:reload={(e) => refreshMailData(e)}
+                    on:mail:reload={(e) => refreshMailData()}
                     on:mail:toggleRead={(e) => toggleRead(e)}
                     on:mail:delete={(e) => deleteMail(e)}
-                    on:mail:sort={(e) => toggleSortByDate(e)}
+                    on:mail:sort={(e) => toggleSortByDate()}
                   />
                 {/if}
               </div>
@@ -740,7 +841,7 @@
                 {#if currentTemplate}
                   <div class="grid-item grid-full">
                     <MailTemplate
-                      bind:this={templateComponent}
+                      bind:this={mailTemplate}
                       bind:canSave
                       bind:working
                       template={{ ...currentTemplate, data }}
