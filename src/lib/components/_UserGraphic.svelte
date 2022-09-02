@@ -7,7 +7,11 @@
   /**
    * @type {{ role: string | null | undefined, avatar: any | undefined, email: string }}
    */
-  export let user;
+  export let user = {
+    role: '',
+    avatar: null,
+    email: ''
+  };
   export let dense = '';
   export let size = 24;
   export let borderSize = 0;
