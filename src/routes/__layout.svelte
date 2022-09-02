@@ -67,7 +67,7 @@
   import * as api from '$lib/api';
   import { goto } from '$app/navigation';
   import { page, session } from '$app/stores';
-  import { getContext, onMount, setContext } from 'svelte';
+  import { getContext, onMount, setContext, tick } from 'svelte';
   import isMobile from 'ismobilejs';
   import { Icons } from '$lib/components';
   import Button, { Icon } from '@smui/button';
@@ -107,6 +107,7 @@
   const redirectDelay = 300;
 
   let root;
+  let base;
   let message = '';
   let action = '';
   let path = '';
@@ -116,6 +117,8 @@
   let unsubscribeVideoEmitter;
   let emphasize;
   let snackbar;
+  let loaderBackgroundOpacity = 1;
+  let loaderColor = 'var(--prime)';
 
   setContext('fab', {
     setFab: (name) => fabs.update(name),
@@ -181,6 +184,12 @@
 
   onMount(() => {
     root = document.documentElement;
+    setTimeout(() => {
+      loaderBackgroundOpacity = 0.45;
+      loaderColor = 'var(--flash)';
+      base.classList.remove('opacity-0');
+    }, 200);
+
     snackbar = getSnackbar();
 
     initListener();
@@ -382,86 +391,94 @@
 {#if $session && $i18n}
   <Modal header={{ name: 'text.upload-type' }}>
     <Modal header={{ name: 'text.edit-uploaded-content' }} key="editor-modal">
-      <form
-        class="main-menu login-form"
-        on:submit|stopPropagation|preventDefault={submit}
-        method="post"
-        action="/login"
-      >
-        <Nav {segment} {page} {logo}>
-          {#if $session.user}
-            <NavItem href="/videos" title="Videothek" segment="videos">
-              <Icon class="material-icons" style="vertical-align: middle;">video_library</Icon>
-              <Label>{$_('nav.library')}</Label>
-            </NavItem>
-          {/if}
+      <div bind:this={base} class="transition opacity-0">
+        <form
+          class="main-menu login-form"
+          on:submit|stopPropagation|preventDefault={submit}
+          method="post"
+          action="/login"
+        >
+          <Nav {segment} {page} {logo}>
+            {#if $session.user}
+              <NavItem href="/videos" title="Videothek" segment="videos">
+                <Icon class="material-icons" style="vertical-align: middle;">video_library</Icon>
+                <Label>{$_('nav.library')}</Label>
+              </NavItem>
+            {/if}
 
-          {#if hasPrivileges}
-            <NavItem href={`/users/${uid}${usersTab}`} title="Administration" segment="users">
-              <Icon class="material-icons" style="vertical-align: middle;">settings</Icon>
-              <Label>Admin</Label>
-            </NavItem>
-          {/if}
+            {#if hasPrivileges}
+              <NavItem href={`/users/${uid}${usersTab}`} title="Administration" segment="users">
+                <Icon class="material-icons" style="vertical-align: middle;">settings</Icon>
+                <Label>Admin</Label>
+              </NavItem>
+            {/if}
 
-          {#if $session.user}
-            <NavItem segment="login">
-              <Button
-                variant="raised"
-                class="sign-in-out button-logout v-emph v-emph-bounce {emphasize}"
-                on:mouseenter={() => (emphasize = 'v-emph-active')}
-                on:mouseleave={() => (emphasize = '')}
-              >
-                <span class="button-first-line v-emph-primary v-emph-down">Logout</span>
-                <Label class="no-break v-emph-secondary v-emph-up">
-                  {@html loggedInButtonTextSecondLine}
-                </Label>
-              </Button>
-            </NavItem>
-          {:else}
-            <NavItem href="/login{search}" class="sign-in-out-item">
-              <Button color="secondary" variant="raised" class="sign-in-out">
-                <Label>{$_('nav.login')}</Label>
-              </Button>
-            </NavItem>
-          {/if}
+            {#if $session.user}
+              <NavItem segment="login">
+                <Button
+                  variant="raised"
+                  class="sign-in-out button-logout v-emph v-emph-bounce {emphasize}"
+                  on:mouseenter={() => (emphasize = 'v-emph-active')}
+                  on:mouseleave={() => (emphasize = '')}
+                >
+                  <span class="button-first-line v-emph-primary v-emph-down">Logout</span>
+                  <Label class="no-break v-emph-secondary v-emph-up">
+                    {@html loggedInButtonTextSecondLine}
+                  </Label>
+                </Button>
+              </NavItem>
+            {:else}
+              <NavItem href="/login{search}" class="sign-in-out-item">
+                <Button color="secondary" variant="raised" class="sign-in-out">
+                  <Label>{$_('nav.login')}</Label>
+                </Button>
+              </NavItem>
+            {/if}
 
-          {#if $session.user}
-            <NavItem title="Avatar" href="/users/{$session.user?.id}?tab=user">
-              <UserGraphic
-                borderSize="3"
-                borderColor="--prime"
-                dense
-                size="40"
-                user={$session.user}
-                badge={{
-                  icon: 'settings',
-                  color: '--prime',
-                  size: 'small',
-                  position: 'BOTTOM_RIGHT'
-                }}
-              />
-            </NavItem>
-          {:else}
-            <NavItem title="Avatar">
-              <UserGraphic borderSize="3" borderColor="--prime" dense size="40" fallback={person} />
-            </NavItem>
-          {/if}
+            {#if $session.user}
+              <NavItem title="Avatar" href="/users/{$session.user?.id}?tab=user">
+                <UserGraphic
+                  borderSize="3"
+                  borderColor="--prime"
+                  dense
+                  size="40"
+                  user={$session.user}
+                  badge={{
+                    icon: 'settings',
+                    color: '--prime',
+                    size: 'small',
+                    position: 'BOTTOM_RIGHT'
+                  }}
+                />
+              </NavItem>
+            {:else}
+              <NavItem title="Avatar">
+                <UserGraphic
+                  borderSize="3"
+                  borderColor="--prime"
+                  dense
+                  size="40"
+                  fallback={person}
+                />
+              </NavItem>
+            {/if}
 
-          <NavItem title={$_('text.choose-locale')}>
-            <LocaleSwitcher />
-          </NavItem>
+            <NavItem title={$_('text.choose-locale')}>
+              <LocaleSwitcher />
+            </NavItem>
 
-          <NavItem title={$_('text.choose-framework')} style="vertical-align: middle;">
-            <FrameworkSwitcher />
-          </NavItem>
-        </Nav>
-      </form>
-      <slot />
+            <NavItem title={$_('text.choose-framework')} style="vertical-align: middle;">
+              <FrameworkSwitcher />
+            </NavItem>
+          </Nav>
+        </form>
+        <slot />
+      </div>
     </Modal>
   </Modal>
 {/if}
-<LoadingModal backgroundColor="#ffffff" opacity=".45" wait="1000">
-  <DoubleBounce color="var(--flash)" unit="px" size="200" />
+<LoadingModal backgroundColor="#ffffff" opacity={loaderBackgroundOpacity} wait="1000">
+  <DoubleBounce color={loaderColor} unit="px" size="200" />
 </LoadingModal>
 
 <Snackbar
@@ -481,6 +498,9 @@
 </Snackbar>
 
 <style>
+  .transition {
+    transition: all 0.4s ease-in;
+  }
   .button-first-line {
     position: absolute;
     width: 84%;

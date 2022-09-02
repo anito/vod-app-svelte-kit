@@ -15,7 +15,7 @@
     </div>
   </GridItem>
   <GridItem name="content" let:inner>
-    <div in:fly={{ duration: 800, opacity: 0 }} class={inner}>
+    <div class={inner}>
       <slot />
     </div>
   </GridItem>

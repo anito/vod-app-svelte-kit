@@ -17,6 +17,7 @@
 
   const { getSnackbar, configSnackbar } = getContext('snackbar');
 
+  let root;
   let name = '';
   let email = '';
   let message = '';
@@ -49,6 +50,7 @@
   $: canSend = selected === 'message' ? message !== '' : filled;
 
   onMount(() => {
+    root = document.documentElement;
     snackbar = getSnackbar();
   });
 
