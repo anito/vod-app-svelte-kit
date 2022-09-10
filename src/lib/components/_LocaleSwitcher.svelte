@@ -21,7 +21,6 @@
   let localeMenuAnchor;
   let currentLocale;
 
-  $: session = $page.data.session;
   $: currentLocale = $locale;
 
   onMount(() => {

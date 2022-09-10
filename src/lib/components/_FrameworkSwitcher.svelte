@@ -34,7 +34,7 @@
   let menuAnchor;
 
   $: session = $page.data.session;
-  $: token = session?.user?.jwt;
+  $: token = session.user?.jwt;
   $: withToken = (token && `/login?token=${token}&redirect=`) || '';
   $: redirect = `${$frameworks.host}${withToken}${$page.url.pathname}${$page.url.search}`;
 

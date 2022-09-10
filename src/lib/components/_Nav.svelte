@@ -235,6 +235,8 @@
 
   @media (min-width: 991px) {
     .primary {
+      display: flex;
+      align-items: center;
       padding: 0;
       background: none;
     }
