@@ -100,8 +100,8 @@
     }
   });
 
-  // $: console.log('DATA.SESSION +layout.svelte', data.session);
-  // $: console.log('DATA.SESSION +layout.svelte $page (store)', $page.data.session);
+  $: console.log('DATA.SESSION +layout.svelte', data.session);
+  $: console.log('DATA.SESSION +layout.svelte $page (store)', $page.data.session);
   $: data && saveConfig(data.config);
   $: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
   $: token = $session.user?.jwt;
