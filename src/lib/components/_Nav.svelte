@@ -268,7 +268,7 @@
 
     .primary :global(li.nav-item) {
       display: inline !important;
-      padding-left: 5px;
+      padding-left: 10px;
     }
 
     .hide-if-desktop {

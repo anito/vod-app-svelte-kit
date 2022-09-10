@@ -70,11 +70,20 @@
     return () => unblock();
   });
 
-  function submitTest(node, options) {
+  /**
+   * see https://svelte.dev/repl/a153f60d46374c1eb3da1678f9337fea?version=3.50.1
+   * for progressivly enhanced forms
+   * @param node
+   * @param options
+   */
+  function submit(node, options) {
     let submitting = false;
 
     async function submitHandler(e) {
       e.preventDefault();
+
+      flash.update({ message: $_('text.one-moment') });
+
       const form = e.target;
       const data = {};
 
@@ -84,7 +93,7 @@
 
       // new FormData(form).forEach((value, key) => (data[key] = value));
 
-      await post('/auth/login', { email, password }).then(async (res) => {
+      await post(form.action, { email, password }).then(async (res) => {
         const { success, data } = { ...res };
 
         if (success) {
@@ -109,37 +118,6 @@
     node.addEventListener('submit', submitHandler);
 
     return () => node.removeEventListener('submit', submitHandler);
-  }
-
-  async function submit() {
-    block();
-    flash.update({ message: $_('text.one-moment') });
-
-    await post('/auth/login', { email, password }).then(async (res) => {
-      const { message } = { ...res.data };
-      let type;
-
-      if (res.success) {
-        type = 'success';
-        proxyEvent('ticker:start', { ...res.data });
-        await tick();
-        reset();
-      } else {
-        unblock();
-        type = 'error';
-        reset();
-
-        if (++loginAttempts > 3) invalidTokenUserDialog.setOpen(true);
-      }
-
-      flash.update({
-        type,
-        message,
-        timeout: 2000
-      });
-      configSnackbar(message);
-      snackbar.open();
-    });
 
     // TODO handle network errors
     // errors = res.errors;
@@ -189,14 +167,14 @@
     </TabBar>
   </div>
   <form
-    use:submitTest={{
+    use:submit={{
       start: () => {},
       error: () => {},
       end: () => {}
     }}
     method="POST"
     class="login-form"
-    action="/login"
+    action="/auth/login"
   >
     <div class="login-grid {rows}">
       {#if active === tabNames[0]}

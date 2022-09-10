@@ -100,6 +100,8 @@
     }
   });
 
+  // $: console.log('DATA.SESSION +layout.svelte', data.session);
+  // $: console.log('DATA.SESSION +layout.svelte $page (store)', $page.data.session);
   $: data && saveConfig(data.config);
   $: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
   $: token = $session.user?.jwt;
@@ -227,7 +229,7 @@
   }
 
   function submit(e) {
-    if ($session.user) {
+    if ($page.data.session.user) {
       loggedInButtonTextSecondLine = $_('text.one-moment');
       proxyEvent('ticker:end', { user: $session.user });
     }
@@ -258,9 +260,11 @@
 
   function handleSnackbarClosed() {}
 
-  function tickerStartHandler(e) {
+  async function tickerStartHandler(e) {
     let { user, groups, renewed } = { ...e.detail };
     const { id, name, jwt, avatar, role } = { ...user };
+
+    await invalidateAll();
 
     $sessionCookie = {
       ...$sessionCookie,
@@ -268,8 +272,6 @@
       role,
       groups
     };
-
-    proxyEvent('ticker:extend');
 
     renewed && localStorage.setItem('renewed', renewed);
     configSnackbar(
@@ -281,24 +283,17 @@
   }
 
   async function tickerEndHandler(e) {
-    if ($session.user) {
-      killSession();
-    }
-
-    setTimeout(
-      (path, options) => {
-        goto(`${path}${createRedirectSlug($page.url, options)}`);
-      },
-      100,
-      e.detail.path || '/',
-      new Map([['sessionend', 'true']])
-    );
+    await killSession();
+    const path = e.detail.path || '/';
+    const redirect = createRedirectSlug($page.url);
+    goto(`${path}${redirect}`);
   }
 
   async function tickerExtendHandler() {
     if ($session.user) {
       const start = new Date().toISOString();
       const response = await post('/session/extend', start);
+      await invalidateAll();
       sessionCookie.update(response);
     }
   }
@@ -308,14 +303,15 @@
     $sessionCookie.role = null;
     $sessionCookie.groups = null;
 
-    invalidateAll();
-
-    await logout(`/auth/logout`).then((res) => {
+    return await logout(`/auth/logout`).then(async (res) => {
+      await invalidateAll();
       message = res.message || res.data?.message;
 
       configSnackbar(message);
       snackbar = getSnackbar();
       snackbar?.open();
+
+      return res.success;
     });
   }
 </script>

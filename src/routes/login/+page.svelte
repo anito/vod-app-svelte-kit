@@ -2,7 +2,7 @@
   // @ts-nocheck
 
   import { page } from '$app/stores';
-  import { goto } from '$app/navigation';
+  import { goto, invalidateAll } from '$app/navigation';
   import { onMount } from 'svelte';
   import { ListMessages, ListErrors, LoginForm } from '$lib/components';
   import { flash, session } from '$lib/stores';
@@ -54,18 +54,14 @@
       // Token login
       const { success, data: serverData } = { ...data };
       if (success) {
-        setTimeout(dispatcher, 100, { type: 'start', data: { ...serverData } });
-        flash.update({ ...serverData, type: 'success', timeout: 2000 });
+        proxyEvent('ticker:start', { ...serverData });
+        flash.update({ ...data, type: 'success', timeout: 2000 });
       } else {
         flash.update({ ...serverData, type: 'error', timeout: 2000 });
       }
     } else {
     }
   });
-
-  function dispatcher({ type, data }) {
-    proxyEvent(`ticker:${type}`, { ...data });
-  }
 
   async function introendHandler() {
     if ($session.user) {

@@ -6,6 +6,7 @@ register('en-US', () => import('../messages/en_US.json'));
 const fallbackLocale = 'en-US';
 
 export async function load({ data, fetch }) {
+  // console.log('DATA.SESSION +layout.ts load({ data })', data.session);
   async function getLocaleFromSession() {
     return await fetch('/session/locale')
       .then(async (res: any) => {

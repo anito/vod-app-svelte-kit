@@ -3,6 +3,7 @@
 
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
+  import { onMount } from 'svelte';
   import Layout from './layout.svelte';
   import List from '@smui/list';
   import Textfield from '@smui/textfield';
@@ -20,6 +21,10 @@
   $: filteredVideos = $videos
     .filter?.((video) => video.title?.toLowerCase().indexOf(search.toLowerCase()) !== -1)
     .sort?.(sortByTitle);
+
+  onMount(() => {
+    proxyEvent('ticker:extend');
+  });
 
   function itemSelectedHandler(e) {
     let { video } = e.detail;

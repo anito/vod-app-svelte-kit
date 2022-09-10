@@ -6,7 +6,7 @@
   import './_icon_size.scss';
   import * as api from '$lib/api';
   import { page } from '$app/stores';
-  import { goto } from '$app/navigation';
+  import { goto, invalidateAll } from '$app/navigation';
   import { getContext, onMount } from 'svelte';
   import Header from './_Header.svelte';
   import { fly } from 'svelte/transition';
@@ -160,11 +160,11 @@
 
       // also reflect the change in the session cookie
       if ($session.user.id === data.id) {
-        console.log('UPDATING COOKIE (AVATAR CHANGED)');
         const response = await post('/session', {
           ...$session,
           user: { ...$session.user, avatar: data.avatar }
         });
+        await invalidateAll();
         sessionCookie.update(response);
       }
     }

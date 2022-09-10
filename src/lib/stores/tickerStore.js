@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { derived } from 'svelte/store';
+import { page } from '$app/stores';
 import { session, settings } from '$lib/stores';
 import { __ticker__ } from '$lib/utils';
 
@@ -9,9 +10,11 @@ function createStore() {
   let time;
 
   return derived(
-    [settings, session],
-    ([$settings, $session], set) => {
-      const start = new Date($session.start).getTime();
+    [settings, session, page],
+    ([$settings, $session, $page], set) => {
+      const startCustomSession = new Date($session.start).getTime();
+      const startPageSession = new Date($page.data.session.start).getTime();
+      const start = [startCustomSession, startPageSession].sort((a, b) => a - b)[1];
       const lifetime = parseInt($settings.Session.lifetime);
       expires = start + lifetime;
       if (isNaN(expires)) {
