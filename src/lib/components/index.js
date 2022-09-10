@@ -12,7 +12,6 @@ export { default as GoogleLoginButton } from './_GoogleLoginButton.svelte';
 export { default as FrameworkSwitcher } from './_FrameworkSwitcher.svelte';
 export { default as Hero } from './_Hero.svelte';
 export { default as ImageCard } from './_ImageCard.svelte';
-export { default as ImageList } from './_ImageList.svelte';
 export { default as ImageManager } from './_ImageManager.svelte';
 export { default as Info } from './_Info.svelte';
 export { default as InfoChips } from './_InfoChips.svelte';

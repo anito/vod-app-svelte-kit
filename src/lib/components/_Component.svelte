@@ -11,7 +11,7 @@
   <div class="header">
     <slot name="header">No Header provided</slot>
   </div>
-  <div class="content">
+  <div class="content flex-1">
     <slot />
   </div>
 </div>

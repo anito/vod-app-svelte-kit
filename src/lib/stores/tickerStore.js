@@ -1,23 +1,28 @@
 // @ts-nocheck
 import { derived } from 'svelte/store';
-import { session } from '$app/stores';
+import { session, settings } from '$lib/stores';
 import { __ticker__ } from '$lib/utils';
 
 function createStore() {
   const INTERVAL = 1;
-  let exp;
+  let expires;
+  let time;
 
   return derived(
-    session,
-    ($s, set) => {
-      exp = $s._expires;
-      if (!exp) return;
-      if (!(exp instanceof Date)) {
-        exp = new Date(exp);
+    [settings, session],
+    ([$settings, $session], set) => {
+      const start = new Date($session.start).getTime();
+      const lifetime = parseInt($settings.Session.lifetime);
+      expires = start + lifetime;
+      if (isNaN(expires)) {
+        return;
+      }
+      if (!(expires instanceof Date)) {
+        expires = new Date(expires);
       }
 
       __ticker__.interval = setInterval(() => {
-        let time = exp - new Date();
+        time = expires - new Date();
         set(time > 0 ? time : 0);
       }, INTERVAL * 1000);
 
@@ -26,8 +31,8 @@ function createStore() {
         clearInterval(__ticker__.interval);
 
         // console.log(
-        // 	'%c TICKER EXTEND OR END',
-        // 	'background: #ff5722; color: #000000; padding:4px 6px 3px 0;'
+        //   `%c TICKER ${time ? 'EXTEND' : 'END'}`,
+        //   `background: ${time ? '#8bc44a' : '#ff5722'}; color: #000000; padding:4px 6px 3px 0;`
         // );
       };
     },

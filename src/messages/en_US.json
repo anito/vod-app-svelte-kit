@@ -112,7 +112,6 @@
     "how-do-i-proceed": "How do I proceed?",
     "a-token-is": "A token is a cryptic string with encrypted (login) information.",
     "type-something": "type something to find names",
-    "no-more-videos-available": "No more video classes available",
     "you-cant-revert-deletion-of-user": "This action can not be undone!",
     "caution": "Caution!",
     "expired": "expired",
@@ -217,7 +216,9 @@
     "default": "Default",
     "sample": "Sample",
     "revoke_app_from_user": "Revoke this App ({name})",
-    "language_is_now": "Language is now {locale}"
+    "language_is_now": "Language is now {locale}",
+    "no-videos-available": "No videos available",
+    "test-form": "Test-Form"
   },
   "summary": {
     "copy-link": {

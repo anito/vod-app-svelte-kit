@@ -2,13 +2,12 @@
   // @ts-nocheck
 
   import * as api from '$lib/api';
-  import { session } from '$app/stores';
   import { onDestroy, onMount } from 'svelte';
   import { Media, MediaContent } from '@smui/card';
   import Textfield, { Textarea } from '@smui/textfield';
   import { VideoPlayer } from '$lib/components/Video';
   import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo } from '$lib/utils';
-  import { users, videoEmitter } from '$lib/stores';
+  import { session, users, videoEmitter } from '$lib/stores';
   import { _ } from 'svelte-i18n';
 
   export let video;
@@ -24,6 +23,7 @@
   let canPlay = false;
   let timeoutId;
 
+  // $: session = $page.data.session;
   $: currentUser = $users.find((user) => user.id == $session.user?.id);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: token = currentUser?.jwt;

@@ -1,59 +1,61 @@
 <script>
-	// @ts-nocheck
+  // @ts-nocheck
 
-	import { session } from '$app/stores';
-	import ArticleList from '../ArticleList/index.svelte';
+  import { page } from '$app/stores';
+  import ArticleList from '../ArticleList/index.svelte';
 
-	export let tab = 'all';
-	export let tag = null;
-	export let p;
+  export let tab = 'all';
+  export let tag = null;
+  export let p;
 
-	function yourFeed() {
-		tab = 'feed';
-		tag = null;
-	}
+  $: session = $page.data.session;
 
-	function globalfeed() {
-		tab = 'all';
-		tag = null;
-	}
+  function yourFeed() {
+    tab = 'feed';
+    tag = null;
+  }
+
+  function globalfeed() {
+    tab = 'all';
+    tag = null;
+  }
 </script>
 
 <div class="col-md-9">
-	<div class="feed-toggle">
-		<ul class="nav nav-pills outline-active">
-			{#if $session.user}
-				<li class="nav-item">
-					<a href="." class="nav-link {tab === 'feed' ? 'active' : ''}" on:click={yourFeed}>
-						Your Feed
-					</a>
-				</li>
-			{:else}
-				<li class="nav-item">
-					<a href="/login" class="nav-link"> Your Feed </a>
-				</li>
-			{/if}
+  <div class="feed-toggle">
+    <ul class="nav nav-pills outline-active">
+      {#if session.user}
+        <li class="nav-item">
+          <a href="." class="nav-link {tab === 'feed' ? 'active' : ''}" on:click={yourFeed}>
+            Your Feed
+          </a>
+        </li>
+      {:else}
+        <li class="nav-item">
+          <a href="/login" class="nav-link"> Your Feed </a>
+        </li>
+      {/if}
 
-			<li class="nav-item">
-				<a href="." class="nav-link {tab === 'all' ? 'active' : ''}" on:click={globalfeed}>
-					Global Feed
-				</a>
-			</li>
+      <li class="nav-item">
+        <a href="." class="nav-link {tab === 'all' ? 'active' : ''}" on:click={globalfeed}>
+          Global Feed
+        </a>
+      </li>
 
-			{#if tag}
-				<li class="nav-item">
-					<a
-						href="."
-						class="nav-link {tab === 'tag' ? 'active' : ''}"
-						on:click={() => (tab = 'tag')}
-					>
-						<i class="ion-pound" />
-						{tag}
-					</a>
-				</li>
-			{/if}
-		</ul>
-	</div>
+      {#if tag}
+        <li class="nav-item">
+          <a
+            href="."
+            class="nav-link {tab === 'tag' ? 'active' : ''}"
+            on:click={() => (tab = 'tag')}
+          >
+            <i class="ion-pound" />
+            {tag}
+          </a>
+        </li>
+      {/if}
+    </ul>
+  </div>
 
-	<ArticleList {p} {tab} {tag} />
+  <ArticleList {p} {tab} {tag} />
 </div>

@@ -4,9 +4,9 @@ import { writable } from 'svelte/store';
 function createStore() {
   const defaults = {
     Session: {
-      lifetime: 60 * 1000
+      lifetime: 60 * 60 * 1000
     },
-    Site: { defaultUserTab: 0 }
+    Site: { defaultUserTab: 'profile' }
   };
   const { subscribe, update, set } = writable(defaults);
 

@@ -5,13 +5,13 @@
   import './_button.scss';
   import './_icon_size.scss';
   import * as api from '$lib/api';
-  import { page, session } from '$app/stores';
+  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { getContext, onMount } from 'svelte';
   import Header from './_Header.svelte';
   import { fly } from 'svelte/transition';
-  import { users, flash } from '$lib/stores';
-  import { createRedirectSlug, proxyEvent, ADMIN, SUPERUSER } from '$lib/utils';
+  import { users, flash, session, sessionCookie } from '$lib/stores';
+  import { createRedirectSlug, proxyEvent, ADMIN, SUPERUSER, post } from '$lib/utils';
   import Textfield from '@smui/textfield';
   import TextfieldIcon from '@smui/textfield/icon';
   import HelperText from '@smui/textfield/helper-text';
@@ -59,6 +59,7 @@
   let active = false;
   let __protected = false;
 
+  // $: session = $page.data.session;
   $: selectedMode = $page.url.searchParams.has('mode')
     ? $page.url.searchParams.get('mode')
     : selectedMode;
@@ -155,12 +156,16 @@
     const { success, message, data } = { ...e.detail };
 
     if (success) {
-      const user = data;
-      users.put(user);
+      users.put(data);
 
       // also reflect the change in the session cookie
       if ($session.user.id === data.id) {
-        $session.user = data;
+        console.log('UPDATING COOKIE (AVATAR CHANGED)');
+        const response = await post('/session', {
+          ...$session,
+          user: { ...$session.user, avatar: data.avatar }
+        });
+        sessionCookie.update(response);
       }
     }
     close();
@@ -181,7 +186,11 @@
 
           // also reflect the change in the session cookie
           if ($session.user.id === currentUser.id) {
-            $session.user.avatar = data.avatar;
+            const response = await post('/session', {
+              ...$session,
+              user: { ...$session.user, avatar: data.avatar }
+            });
+            sessionCookie.update(response);
           }
         }
       });
@@ -279,7 +288,7 @@
               users.update(resUsers.data);
               reset();
 
-              path = `/users/${res.data.id}?tab=user`;
+              path = `/users/${res.data.id}?tab=profile`;
               action = $_('text.reveal-user');
               configSnackbar(message, { path, action });
               snackbar.open();
@@ -376,7 +385,7 @@
             </button>
           </div>
         </div>
-        <div class="flex flex-shrink flex-wrap">
+        <div class="flex flex-shrink flex-wrap height-100" style="height: 100%;">
           {#if userNotFound}
             <div class="exception user-not-found">
               <div class="flex justify-center items-center flex-1">
@@ -920,6 +929,7 @@
   }
   .empty-selection {
     display: flex;
+    grid-area: one;
     justify-content: center;
     align-items: center;
     height: 100%;

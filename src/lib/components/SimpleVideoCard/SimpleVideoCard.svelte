@@ -2,7 +2,7 @@
   // @ts-nocheck
 
   import './_user-video.scss';
-  import { session } from '$app/stores';
+  import { page } from '$app/stores';
   import { createEventDispatcher } from 'svelte';
   import { Icon } from '@smui/button';
   import { Item, Graphic, Text, PrimaryText, SecondaryText } from '@smui/list';
@@ -40,7 +40,8 @@
   let filtered;
   let item;
 
-  $: user = $session.user;
+  $: session = $page.data.session;
+  $: user = session.user;
   $: dateFormat = $locale.indexOf('de') != -1 ? 'dd. MMM yyyy' : 'yyyy-MM-dd';
   $: video && fetchBackgroundImage(video);
   $: unmanagable = disabled;
@@ -136,7 +137,7 @@
   <Text>
     <PrimaryText>
       <span class="opacity-25" class:opacity-25={!video.title}>
-        {`${video.title || 'Kein Titel'}`}
+        {`${video.title || $_('text.no-title')}`}
       </span>
     </PrimaryText>
     {#if isUserVideo}

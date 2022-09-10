@@ -1,7 +1,7 @@
 <script>
   // @ts-nocheck
 
-  import { session } from '$app/stores';
+  import { page } from '$app/stores';
   import { getContext, onMount } from 'svelte';
   import Menu, { SelectionGroup, SelectionGroupIcon } from '@smui/menu';
   import { Anchor } from '@smui/menu-surface';
@@ -21,6 +21,7 @@
   let localeMenuAnchor;
   let currentLocale;
 
+  $: session = $page.data.session;
   $: currentLocale = $locale;
 
   onMount(() => {
@@ -29,11 +30,7 @@
 
   async function setLocale(value) {
     $locale = value;
-    await post('/locale', value).then((res) => {
-      if (res.ok) {
-        session.set({ ...$session, locale: value });
-      }
-
+    await post('locale', value).then((res) => {
       configSnackbar(
         $_('text.language_is_now', { values: { locale: localeLookup.get(value.slice(0, 2)) } })
       );

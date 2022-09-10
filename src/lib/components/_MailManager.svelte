@@ -3,9 +3,9 @@
   import './_list.scss';
   import * as api from '$lib/api';
   import { onMount, tick, getContext } from 'svelte';
-  import { page, session } from '$app/stores';
+  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { fabs, sents, inboxes, templates, users, slim } from '$lib/stores';
+  import { fabs, sents, inboxes, session, templates, users, slim } from '$lib/stores';
   import {
     MailViewer,
     MailList,
@@ -153,11 +153,12 @@
    */
   let selectionUserId = null;
 
+  // $: session = $page.data.session;
   $: currentUser = ((id) => $users.filter((usr) => usr.id === id))(selectionUserId)[0];
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: selectionUserId && (selectionIndex = -1);
-  $: username = currentUser?.name;
-  $: email = currentUser?.email;
+  $: username = currentUser?.name || $_('text.empty-user-selection');
+  $: email = currentUser?.email || '';
   $: totalSents = $sents.length;
   $: totalInboxes = $inboxes.length;
   $: unreadInboxes = $inboxes.filter((mail) => !mail._read).length;
@@ -220,7 +221,9 @@
       return new Promise((res, rej) => rej(`The mailbox "${ep}" doesn'nt exist`)).catch((reason) =>
         console.log(reason)
       );
-    const id = $page.params.slug;
+    const id = validateUserId($page.params.slug);
+    if (!id) return;
+
     return await api
       .get(`${ep}/get/${id}`, { token: $session.user?.jwt, fetch })
       .then((res) => {
@@ -253,6 +256,13 @@
       configSnackbar($_('text.message-sent-failed'));
     }
     snackbar.open();
+  }
+
+  /**
+   * @param {string} id
+   */
+  function validateUserId(id) {
+    return $users.find((usr) => usr.id == id) ? id : false;
   }
 
   /**
@@ -699,7 +709,7 @@
             <Subtitle>{email}</Subtitle>
           </Header>
           <Content>
-            <List class="mailbox-list">
+            <List class="mailbox-list" nonInteractive={!currentUser}>
               <Item
                 href={dynamicTemplatePath(INBOX)}
                 on:click={() => (selectionIndex = -1)}
@@ -769,8 +779,9 @@
 
                 {#each $templates.sort(sortAZProtected) as template (template.id)}
                   <Item
+                    disabled={!currentUser}
                     class="template-list-item"
-                    sveltekit:prefetch
+                    data-sveltekit-prefetch=""
                     href={dynamicTemplatePath(templateStringFromSlug(template.slug))}
                     activated={activeListItem === `template:${template.slug}`}
                     on:mouseover={(e) => overEditable(e)}
@@ -978,6 +989,7 @@
   }
   .empty-selection {
     display: flex;
+    grid-area: one;
     justify-content: center;
     align-items: center;
     height: 100%;
@@ -985,18 +997,15 @@
     font-weight: 600;
     color: #d8d8d8;
   }
-  .empty-selection.no-user-selection {
-    grid-column-start: 1;
-    grid-column-end: 3;
-  }
-  :global(.edit) {
+  :global(.mailbox-list:not([class*='non-interactive']) .edit) {
     pointer-events: all;
+    cursor: pointer;
   }
   :global(.hover .edit) {
     visibility: visible;
     pointer-events: all;
   }
-  :global(.editor[contenteditable]) {
+  :global(.mailbox-list:not([class*='non-interactive']) .editor[contenteditable]) {
     flex-basis: 55%;
     padding: 0.5em;
     border: 1px solid #eee;
@@ -1005,5 +1014,8 @@
     text-overflow: clip;
     pointer-events: all;
     cursor: initial;
+  }
+  :global(.mailbox-list[class*='non-interactive']) {
+    pointer-events: none;
   }
 </style>

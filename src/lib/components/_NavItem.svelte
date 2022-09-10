@@ -1,40 +1,40 @@
 <script>
-	// @ts-nocheck
+  // @ts-nocheck
 
-	import { page } from '$app/stores';
-	import { getContext } from 'svelte';
+  import { page } from '$app/stores';
+  import { getContext } from 'svelte';
 
-	export let segment = null;
-	export let href = null;
-	export let external = null;
-	export let title = null;
-	export let style = '';
-	export { className as class };
+  export let segment = null;
+  export let external = null;
+  export let href = '';
+  export let title = '';
+  export let style = '';
+  export { className as class };
 
-	const current = getContext('nav');
-	let className = '';
+  const current = getContext('nav');
+  let className = '';
 
-	$: active = $current === segment;
+  $: active = $current === segment;
 </script>
 
 {#if external}
-	<li class="nav-item" class:className>
-		<a target="_blank" href={external} {title} {style}><slot /></a>
-	</li>
+  <li class="nav-item" class:className>
+    <a target="_blank" href={external} {title} {style}><slot /></a>
+  </li>
 {:else}
-	<li class:active class="nav-item {className}">
-		<a
-			aria-current={$page.url.pathname.startsWith(href) ? true : undefined}
-			sveltekit:prefetch
-			{style}
-			{href}
-			{title}><slot /></a
-		>
-	</li>
+  <li class:active class="nav-item {className}">
+    {#if href}
+      <a data-sveltekit-prefetch aria-current={$page.url.pathname === href} {style} {href} {title}
+        ><slot /></a
+      >
+    {:else}
+      <slot />
+    {/if}
+  </li>
 {/if}
 
 <style>
-	[aria-current='true'] {
-		color: var(--prime);
-	}
+  [aria-current='true'] {
+    color: var(--prime);
+  }
 </style>

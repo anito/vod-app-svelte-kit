@@ -1,7 +1,6 @@
 <script>
   // @ts-nocheck
 
-  import { fly } from 'svelte/transition';
   import { GridItem, LayoutGrid } from '$lib/components';
   import { page } from '$app/stores';
 

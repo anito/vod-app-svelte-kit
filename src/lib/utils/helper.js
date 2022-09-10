@@ -1,6 +1,7 @@
 // @ts-nocheck
 
-import { ADMIN, SUPERUSER } from './const';
+import { browser } from '$app/environment';
+import { ADMIN, SUPERUSER, INBOX } from './const';
 
 export function sortByTitle(a, b) {
   let _a = a.title?.toUpperCase() || '';
@@ -79,7 +80,7 @@ export function processRedirect(searchParams, session = {}) {
     return redirect;
   } else {
     uid = session.user?.id;
-    path = hasPrivileges ? `/users/${uid}` : '/videos';
+    path = hasPrivileges ? '/users' : '/videos';
     return path.concat(parseSearchParams(searchParams));
   }
 }
@@ -142,7 +143,7 @@ export const proxyEvent = function (eventType, detail = {}) {
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent(eventType, { detail }));
   } else {
-    throw `Could not dispatch event ${eventType}`;
+    console.error(`[${browser ? 'Browser' : 'Node'}] Could not dispatch event ${eventType}`);
   }
 };
 
@@ -190,6 +191,18 @@ export function svg(fn, colors) {
       )
     )
   );
+}
+
+export function createTabSearch(tab) {
+  const search =
+    tab === 'time'
+      ? `?tab=${tab}`
+      : tab === 'profile'
+      ? `?tab=${tab}`
+      : tab === 'mail'
+      ? `?tab=${tab}&active=${INBOX}`
+      : '';
+  return search;
 }
 
 Array.prototype.unique = function () {

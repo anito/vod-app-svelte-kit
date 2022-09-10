@@ -25,7 +25,7 @@
       SUPRESS_SEARCHES_KEY,
       (to) => {
         searches.forEach((slug) => {
-          if (to.searchParams.has(slug)) {
+          if (to.url.searchParams.has(slug)) {
             disabled = true;
             return;
           }
@@ -59,15 +59,11 @@
     root = document.documentElement;
   });
 
-  $: ((nav) => {
-    if (disabled) return;
-    if (nav) {
-      timeoutId = setTimeout(() => root?.classList.add('navigating'), wait);
-    } else {
+  $: !disabled &&
+    ((isNavigating) => {
       clearTimeout(timeoutId);
-      root?.classList.remove('navigating');
-    }
-  })($navigating);
+      timeoutId = setTimeout(() => root?.classList.toggle('navigating', !!isNavigating), wait);
+    })($navigating);
   $: _step1 = backgroundColor.slice(0, 7);
   $: bgColor = `${_step1}${(_step1.length === 7 && opacityToHex) || ''}`;
   $: opacityToHex = convert.dec2Hex(parseFloat(opacity), true);

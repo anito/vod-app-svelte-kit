@@ -1,13 +1,13 @@
 <script>
   // @ts-nocheck
 
-  import { session } from '$app/stores';
+  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { onMount, getContext } from 'svelte';
   import { fly } from 'svelte/transition';
   import Fab, { Label, Icon } from '@smui/fab';
   import { Info, VideoCard, MediaUploader, VideoEditorList } from '$lib/components';
-  import { videos, fabs } from '$lib/stores';
+  import { session, videos, fabs } from '$lib/stores';
   import {
     ADMIN,
     SUPERUSER,
@@ -115,7 +115,7 @@
       {/each}
     </div>
   {:else}
-    <div class="empty-selection no-user-selection">
+    <div class="empty-selection">
       <span style="text-align: center;">{$_('text.no-content-available')}</span>
     </div>
   {/if}

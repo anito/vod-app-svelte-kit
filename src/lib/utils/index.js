@@ -1,6 +1,7 @@
 import {
   convert,
   createRedirectSlug,
+  createTabSearch,
   equals,
   formatter,
   minDigits,
@@ -32,12 +33,13 @@ import {
 import { getMedia, getExt, getMediaAvatar, getMediaImage, getMediaVideo } from './media';
 import { localeFormat } from './locale-format';
 import { get, post, put, del } from './http';
-import { getAuxSession } from './session';
+import { getAuxSession } from './auxSession';
 import { posterCreatedHandler, posterSelectedHandler, posterRemoveHandler } from './video';
 
 export {
   convert,
   createRedirectSlug,
+  createTabSearch,
   del,
   ellapsedFormatted,
   equals,

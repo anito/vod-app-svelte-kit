@@ -1,5 +1,5 @@
 <script>
-  import { session } from '$app/stores';
+  import { page } from '$app/stores';
   import { Graphic } from '@smui/list';
   import { Icon } from '@smui/common';
   import { getMediaAvatar, placeholderDotComAvatar } from '$lib/utils';
@@ -60,11 +60,12 @@
     : 'transparent';
   badge.color?.startsWith('--') && (badge.color = `var(${badge.color})`);
 
+  $: session = $page.data.session;
   $: (async (user) => {
     if (user.avatar?.src?.startsWith('http')) {
       Promise.resolve(user.avatar?.src).then((val) => (src = val));
     } else if (user.avatar) {
-      await getMediaAvatar(user.avatar?.id, $session.user, {
+      await getMediaAvatar(user.avatar?.id, session.user, {
         width,
         height,
         square: 1,

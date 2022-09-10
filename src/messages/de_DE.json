@@ -112,7 +112,6 @@
     "how-do-i-proceed": "Wie gehe ich weiter vor?",
     "a-token-is": "Ein Token ist eine kryptische Zeichenkette mit verschlüsselten (Anmelde-) Informationen.",
     "type-something": "tippe etwas um Namen zu finden",
-    "no-more-videos-available": "Keine weiteren Videokurse verfügbar",
     "you-cant-revert-deletion-of-user": "Dieser Vorgang kann nicht rückgängig gemacht werden!",
     "caution": "Achtung!",
     "expired": "abgelaufen",
@@ -217,7 +216,9 @@
     "default": "Standard",
     "sample": "Beispiel",
     "revoke_app_from_user": "Diese App widerrufen ({name})",
-    "language_is_now": "Sprache geändert auf {locale}"
+    "language_is_now": "Sprache geändert auf {locale}",
+    "no-videos-available": "Keine Videokurse verfügbar",
+    "test-form": "Test-Formular"
   },
   "summary": {
     "copy-link": {

@@ -3,11 +3,11 @@
 
   import './_button.scss';
   import './_menu-surface.scss';
-  import { session } from '$app/stores';
+  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { getContext, createEventDispatcher } from 'svelte';
   import { fly } from 'svelte/transition';
-  import { images, videoEmitter, currentVideo } from '$lib/stores';
+  import { images, session, videoEmitter, currentVideo } from '$lib/stores';
   import { getMedia } from '$lib/utils/media';
   import { ADMIN, SUPERUSER } from '$lib/utils';
   import { VideoMedia, MediaUploader } from '$lib/components';
@@ -42,6 +42,7 @@
   };
   let isImageListOpen = false;
 
+  // $: session = $page.data.session;
   $: user = $session.user;
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: leftButton = isEditMode

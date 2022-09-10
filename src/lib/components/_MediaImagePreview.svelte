@@ -1,25 +1,26 @@
 <script>
-// @ts-nocheck
+  // @ts-nocheck
 
-	import { session } from '$app/stores';
-	import { Media } from '@smui/card';
-	import { getExt, getMediaImage } from '$lib/utils';
+  import { page } from '$app/stores';
+  import { Media } from '@smui/card';
+  import { getExt, getMediaImage } from '$lib/utils';
 
-	const posterUrl = `https://via.placeholder.com/320x180.png?text=`;
+  const posterUrl = `https://via.placeholder.com/320x180.png?text=`;
 
-	export let media;
+  export let media;
 
-	const settings = {
-		width: 400,
-		height: 400,
-		square: 0
-	};
+  const settings = {
+    width: 400,
+    height: 400,
+    square: 0
+  };
 
-	let id;
-	let poster = (media && `${posterUrl}${getExt(media.src)}`) || posterUrl;
+  let id;
+  let poster = (media && `${posterUrl}${getExt(media.src)}`) || posterUrl;
 
-	$: media && (id = media.id);
-	$: id && ((id) => getMediaImage(id, $session.user, settings).then((v) => (poster = v)))(id);
+  $: session = $page.data.session;
+  $: media && (id = media.id);
+  $: id && ((id) => getMediaImage(id, session.user, settings).then((v) => (poster = v)))(id);
 </script>
 
 <Media aspectRatio="16x9" style="background-image:url({poster})" />

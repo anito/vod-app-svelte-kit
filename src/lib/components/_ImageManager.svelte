@@ -2,14 +2,14 @@
   // @ts-nocheck
 
   import * as api from '$lib/api';
-  import { session } from '$app/stores';
+  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { onMount, getContext } from 'svelte';
   import { fly } from 'svelte/transition';
   import Fab, { Icon } from '@smui/fab';
   import { Label } from '@smui/common';
   import { ImageCard, MediaUploader, Info } from '$lib/components';
-  import { fabs, urls, sitename, images } from '$lib/stores';
+  import { fabs, urls, sitename, images, session } from '$lib/stores';
   import { _ } from 'svelte-i18n';
 
   const { open } = getContext('default-modal');

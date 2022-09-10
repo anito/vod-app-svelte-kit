@@ -4,7 +4,7 @@
   import * as api from '$lib/api';
   import './_icon-button.scss';
   import './_date-range-picker.scss';
-  import { page, session } from '$app/stores';
+  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { onMount, getContext, tick } from 'svelte';
   import { createRedirectSlug, ADMIN, SUPERUSER } from '$lib/utils';
@@ -35,7 +35,6 @@
   import Dialog, { Title, Content, Actions, InitialFocus } from '@smui/dialog';
   import Radio from '@smui/radio';
   import { _, locale } from 'svelte-i18n';
-  import { list } from 'postcss';
 
   export let selectionUserId;
 
@@ -54,7 +53,6 @@
   const NONUSERVIDEOSLIST = 'non-user-videos-list';
 
   let root;
-  let mainEl;
   let schedulingVideoId;
   let scheduleDialog;
   let removeDialog;
@@ -73,6 +71,7 @@
   let isExpired;
   let itemsList = {};
 
+  $: session = $page.data.session;
   $: dateFormat = $locale.startsWith('de') ? 'dd. MMM yyyy' : 'yyyy-MM-dd';
   $: currentUserIndex = ((id) => $users.findIndex((usr) => usr.id === id))(selectionUserId);
   $: userVideos = ((idx) => {
@@ -89,10 +88,9 @@
           .sort(sortByEndDate);
       }
     };
-    return vids()?.map((v) => {
-      const videoImageId = $videos.find((video) => video.id === v.id)?.image_id;
-      v.image_id = videoImageId;
-      return v;
+    return vids()?.map((video) => {
+      const { image_id, title } = $videos.find((vid) => vid.id === video.id);
+      return { ...video, image_id, title };
     });
   })(currentUserIndex);
   $: (() => (selectionVideoId = null))(selectionUserId);
@@ -137,7 +135,7 @@
     ($infos?.has(selectionUserId) &&
       $infos.get(selectionUserId).params.filter((info) => info.type === 'issue')) ||
     [];
-  $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
+  $: hasPrivileges = session.role === ADMIN || session.role === SUPERUSER;
   $: hasCurrentPrivileges = role === ADMIN || role === SUPERUSER;
 
   onMount(() => {
@@ -183,9 +181,7 @@
       let end = null;
 
       timespanSelected = timespanSelection;
-      if (timespanSelected === 'custom') {
-        selectionVideoId = schedulingVideoId;
-      } else {
+      if (timespanSelected !== 'custom') {
         let now = new Date();
         let time = new Date(now.getTime() + timespanSelected * 24 * 60 * 60 * 1000);
         start = toISODate(now);
@@ -199,7 +195,7 @@
 
   function itemSelectedHandler({ detail }) {
     const { video } = detail;
-    selectionVideoId = video.id == selectionVideoId ? null : video.id;
+    selectionVideoId = video.id;
     scrollIntoView();
   }
 
@@ -269,7 +265,7 @@
   function saveUser(data) {
     return api.put(`users/${selectionUserId}?locale=${$locale}`, {
       data,
-      token: $session.user?.jwt
+      token: session.user?.jwt
     });
   }
 
@@ -319,10 +315,6 @@
     });
   }
 
-  function setMainElement(el) {
-    mainEl = el;
-  }
-
   function scrollIntoView() {
     const options = { block: 'nearest', behavior: 'smooth' };
     setTimeout(() => {
@@ -334,7 +326,7 @@
   }
 </script>
 
-<div class="main-grid" use:setMainElement>
+<div class="main-grid">
   <div
     class="grid-item user-videos"
     class:no-user-selected={!currentUser}
@@ -501,7 +493,7 @@
             {/each}
           {:else}
             <li class="flex flex-1 flex-col self-center text-center">
-              <div class="m-5">{$_('text.no-more-videos-available')}</div>
+              <div class="m-5">{$_('text.no-videos-available')}</div>
             </li>
           {/if}
         </List>

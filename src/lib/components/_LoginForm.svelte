@@ -5,6 +5,7 @@
 <script>
   // @ts-nocheck
 
+  import { browser, dev } from '$app/environment';
   import { onMount, getContext, tick } from 'svelte';
   import { post, proxyEvent } from '$lib/utils';
   import { flash, googleUser } from '$lib/stores';
@@ -15,7 +16,6 @@
   import Icon from '@smui/textfield/icon';
   import { Label } from '@smui/common';
   import Dialog, { Title as DialogTitle, Content, Actions, InitialFocus } from '@smui/dialog';
-  import { browser, dev } from '$app/env';
   import { FacebookLoginButton, GoogleLoginButton, Header } from '$lib/components';
   import { _ } from 'svelte-i18n';
 
@@ -70,12 +70,53 @@
     return () => unblock();
   });
 
+  function submitTest(node, options) {
+    let submitting = false;
+
+    async function submitHandler(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = {};
+
+      if (submitting) return;
+      submitting = true;
+      block();
+
+      // new FormData(form).forEach((value, key) => (data[key] = value));
+
+      await post('/auth/login', { email, password }).then(async (res) => {
+        const { success, data } = { ...res };
+
+        if (success) {
+          proxyEvent('ticker:start', { ...data });
+          await tick();
+          reset();
+        } else {
+          unblock();
+          reset();
+
+          /**
+           * Show dialog after 3 login fails
+           */
+          if (++loginAttempts > 3) invalidTokenUserDialog.setOpen(true);
+        }
+        flash.update({ ...data, type: success ? 'success' : 'error', timeout: 2000 });
+        submitting = false;
+        unblock();
+      });
+    }
+
+    node.addEventListener('submit', submitHandler);
+
+    return () => node.removeEventListener('submit', submitHandler);
+  }
+
   async function submit() {
     block();
     flash.update({ message: $_('text.one-moment') });
 
     await post('/auth/login', { email, password }).then(async (res) => {
-      const message = res.data.message;
+      const { message } = { ...res.data };
       let type;
 
       if (res.success) {
@@ -94,7 +135,7 @@
       flash.update({
         type,
         message,
-        expires: 2000
+        timeout: 2000
       });
       configSnackbar(message);
       snackbar.open();
@@ -147,7 +188,16 @@
       </Tab>
     </TabBar>
   </div>
-  <form on:submit|preventDefault={submit} method="post" class="login-form">
+  <form
+    use:submitTest={{
+      start: () => {},
+      error: () => {},
+      end: () => {}
+    }}
+    method="POST"
+    class="login-form"
+    action="/login"
+  >
     <div class="login-grid {rows}">
       {#if active === tabNames[0]}
         <span class="one flex flex-col">
