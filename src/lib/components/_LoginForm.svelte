@@ -66,8 +66,12 @@
     unblock();
     active = localStorage.getItem('activeSignIn') || 'Sample';
     snackbar = getSnackbar();
+    window.addEventListener('ticker:started', tickerStartedHandler);
 
-    return () => unblock();
+    return () => {
+      unblock();
+      window.removeEventListener('ticker:started', tickerStartedHandler);
+    };
   });
 
   /**
@@ -104,12 +108,13 @@
           unblock();
           reset();
 
+          flash.update({ ...data, type: 'error', timeout: 2000 });
+
           /**
            * Show dialog after 3 login fails
            */
           if (++loginAttempts > 3) invalidTokenUserDialog.setOpen(true);
         }
-        flash.update({ ...data, type: success ? 'success' : 'error', timeout: 2000 });
         submitting = false;
         unblock();
       });
@@ -121,6 +126,11 @@
 
     // TODO handle network errors
     // errors = res.errors;
+  }
+
+  function tickerStartedHandler(e) {
+    const data = e.detail;
+    flash.update({ ...data, type: 'success', timeout: 2000 });
   }
 
   function reset() {

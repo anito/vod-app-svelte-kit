@@ -266,6 +266,8 @@
 
     await invalidateAll();
 
+    proxyEvent('ticker:started', e.detail);
+
     $sessionCookie = {
       ...$sessionCookie,
       user: { id, name, jwt, avatar },

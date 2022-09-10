@@ -40,6 +40,7 @@
   }
 
   onMount(() => {
+    window.addEventListener('ticker:started', tickerStartedHandler);
     /**
      * DISPLAYING RESULT MESSAGES
      * There are two steps:
@@ -55,12 +56,14 @@
       const { success, data: serverData } = { ...data };
       if (success) {
         proxyEvent('ticker:start', { ...serverData });
-        flash.update({ ...data, type: 'success', timeout: 2000 });
       } else {
         flash.update({ ...serverData, type: 'error', timeout: 2000 });
       }
-    } else {
     }
+
+    return () => {
+      window.removeEventListener('ticker:started', tickerStartedHandler);
+    };
   });
 
   async function introendHandler() {
@@ -69,6 +72,11 @@
     } else {
       setTimeout(() => goto('/login'), 1000);
     }
+  }
+
+  function tickerStartedHandler(e) {
+    const data = e.detail;
+    flash.update({ ...data, type: 'success', timeout: 2000 });
   }
 </script>
 
