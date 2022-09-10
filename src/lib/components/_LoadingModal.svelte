@@ -46,6 +46,7 @@
   ]);
 
   beforeNavigate(({ to }) => {
+    root?.classList.remove('navigating');
     disabled = false;
     omitt.forEach((fn, key) => {
       key === SUPRESS_SEARCHES_KEY && fn(to);
