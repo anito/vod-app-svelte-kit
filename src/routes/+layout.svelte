@@ -231,7 +231,7 @@
   function submit(e) {
     if ($page.data.session.user) {
       loggedInButtonTextSecondLine = $_('text.one-moment');
-      proxyEvent('ticker:end', { user: $session.user });
+      proxyEvent('ticker:end');
     }
   }
 
@@ -283,10 +283,12 @@
   }
 
   async function tickerEndHandler(e) {
-    await killSession();
-    const path = e.detail.path || '/';
-    const redirect = createRedirectSlug($page.url);
-    goto(`${path}${redirect}`);
+    if ($page.data.session.user) {
+      await killSession();
+      const path = e.detail.path || '/';
+      const redirect = createRedirectSlug($page.url);
+      goto(`${path}${redirect}`);
+    }
   }
 
   async function tickerExtendHandler() {
