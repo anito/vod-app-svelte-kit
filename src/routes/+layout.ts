@@ -31,7 +31,7 @@ export async function load({ data, fetch }) {
       .catch((reason: string) => console.error(reason));
   }
 
-  const { locale } = await getLocaleFromSession();
+  const locale = await getLocaleFromSession();
   const config = await getConfig();
 
   init({
