@@ -258,6 +258,10 @@
       padding: 0 0.5rem;
     }
 
+    .primary.open > :global(li.nav-item):first-child :global(a) {
+      padding-top: 0;
+    }
+
     .primary::after {
       display: none;
     }
