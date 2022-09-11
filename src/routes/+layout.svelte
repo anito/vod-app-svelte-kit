@@ -229,7 +229,7 @@
   }
 
   function submit(e) {
-    if ($page.data.session.user) {
+    if ($session.user) {
       loggedInButtonTextSecondLine = $_('text.one-moment');
       proxyEvent('ticker:end');
     }
@@ -285,7 +285,7 @@
   }
 
   async function tickerEndHandler(e) {
-    if ($page.data.session.user) {
+    if ($session.user) {
       await killSession();
       const path = e.detail.path || '/';
       const redirect = createRedirectSlug($page.url);
