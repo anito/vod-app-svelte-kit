@@ -10,7 +10,7 @@
   import { localeFormat, hasStarted, isExpired } from '$lib/utils';
   import { getMedia } from '$lib/utils/media';
   import { parseISO } from 'date-fns';
-  import { users } from '$lib/stores';
+  import { session, users } from '$lib/stores';
   import { differenceInHours } from 'date-fns';
   import { _, locale } from 'svelte-i18n';
 
@@ -40,8 +40,7 @@
   let filtered;
   let item;
 
-  $: session = $page.data.session;
-  $: user = session.user;
+  $: user = $session.user;
   $: dateFormat = $locale.indexOf('de') != -1 ? 'dd. MMM yyyy' : 'yyyy-MM-dd';
   $: video && fetchBackgroundImage(video);
   $: unmanagable = disabled;

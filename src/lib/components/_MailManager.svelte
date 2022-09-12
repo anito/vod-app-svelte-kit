@@ -153,7 +153,6 @@
    */
   let selectionUserId = null;
 
-  // $: session = $page.data.session;
   $: currentUser = ((id) => $users.filter((usr) => usr.id === id))(selectionUserId)[0];
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: selectionUserId && (selectionIndex = -1);

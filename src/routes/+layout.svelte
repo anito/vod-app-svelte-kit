@@ -264,7 +264,7 @@
     let { user, groups, renewed } = { ...e.detail };
     const { id, name, jwt, avatar, role } = { ...user };
 
-    await invalidateAll();
+    // await invalidateAll();
 
     proxyEvent('ticker:started', e.detail);
 
@@ -297,7 +297,7 @@
     if ($session.user) {
       const start = new Date().toISOString();
       const response = await post('/session/extend', start);
-      await invalidateAll();
+      // await invalidateAll();
       sessionCookie.update(response);
     }
   }
@@ -308,7 +308,7 @@
     $sessionCookie.groups = null;
 
     return await logout(`/auth/logout`).then(async (res) => {
-      await invalidateAll();
+      // await invalidateAll();
       message = res.message || res.data?.message;
 
       configSnackbar(message);

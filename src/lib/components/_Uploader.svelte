@@ -3,6 +3,7 @@
 
   import { page } from '$app/stores';
   import { onMount, createEventDispatcher, getContext } from 'svelte';
+  import { session } from '$lib/stores';
   import PreviewTemplate from './_PreviewTemplate.svelte';
   import Button, { Label, Icon } from '@smui/button';
   import LinearProgress from '@smui/linear-progress';
@@ -29,7 +30,6 @@
   let options;
   let count = 0;
 
-  $: session = $page.data.session;
   $: hasFiles = !!count;
   $: closed = !hasFiles;
   $: if (!hasFiles) progress = 0; // reset progress when removing last file
@@ -77,7 +77,7 @@
 
   onMount(async () => {
     options = {
-      url: `${base}/${path}?token=${session.user?.jwt}`,
+      url: `${base}/${path}?token=${$session.user?.jwt}`,
       timeout,
       paramName: 'Files',
       uploadMultiple,

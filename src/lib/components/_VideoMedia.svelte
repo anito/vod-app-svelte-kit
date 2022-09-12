@@ -23,7 +23,6 @@
   let canPlay = false;
   let timeoutId;
 
-  // $: session = $page.data.session;
   $: currentUser = $users.find((user) => user.id == $session.user?.id);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: token = currentUser?.jwt;

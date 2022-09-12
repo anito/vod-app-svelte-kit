@@ -2,11 +2,10 @@
   // @ts-nocheck
 
   import './_chip.scss';
-  import { page } from '$app/stores';
   import { onMount } from 'svelte';
   import Chip, { Set, LeadingIcon, Text } from '@smui/chips';
   import Dot from './_Dot.svelte';
-  import { ticker } from '$lib/stores';
+  import { session, ticker } from '$lib/stores';
   import { _ } from 'svelte-i18n';
 
   export let prefix = '';
@@ -26,7 +25,6 @@
 
   prefix === true && (prefix = '');
 
-  $: session = $page.data.session;
   $: clName = !isNaN(warning) && $ticker / 1000 <= warning ? 'warning' : className;
   $: isWarning = clName === 'warning';
   $: isVisible = !warningOnly || isWarning;
@@ -72,7 +70,7 @@
   }
 </script>
 
-{#if session.user}
+{#if $session.user}
   <div class="container" class:show class:isWarning>
     <Set chips={[{ id: 0 }]} let:chip>
       <Chip class={clName} on:MDCChip:interaction {chip}>

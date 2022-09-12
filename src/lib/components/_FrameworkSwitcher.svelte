@@ -5,7 +5,7 @@
   import { dev } from '$app/environment';
   import { goto } from '$app/navigation';
   import { tick } from 'svelte';
-  import { frameworks } from '$lib/stores';
+  import { frameworks, session } from '$lib/stores';
   import Menu, { SelectionGroup, SelectionGroupIcon } from '@smui/menu';
   import { Anchor } from '@smui/menu-surface';
   import List, { Item, Separator, Text } from '@smui/list';
@@ -33,8 +33,7 @@
   let menu;
   let menuAnchor;
 
-  $: session = $page.data.session;
-  $: token = session.user?.jwt;
+  $: token = $session.user?.jwt;
   $: withToken = (token && `/login?token=${token}&redirect=`) || '';
   $: redirect = `${$frameworks.host}${withToken}${$page.url.pathname}${$page.url.search}`;
 

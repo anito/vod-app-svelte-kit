@@ -11,7 +11,7 @@
   import List, { Item, Graphic, Separator, Text } from '@smui/list';
   import Button, { Label, Icon as ButtonIcon } from '@smui/button';
   import IconButton, { Icon } from '@smui/icon-button';
-  import { videos, videosAll, users, flash, infos } from '$lib/stores';
+  import { flash, infos, session, users, videos, videosAll } from '$lib/stores';
   import {
     SimpleVideoCard,
     DateRangePicker,
@@ -71,7 +71,6 @@
   let isExpired;
   let itemsList = {};
 
-  $: session = $page.data.session;
   $: dateFormat = $locale.startsWith('de') ? 'dd. MMM yyyy' : 'yyyy-MM-dd';
   $: currentUserIndex = ((id) => $users.findIndex((usr) => usr.id === id))(selectionUserId);
   $: userVideos = ((idx) => {
@@ -135,7 +134,7 @@
     ($infos?.has(selectionUserId) &&
       $infos.get(selectionUserId).params.filter((info) => info.type === 'issue')) ||
     [];
-  $: hasPrivileges = session.role === ADMIN || session.role === SUPERUSER;
+  $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: hasCurrentPrivileges = role === ADMIN || role === SUPERUSER;
 
   onMount(() => {
@@ -265,7 +264,7 @@
   function saveUser(data) {
     return api.put(`users/${selectionUserId}?locale=${$locale}`, {
       data,
-      token: session.user?.jwt
+      token: $session.user?.jwt
     });
   }
 

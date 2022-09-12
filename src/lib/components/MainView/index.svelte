@@ -1,14 +1,12 @@
 <script>
   // @ts-nocheck
 
-  import { page } from '$app/stores';
+  import { session } from '$lib/stores';
   import ArticleList from '../ArticleList/index.svelte';
 
   export let tab = 'all';
   export let tag = null;
   export let p;
-
-  $: session = $page.data.session;
 
   function yourFeed() {
     tab = 'feed';
@@ -24,7 +22,7 @@
 <div class="col-md-9">
   <div class="feed-toggle">
     <ul class="nav nav-pills outline-active">
-      {#if session.user}
+      {#if $session.user}
         <li class="nav-item">
           <a href="." class="nav-link {tab === 'feed' ? 'active' : ''}" on:click={yourFeed}>
             Your Feed

@@ -1,7 +1,7 @@
 <script>
   // @ts-nocheck
 
-  import { page } from '$app/stores';
+  import { session } from '$lib/stores';
   import { Media } from '@smui/card';
   import { getExt, getMediaImage } from '$lib/utils';
 
@@ -18,9 +18,8 @@
   let id;
   let poster = (media && `${posterUrl}${getExt(media.src)}`) || posterUrl;
 
-  $: session = $page.data.session;
   $: media && (id = media.id);
-  $: id && ((id) => getMediaImage(id, session.user, settings).then((v) => (poster = v)))(id);
+  $: id && ((id) => getMediaImage(id, $session.user, settings).then((v) => (poster = v)))(id);
 </script>
 
 <Media aspectRatio="16x9" style="background-image:url({poster})" />

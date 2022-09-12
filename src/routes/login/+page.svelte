@@ -2,7 +2,7 @@
   // @ts-nocheck
 
   import { page } from '$app/stores';
-  import { goto, invalidateAll } from '$app/navigation';
+  import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
   import { ListMessages, ListErrors, LoginForm } from '$lib/components';
   import { flash, session } from '$lib/stores';
