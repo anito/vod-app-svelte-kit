@@ -12,6 +12,7 @@ export async function GET({ locals, url }) {
       .get(`users/login?token=${token}&locale=${lang}`, { fetch })
       .then(async (res) => {
         if (res.success) {
+          /** @type {import('$lib/types').User} */
           const { id, name, avatar, jwt, role, groups } = { ...res.data.user, ...res.data };
 
           await locals.session.destroy();
@@ -30,12 +31,14 @@ export async function GET({ locals, url }) {
   throw error(401, 'This method is only allowed for token logins');
 }
 
+/** @type {import('./$types').RequestHandler} */
 export async function POST({ locals, request }) {
   const data = await request.json();
   const lang = get(locale);
 
   return await api.post(`users/login?locale=${lang}`, { data, fetch }).then(async (res) => {
     if (res.success) {
+      /** @type {import('$lib/types').User} */
       const { id, name, avatar, jwt, role, groups } = { ...res.data.user, ...res.data };
 
       await locals.session.destroy();
