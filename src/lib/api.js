@@ -35,7 +35,7 @@ async function send(atts = {}) {
     .then((res) => {
       try {
         return JSON.parse(res);
-      } catch (_) {}
+      } catch (error) {}
     })
     .catch((err) => {
       console.log('API FETCH ERROR', err);

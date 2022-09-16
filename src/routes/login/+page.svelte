@@ -59,7 +59,7 @@
     if ($session.user) {
       setTimeout(() => goto(processRedirect($page.url.searchParams, $session)), 1000);
     } else {
-      // setTimeout(() => goto('/login'), 1000);
+      setTimeout(() => goto('/login'), 1000);
     }
   }
 </script>
