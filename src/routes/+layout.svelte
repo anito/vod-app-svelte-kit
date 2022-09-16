@@ -47,6 +47,7 @@
   } from '$lib/components';
   import { svg_manifest } from '$lib/svg_manifest';
   import { _, locale } from 'svelte-i18n';
+  import { writable } from 'svelte/store';
 
   export let data;
 
@@ -66,6 +67,7 @@
   let snackbar;
   let loaderBackgroundOpacity = 1;
   let loaderColor = 'var(--prime)';
+  let isMounted = false;
 
   setContext('fab', {
     setFab: (name) => fabs.update(name),
@@ -100,8 +102,9 @@
     }
   });
 
-  $: console.log('DATA.SESSION +layout.svelte', data.session);
-  $: console.log('DATA.SESSION +layout.svelte $page (store)', $page.data.session);
+  $: console.log('SESSION', $session);
+  // $: console.log('DATA.SESSION +layout.svelte', data.session);
+  // $: console.log('DATA.SESSION +layout.svelte $page (store)', $page.data.session);
   $: data && saveConfig(data.config);
   $: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
   $: token = $session.user?.jwt;
@@ -122,7 +125,15 @@
   $: searchParams = $page.url.searchParams.toString();
   $: search = searchParams && `?${searchParams}`;
 
+  const mounted = writable(isMounted);
+
+  setContext('mounted', {
+    mounted
+  });
+
   onMount(() => {
+    $mounted = true;
+    console.log('Layout mounted');
     root = document.documentElement;
     setTimeout(() => {
       loaderBackgroundOpacity = 0.45;
@@ -260,20 +271,14 @@
 
   function handleSnackbarClosed() {}
 
-  async function tickerStartHandler(e) {
+  function tickerStartHandler(e) {
     let { user, groups, renewed } = { ...e.detail };
     const { id, name, jwt, avatar, role } = { ...user };
+    console.log('tickerStartHandler', name);
 
-    // await invalidateAll();
+    invalidateAll();
 
-    proxyEvent('ticker:started', e.detail);
-
-    $sessionCookie = {
-      ...$sessionCookie,
-      user: { id, name, jwt, avatar },
-      role,
-      groups
-    };
+    // sessionCookie.update({ user: { id, name, jwt, avatar }, role, groups });
 
     renewed && localStorage.setItem('renewed', renewed);
     configSnackbar(
@@ -285,6 +290,7 @@
   }
 
   async function tickerEndHandler(e) {
+    console.log('tickerEndHandler', $session.user);
     if ($session.user) {
       await killSession();
       const path = e.detail.path || '/';
@@ -297,7 +303,7 @@
     if ($session.user) {
       const start = new Date().toISOString();
       const response = await post('/session/extend', start);
-      // await invalidateAll();
+      invalidateAll();
       sessionCookie.update(response);
     }
   }
@@ -307,8 +313,8 @@
     $sessionCookie.role = null;
     $sessionCookie.groups = null;
 
+    invalidateAll();
     return await logout(`/auth/logout`).then(async (res) => {
-      // await invalidateAll();
       message = res.message || res.data?.message;
 
       configSnackbar(message);

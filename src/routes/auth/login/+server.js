@@ -1,10 +1,9 @@
-// @ts-nocheck
-
 import * as api from '$lib/api';
 import { error, json } from '@sveltejs/kit';
 import { get } from 'svelte/store';
 import { locale } from 'svelte-i18n';
 
+/** @type {import('./$types').RequestHandler} */
 export async function GET({ locals, url }) {
   const token = url.searchParams.get('token');
   const lang = get(locale);

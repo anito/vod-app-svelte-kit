@@ -8,9 +8,10 @@
   import { flash, session } from '$lib/stores';
   import { sitename } from '$lib/stores';
   import { fly } from 'svelte/transition';
-  import { processRedirect, proxyEvent, post } from '$lib/utils';
+  import { processRedirect, proxyEvent } from '$lib/utils';
   import Paper, { Content } from '@smui/paper';
   import { _ } from 'svelte-i18n';
+  import { getContext } from 'svelte';
 
   export let data;
 
@@ -19,14 +20,13 @@
     duration: 200
   };
   const textTransitionParams = { ...transitionParams, x: -80 };
+  const { mounted } = getContext('mounted');
 
   let errors = null;
 
+  $: $mounted && init();
   $: loggedin = !!$session.user;
   $: outroended = loggedin;
-  /**
-   * Define header messages dependent on Login condition
-   */
   $: message = $session.user
     ? $_('text.welcome-message', { values: { name: $session.user.name } })
     : $page.url.searchParams.has('token')
@@ -39,44 +39,28 @@
     });
   }
 
-  onMount(() => {
-    window.addEventListener('ticker:started', tickerStartedHandler);
-    /**
-     * DISPLAYING RESULT MESSAGES
-     * There are two steps:
-     *
-     * Step 1: The flashStore handles the expiration time the first message should stay visible (e.g. after the servers result is received)
-     *
-     * Step 2: After specified expiration time the message will be invalidated by the store and
-     * depending on outroended flag the second message should be animated.
-     * Once this animation is completed the introendHandler should run
-     */
+  onMount(() => {});
+
+  function init() {
     if (data.hasToken) {
-      // Token login
       const { success, data: serverData } = { ...data };
+      console.log(success, serverData);
       if (success) {
-        proxyEvent('ticker:start', { ...serverData });
+        proxyEvent('ticker:start', serverData);
+        flash.update({ ...serverData, type: 'success', timeout: 2000 });
       } else {
         flash.update({ ...serverData, type: 'error', timeout: 2000 });
       }
     }
-
-    return () => {
-      window.removeEventListener('ticker:started', tickerStartedHandler);
-    };
-  });
+  }
 
   async function introendHandler() {
+    console.log('introend', !!$session.user);
     if ($session.user) {
       setTimeout(() => goto(processRedirect($page.url.searchParams, $session)), 1000);
     } else {
-      setTimeout(() => goto('/login'), 1000);
+      // setTimeout(() => goto('/login'), 1000);
     }
-  }
-
-  function tickerStartedHandler(e) {
-    const data = e.detail;
-    flash.update({ ...data, type: 'success', timeout: 2000 });
   }
 </script>
 
@@ -105,13 +89,11 @@
           </div>
         {:else if outroended}
           <div
-            class="flex justify-center message {message.type}"
-            in:fly={textTransitionParams}
+            class="flex justify-center message success"
+            in:fly={{ ...textTransitionParams }}
             on:introend={() => introendHandler()}
           >
-            <h5 class="m-2 mdc-typography--headline5 headline">
-              {message}
-            </h5>
+            <h5 class="m-2 mdc-typography--headline5 headline">{message}</h5>
           </div>
         {/if}
       </div>

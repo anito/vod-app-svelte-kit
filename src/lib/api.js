@@ -5,8 +5,7 @@ import { locale as i18n } from 'svelte-i18n';
 let locale;
 i18n.subscribe((val) => (locale = val));
 
-// export const base = dev ? 'http://localhost:8765/api' : 'https://vod.webpremiere.de/api';
-export const base = dev ? `https://physio.mbp/api` : `https://vod.webpremiere.de/api`;
+export const base = dev ? `https://physio.mbp/v1` : `https://vod.webpremiere.de/v1`;
 
 async function send(atts = {}) {
   if (browser) atts = { fetch: window.fetch, ...atts };

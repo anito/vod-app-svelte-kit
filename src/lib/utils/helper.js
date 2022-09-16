@@ -141,7 +141,8 @@ export let convert = (() => {
 export const proxyEvent = function (eventType, detail = {}) {
   eventType = typeof eventType === 'string' ? eventType : detail.eventType;
   if (typeof window !== 'undefined') {
-    window.dispatchEvent(new CustomEvent(eventType, { detail }));
+    console.log('dispatching event', eventType, { detail }),
+      window.dispatchEvent(new CustomEvent(eventType, { detail, bubbles: true }));
   } else {
     console.error(`[${browser ? 'Browser' : 'Node'}] Could not dispatch event ${eventType}`);
   }

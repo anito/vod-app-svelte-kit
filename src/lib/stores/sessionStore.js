@@ -5,9 +5,11 @@ import { sessionCookie } from '$lib/stores';
 
 function createStore() {
   return derived(
-    [sessionCookie, page],
-    ([$sessionCookie, $page], set) => {
-      set({ ...$page.data.session, ...$sessionCookie });
+    [page, sessionCookie],
+    ([$page, $sessionCookie], set) => {
+      const session = { ...$page.data.session };
+      // const session = { ...$sessionCookie, ...$page.data.session };
+      set(session);
     },
     void {} // initial value
   );

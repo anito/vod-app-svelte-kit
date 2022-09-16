@@ -22,7 +22,7 @@
   const client_id = import.meta.env.VITE_CLIENT_ID; // Ggogle Client ID
   const appId = import.meta.env.VITE_APP_ID; // Facebook App ID
 
-  const { getSnackbar, configSnackbar } = getContext('snackbar');
+  const { getSnackbar } = getContext('snackbar');
   const toplevel = dev ? 'dev' : 'de';
 
   // Fixtures
@@ -102,6 +102,7 @@
 
         if (success) {
           proxyEvent('ticker:start', { ...data });
+          flash.update({ ...data, type: 'success', timeout: 2000 });
           await tick();
           reset();
         } else {
