@@ -1,11 +1,10 @@
 <script>
   // @ts-nocheck
   import * as api from '$lib/api';
-  import { goto } from '$app/navigation';
+  import { goto, invalidateAll } from '$app/navigation';
   import { onMount } from 'svelte';
   import { flash, googleUser } from '$lib/stores';
   import { _ } from 'svelte-i18n';
-  import { get } from 'svelte/store';
 
   export let client_id;
 
@@ -35,13 +34,12 @@
   }
 
   async function decodeJwtResponse(token) {
-    flash.update({ message: $_('text.one-moment') });
-
+    flash.update({ message: $_('text.one-moment'), timeout: 2000 });
     await api.post('users/google_login', { token }).then(async (res) => {
       if (res.success) {
         googleUser.update(res.data.user);
-        goto(`/login/redirect/?token=${res.data.token}`).then(() => {
-          setTimeout(() => renderSignIn(), 500);
+        goto(`/login/redirect?token=${res.data.token}`).then(() => {
+          setTimeout(() => renderSignIn(), 100);
         });
       }
     });

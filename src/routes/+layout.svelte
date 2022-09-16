@@ -1,6 +1,4 @@
 <script>
-  // @ts-nocheck
-
   import '../app.css';
   import '$lib/components/_notched_outline.scss';
   import * as api from '$lib/api';
@@ -33,7 +31,8 @@
     urls,
     videos,
     videoEmitter,
-    sessionCookie
+    sessionCookie,
+    flash
   } from '$lib/stores';
   import { Modal } from '$lib/components';
   import { DoubleBounce } from 'svelte-loading-spinners';
@@ -49,11 +48,13 @@
   import { _, locale } from 'svelte-i18n';
   import { writable } from 'svelte/store';
 
+  /** @type {import('./$types').PageData} */
   export let data;
 
   const snackbarLifetimeDefault = 4000;
   const redirectDelay = 300;
 
+  /** @type {HTMLElement} */
   let root;
   let base;
   let message = '';
@@ -207,8 +208,8 @@
     settings.update(config);
   }
   /**
-   * Saves video changes and deletions
-   * @param item
+   * Saves video changes
+   * @param {import('$lib/types').VideoEmitter} VideoEmitterData
    */
   async function put({ data, show }) {
     await api.put(`videos/${data.id}`, { data, token: $session.user?.jwt }).then((res) => {
@@ -223,6 +224,10 @@
     });
   }
 
+  /**
+   * Deletes a video
+   * @param {import('$lib/types').VideoEmitter} VideoEmitterData
+   */
   async function del({ data, show }) {
     await api.del(`videos/${data.id}`, { token }).then((res) => {
       if (res.success) {
@@ -273,12 +278,11 @@
 
   function tickerStartHandler(e) {
     let { user, groups, renewed } = { ...e.detail };
+
     const { id, name, jwt, avatar, role } = { ...user };
-    console.log('tickerStartHandler', name);
 
-    invalidateAll();
-
-    // sessionCookie.update({ user: { id, name, jwt, avatar }, role, groups });
+    // invalidateAll();
+    sessionCookie.update({ user: { id, name, jwt, avatar }, role, groups });
 
     renewed && localStorage.setItem('renewed', renewed);
     configSnackbar(
@@ -303,7 +307,7 @@
     if ($session.user) {
       const start = new Date().toISOString();
       const response = await post('/session/extend', start);
-      invalidateAll();
+      // invalidateAll();
       sessionCookie.update(response);
     }
   }
@@ -313,7 +317,7 @@
     $sessionCookie.role = null;
     $sessionCookie.groups = null;
 
-    invalidateAll();
+    // invalidateAll();
     return await logout(`/auth/logout`).then(async (res) => {
       message = res.message || res.data?.message;
 

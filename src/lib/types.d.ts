@@ -69,6 +69,20 @@ export interface VideoElement<VideoElementType = Record<string, any>> {
   promise: any
 }
 
+export interface VideoEmitter<VideoEmitterType = Record<string, any>> {
+  method: string
+  data: Video
+  show: boolean
+}
+
+export interface Sent<SentType = Record<string, any>> {
+  id: string
+}
+
+export interface Inbox<InboxType = Record<string, any>> {
+  id: string
+}
+
 // export interface Session<SessionType = Record<string, any>> {
 //   data: SessionType;
 //   expires: Date | undefined;

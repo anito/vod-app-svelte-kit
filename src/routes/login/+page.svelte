@@ -44,7 +44,7 @@
   function init() {
     if (data.hasToken) {
       const { success, data: serverData } = { ...data };
-      console.log(success, serverData);
+      console.log(success, serverData.message);
       if (success) {
         proxyEvent('ticker:start', serverData);
         flash.update({ ...serverData, type: 'success', timeout: 2000 });

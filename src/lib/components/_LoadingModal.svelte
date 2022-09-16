@@ -1,6 +1,4 @@
 <script>
-  // @ts-nocheck
-
   import { navigating } from '$app/stores';
   import { afterNavigate, beforeNavigate } from '$app/navigation';
   import { onMount } from 'svelte';
@@ -13,16 +11,31 @@
   const SUPRESS_SEARCHES_KEY = 'searches';
   const SUPPRESS_PATH_KEY = 'paths';
 
-  // configure url (navigate) pathnames/searchParams here which shall supress the LoadinSpinner
+  /**
+   * Configure where to supress the LoadinSpinner
+   * @type {string[]} - Configure url query names which shall supress the LoadinSpinner
+   */
   const searches = ['active'];
-  const paths = [];
+  /**
+   * @type {string[]} - Configure pathnames which shall supress the LoadinSpinner
+   */
+  const pathnames = [];
 
+  /**
+   * @type {HTMLElement}
+   */
   let root;
   let disabled = false;
+  /**
+   * @type {ReturnType<typeof setTimeout>}
+   */
   let timeoutId;
   let omitt = new Map([
     [
       SUPRESS_SEARCHES_KEY,
+      /**
+       * @param {import('@sveltejs/kit').NavigationTarget} to
+       */
       (to) => {
         searches.forEach((slug) => {
           if (to.url.searchParams.has(slug)) {
@@ -35,8 +48,8 @@
     [
       SUPPRESS_PATH_KEY,
       (to) => {
-        paths.forEach((slug) => {
-          if (to.pathname.indexOf(slug) != -1) {
+        pathnames.forEach((slug) => {
+          if (to.url.pathname.indexOf(slug) != -1) {
             disabled = true;
             return;
           }
@@ -49,8 +62,8 @@
     root?.classList.remove('navigating');
     disabled = false;
     omitt.forEach((fn, key) => {
-      key === SUPRESS_SEARCHES_KEY && fn(to);
-      key === SUPPRESS_PATH_KEY && fn(to);
+      key === SUPRESS_SEARCHES_KEY && to && fn(to);
+      key === SUPPRESS_PATH_KEY && to && fn(to);
     });
   });
 
@@ -67,7 +80,7 @@
     })($navigating);
   $: _step1 = backgroundColor.slice(0, 7);
   $: bgColor = `${_step1}${(_step1.length === 7 && opacityToHex) || ''}`;
-  $: opacityToHex = convert.dec2Hex(parseFloat(opacity), true);
+  $: opacityToHex = convert.dec2Hex(opacity, true);
 </script>
 
 <div class="modal-outer" style="background-color: {bgColor}">
