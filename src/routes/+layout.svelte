@@ -1,4 +1,6 @@
 <script>
+  // @ts-nocheck
+
   import '../app.css';
   import '$lib/components/_notched_outline.scss';
   import * as api from '$lib/api';
@@ -54,24 +56,65 @@
   const snackbarLifetimeDefault = 4000;
   const redirectDelay = 300;
 
-  /** @type {HTMLElement} */
+  /**
+   * @type {HTMLElement}
+   */
   let root;
+  /**
+   * @type {HTMLDivElement}
+   */
   let base;
+  /**
+   * @type {string}
+   */
   let message = '';
+  /**
+   * @type {string}
+   */
   let action = '';
+  /**
+   * @type {string}
+   */
   let path = '';
+  /**
+   * @type {ReturnType<typeof setTimeout>}
+   */
   let timeoutId;
+  /**
+   * @type {any}
+   */
   let isMobileDevice;
+  /**
+   * @type {string}
+   */
   let loggedInButtonTextSecondLine;
+  /**
+   * @type {import("svelte/store").Unsubscriber}
+   */
   let unsubscribeVideoEmitter;
+  /**
+   * @type {string}
+   */
   let emphasize;
+  /**
+   * @type {import("@smui/snackbar").SnackbarComponentDev}
+   */
   let snackbar;
+  /**
+   * @type {number}
+   */
   let loaderBackgroundOpacity = 1;
+  /**
+   * @type {string}
+   */
   let loaderColor = 'var(--prime)';
+  /**
+   * @type {boolean}
+   */
   let isMounted = false;
 
   setContext('fab', {
-    setFab: (name) => fabs.update(name),
+    setFab: (/** @type {any} */ name) => fabs.update(name),
     restoreFab: () => fabs.restore()
   });
 
@@ -103,7 +146,7 @@
     }
   });
 
-  $: console.log('SESSION', $session);
+  // $: console.log('SESSION', $session);
   // $: console.log('DATA.SESSION +layout.svelte', data.session);
   // $: console.log('DATA.SESSION +layout.svelte $page (store)', $page.data.session);
   $: data && saveConfig(data.config);
@@ -134,7 +177,6 @@
 
   onMount(() => {
     $mounted = true;
-    console.log('Layout mounted');
     root = document.documentElement;
     setTimeout(() => {
       loaderBackgroundOpacity = 0.45;
@@ -217,7 +259,7 @@
 
       if (show) {
         let message = res.message || res.data.message;
-        snackbar.isOpen && snackbar.close();
+        snackbar.isOpen() && snackbar.close();
         configSnackbar(message);
         snackbar.open();
       }
@@ -237,7 +279,7 @@
 
       if (show) {
         let message = res.message || res.data.message;
-        snackbar.isOpen && snackbar.close();
+        snackbar.isOpen() && snackbar.close();
         configSnackbar(message);
         snackbar.open();
       }
@@ -276,9 +318,8 @@
 
   function handleSnackbarClosed() {}
 
-  function tickerStartHandler(e) {
-    let { user, groups, renewed } = { ...e.detail };
-
+  function tickerStartHandler(ev) {
+    const { user, groups, renewed } = { ...ev.detail };
     const { id, name, jwt, avatar, role } = { ...user };
 
     // invalidateAll();
@@ -293,14 +334,13 @@
     snackbar?.open();
   }
 
-  async function tickerEndHandler(e) {
-    console.log('tickerEndHandler', $session.user);
+  async function tickerEndHandler(ev) {
     if ($session.user) {
       await killSession();
-      const path = e.detail.path || '/';
-      const redirect = createRedirectSlug($page.url);
-      goto(`${path}${redirect}`);
     }
+    const path = ev.detail.path || '/';
+    const redirect = createRedirectSlug($page.url);
+    setTimeout(() => goto(`${path}${redirect}`), 200);
   }
 
   async function tickerExtendHandler() {

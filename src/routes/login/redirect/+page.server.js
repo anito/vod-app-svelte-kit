@@ -1,5 +1,9 @@
 /** @type {import('./$types').PageServerLoad} */
 export function load({ url }) {
-  const token = url.searchParams.get('token');
-  return token ? { token } : {};
+  /** @type {Object<string, any>} */
+  const params = {};
+  for (const [key, val] of url.searchParams) {
+    params[key] = val === 'true' ? true : val === 'false' ? false : val;
+  }
+  return params.token ? { ...params } : {};
 }

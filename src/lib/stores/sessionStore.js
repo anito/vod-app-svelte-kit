@@ -7,7 +7,8 @@ function createStore() {
     [page, sessionCookie],
     ([$page, $sessionCookie], set) => {
       // const session = { ...$page.data.session };
-      const session = { ...$sessionCookie };
+      const session = { ...$page.data.session, ...$sessionCookie };
+      // const session = { ...$sessionCookie };
       set(session);
     },
     {} // initial value

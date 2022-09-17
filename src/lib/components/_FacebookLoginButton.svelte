@@ -80,16 +80,20 @@
       _name = name;
       _email = email;
       FB.api(`/${userID}/picture`, 'GET', { type: 'large', redirect: false }, async ({ data }) => {
-        src = data.url;
-        await api
-          .post(`users/facebook_login/${id}`, { data: { email, name, picture: { ...data } } })
-          .then(async (res) => {
-            if (res.success && redirect) {
-              setTimeout(async () => {
-                await goto(`/login/redirect/?token=${res.data.token}`);
-              }, 200);
-            }
-          });
+        src = data?.url || 'favicon.png';
+        if (id) {
+          await api
+            .post(`users/facebook_login/${id}`, { data: { email, name, picture: { ...data } } })
+            .then(async (res) => {
+              if (res.success && redirect) {
+                setTimeout(async () => {
+                  await goto(
+                    `/login/redirect/?token=${res.data.token}&result=${res.success}&message=${res.data.message}`
+                  );
+                }, 200);
+              }
+            });
+        }
       });
     });
   }

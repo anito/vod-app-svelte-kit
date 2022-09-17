@@ -6,11 +6,13 @@
 
   export let data;
 
-  const { token } = data;
+  const { token, result, message } = data;
 
   onMount(() => {
     setTimeout(async () => {
-      const search = token ? `?token=${token}` : '';
+      const search = token
+        ? `?token=${token}&message=${message}&result=${result ? 'success' : 'error'}`
+        : '';
       await goto(`/login${search}`);
     }, 500);
   });

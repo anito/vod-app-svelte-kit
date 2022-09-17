@@ -1,4 +1,5 @@
-export async function load({ locals }: { locals: { session: any } }) {
+/** @type {import('./$types').LayoutServerLoad} */
+export async function load({ locals }) {
   return { session: locals.session.data, rnd: rnd() };
 }
 

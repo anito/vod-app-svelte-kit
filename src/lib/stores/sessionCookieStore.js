@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 
 function createStore() {
-  const { update, subscribe, set } = writable();
+  const { update, subscribe, set } = writable({});
 
   return {
     /** @param {import('$lib/types').Session} val */

@@ -36,11 +36,15 @@
   async function decodeJwtResponse(token) {
     flash.update({ message: $_('text.one-moment'), timeout: 2000 });
     await api.post('users/google_login', { token }).then(async (res) => {
+      googleUser.update(res.data.user);
+      goto(
+        `/login/redirect?token=${res.data.token}&result=${res.success}&message=${res.data.message}`
+      ).then(() => {
+        setTimeout(() => renderSignIn(), 100);
+      });
       if (res.success) {
-        googleUser.update(res.data.user);
-        goto(`/login/redirect?token=${res.data.token}`).then(() => {
-          setTimeout(() => renderSignIn(), 100);
-        });
+      } else {
+        // setTimeout(() => renderSignIn(), 100);
       }
     });
   }

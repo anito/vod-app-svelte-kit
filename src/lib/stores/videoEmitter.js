@@ -1,15 +1,14 @@
-// @ts-nocheck
 import { writable } from 'svelte/store';
 
 function createStore() {
-	const { subscribe, update, set } = writable({});
+  const { subscribe, update, set } = writable({ method: '', data: {}, show: false });
 
-	return {
-		subscribe,
-		update,
-		dispatch: (val) => update(() => val),
-		set
-	};
+  return {
+    subscribe,
+    update,
+    dispatch: (/** @type {import('$lib/types').VideoEmitter} */ val) => update(() => val),
+    set
+  };
 }
 
 export default createStore();

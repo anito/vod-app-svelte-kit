@@ -2,7 +2,7 @@
   // @ts-nocheck
 
   import { page } from '$app/stores';
-  import { goto } from '$app/navigation';
+  import { goto, invalidateAll } from '$app/navigation';
   import { onMount } from 'svelte';
   import { ListMessages, ListErrors, LoginForm } from '$lib/components';
   import { flash, session } from '$lib/stores';
@@ -16,46 +16,55 @@
   export let data;
 
   const transitionParams = {
-    delay: 0,
-    duration: 200
+    delay: 100,
+    duration: 600
   };
   const textTransitionParams = { ...transitionParams, x: -80 };
   const { mounted } = getContext('mounted');
+  const promise = new Promise((resolve) => {
+    setTimeout(() => resolve(), 500);
+  });
 
   let errors = null;
 
   $: $mounted && init();
   $: loggedin = !!$session.user;
-  $: outroended = loggedin;
-  $: message = $session.user
-    ? $_('text.welcome-message', { values: { name: $session.user.name } })
-    : $page.url.searchParams.has('token')
-    ? $_('text.one-moment')
-    : $_('text.login-text');
-  $: if (!loggedin) {
-    flash.update({
-      message,
-      type: 'success'
-    });
-  }
+  $: ({ message, permanent, type } = data.session.user
+    ? {
+        message: $_('text.welcome-message', { values: { name: data.session.user.name } }),
+        type: 'success',
+        permanent: false
+      }
+    : data.token && !data.result
+    ? {
+        message: $_('text.one-moment'),
+        type: 'success',
+        permanent: false
+      }
+    : data.token && data.result
+    ? {
+        message: data.message,
+        type: data.result,
+        permanent: false
+      }
+    : {
+        message: $_('text.login-text'),
+        type: 'success',
+        permanent: true
+      });
 
   onMount(() => {});
 
   function init() {
-    if (data.hasToken) {
-      const { success, data: serverData } = { ...data };
-      console.log(success, serverData.message);
-      if (success) {
-        proxyEvent('ticker:start', serverData);
-        flash.update({ ...serverData, type: 'success', timeout: 2000 });
-      } else {
-        flash.update({ ...serverData, type: 'error', timeout: 2000 });
+    if (data.token) {
+      if (data.result === 'success') {
+        proxyEvent('ticker:start', data);
       }
+      flash.update({ type: data.result, message, permanent });
     }
   }
 
   async function introendHandler() {
-    console.log('introend', !!$session.user);
     if ($session.user) {
       setTimeout(() => goto(processRedirect($page.url.searchParams, $session)), 1000);
     } else {
@@ -73,39 +82,36 @@
   out:fly={{ x: 200 }}
   class="flex flex-1 justify-center paper-wrapper"
 >
-  <div class="wrapper">
-    <Paper elevation="20" style="margin-top: calc(100vh / 6);">
-      <div class="flyer">
-        {#if $flash.message}
-          <div
-            class="flex justify-center message {$flash.type}"
-            transition:fly={textTransitionParams}
-            on:outrostart={(e) => (outroended = false)}
-            on:outroend={(e) => (outroended = true)}
-          >
-            <h5 class="m-2 mdc-typography--headline5 headline">
-              {$flash.message}
-            </h5>
-          </div>
-        {:else if outroended}
-          <div
-            class="flex justify-center message success"
-            in:fly={{ ...textTransitionParams }}
-            on:introend={() => introendHandler()}
-          >
-            <h5 class="m-2 mdc-typography--headline5 headline">{message}</h5>
-          </div>
-        {/if}
-      </div>
-      <div class="login-form loggedin" class:loggedin>
-        <Paper elevation="0" style="padding-top: 0;">
-          <Content>
-            <LoginForm />
-          </Content>
-        </Paper>
-      </div>
-    </Paper>
-  </div>
+  {#await promise then}
+    <div class="wrapper">
+      <Paper elevation="20" style="margin-top: calc(100vh / 6);">
+        <div class="flyer">
+          {#if $flash.message}
+            <div class="flex justify-center message {$flash.type}" in:fly={textTransitionParams}>
+              <h5 class="m-2 mdc-typography--headline5 headline">
+                {$flash.message}
+              </h5>
+            </div>
+          {:else}
+            <div
+              class="flex justify-center message {type}"
+              in:fly={textTransitionParams}
+              on:introend={introendHandler}
+            >
+              <h5 class="m-2 mdc-typography--headline5 headline">{message}</h5>
+            </div>
+          {/if}
+        </div>
+        <div class="login-form loggedin" class:loggedin>
+          <Paper elevation="0" style="padding-top: 0;">
+            <Content>
+              <LoginForm />
+            </Content>
+          </Paper>
+        </div>
+      </Paper>
+    </div>
+  {/await}
 </div>
 
 <div class="hidden">
