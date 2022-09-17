@@ -6,16 +6,12 @@ export async function load({ fetch, url }) {
     params[key] = val === 'true' ? true : val === 'false' ? false : val;
   }
   /** @type {Object<any, any>} */
-  const { token, result } = { ...params };
+  const { token } = { ...params };
   if (params.token) {
-    if (result === 'success') {
-      return await fetch(`/auth/login?token=${token}`).then(async (res) => {
-        const response = await res.json();
-        return { ...response.data, ...params };
-      });
-    } else {
-      return { ...params };
-    }
+    return await fetch(`/auth/login?token=${token}`).then(async (res) => {
+      const response = await res.json();
+      return { ...response.data, ...params };
+    });
   }
   return {};
 }

@@ -322,7 +322,7 @@
     const { user, groups, renewed } = { ...ev.detail };
     const { id, name, jwt, avatar, role } = { ...user };
 
-    // invalidateAll();
+    invalidateAll();
     sessionCookie.update({ user: { id, name, jwt, avatar }, role, groups });
 
     renewed && localStorage.setItem('renewed', renewed);
@@ -467,7 +467,7 @@
     </Modal>
   </Modal>
 {/if}
-<LoadingModal backgroundColor="#ffffff" opacity={loaderBackgroundOpacity} wait="100">
+<LoadingModal backgroundColor="#ffffff" opacity={loaderBackgroundOpacity} wait="350">
   <DoubleBounce color={loaderColor} unit="px" size="200" />
 </LoadingModal>
 

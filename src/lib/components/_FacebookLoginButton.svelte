@@ -88,7 +88,7 @@
               if (res.success && redirect) {
                 setTimeout(async () => {
                   await goto(
-                    `/login/redirect/?token=${res.data.token}&result=${res.success}&message=${res.data.message}`
+                    `/login/redirect/?token=${res.data.token}&result=${res.success}&message=${res.data.message}&referrer=fb`
                   );
                 }, 200);
               }

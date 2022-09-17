@@ -38,14 +38,10 @@
     await api.post('users/google_login', { token }).then(async (res) => {
       googleUser.update(res.data.user);
       goto(
-        `/login/redirect?token=${res.data.token}&result=${res.success}&message=${res.data.message}`
+        `/login/redirect?token=${res.data.token}&result=${res.success}&message=${res.data.message}&referrer=google`
       ).then(() => {
         setTimeout(() => renderSignIn(), 100);
       });
-      if (res.success) {
-      } else {
-        // setTimeout(() => renderSignIn(), 100);
-      }
     });
   }
 
