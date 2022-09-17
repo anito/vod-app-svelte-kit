@@ -29,9 +29,9 @@
 
   $: $mounted && init();
   $: loggedin = !!$session.user;
-  $: ({ message, permanent, type } = data.session.user
+  $: ({ message, permanent, type } = $session.user
     ? {
-        message: $_('text.welcome-message', { values: { name: data.session.user.name } }),
+        message: $_('text.welcome-message', { values: { name: $session.user.name } }),
         type: 'success',
         permanent: false
       }
