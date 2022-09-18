@@ -1,16 +1,16 @@
 /** @type {import('./$types').PageLoad} */
 export async function load({ fetch, url }) {
   /** @type {Object<string, any>} */
-  const params = {};
+  const searchParams = {};
   for (const [key, val] of url.searchParams) {
-    params[key] = val === 'true' ? true : val === 'false' ? false : val;
+    searchParams[key] = val === 'true' ? true : val === 'false' ? false : val;
   }
   /** @type {Object<any, any>} */
-  const { token } = { ...params };
-  if (params.token) {
+  const { token } = { ...searchParams };
+  if (searchParams.token) {
     return await fetch(`/auth/login?token=${token}`).then(async (res) => {
       const response = await res.json();
-      return { ...response.data, ...params };
+      return { ...response.data, ...searchParams };
     });
   }
   return {};

@@ -3,7 +3,7 @@
 
   import { page } from '$app/stores';
   import { goto, invalidateAll } from '$app/navigation';
-  import { onMount, tick } from 'svelte';
+  import { onMount } from 'svelte';
   import { ListMessages, ListErrors, LoginForm } from '$lib/components';
   import { flash, session } from '$lib/stores';
   import { sitename } from '$lib/stores';
@@ -52,6 +52,7 @@
         type: 'success',
         permanent: true
       });
+  $: console.log($session.user?.name, $page.data.session.user?.name);
 
   onMount(() => {});
 

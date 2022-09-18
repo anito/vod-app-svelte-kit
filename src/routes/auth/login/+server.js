@@ -6,10 +6,11 @@ import { locale } from 'svelte-i18n';
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ locals, url }) {
   const token = url.searchParams.get('token');
+  const type = url.searchParams.get('type');
   const lang = get(locale);
   if (token) {
     return await api
-      .get(`users/login?token=${token}&locale=${lang}`, { fetch })
+      .get(`users/login/${type}?token=${token}&locale=${lang}`, { fetch })
       .then(async (res) => {
         if (res.success) {
           /** @type {import('$lib/types').User} */

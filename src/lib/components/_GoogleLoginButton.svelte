@@ -35,14 +35,15 @@
 
   async function decodeJwtResponse(token) {
     flash.update({ message: $_('text.one-moment'), timeout: 2000 });
-    await api.post('users/google_login', { token }).then(async (res) => {
-      googleUser.update(res.data.user);
-      goto(
-        `/login/redirect?token=${res.data.token}&result=${res.success}&message=${res.data.message}&referrer=google`
-      ).then(() => {
-        setTimeout(() => renderSignIn(), 100);
-      });
-    });
+    goto('/login/google');
+    // await api.post('users/google_login', { token }).then(async (res) => {
+    //   googleUser.update(res.data.user);
+    //   goto(
+    //     `/login/redirect?token=${res.data.token}&result=${res.success}&message=${res.data.message}&referrer=google`
+    //   ).then(() => {
+    //     setTimeout(() => renderSignIn(), 100);
+    //   });
+    // });
   }
 
   function renderSignIn() {

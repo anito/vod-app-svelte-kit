@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { browser } from '$app/environment';
 import { ADMIN, SUPERUSER, INBOX } from './const';
 
@@ -203,6 +201,17 @@ export function createTabSearch(tab) {
       ? `?tab=${tab}&active=${INBOX}`
       : '';
   return search;
+}
+
+/**
+ * @params {URLSearchParams} searchParams
+ */
+export function searchParamsToObject(searchParams) {
+  const params = {};
+  for (const [key, val] of url.searchParams) {
+    params[key] = val === 'true' ? true : val === 'false' ? false : val;
+  }
+  return params;
 }
 
 Array.prototype.unique = function () {
