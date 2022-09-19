@@ -4,11 +4,11 @@ import {
   createTabSearch,
   equals,
   formatter,
-  minDigits,
   parseSearchParams,
   placeholderDotComAvatar,
   proxyEvent,
   processRedirect,
+  searchParamsToObject,
   slugify,
   sortByEndDate,
   sortByStartDate,
@@ -17,8 +17,7 @@ import {
   svg,
   windowSize,
   __key__,
-  __session__,
-  __ticker__
+  __session__
 } from './helper';
 import { INBOX, SENT, ADMIN, SUPERUSER, USER, TABS, DEFAULT_TAB } from './const';
 import {
@@ -55,7 +54,6 @@ export {
   isExpired,
   isToday,
   localeFormat,
-  minDigits,
   parseSearchParams,
   placeholderDotComAvatar,
   post,
@@ -65,6 +63,7 @@ export {
   proxyEvent,
   put,
   processRedirect,
+  searchParamsToObject,
   slugify,
   sortByEndDate,
   sortByStartDate,
@@ -77,7 +76,6 @@ export {
   windowSize,
   __key__,
   __session__,
-  __ticker__,
   INBOX,
   SENT,
   ADMIN,

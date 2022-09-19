@@ -1,30 +1,60 @@
 import { browser } from '$app/environment';
 import { ADMIN, SUPERUSER, INBOX } from './const';
 
+/**
+ *
+ * @param {*} a
+ * @param {*} b
+ * @returns
+ */
 export function sortByTitle(a, b) {
   let _a = a.title?.toUpperCase() || '';
   let _b = b.title?.toUpperCase() || '';
   return (_a < _b && -1) || (_a > _b && 1) || 0;
 }
 
+/**
+ *
+ * @param {*} a
+ * @param {*} b
+ * @returns {number}
+ */
 export function sortByName(a, b) {
   let _a = a.name?.toUpperCase() || '';
   let _b = b.name?.toUpperCase() || '';
   return (_a < _b && -1) || (_a > _b && 1) || 0;
 }
 
+/**
+ *
+ * @param {*} a
+ * @param {*} b
+ * @returns {number}
+ */
 export function sortByStartDate(a, b) {
   let aStart = a._joinData.start || new Date('3000');
   let bStart = b._joinData.start || new Date('3000');
-  return new Date(bStart) - new Date(aStart);
+  return new Date(bStart).getTime() - new Date(aStart).getTime();
 }
 
+/**
+ *
+ * @param {*} a
+ * @param {*} b
+ * @returns {number}
+ */
 export function sortByEndDate(a, b) {
   let aEnd = a._joinData.end || new Date('3000');
   let bEnd = b._joinData.end || new Date('3000');
-  return new Date(bEnd) - new Date(aEnd);
+  return new Date(bEnd).getTime() - new Date(aEnd).getTime();
 }
 
+/**
+ *
+ * @param {Object} obj_1
+ * @param {Object} obj_2
+ * @returns {boolean}
+ */
 export function equals(obj_1, obj_2) {
   let json_1 = typeof obj_1 === 'object' && JSON.stringify(obj_1);
   let json_2 = typeof obj_2 === 'object' && JSON.stringify(obj_2);
@@ -34,28 +64,34 @@ export function equals(obj_1, obj_2) {
   return false;
 }
 
-export function minDigits(m) {
-  toLocaleString('en-US', {
-    //this is the function that formats the numbers
-    minimumIntegerDigits: 2, //change this to your minimum length
-    useGrouping: false
-  });
-}
+/**
+ *
+ * @param {*} d
+ * @returns {string}
+ */
 export function formatter(d) {
-  let h, hrs, m, min, s, sec;
-  hrs = d / 1000 / 60 / 60;
-  min = !isNaN(((hrs % Math.floor(hrs)) * 60) % 60) || 0;
-  sec = !isNaN(((min % Math.floor(min)) * 60) % 60) || 0;
+  let hrs = d / 1000 / 60 / 60;
+  let min = (!isNaN(hrs) && ((hrs % Math.floor(hrs)) * 60) % 60) || 0;
+  let sec = (!isNaN(min) && ((min % Math.floor(min)) * 60) % 60) || 0;
   return `${Math.floor(hrs)}:${Math.floor(min)}:${Math.floor(sec)}`;
 }
 
+/**
+ *
+ * @param {URL} url
+ * @param {Map<string, any>} searchMap
+ * @returns {string}
+ */
 export function createRedirectSlug(url, searchMap = new Map([])) {
-  let path, searchParams;
+  /** @type {URLSearchParams} */
+  let searchParams;
+  let path;
   const ignored = ['login'];
 
   if (typeof url === 'string') {
-    url = new URL(url, window.location.hostname);
-    searchParams = new URLSearchParams(url);
+    let urlString = url;
+    url = new URL(urlString, window.location.hostname);
+    searchParams = new URLSearchParams(urlString);
   } else {
     searchParams = url.searchParams;
   }
@@ -71,7 +107,15 @@ export function createRedirectSlug(url, searchMap = new Map([])) {
   return `?redirect=${path}${parseSearchParams(searchParams)}`;
 }
 
-export function processRedirect(searchParams, session = {}) {
+/**
+ *
+ * @param {URLSearchParams} searchParams
+ * @param {Object} session
+ * @param {Object} session.role
+ * @param {import('$lib/types').User} session.user
+ * @returns
+ */
+export function processRedirect(searchParams, session) {
   const hasPrivileges = session?.role === ADMIN || session?.role === SUPERUSER;
   let redirect, uid, path;
   if ((redirect = searchParams.get('redirect'))) {
@@ -83,6 +127,11 @@ export function processRedirect(searchParams, session = {}) {
   }
 }
 
+/**
+ *
+ * @param {URLSearchParams | string} search
+ * @returns
+ */
 export function parseSearchParams(search) {
   const excludeSet = new Set(['token', 'redirect', 'sessionend']);
   let searchParams = new URLSearchParams(search);
@@ -116,10 +165,13 @@ export function windowSize() {
 
 // https://gist.github.com/faisalman/4213592
 export let convert = (() => {
+  /** @param {any} num */
   const convertBase = (num) => {
     return {
+      /** @param {number} baseFrom */
       from: (baseFrom) => {
         return {
+          /** @param {number} baseTo */
           to: (baseTo) => {
             return parseInt(num, baseFrom).toString(baseTo);
           }
@@ -129,6 +181,12 @@ export let convert = (() => {
   };
 
   return {
+    /**
+     *
+     * @param {number} num
+     * @param {boolean} rel
+     * @returns
+     */
     dec2Hex: (num, rel) => {
       rel && (num *= 255);
       return convertBase(num).from(10).to(16);
@@ -136,16 +194,25 @@ export let convert = (() => {
   };
 })();
 
+/**
+ *
+ * @param {string} eventType
+ * @param {*} detail
+ */
 export const proxyEvent = function (eventType, detail = {}) {
   eventType = typeof eventType === 'string' ? eventType : detail.eventType;
   if (typeof window !== 'undefined') {
-    window.dispatchEvent(new CustomEvent(eventType, { detail, bubbles: true }));
+    window.dispatchEvent(new CustomEvent(eventType, { detail }));
   } else {
     console.error(`[${browser ? 'Browser' : 'Node'}] Could not dispatch event ${eventType}`);
   }
 };
 
-// https://gist.github.com/codeguy/6684588
+/**
+ * see https://gist.github.com/codeguy/6684588
+ * @param {string} str
+ * @returns {string}
+ */
 export function slugify(str) {
   str = str.replace(/^\s+|\s+$/g, ''); // trim
   str = str.toLowerCase();
@@ -173,6 +240,12 @@ export function placeholderDotComAvatar(name = '?') {
     .join('')}`;
 }
 
+/**
+ *
+ * @param {Function} fn
+ * @param {string[]} colors
+ * @returns {string}
+ */
 export function svg(fn, colors) {
   colors = (!Array.isArray(colors) && [colors]) || colors;
   return (
@@ -191,6 +264,11 @@ export function svg(fn, colors) {
   );
 }
 
+/**
+ *
+ * @param {string} tab
+ * @returns {string}
+ */
 export function createTabSearch(tab) {
   const search =
     tab === 'time'
@@ -204,34 +282,51 @@ export function createTabSearch(tab) {
 }
 
 /**
- * @params {URLSearchParams} searchParams
+ * @param {URLSearchParams} searchParams
  */
 export function searchParamsToObject(searchParams) {
+  /**
+   * @type {Object<string, any>}
+   */
   const params = {};
-  for (const [key, val] of url.searchParams) {
+  for (const [key, val] of searchParams) {
     params[key] = val === 'true' ? true : val === 'false' ? false : val;
   }
   return params;
 }
 
+// @ts-ignore
 Array.prototype.unique = function () {
   return this.filter((val, index, self) => self.indexOf(index) != val);
 };
 
-String.prototype.remove = function (val) {
-  let arr = this.split(' ');
-  return arr
-    .filter((item) => item != val)
-    .unique()
-    .join(' ')
-    .trim();
+// @ts-ignore
+Number.prototype.minDigits = function (minimumIntegerDigits, locale = 'de-DE', options) {
+  return this.toLocaleString(locale, {
+    minimumIntegerDigits,
+    ...options
+  });
 };
 
+// @ts-ignore
+String.prototype.remove = function (val) {
+  const arr = this.split(/\s+/);
+  return (
+    arr
+      .filter((item) => item != val)
+      // @ts-ignore
+      .unique()
+      .join(' ')
+      .trim()
+  );
+};
+
+// @ts-ignore
 String.prototype.add = function (val) {
   let arr = this.split(' ');
+  // @ts-ignore
   return arr.concat(val).unique().join(' ').trim();
 };
 
 export const __key__ = {};
-export const __ticker__ = {};
 export const __session__ = {};
