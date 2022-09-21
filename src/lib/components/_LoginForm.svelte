@@ -85,12 +85,11 @@
     async function submitHandler(e) {
       e.preventDefault();
 
-      // flash.update({ message: $_('text.one-moment') });
-
       const form = e.target;
       const data = {};
 
       if (submitting) return;
+      flash.update({ message: $_('text.one-moment'), permanent: true });
       submitting = true;
       block();
 

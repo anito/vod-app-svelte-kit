@@ -203,6 +203,7 @@
       base?.classList.remove('opacity-0');
     }, 400);
   }
+
   function initListener() {
     window.addEventListener('ticker:success', tickerSuccessHandler);
     window.addEventListener('ticker:error', tickerErrorHandler);
@@ -347,7 +348,6 @@
 
   async function tickerSuccessHandler(ev) {
     const { user, renewed, message } = { ...ev.detail };
-
     invalidate('/session');
     await tick();
     flash.update({ message, type: 'success', timeout: 2000 });
@@ -363,8 +363,9 @@
 
   async function tickerErrorHandler(ev) {
     const data = { ...ev.detail };
-    flash.update({ ...data, type: 'error', timeout: 2000 });
     invalidate('/session');
+    await tick();
+    flash.update({ ...data, type: 'error', timeout: 2000 });
   }
 
   async function tickerStopHandler(ev) {

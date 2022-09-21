@@ -17,7 +17,7 @@
     SvgIcon,
     VideoEditorList
   } from '$lib/components';
-  import { proxyEvent } from '$lib/utils';
+  import { get, proxyEvent } from '$lib/utils';
   import Button, { Icon as Icon_ } from '@smui/button';
   import Fab, { Label } from '@smui/fab';
   import Textfield from '@smui/textfield';
@@ -66,7 +66,7 @@
     token = usr?.jwt || '';
     tokenExpires = usr?.expires;
     hasExpired = (tokenExpires && tokenExpires * 1000 < +new Date().getTime()) || false;
-    magicLink = (token && `${$page.url.origin}/login?token=${token}&locale=${$locale}`) || '';
+    magicLink = token ? `${$page.url.origin}/login?token=${token}` : '';
   })(currentUser);
   $: filteredUsers =
     $users?.filter((user) => user.name.toLowerCase().indexOf(search.toLowerCase()) !== -1) || [];
@@ -225,7 +225,16 @@
       'redirect' === e.detail.action &&
       /^(https?|ftp|torrent|image|irc):\/\/(-\.)?([^\s\/?\.#-&]+\.?)+(\/[^\s]*)?$/i.test(magicLink)
     ) {
-      await goto(magicLink);
+      goto(`/login`).then(async () => {
+        await get(`/auth/login?token=${token}`).then(async (res) => {
+          const { success, data } = { ...res };
+          if (success) {
+            proxyEvent('ticker:success', { ...data });
+          } else {
+            proxyEvent('ticker:error', { ...data });
+          }
+        });
+      });
     }
   }
 
