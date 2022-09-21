@@ -3,7 +3,7 @@ import { register, waitLocale, init, getLocaleFromNavigator, locale as loc } fro
 register('de-DE', () => import('../messages/de_DE.json'));
 register('en-US', () => import('../messages/en_US.json'));
 
-const fallbackLocale = 'en-US';
+const fallbackLocale = 'de-DE';
 
 /** @type {import('./$types').LayoutLoad} */
 export async function load({ fetch }) {
