@@ -2,6 +2,7 @@
   // @ts-nocheck
 
   import { page } from '$app/stores';
+  import { browser } from '$app/environment';
   import { goto, invalidate } from '$app/navigation';
   import { onMount, getContext, tick } from 'svelte';
   import { ListMessages, ListErrors, LoginForm } from '$lib/components';
@@ -33,12 +34,17 @@
       invalidate('session');
       await tick();
     }
-  })(!!data.token);
+  })(!!data.token && browser);
   $: ({ message, permanent, type } = $session.user
     ? {
         message: $_('text.welcome-message', { values: { name: $session.user?.name } }),
         type: 'success',
         permanent: false
+      }
+    : data.token
+    ? {
+        message: $_('text.one-moment'),
+        permanent: true
       }
     : {
         message: $_('text.login-text'),

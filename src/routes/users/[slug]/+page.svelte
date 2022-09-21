@@ -57,7 +57,7 @@
       userExpires = user.expires;
       hasExpired = (userExpires && userExpires * 1000 < +new Date().getTime()) || false;
       jwt = user.jwt;
-      magicLink = jwt && `${$page.url.origin}/login/redirect?token=${jwt}`;
+      magicLink = jwt && `${$page.url.origin}/login?token=${jwt}`;
     }
   })(currentUser);
   $: hidden =

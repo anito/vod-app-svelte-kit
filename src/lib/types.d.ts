@@ -1,7 +1,8 @@
 declare global {
   interface WindowEventMap {
-    'ticker:start': CustomEvent;
-    'ticker:end': CustomEvent;
+    'ticker:success': CustomEvent;
+    'ticker:error': CustomEvent;
+    'ticker:stop': CustomEvent;
     'ticker:extend': CustomEvent;
     'player:loadstart': CustomEvent;
     'player:emptied': CustomEvent;
@@ -21,16 +22,22 @@ export declare type EventType = keyof GlobalEventHandlersEventMap;
 // export declare type SpecificWindowEventListener<K extends WindowEventType> = (evt: WindowEventMap[K]) => void;
 
 export interface User<UserType = Record<string, any>> {
+  name: string;
+  email: string | undefined;
+  id: string;
+  jwt: string;
+  role: string;
+  expires: number;
+  token_id: string;
+  avatar: Avatar[];
+  videos: Video[];
+  groups: Group[];
+}
+
+export interface GoogleUser<GoogleUserType = Record<string, void>> {
+  id: string
   name: string
   email: string | undefined
-  id: string
-  jwt: string
-  role: string
-  expires: number
-  token_id: string
-  avatar: Avatar[]
-  videos: Video[]
-  groups: Group[]
 }
 
 export interface Group<GroupType = Record<string, any>> {
@@ -61,6 +68,7 @@ export interface Avatar<AvatarType = Record<string, any>> {
 export interface Session<SessionType = Record<string, any>> {
   User: User
   start: Date | any
+  role: string
 }
 
 export interface VideoElement<VideoElementType = Record<string, any>> {

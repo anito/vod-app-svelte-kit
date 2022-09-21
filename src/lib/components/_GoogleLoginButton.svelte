@@ -3,30 +3,37 @@
   import { goto, invalidate } from '$app/navigation';
   import { onMount } from 'svelte';
   import { flash, googleUser } from '$lib/stores';
-  import { _ } from 'svelte-i18n';
   import { get, proxyEvent } from '$lib/utils';
 
-  export let client_id;
+  import { _ } from 'svelte-i18n';
 
+  export let client_id = '';
+
+  /** @type {HTMLButtonElement}*/
   let signInButton;
+  /** @type {string}*/
   let id;
+  /** @type {string}*/
   let name;
+  /** @type {string}*/
   let email;
 
-  googleUser.subscribe((val) => ({ id, name, email } = { ...val }));
+  googleUser.subscribe(
+    /** @param {import('$lib/types').GoogleUser} val*/ (val) => ({ id, name, email } = { ...val })
+  );
 
   onMount(() => {
-    (window.google && googleSignIn()) || window.addEventListener('load', googleSignIn);
+    (window.google && signIn()) || window.addEventListener('load', signIn);
   });
 
-  function googleSignIn() {
+  function signIn() {
     google.accounts.id.initialize({
       client_id,
       auto_select: false,
       context: 'signin',
       callback: googleHandleCredentialResponse
     });
-    renderSignIn();
+    renderButton();
   }
 
   async function googleHandleCredentialResponse(response) {
@@ -34,19 +41,21 @@
   }
 
   async function decodeJwtResponse(token) {
-    flash.update({ message: $_('text.one-moment'), permanent: true });
-    await get(`/auth/login?token=${token}&type=google`).then(async (res) => {
-      const { success, data } = { ...res };
-      if (success) {
-        googleUser.update(data.user);
-        proxyEvent('ticker:start', { ...data });
-      } else {
-        flash.update({ ...data, type: 'error', timeout: 2000 });
-      }
+    goto(`/login`).then(async () => {
+      await get(`/auth/login?token=${token}&type=google`).then(async (res) => {
+        const { success, data } = { ...res };
+        if (success) {
+          googleUser.update(data.user);
+          proxyEvent('ticker:success', { ...data });
+        } else {
+          proxyEvent('ticker:error', { ...data });
+        }
+        setTimeout(() => renderButton(), 500);
+      });
     });
   }
 
-  function renderSignIn() {
+  function renderButton() {
     google.accounts.id.renderButton(
       signInButton,
       {
@@ -63,16 +72,13 @@
 
   function signOut(id) {
     google.accounts.id.disableAutoSelect();
-    if (id) {
-      google.accounts.id.revoke(id, (res) => {
-        if (res.successful) {
-          googleUser.set(null);
-          goto(`/login/redirect/`).then(() => {
-            setTimeout(() => renderSignIn(), 500);
-          });
-        }
-      });
-    }
+    google.accounts.id.revoke(id, (res) => {
+      if (res.successful) {
+        googleUser.set(null);
+        proxyEvent('ticker:stop', { ...data, redirect: '/login' });
+        // setTimeout(() => renderSignIn(), 500);
+      }
+    });
   }
 </script>
 

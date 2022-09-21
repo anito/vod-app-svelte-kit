@@ -9,7 +9,7 @@
   import { invalidate } from '$app/navigation';
   import { onMount, getContext, tick } from 'svelte';
   import { post, proxyEvent } from '$lib/utils';
-  import { flash, googleUser, session } from '$lib/stores';
+  import { flash } from '$lib/stores';
   import Button from '@smui/button';
   import TabBar from '@smui/tab-bar';
   import Tab, { Label as TabLabel } from '@smui/tab';
@@ -100,9 +100,9 @@
         const { success, data } = { ...res };
 
         if (success) {
-          proxyEvent('ticker:start', { ...data });
+          proxyEvent('ticker:success', { ...data });
         } else {
-          flash.update({ ...data, type: 'error', timeout: 2000 });
+          proxyEvent('ticker:error', { ...data });
 
           /**
            * Show dialog after 3 login fails

@@ -1,12 +1,12 @@
-// @ts-nocheck
 import { writable } from 'svelte/store';
 
 function createStore() {
-  const { subscribe, update, set } = writable(null);
+  const { subscribe, update, set } = writable({});
 
   return {
     subscribe,
-    update: (val) => update((_) => val),
+    /** @param {import('$lib/types').GoogleUser} val */
+    update: (val) => update(() => val),
     set
   };
 }

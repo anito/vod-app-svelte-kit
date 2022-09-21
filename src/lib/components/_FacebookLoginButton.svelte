@@ -83,7 +83,6 @@
       FB.api(`/${userID}/picture`, 'GET', { type: 'large', redirect: false }, async ({ data }) => {
         src = data?.url || 'favicon.png';
         if (id && redirect) {
-          flash.update({ message: $_('text.one-moment'), permanent: true });
           await post(`/auth/login?type=facebook`, {
             id,
             email,
@@ -92,7 +91,9 @@
           }).then(async (res) => {
             const { success, data } = { ...res };
             if (success) {
-              proxyEvent('ticker:start', { ...data });
+              proxyEvent('ticker:success', { ...data });
+            } else {
+              proxyEvent('ticker:error', { ...data, redirect: '/login' });
             }
           });
         }

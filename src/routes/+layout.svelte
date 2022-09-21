@@ -135,7 +135,7 @@
     //   `${(!isNaN(val) && parseInt(val / 1000) + 's') || '--'}`
     // );
     if (val === 0) {
-      proxyEvent('ticker:end');
+      proxyEvent('ticker:stop');
     }
   });
 
@@ -200,8 +200,9 @@
   });
 
   function initListener() {
-    window.addEventListener('ticker:start', tickerStartHandler);
-    window.addEventListener('ticker:end', tickerEndHandler);
+    window.addEventListener('ticker:success', tickerSuccessHandler);
+    window.addEventListener('ticker:error', tickerErrorHandler);
+    window.addEventListener('ticker:stop', tickerStopHandler);
     window.addEventListener('ticker:extend', tickerExtendHandler);
   }
 
@@ -215,8 +216,8 @@
       proxyEvent('ticker:extend', { remaining });
     } else {
       const pathname = $page.url.pathname;
-      proxyEvent('ticker:end', {
-        path: pathname == '/' ? pathname : '/login'
+      proxyEvent('ticker:stop', {
+        redirect: pathname == '/' ? pathname : '/login'
       });
     }
   }
@@ -234,8 +235,9 @@
   }
 
   function removeListener() {
-    window.removeEventListener('ticker:start', tickerStartHandler);
-    window.removeEventListener('ticker:end', tickerEndHandler);
+    window.removeEventListener('ticker:success', tickerSuccessHandler);
+    window.removeEventListener('ticker:error', tickerErrorHandler);
+    window.removeEventListener('ticker:stop', tickerStopHandler);
     window.removeEventListener('ticker:extend', tickerExtendHandler);
   }
 
@@ -303,7 +305,7 @@
         const { success, data } = { ...res };
 
         if (success) {
-          proxyEvent('ticker:end', { ...data });
+          proxyEvent('ticker:stop', { ...data });
         }
         submitting = false;
       });
@@ -339,7 +341,7 @@
 
   function handleSnackbarClosed() {}
 
-  async function tickerStartHandler(ev) {
+  async function tickerSuccessHandler(ev) {
     const { user, renewed, message } = { ...ev.detail };
 
     invalidate('session');
@@ -355,17 +357,23 @@
     snackbar?.open();
   }
 
-  async function tickerEndHandler(ev) {
+  async function tickerErrorHandler(ev) {
+    const data = { ...ev.detail };
+    flash.update({ ...data, type: 'error', timeout: 2000 });
+    invalidate('session');
+  }
+
+  async function tickerStopHandler(ev) {
     await killSession();
 
-    const path = ev.detail.path || '/';
-    const redirect = createRedirectSlug($page.url);
-    setTimeout(() => goto(`${path}${redirect}`), 200);
+    const path = ev.detail.redirect || '/';
+    const search = createRedirectSlug($page.url);
+    setTimeout(() => goto(`${path}${search}`), 200);
   }
 
   async function killSession() {
     return await post(`/auth/logout`, {}).then(async (res) => {
-      new Promise((resolve) => setTimeout(() => resolve(invalidate('session')), 300));
+      new Promise((resolve) => setTimeout(() => resolve(invalidate('session')), 500));
       message = res.message || res.data?.message;
 
       configSnackbar(message);
