@@ -6,7 +6,7 @@
   import './_icon_size.scss';
   import * as api from '$lib/api';
   import { page } from '$app/stores';
-  import { goto, invalidate } from '$app/navigation';
+  import { goto, invalidate, invalidateAll } from '$app/navigation';
   import { getContext, onMount } from 'svelte';
   import Header from './_Header.svelte';
   import { fly } from 'svelte/transition';
@@ -163,7 +163,7 @@
           ...$session,
           user: { ...$session.user, avatar: data.avatar }
         });
-        invalidate('session');
+        invalidate('/session');
       }
     }
     close();
@@ -188,7 +188,7 @@
               ...$session,
               user: { ...$session.user, avatar: data.avatar }
             });
-            invalidate('session');
+            invalidate('/session');
           }
         }
       });

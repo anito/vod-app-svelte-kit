@@ -31,7 +31,7 @@
   $: loggedin = !!$session.user;
   $: (async (withToken) => {
     if (withToken) {
-      invalidate('session');
+      invalidate('/session');
       await tick();
     }
   })(!!data.token && browser);

@@ -203,8 +203,6 @@ export const proxyEvent = function (eventType, detail = {}) {
   eventType = typeof eventType === 'string' ? eventType : detail.eventType;
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent(eventType, { detail }));
-  } else {
-    console.error(`[${browser ? 'Browser' : 'Node'}] Could not dispatch event ${eventType}`);
   }
 };
 

@@ -49,6 +49,7 @@
   import { svg_manifest } from '$lib/svg_manifest';
   import { _, locale } from 'svelte-i18n';
   import { writable } from 'svelte/store';
+  import { append_hydration } from 'svelte/internal';
 
   /** @type {import('./$types').PageData} */
   export let data;
@@ -179,14 +180,10 @@
   onMount(async () => {
     $mounted = true;
     root = document.documentElement;
-    setTimeout(() => {
-      loaderBackgroundOpacity = 0.45;
-      loaderColor = 'var(--flash)';
-      base.classList.remove('opacity-0');
-    }, 200);
 
     snackbar = getSnackbar();
 
+    revealApp();
     initListener();
     checkSession();
     initClasses();
@@ -199,6 +196,13 @@
     };
   });
 
+  function revealApp() {
+    setTimeout(() => {
+      loaderBackgroundOpacity = 0.45;
+      loaderColor = 'var(--flash)';
+      base?.classList.remove('opacity-0');
+    }, 400);
+  }
   function initListener() {
     window.addEventListener('ticker:success', tickerSuccessHandler);
     window.addEventListener('ticker:error', tickerErrorHandler);
@@ -344,7 +348,7 @@
   async function tickerSuccessHandler(ev) {
     const { user, renewed, message } = { ...ev.detail };
 
-    invalidate('session');
+    invalidate('/session');
     await tick();
     flash.update({ message, type: 'success', timeout: 2000 });
 
@@ -360,7 +364,7 @@
   async function tickerErrorHandler(ev) {
     const data = { ...ev.detail };
     flash.update({ ...data, type: 'error', timeout: 2000 });
-    invalidate('session');
+    invalidate('/session');
   }
 
   async function tickerStopHandler(ev) {
@@ -373,7 +377,7 @@
 
   async function killSession() {
     return await post(`/auth/logout`, {}).then(async (res) => {
-      new Promise((resolve) => setTimeout(() => resolve(invalidate('session')), 500));
+      new Promise((resolve) => setTimeout(() => resolve(invalidate('/session')), 500));
       message = res.message || res.data?.message;
 
       configSnackbar(message);
@@ -388,7 +392,7 @@
     if ($session.user) {
       const start = new Date().toISOString();
       await post('/session/extend', start);
-      invalidate('session');
+      invalidate('/session');
     }
   }
 </script>
