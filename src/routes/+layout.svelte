@@ -183,7 +183,7 @@
 
     snackbar = getSnackbar();
 
-    revealApp();
+    reveal();
     initListener();
     checkSession();
     initClasses();
@@ -196,7 +196,7 @@
     };
   });
 
-  function revealApp() {
+  function reveal() {
     setTimeout(() => {
       loaderBackgroundOpacity = 0.45;
       loaderColor = 'var(--flash)';
@@ -369,16 +369,16 @@
   }
 
   async function tickerStopHandler(ev) {
-    await killSession();
-
-    const path = ev.detail.redirect || '/';
-    const search = createRedirectSlug($page.url);
-    setTimeout(() => goto(`${path}${search}`), 200);
+    await killSession().then(() => {
+      const path = ev.detail.redirect || '/';
+      const search = createRedirectSlug($page.url);
+      goto(`${path}${search}`);
+    });
   }
 
   async function killSession() {
     return await post(`/auth/logout`, {}).then(async (res) => {
-      new Promise((resolve) => setTimeout(() => resolve(invalidate('/session')), 500));
+      invalidate('/session');
       message = res.message || res.data?.message;
 
       configSnackbar(message);
