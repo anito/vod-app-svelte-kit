@@ -29,12 +29,11 @@
 
   async function setLocale(value) {
     $locale = value;
-    await post('locale', value).then((res) => {
-      configSnackbar(
-        $_('text.language_is_now', { values: { locale: localeLookup.get(value.slice(0, 2)) } })
-      );
-      snackbar.open();
-    });
+    await post('/locale', value);
+    configSnackbar(
+      $_('text.language_is_now', { values: { locale: localeLookup.get(value.slice(0, 2)) } })
+    );
+    snackbar.open();
   }
 </script>
 
