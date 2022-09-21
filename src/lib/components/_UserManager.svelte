@@ -6,7 +6,7 @@
   import './_icon_size.scss';
   import * as api from '$lib/api';
   import { page } from '$app/stores';
-  import { goto, invalidateAll } from '$app/navigation';
+  import { goto, invalidate } from '$app/navigation';
   import { getContext, onMount } from 'svelte';
   import Header from './_Header.svelte';
   import { fly } from 'svelte/transition';
@@ -159,12 +159,11 @@
 
       // also reflect the change in the session cookie
       if ($session.user.id === data.id) {
-        const response = await post('/session', {
+        await post('/session', {
           ...$session,
           user: { ...$session.user, avatar: data.avatar }
         });
-        invalidateAll();
-        sessionCookie.update(response);
+        invalidate('session');
       }
     }
     close();
@@ -185,11 +184,11 @@
 
           // also reflect the change in the session cookie
           if ($session.user.id === currentUser.id) {
-            const response = await post('/session', {
+            await post('/session', {
               ...$session,
               user: { ...$session.user, avatar: data.avatar }
             });
-            sessionCookie.update(response);
+            invalidate('session');
           }
         }
       });

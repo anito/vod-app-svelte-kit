@@ -35,10 +35,12 @@ async function send(atts = {}) {
     .then((res) => {
       try {
         return JSON.parse(res);
-      } catch (error) {}
+      } catch (err) {
+        console.log('API FETCH ERROR #1', err);
+      }
     })
     .catch((err) => {
-      console.log('API FETCH ERROR', err);
+      console.log('API FETCH ERROR #2', err);
     });
 }
 

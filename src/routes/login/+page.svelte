@@ -2,16 +2,15 @@
   // @ts-nocheck
 
   import { page } from '$app/stores';
-  import { goto, invalidateAll } from '$app/navigation';
-  import { onMount } from 'svelte';
+  import { goto, invalidate } from '$app/navigation';
+  import { onMount, getContext, tick } from 'svelte';
   import { ListMessages, ListErrors, LoginForm } from '$lib/components';
   import { flash, session } from '$lib/stores';
   import { sitename } from '$lib/stores';
   import { fly } from 'svelte/transition';
-  import { processRedirect, proxyEvent } from '$lib/utils';
+  import { processRedirect } from '$lib/utils';
   import Paper, { Content } from '@smui/paper';
   import { _ } from 'svelte-i18n';
-  import { getContext } from 'svelte';
 
   export let data;
 
@@ -29,22 +28,16 @@
 
   $: $mounted && init();
   $: loggedin = !!$session.user;
+  $: (async (withToken) => {
+    if (withToken) {
+      invalidate('session');
+      await tick();
+    }
+  })(!!data.token);
   $: ({ message, permanent, type } = $session.user
     ? {
-        message: $_('text.welcome-message', { values: { name: $session.user.name } }),
+        message: $_('text.welcome-message', { values: { name: $session.user?.name } }),
         type: 'success',
-        permanent: false
-      }
-    : data.token && !data.result
-    ? {
-        message: $_('text.one-moment'),
-        type: 'success',
-        permanent: false
-      }
-    : data.token && data.result
-    ? {
-        message: data.message,
-        type: data.result,
         permanent: false
       }
     : {
@@ -52,18 +45,10 @@
         type: 'success',
         permanent: true
       });
-  $: console.log($session.user?.name, $page.data.session.user?.name);
 
   onMount(() => {});
 
-  function init() {
-    if (data.token) {
-      if (data.result === 'success') {
-        proxyEvent('ticker:start', data);
-      }
-      flash.update({ type: data.result, message, permanent });
-    }
-  }
+  function init() {}
 
   async function introendHandler() {
     if ($session.user) {

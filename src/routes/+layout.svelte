@@ -4,9 +4,10 @@
   import '../app.css';
   import '$lib/components/_notched_outline.scss';
   import * as api from '$lib/api';
-  import { goto, invalidate, invalidateAll } from '$app/navigation';
+  import { goto, invalidate } from '$app/navigation';
+  import { browser } from '$app/environment';
   import { page } from '$app/stores';
-  import { getContext, onMount, setContext } from 'svelte';
+  import { getContext, onMount, setContext, tick } from 'svelte';
   import isMobile from 'ismobilejs';
   import { Icons } from '$lib/components';
   import Button, { Icon } from '@smui/button';
@@ -14,15 +15,14 @@
   import Snackbar, { Actions } from '@smui/snackbar';
   import { Label } from '@smui/common';
   import {
-    del as logout,
     createRedirectSlug,
     proxyEvent,
     svg,
-    __ticker__,
     ADMIN,
     SUPERUSER,
     post,
-    createTabSearch
+    createTabSearch,
+    get
   } from '$lib/utils';
   import {
     fabs,
@@ -125,6 +125,8 @@
 
   const { getSnackbar } = getContext('snackbar');
 
+  const mounted = writable(isMounted);
+
   ticker.subscribe((val) => {
     // console.log(
     //   '%c TICKER %c %s',
@@ -146,10 +148,15 @@
     }
   });
 
-  // $: console.log('SESSION', $session);
-  // $: console.log('DATA.SESSION +layout.svelte', data.session);
-  // $: console.log('DATA.SESSION +layout.svelte $page (store)', $page.data.session);
-  $: data && saveConfig(data.config);
+  browser &&
+    get('/config').then((res) => {
+      settings.update(res);
+    });
+
+  setContext('mounted', {
+    mounted
+  });
+
   $: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
   $: token = $session.user?.jwt;
   $: person = svg(svg_manifest.person, $theme.primary);
@@ -169,13 +176,7 @@
   $: searchParams = $page.url.searchParams.toString();
   $: search = searchParams && `?${searchParams}`;
 
-  const mounted = writable(isMounted);
-
-  setContext('mounted', {
-    mounted
-  });
-
-  onMount(() => {
+  onMount(async () => {
     $mounted = true;
     root = document.documentElement;
     setTimeout(() => {
@@ -187,7 +188,7 @@
     snackbar = getSnackbar();
 
     initListener();
-    initSession();
+    checkSession();
     initClasses();
     initStyles();
 
@@ -204,7 +205,7 @@
     window.addEventListener('ticker:extend', tickerExtendHandler);
   }
 
-  function initSession() {
+  function checkSession() {
     const now = Date.now();
     const { start } = { start: 0, ...$session };
     const { lifetime } = $settings.Session;
@@ -246,9 +247,6 @@
     root.classList.remove('ismobile');
   }
 
-  function saveConfig(config) {
-    settings.update(config);
-  }
   /**
    * Saves video changes
    * @param {import('$lib/types').VideoEmitter} VideoEmitterData
@@ -286,11 +284,34 @@
     });
   }
 
-  function submit(e) {
-    if ($session.user) {
+  async function submit(node) {
+    let submitting = false;
+
+    async function submitHandler(e) {
+      e.preventDefault();
+
       loggedInButtonTextSecondLine = $_('text.one-moment');
-      proxyEvent('ticker:end');
+
+      const form = e.target;
+      const data = {};
+
+      if (submitting) return;
+      submitting = true;
+
+      // new FormData(form).forEach((value, key) => (data[key] = value));
+      await post(form.action, {}).then(async (res) => {
+        const { success, data } = { ...res };
+
+        if (success) {
+          proxyEvent('ticker:end', { ...data });
+        }
+        submitting = false;
+      });
     }
+
+    node.addEventListener('submit', submitHandler);
+
+    return () => node.removeEventListener('submit', submitHandler);
   }
 
   function configSnackbar(msg, link) {
@@ -318,12 +339,12 @@
 
   function handleSnackbarClosed() {}
 
-  function tickerStartHandler(ev) {
-    const { user, groups, renewed } = { ...ev.detail };
-    const { id, name, jwt, avatar, role } = { ...user };
+  async function tickerStartHandler(ev) {
+    const { user, renewed, message } = { ...ev.detail };
 
-    invalidateAll();
-    sessionCookie.update({ user: { id, name, jwt, avatar }, role, groups });
+    invalidate('session');
+    await tick();
+    flash.update({ message, type: 'success', timeout: 2000 });
 
     renewed && localStorage.setItem('renewed', renewed);
     configSnackbar(
@@ -335,30 +356,16 @@
   }
 
   async function tickerEndHandler(ev) {
-    if ($session.user) {
-      await killSession();
-    }
+    await killSession();
+
     const path = ev.detail.path || '/';
     const redirect = createRedirectSlug($page.url);
     setTimeout(() => goto(`${path}${redirect}`), 200);
   }
 
-  async function tickerExtendHandler() {
-    if ($session.user) {
-      const start = new Date().toISOString();
-      const response = await post('/session/extend', start);
-      // invalidateAll();
-      sessionCookie.update(response);
-    }
-  }
-
   async function killSession() {
-    $sessionCookie.user = null;
-    $sessionCookie.role = null;
-    $sessionCookie.groups = null;
-
-    // invalidateAll();
-    return await logout(`/auth/logout`).then(async (res) => {
+    return await post(`/auth/logout`, {}).then(async (res) => {
+      new Promise((resolve) => setTimeout(() => resolve(invalidate('session')), 300));
       message = res.message || res.data?.message;
 
       configSnackbar(message);
@@ -368,6 +375,14 @@
       return res.success;
     });
   }
+
+  async function tickerExtendHandler() {
+    if ($session.user) {
+      const start = new Date().toISOString();
+      await post('/session/extend', start);
+      invalidate('session');
+    }
+  }
 </script>
 
 <Icons />
@@ -376,12 +391,7 @@
   <Modal header={{ name: 'text.upload-type' }}>
     <Modal header={{ name: 'text.edit-uploaded-content' }} key="editor-modal">
       <div bind:this={base} class="transition opacity-0">
-        <form
-          on:submit|preventDefault={submit}
-          class="main-menu login-form"
-          method="POST"
-          action="/auth/logout"
-        >
+        <form use:submit class="main-menu login-form" method="POST" action="/auth/logout">
           <Nav {segment} {page} {logo}>
             {#if $session.user}
               <NavItem href="/videos" title="Videothek" segment="videos">

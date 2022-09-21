@@ -66,8 +66,7 @@
     token = usr?.jwt || '';
     tokenExpires = usr?.expires;
     hasExpired = (tokenExpires && tokenExpires * 1000 < +new Date().getTime()) || false;
-    magicLink =
-      (token && `${$page.url.origin}/login/redirect?token=${token}&locale=${$locale}`) || '';
+    magicLink = (token && `${$page.url.origin}/login?token=${token}&locale=${$locale}`) || '';
   })(currentUser);
   $: filteredUsers =
     $users?.filter((user) => user.name.toLowerCase().indexOf(search.toLowerCase()) !== -1) || [];

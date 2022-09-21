@@ -1,13 +1,13 @@
 <script>
   // @ts-nocheck
 
-  import { page } from '$app/stores';
   import { getContext, onMount } from 'svelte';
+  import { invalidate } from '$app/navigation';
   import Menu, { SelectionGroup, SelectionGroupIcon } from '@smui/menu';
   import { Anchor } from '@smui/menu-surface';
   import List, { Item, Text } from '@smui/list';
-  import { _, locale, locales } from 'svelte-i18n';
   import { post } from '$lib/utils';
+  import { _, locale, locales } from 'svelte-i18n';
 
   const { getSnackbar, configSnackbar } = getContext('snackbar');
 
@@ -31,7 +31,7 @@
     $locale = value;
     await post('locale', value).then((res) => {
       configSnackbar(
-        $_('text.language_is_now', { values: { locale: localeLookup.get(value.slice(0, 2)) } })
+        $_('text.language_is_now', { values: { locale: localeLookup.get(res.locale.slice(0, 2)) } })
       );
       snackbar.open();
     });

@@ -85,7 +85,6 @@
     }
 
     if (success) {
-      console.log(data);
       uploadedData = data;
       videos.add(data);
       uploader.close();

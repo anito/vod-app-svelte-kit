@@ -5,13 +5,15 @@ const credentials = browser ? 'include' : void 0;
 
 export function get(endpoint) {
   return fetch(endpoint, {
-    method: 'GET',
-    credentials,
-    headers: {
-      'Content-Type': 'application/json'
-    }
+    method: 'GET'
+    // credentials,
+    // headers: {
+    //   'Content-Type': 'application/json'
+    // }
   })
-    .then((r) => r.json())
+    .then(async (r) => {
+      return await r.json();
+    })
     .catch((reason) => console.error(reason));
 }
 

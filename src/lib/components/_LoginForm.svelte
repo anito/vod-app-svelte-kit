@@ -6,9 +6,10 @@
   // @ts-nocheck
 
   import { browser, dev } from '$app/environment';
+  import { invalidate } from '$app/navigation';
   import { onMount, getContext, tick } from 'svelte';
   import { post, proxyEvent } from '$lib/utils';
-  import { flash, googleUser } from '$lib/stores';
+  import { flash, googleUser, session } from '$lib/stores';
   import Button from '@smui/button';
   import TabBar from '@smui/tab-bar';
   import Tab, { Label as TabLabel } from '@smui/tab';
@@ -66,11 +67,9 @@
     unblock();
     active = localStorage.getItem('activeSignIn') || 'Sample';
     snackbar = getSnackbar();
-    window.addEventListener('ticker:started', tickerStartedHandler);
 
     return () => {
       unblock();
-      window.removeEventListener('ticker:started', tickerStartedHandler);
     };
   });
 
@@ -86,7 +85,7 @@
     async function submitHandler(e) {
       e.preventDefault();
 
-      flash.update({ message: $_('text.one-moment') });
+      // flash.update({ message: $_('text.one-moment') });
 
       const form = e.target;
       const data = {};
@@ -102,13 +101,7 @@
 
         if (success) {
           proxyEvent('ticker:start', { ...data });
-          flash.update({ ...data, type: 'success', timeout: 2000 });
-          await tick();
-          reset();
         } else {
-          unblock();
-          reset();
-
           flash.update({ ...data, type: 'error', timeout: 2000 });
 
           /**
@@ -117,6 +110,7 @@
           if (++loginAttempts > 3) invalidTokenUserDialog.setOpen(true);
         }
         submitting = false;
+        reset();
         unblock();
       });
     }
@@ -127,11 +121,6 @@
 
     // TODO handle network errors
     // errors = res.errors;
-  }
-
-  function tickerStartedHandler(e) {
-    const data = e.detail;
-    flash.update({ ...data, type: 'success', timeout: 2000 });
   }
 
   function reset() {

@@ -1,11 +1,10 @@
 <script>
   // @ts-nocheck
-  import * as api from '$lib/api';
-  import { goto, invalidateAll } from '$app/navigation';
+  import { goto, invalidate } from '$app/navigation';
   import { onMount } from 'svelte';
   import { flash, googleUser } from '$lib/stores';
   import { _ } from 'svelte-i18n';
-  import { get } from '$lib/utils';
+  import { get, proxyEvent } from '$lib/utils';
 
   export let client_id;
 
@@ -35,24 +34,16 @@
   }
 
   async function decodeJwtResponse(token) {
-    flash.update({ message: $_('text.one-moment'), timeout: 2000 });
-    await get(`/auth/login?token=${token}&type=${google}`).then(async (res) => {
-      console.log(res);
-      // googleUser.update(res.data.user);
-      // goto(
-      //   `/login/redirect?token=${res.data.token}&result=${res.success}&message=${res.data.message}&referrer=google`
-      // ).then(() => {
-      //   setTimeout(() => renderSignIn(), 100);
-      // });
+    flash.update({ message: $_('text.one-moment'), permanent: true });
+    await get(`/auth/login?token=${token}&type=google`).then(async (res) => {
+      const { success, data } = { ...res };
+      if (success) {
+        googleUser.update(data.user);
+        proxyEvent('ticker:start', { ...data });
+      } else {
+        flash.update({ ...data, type: 'error', timeout: 2000 });
+      }
     });
-    // await api.post('users/google_login', { token }).then(async (res) => {
-    //   googleUser.update(res.data.user);
-    //   goto(
-    //     `/login/redirect?token=${res.data.token}&result=${res.success}&message=${res.data.message}&referrer=google`
-    //   ).then(() => {
-    //     setTimeout(() => renderSignIn(), 100);
-    //   });
-    // });
   }
 
   function renderSignIn() {

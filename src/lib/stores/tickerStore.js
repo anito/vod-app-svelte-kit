@@ -1,16 +1,36 @@
-// @ts-nocheck
 import { derived } from 'svelte/store';
 import { page } from '$app/stores';
 import { session, settings } from '$lib/stores';
-import { __ticker__ } from '$lib/utils';
 
 function createStore() {
+  /**
+   * @type {number}
+   */
   const INTERVAL = 1;
+  /**
+   * @type {number}
+   */
+  /**
+   * @type {any}
+   */
   let expires;
+  /**
+   * @type {number}
+   */
   let time;
+  /**
+   * @type {ReturnType<typeof setInterval>}
+   */
+  let intervalId;
 
   return derived(
     [settings, session, page],
+    /**
+     *
+     * @param {*} param0
+     * @param {*} set
+     * @returns
+     */
     ([$settings, $session, $page], set) => {
       const startCustomSession = new Date($session.start).getTime();
       const startPageSession = new Date($page.data.session.start).getTime();
@@ -24,14 +44,14 @@ function createStore() {
         expires = new Date(expires);
       }
 
-      __ticker__.interval = setInterval(() => {
-        time = expires - new Date();
+      intervalId = setInterval(() => {
+        time = expires - new Date().getTime();
         set(time > 0 ? time : 0);
       }, INTERVAL * 1000);
 
       // no more subscribers or when callback runs
       return () => {
-        clearInterval(__ticker__.interval);
+        clearInterval(intervalId);
 
         // console.log(
         //   `%c TICKER ${time ? 'EXTEND' : 'END'}`,
@@ -39,7 +59,7 @@ function createStore() {
         // );
       };
     },
-    void 0 // initial value
+    1000 // initial value
   );
 }
 

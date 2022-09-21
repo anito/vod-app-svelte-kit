@@ -7,9 +7,9 @@ import { locale } from 'svelte-i18n';
 export async function GET({ locals, url }) {
   const token = url.searchParams.get('token');
   const type = url.searchParams.get('type') || 'login';
-  const lang = get(locale);
+
   if (token) {
-    return await api.get(`/${type}?token=${token}&locale=${lang}`, { fetch }).then(async (res) => {
+    return await api.get(`${type}`, { fetch, token }).then(async (res) => {
       if (res.success) {
         /** @type {import('$lib/types').User} */
         const { id, name, avatar, jwt, role, groups } = { ...res.data.user, ...res.data };
@@ -20,22 +20,27 @@ export async function GET({ locals, url }) {
           user: { id, name, jwt, avatar },
           role,
           groups,
-          locale: lang
+          locale: get(locale)
         });
         await locals.session.refresh();
+      } else {
+        await locals.session.destroy();
+        await locals.session.set({
+          locale: get(locale)
+        });
       }
-      return json({ ...res });
+      return json(res);
     });
   }
   throw error(401, 'This method is only allowed for token logins');
 }
 
 /** @type {import('./$types').RequestHandler} */
-export async function POST({ locals, request }) {
+export async function POST({ locals, request, url }) {
   const data = await request.json();
-  const lang = get(locale);
+  const type = url.searchParams.get('type') || 'login';
 
-  return await api.post(`users/login?locale=${lang}`, { data, fetch }).then(async (res) => {
+  return await api.post(`${type}`, { data, fetch }).then(async (res) => {
     if (res.success) {
       /** @type {import('$lib/types').User} */
       const { id, name, avatar, jwt, role, groups } = { ...res.data.user, ...res.data };
@@ -46,10 +51,10 @@ export async function POST({ locals, request }) {
         user: { id, name, jwt, avatar },
         role,
         groups,
-        locale: lang
+        locale: get(locale)
       });
       await locals.session.refresh();
     }
-    return json({ ...res });
+    return json(res);
   });
 }

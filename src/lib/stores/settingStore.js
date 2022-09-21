@@ -1,7 +1,7 @@
-// @ts-nocheck
 import { writable } from 'svelte/store';
 
 function createStore() {
+  /** @type {import('$lib/types').Setting} */
   const defaults = {
     Session: {
       lifetime: 60 * 60 * 1000
@@ -12,11 +12,16 @@ function createStore() {
 
   return {
     subscribe,
+    /** @param {import('$lib/types').Setting} val */
     update: (val) =>
       update((current) => {
-        let cur,
-          ret = {};
-        for (let item in val) {
+        let cur;
+        /** @type {Object<any, any>}} */
+        let ret = {};
+        /** @type {string | any} */
+        let item;
+        for (item in val) {
+          // @ts-ignore
           ret[item] = (cur = current[item] || {}) && { ...cur, ...val[item] };
         }
         return { ...defaults, ...ret };

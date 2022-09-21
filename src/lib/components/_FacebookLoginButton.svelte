@@ -2,19 +2,20 @@
   // @ts-nocheck
 
   import './_fbButton.scss';
-  import * as api from '$lib/api';
-  import { goto } from '$app/navigation';
+  import { invalidate } from '$app/navigation';
   import Button, { Icon, Label } from '@smui/button';
   import { onMount } from 'svelte';
   import SvgIcon from './_SvgIcon.svelte';
   import { _ } from 'svelte-i18n';
+  import { post, proxyEvent } from '$lib/utils';
+  import { flash } from '$lib/stores';
 
   export let appId;
 
   let status;
   let _name = '';
   let _email = '';
-  let src;
+  let src = '';
   let authResponse = null;
 
   onMount(() => {
@@ -81,18 +82,19 @@
       _email = email;
       FB.api(`/${userID}/picture`, 'GET', { type: 'large', redirect: false }, async ({ data }) => {
         src = data?.url || 'favicon.png';
-        if (id) {
-          await api
-            .post(`users/facebook_login/${id}`, { data: { email, name, picture: { ...data } } })
-            .then(async (res) => {
-              if (res.success && redirect) {
-                setTimeout(async () => {
-                  await goto(
-                    `/login/redirect/?token=${res.data.token}&result=${res.success}&message=${res.data.message}&referrer=fb`
-                  );
-                }, 200);
-              }
-            });
+        if (id && redirect) {
+          flash.update({ message: $_('text.one-moment'), permanent: true });
+          await post(`/auth/login?type=facebook`, {
+            id,
+            email,
+            name,
+            picture: { ...data }
+          }).then(async (res) => {
+            const { success, data } = { ...res };
+            if (success) {
+              proxyEvent('ticker:start', { ...data });
+            }
+          });
         }
       });
     });

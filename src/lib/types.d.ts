@@ -1,7 +1,6 @@
 declare global {
   interface WindowEventMap {
     'ticker:start': CustomEvent;
-    'ticker:started': CustomEvent;
     'ticker:end': CustomEvent;
     'ticker:extend': CustomEvent;
     'player:loadstart': CustomEvent;
@@ -81,6 +80,15 @@ export interface Sent<SentType = Record<string, any>> {
 
 export interface Inbox<InboxType = Record<string, any>> {
   id: string
+}
+
+export interface Setting<SettingType = Record<string, any>> {
+  Session
+  Site: Site
+}
+
+export interface Site<SiteType = Record<string, any>> {
+  defaultUserTab: string
 }
 
 // export interface Session<SessionType = Record<string, any>> {
