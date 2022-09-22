@@ -75,8 +75,7 @@
     google.accounts.id.revoke(id, (res) => {
       if (res.successful) {
         googleUser.set(null);
-        proxyEvent('ticker:stop', { ...data, redirect: '/login' });
-        // setTimeout(() => renderSignIn(), 500);
+        proxyEvent('ticker:stop', { redirect: '/login' });
       }
     });
   }

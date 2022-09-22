@@ -124,7 +124,9 @@
         </div>
       {/if}
       <div class="label-wrapper flex flex-col overflow-hidden">
-        <div class="first-line connected" class:connected>{$_('text.login-with-facebook')}</div>
+        <div class="first-line connected" class:connected>
+          {$_('text.login-with-facebook')}
+        </div>
         {#if _email}
           <div class="email-line">{_email}</div>
         {/if}
