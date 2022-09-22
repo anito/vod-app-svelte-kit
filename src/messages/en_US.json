@@ -212,14 +212,15 @@
     "profile_image": "{name}s Profileimage",
     "select-signin-mode": "Select Your Sign-In Mode",
     "preset": "Preset",
+    "presets": "Presets",
     "social": "Social",
     "default": "Default",
     "sample": "Sample",
-    "preset": "Preset",
     "revoke_app_from_user": "Revoke this App ({name})",
     "language_is_now": "Language is now {locale}",
     "no-videos-available": "No videos available",
-    "test-form": "Test-Form"
+    "test-form": "Test-Form",
+    "formular": "Form"
   },
   "summary": {
     "copy-link": {

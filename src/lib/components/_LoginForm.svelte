@@ -35,13 +35,22 @@
   const ONE = 'one-row';
   const TWO = 'two-rows';
   const THREE = 'three-rows';
-  const DefaultTab = 'Preset';
-  const tabMap = new Map([
-    ['Default', { rows: THREE, text: $_('text.default'), icon: 'notes' }],
-    [DefaultTab, { rows: TWO, text: $_('text.preset'), icon: 'person_outline' }],
+  const DefaultTab = 'Presets';
+
+  let root;
+  let password = '';
+  let email = '';
+  let snackbar;
+  let invalidTokenUserDialog;
+  let foundActive;
+  let active;
+
+  $: tabMap = new Map([
+    ['Default', { rows: THREE, text: $_('text.formular'), icon: 'notes' }],
+    ['Presets', { rows: TWO, text: $_('text.presets'), icon: 'people_alt' }],
     ['Social', { rows: TWO, text: $_('text.social'), icon: 'mood' }]
   ]);
-  const tabs = {
+  $: tabs = {
     names: () => {
       const names = [];
       tabMap.forEach((val, key) => {
@@ -53,17 +62,7 @@
     text: (key) => tabMap.get(key).text,
     icon: (key) => tabMap.get(key).icon
   };
-  const tabNames = tabs.names();
-
-  let root;
-  let password = '';
-  let email = '';
-  let snackbar;
-  let invalidTokenUserDialog;
-  let foundActive;
-  let active;
-
-  $: console.log(active);
+  $: tabNames = tabs.names();
   $: rows = active && tabs.rows(active);
   $: active && browser && localStorage.setItem('activeSignIn', active);
 
@@ -71,7 +70,7 @@
     root = document.documentElement;
     unblock();
     foundActive = localStorage.getItem('activeSignIn');
-    active = tabMap.get(foundActive) || DefaultTab;
+    active = (tabMap.has(foundActive) && foundActive) || DefaultTab;
     snackbar = getSnackbar();
 
     return () => {
