@@ -220,7 +220,8 @@
     "language_is_now": "Language is now {locale}",
     "no-videos-available": "No videos available",
     "test-form": "Test-Form",
-    "formular": "Form"
+    "formular": "Form",
+    "logout-from-facebook": "Logout from Facebook"
   },
   "summary": {
     "copy-link": {

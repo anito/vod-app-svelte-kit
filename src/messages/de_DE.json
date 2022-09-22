@@ -220,7 +220,8 @@
     "language_is_now": "Sprache geändert auf {locale}",
     "no-videos-available": "Keine Videokurse verfügbar",
     "test-form": "Test-Formular",
-    "formular": "Formular"
+    "formular": "Formular",
+    "logout-from-facebook": "Aus Facebook ausloggen"
   },
   "summary": {
     "copy-link": {

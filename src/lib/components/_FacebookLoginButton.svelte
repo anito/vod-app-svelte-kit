@@ -137,7 +137,7 @@
     </div>
   </Button>
   {#if connected}
-    <a href="." class="logout-link" on:click={() => logout()}>Logout from Facebook</a>
+    <a href="." class="logout-link" on:click={() => logout()}>{$_('text.logout-from-facebook')}</a>
   {/if}
 </div>
 
