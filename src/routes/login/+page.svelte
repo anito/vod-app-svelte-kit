@@ -122,7 +122,6 @@
     color: var(--prime);
   }
   .message .headline {
-    max-width: 400px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
