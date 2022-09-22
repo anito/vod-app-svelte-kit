@@ -14,8 +14,11 @@
   let status;
   let _name = '';
   let _email = '';
-  let src = '';
+  let defaultSrc = 'favicon.png';
+  let src = defaultSrc;
   let authResponse = null;
+
+  $: connected = status === 'connected';
 
   onMount(() => {
     init();
@@ -25,7 +28,7 @@
   function handleLogin(e) {
     e.preventDefault();
     e.stopPropagation();
-    if (status === 'connected') {
+    if (connected) {
       authResponse && fbAPI({ ...authResponse, redirect: true });
     } else {
       login();
@@ -54,7 +57,7 @@
   function statusChangeHandler({ authResponse: _authResponse, status: _status }) {
     authResponse = _authResponse;
     status = _status;
-    if (status === 'connected') {
+    if (connected) {
       // Logged into your webpage and Facebook.
       authResponse && fbAPI({ ...authResponse, redirect: false });
     }
@@ -80,7 +83,7 @@
       _name = name;
       _email = email;
       FB.api(`/${userID}/picture`, 'GET', { type: 'large', redirect: false }, async ({ data }) => {
-        src = data?.url || 'favicon.png';
+        src = data?.url || defaultSrc;
         if (id && redirect) {
           await post(`/auth/login?type=facebook`, {
             id,
@@ -103,14 +106,14 @@
 
 <div class="relative flex flex-col">
   <Button
-    class="min-w-full fb-button flex overflow-clip justify-between {status === 'connected'
+    class="min-w-full fb-button flex overflow-clip justify-between {connected
       ? 'connected'
       : 'flex-row-reverse'}"
     style="height: 41px;"
     on:click={(e) => handleLogin(e)}
   >
-    <div class="flex" style="width: 80%;">
-      {#if status === 'connected'}
+    <div class="flex justify-center" style="width: 80%;">
+      {#if connected}
         <div class="image-wrapper self-center">
           <!-- svelte-ignore a11y-missing-attribute -->
           <img
@@ -121,9 +124,9 @@
         </div>
       {/if}
       <div class="label-wrapper flex flex-col overflow-hidden">
-        <div style="font-weight: 500;">{$_('text.login-with-facebook')}</div>
+        <div class="first-line connected" class:connected>{$_('text.login-with-facebook')}</div>
         {#if _email}
-          <div style="font-weight: 300; ">{_email}</div>
+          <div class="email-line">{_email}</div>
         {/if}
       </div>
     </div>
@@ -133,7 +136,7 @@
       </div>
     </div>
   </Button>
-  {#if status === 'connected'}
+  {#if connected}
     <a href="." class="logout-link" on:click={() => logout()}>Logout from Facebook</a>
   {/if}
 </div>
@@ -145,12 +148,24 @@
     line-height: 1.2em;
     font-family: Roboto;
     text-transform: initial;
+    letter-spacing: 0.25px;
     text-align: start;
   }
   .label-wrapper > div {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+  .first-line:not(.connected) {
+    font-size: 14px;
+  }
+  .first-line {
+    font-weight: 500;
+  }
+  .email-line {
+    font-weight: 400;
+    font-size: 11px;
+    color: #eeeeee;
   }
   .image-wrapper {
     margin-left: 4px;

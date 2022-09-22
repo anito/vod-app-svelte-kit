@@ -12,7 +12,7 @@
   import { flash } from '$lib/stores';
   import Button from '@smui/button';
   import TabBar from '@smui/tab-bar';
-  import Tab, { Label as TabLabel } from '@smui/tab';
+  import Tab, { Label as TabLabel, Icon as LabelIcon } from '@smui/tab';
   import Textfield from '@smui/textfield';
   import Icon from '@smui/textfield/icon';
   import { Label } from '@smui/common';
@@ -34,38 +34,44 @@
   const userPassword = 'Angela@005';
   const ONE = 'one-row';
   const TWO = 'two-rows';
+  const THREE = 'three-rows';
+  const DefaultTab = 'Preset';
   const tabMap = new Map([
-    ['Default', { rows: TWO, locale: 'text.default' }],
-    ['Sample', { rows: TWO, locale: 'text.sample' }],
-    ['Social', { rows: TWO, locale: 'text.social' }]
+    ['Default', { rows: THREE, text: $_('text.default'), icon: 'notes' }],
+    [DefaultTab, { rows: TWO, text: $_('text.preset'), icon: 'person_outline' }],
+    ['Social', { rows: TWO, text: $_('text.social'), icon: 'mood' }]
   ]);
   const tabs = {
-    getNames: () => {
+    names: () => {
       const names = [];
       tabMap.forEach((val, key) => {
         names.push(key);
       });
       return names;
     },
-    getRows: (key) => tabMap.get(key).rows,
-    getLocale: (key) => tabMap.get(key).locale
+    rows: (key) => tabMap.get(key).rows,
+    text: (key) => tabMap.get(key).text,
+    icon: (key) => tabMap.get(key).icon
   };
-  const tabNames = tabs.getNames();
+  const tabNames = tabs.names();
 
   let root;
   let password = '';
   let email = '';
   let snackbar;
   let invalidTokenUserDialog;
+  let foundActive;
   let active;
 
-  $: rows = active && tabs.getRows(active);
+  $: console.log(active);
+  $: rows = active && tabs.rows(active);
   $: active && browser && localStorage.setItem('activeSignIn', active);
 
   onMount(() => {
     root = document.documentElement;
     unblock();
-    active = localStorage.getItem('activeSignIn') || 'Sample';
+    foundActive = localStorage.getItem('activeSignIn');
+    active = tabMap.get(foundActive) || DefaultTab;
     snackbar = getSnackbar();
 
     return () => {
@@ -161,7 +167,8 @@
   <div class="mb-5">
     <TabBar tabs={tabNames} let:tab bind:active>
       <Tab {tab}>
-        <Label>{$_(tabs.getLocale(tab))}</Label>
+        <LabelIcon class="material-icons">{tabs.icon(tab)}</LabelIcon>
+        <Label>{tabs.text(tab)}</Label>
       </Tab>
     </TabBar>
   </div>
@@ -172,7 +179,7 @@
       end: () => {}
     }}
     method="POST"
-    class="login-form"
+    class="login-form flex justify-center"
     action="/auth/login"
   >
     <div class="login-grid {rows}">
@@ -205,9 +212,10 @@
         <div class="three flex">
           <Button
             disabled={!(email && password)}
-            class="login-button flex-1"
+            class="login-button"
             type="submit"
             variant="raised"
+            style="flex: 0 0 221px;"
           >
             <Label>Login</Label>
           </Button>
@@ -218,10 +226,10 @@
           <Button
             on:click={() => setFields('admin')}
             color=""
-            class="login-button flex-1"
+            class="login-button"
             type="submit"
             variant="raised"
-            style="flex: 0 0 70%;"
+            style="flex: 0 0 221px;"
           >
             <Icon class="material-icons">supervisor_account</Icon>
             <Label>Sample Admin</Label>
@@ -234,7 +242,7 @@
             class="login-button flex-1"
             type="submit"
             variant="raised"
-            style="flex: 0 0 70%;"
+            style="flex: 0 0 221px;"
           >
             <Icon class="material-icons">person</Icon>
             <Label>Sample User</Label>
@@ -315,6 +323,13 @@
       grid-template-areas:
         'one one'
         'two two';
+    }
+    .login-grid.three-rows {
+      grid-template-rows: repeat(3, 1fr);
+      grid-template-areas:
+        'one one'
+        'two two'
+        'three three';
     }
   }
   .sign-in-hint {

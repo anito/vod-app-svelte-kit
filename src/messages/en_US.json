@@ -215,6 +215,7 @@
     "social": "Social",
     "default": "Default",
     "sample": "Sample",
+    "preset": "Preset",
     "revoke_app_from_user": "Revoke this App ({name})",
     "language_is_now": "Language is now {locale}",
     "no-videos-available": "No videos available",
