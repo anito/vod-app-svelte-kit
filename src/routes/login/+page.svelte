@@ -72,16 +72,19 @@
   {#await promise then}
     <div class="wrapper">
       <div style="margin-top: calc(100vh / 6);">
-        <div class="flyer">
+        <div class="flyer flex">
           {#if $flash.message}
-            <div class="flex justify-center message {$flash.type}" in:fly={textTransitionParams}>
+            <div
+              class="flex justify-center items-center message {$flash.type}"
+              in:fly={textTransitionParams}
+            >
               <h5 class="m-2 mdc-typography--headline5 headline">
                 {$flash.message}
               </h5>
             </div>
           {:else}
             <div
-              class="flex justify-center message {type}"
+              class="flex justify-center items-center message {type}"
               in:fly={textTransitionParams}
               on:introend={introendHandler}
             >
@@ -113,7 +116,7 @@
     pointer-events: none;
   }
   .flyer {
-    height: 50px;
+    height: 100px;
     overflow: hidden;
     position: relative;
   }
@@ -122,8 +125,10 @@
     color: var(--prime);
   }
   .message .headline {
+    max-width: 400px;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-align: center;
     white-space: nowrap;
   }
   :global(.error).message {
@@ -141,6 +146,12 @@
   @media (min-width: 768px) {
     .wrapper {
       width: 522px;
+    }
+    .message .headline {
+      max-width: 100%;
+      overflow: auto;
+      white-space: normal;
+      text-align: center;
     }
   }
 </style>
