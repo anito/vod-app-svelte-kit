@@ -8,7 +8,6 @@
   import SvgIcon from './_SvgIcon.svelte';
   import { _ } from 'svelte-i18n';
   import { post, proxyEvent } from '$lib/utils';
-  import { flash } from '$lib/stores';
 
   export let appId;
 

@@ -36,8 +36,8 @@
   const TWO = 'two-rows';
   const tabMap = new Map([
     ['Default', { rows: TWO, locale: 'text.default' }],
-    ['Sample', { rows: ONE, locale: 'text.sample' }],
-    ['Social', { rows: ONE, locale: 'text.social' }]
+    ['Sample', { rows: TWO, locale: 'text.sample' }],
+    ['Social', { rows: TWO, locale: 'text.social' }]
   ]);
   const tabs = {
     getNames: () => {
@@ -214,25 +214,27 @@
         </div>
       {/if}
       {#if active === tabNames[1]}
-        <div class="one flex">
+        <div class="one flex justify-center">
           <Button
             on:click={() => setFields('admin')}
             color=""
             class="login-button flex-1"
             type="submit"
             variant="raised"
+            style="flex: 0 0 70%;"
           >
             <Icon class="material-icons">supervisor_account</Icon>
             <Label>Sample Admin</Label>
           </Button>
         </div>
-        <div class="two flex">
+        <div class="two flex justify-center">
           <Button
             on:click={() => setFields('user')}
             color=""
             class="login-button flex-1"
             type="submit"
             variant="raised"
+            style="flex: 0 0 70%;"
           >
             <Icon class="material-icons">person</Icon>
             <Label>Sample User</Label>
@@ -240,10 +242,10 @@
         </div>
       {/if}
       {#if active === tabNames[2]}
-        <div class="one flex relative">
+        <div class="one flex relative justify-center">
           <FacebookLoginButton {appId} />
         </div>
-        <div class="two flex relative">
+        <div class="two flex relative justify-center">
           <GoogleLoginButton {client_id} />
         </div>
       {/if}
@@ -276,10 +278,9 @@
   }
   .login-grid {
     display: grid;
-    grid-gap: 15px;
     grid-row-gap: 0.5rem;
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(2, 1fr);
+    grid-template-rows: 1fr;
     grid-template-areas:
       'one'
       'two'
@@ -298,26 +299,29 @@
   @media (min-width: 868px) {
     .login-grid {
       grid-template-areas:
-        'one two'
-        'three three';
-      grid-template-columns: repeat(2, 1fr);
+        'one one'
+        'two two';
       grid-template-rows: 1fr 1fr;
+      grid-template-columns: 1fr;
       grid-row-gap: 1rem;
     }
     .login-grid.one-row {
       grid-template-rows: 1fr;
       grid-template-areas: 'one two';
+      grid-gap: 15px;
     }
     .login-grid.two-rows {
       grid-template-rows: repeat(2, 1fr);
       grid-template-areas:
-        'one two'
-        'three three';
+        'one one'
+        'two two';
     }
   }
   .sign-in-hint {
     background-color: rgb(173 20 87 / 10%);
-    padding: 0px 8px;
+    padding: 6px 8px;
+    line-height: 1em;
+    text-align: center;
     height: 30px;
     border-radius: 15px;
     color: var(--prime);
