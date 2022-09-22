@@ -10,7 +10,6 @@
   import { sitename } from '$lib/stores';
   import { fly } from 'svelte/transition';
   import { processRedirect } from '$lib/utils';
-  import Paper, { Content } from '@smui/paper';
   import { _ } from 'svelte-i18n';
 
   export let data;
@@ -69,14 +68,10 @@
   <title>{$sitename} | Login</title>
 </svelte:head>
 
-<div
-  in:fly={{ x: -200, duration: 800 }}
-  out:fly={{ x: 200 }}
-  class="flex flex-1 justify-center paper-wrapper"
->
+<div in:fly={{ x: -200, duration: 800 }} out:fly={{ x: 200 }} class="flex flex-1 justify-center">
   {#await promise then}
     <div class="wrapper">
-      <Paper elevation="20" style="margin-top: calc(100vh / 6);">
+      <div style="margin-top: calc(100vh / 6);">
         <div class="flyer">
           {#if $flash.message}
             <div class="flex justify-center message {$flash.type}" in:fly={textTransitionParams}>
@@ -95,13 +90,9 @@
           {/if}
         </div>
         <div class="login-form loggedin" class:loggedin>
-          <Paper elevation="0" style="padding-top: 0;">
-            <Content>
-              <LoginForm />
-            </Content>
-          </Paper>
+          <LoginForm />
         </div>
-      </Paper>
+      </div>
     </div>
   {/await}
 </div>

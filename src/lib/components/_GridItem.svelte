@@ -5,6 +5,7 @@
   export let hcenter = false;
   export let vcenter = false;
   export { className as class };
+  export let style = '';
 
   let className = '';
 
@@ -14,6 +15,7 @@
 <div
   in:fly={{ opacity: 0, duration: 800 }}
   class="grid-item {name} {className}"
+  {style}
   class:is-item={name}
 >
   <div class="inner flex flex-1 {className}" class:vcenter class:hcenter>
@@ -27,12 +29,6 @@
     background: var(--back-grid-item);
     position: relative;
     align-self: normal;
-  }
-  :global(.home) .grid-item {
-    background: var(--back-white);
-  }
-  :global(.home .grid-inner) {
-    display: inline-block;
   }
   :global(.grid-inner) {
     display: flex;

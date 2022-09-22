@@ -522,6 +522,9 @@
     overflow: hidden;
     white-space: nowrap;
   }
+  :global(.home .grid-inner) {
+    display: inline-block;
+  }
   :global(.is-login-page .sign-in-out-item a) {
     pointer-events: none;
   }
