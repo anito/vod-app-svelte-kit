@@ -73,10 +73,7 @@
   function signOut(id) {
     google.accounts.id.disableAutoSelect();
     google.accounts.id.revoke(id, (res) => {
-      if (res.successful) {
-        googleUser.set(null);
-        proxyEvent('ticker:stop', { redirect: '/login' });
-      }
+      googleUser.set(null);
     });
   }
 </script>
