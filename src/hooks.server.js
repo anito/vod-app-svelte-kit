@@ -22,10 +22,12 @@ export const handle = handleSession(
   }
 );
 
+/** @type {import('@sveltejs/kit').HandleFetch} */
 export async function handleFetch({ request, fetch }) {
   return fetch(request);
 }
 
+/** @type {import('@sveltejs/kit').HandleServerError} */
 export async function handleError({ error, event }) {
   console.log('ERROR (hooks.js)', error, event);
 }

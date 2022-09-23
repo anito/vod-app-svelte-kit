@@ -175,7 +175,6 @@
   $: searchParams = $page.url.searchParams.toString();
   $: search = searchParams && `?${searchParams}`;
   $: waitforConfig && checkSession();
-  $: console.log($locale);
 
   onMount(async () => {
     $mounted = true;
