@@ -4,9 +4,6 @@ import { get } from 'svelte/store';
 import { locale as i18n } from 'svelte-i18n';
 import { settings } from '$lib/stores';
 
-/** @type {string | null | undefined} */
-let locale;
-i18n.subscribe((val) => (locale = val));
 /** @type {number} */
 let lifetime;
 settings.subscribe((val) => (lifetime = val.Session.lifetime));
@@ -18,10 +15,10 @@ export async function GET({ locals, url }) {
 
   if (token) {
     return await api.get(`${type}`, { fetch, token }).then(async (res) => {
+      const locale = locals.session.data.locale || get(i18n);
       if (res.success) {
         /** @type {import('$lib/types').User} */
         const { id, name, avatar, jwt, role, groups } = { ...res.data.user, ...res.data };
-
         await locals.session.destroy();
         await locals.session.set({
           start: new Date().toISOString(),
@@ -51,10 +48,10 @@ export async function POST({ locals, request, url }) {
   const type = url.searchParams.get('type') || 'login';
 
   return await api.post(`${type}`, { data, fetch }).then(async (res) => {
+    const locale = locals.session.data.locale || get(i18n);
     if (res.success) {
       /** @type {import('$lib/types').User} */
       const { id, name, avatar, jwt, role, groups } = { ...res.data.user, ...res.data };
-
       await locals.session.destroy();
       await locals.session.set({
         start: new Date().toISOString(),
