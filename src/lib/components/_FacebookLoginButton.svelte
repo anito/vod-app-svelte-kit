@@ -2,88 +2,55 @@
   // @ts-nocheck
 
   import './_fbButton.scss';
-  import { invalidate } from '$app/navigation';
-  import Button, { Icon, Label } from '@smui/button';
+  import Button from '@smui/button';
   import { onMount } from 'svelte';
   import SvgIcon from './_SvgIcon.svelte';
   import { _ } from 'svelte-i18n';
   import { post, proxyEvent } from '$lib/utils';
 
+  /** @type {string}*/
   export let appId;
 
-  let status;
-  let _name = '';
-  let _email = '';
-  let defaultSrc = 'favicon.png';
-  let src = defaultSrc;
+  const defaultSrc = 'favicon.png';
+
+  let status = '';
+  let id = '';
+  let name = '';
+  let email = '';
+  /** @type {any | null} */
+  let src = null;
+  /** @type {any | null} */
   let authResponse = null;
 
   $: connected = status === 'connected';
 
   onMount(() => {
     init();
-    window.fbAsyncInit();
   });
 
-  function handleLogin(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    if (connected) {
-      authResponse && fbAPI({ ...authResponse, redirect: true });
-    } else {
-      login();
-    }
-  }
-
-  function login() {
-    FB.login(
-      ({ authResponse, status: _status }) => {
-        status = _status;
-        authResponse && fbAPI({ ...authResponse, redirect: true });
-      },
-      { scope: 'public_profile,email' }
-    );
-  }
-
-  function logout() {
-    FB.logout(({ status: _status, authResponse }) => {
-      src = null;
-      _name = null;
-      _email = null;
-      status = _status;
-    });
-  }
-
-  function statusChangeHandler({ authResponse: _authResponse, status: _status }) {
-    authResponse = _authResponse;
-    status = _status;
-    if (connected) {
-      // Logged into your webpage and Facebook.
-      authResponse && fbAPI({ ...authResponse, redirect: false });
-    }
-  }
-
   const init = () => {
-    window.fbAsyncInit = () => {
-      FB.init({
-        appId,
-        cookie: true, // Enable cookies to allow the server to access the session.
-        xfbml: true, // Parse social plugins on this webpage.
-        version: 'v14.0'
-      });
+    FB.init({
+      appId,
+      cookie: true, // Enable cookies to allow the server to access the session.
+      xfbml: true, // Parse social plugins on this webpage.
+      version: 'v14.0'
+    });
 
-      FB.getLoginStatus((response) => {
-        statusChangeHandler(response);
-      });
-    };
+    FB.getLoginStatus((response) => {
+      statusChangeHandler(response);
+    });
   };
 
+  function statusChangeHandler(response) {
+    ({ authResponse, status } = response);
+    authResponse && fbAPI({ ...authResponse, redirect: connected });
+  }
+
   function fbAPI({ userID, redirect }) {
-    FB.api(`/${userID}?fields=id,name,email`, async ({ email, id, name }) => {
-      _name = name;
-      _email = email;
+    FB.api(`/${userID}?fields=id,name,email`, async (user) => {
+      ({ email, id, name } = user); // User attributes
       FB.api(`/${userID}/picture`, 'GET', { type: 'large', redirect: false }, async ({ data }) => {
-        src = data?.url || defaultSrc;
+        ({ url: src } = { ...data }); // The src attribute for login buttton
         if (id && redirect) {
           await post(`/auth/login?type=facebook`, {
             id,
@@ -102,6 +69,32 @@
       });
     });
   }
+
+  function handleLogin(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    fbAPI({ ...authResponse, redirect: true });
+    if (!connected) login();
+  }
+
+  function login() {
+    FB.login(
+      (response) => {
+        ({ authResponse, status } = { ...response });
+        fbAPI({ ...authResponse, redirect: true });
+      },
+      { scope: 'public_profile,email' }
+    );
+  }
+
+  function logout() {
+    FB.logout((response) => {
+      ({ status } = { ...response });
+      src = null;
+      name = null;
+      email = null;
+    });
+  }
 </script>
 
 <div class="relative flex flex-col">
@@ -117,9 +110,9 @@
         <div class="image-wrapper self-center">
           <!-- svelte-ignore a11y-missing-attribute -->
           <img
-            alt={$_('text.profile_image', { values: { name: _name } })}
+            alt={$_('text.profile_image', { values: { name } })}
             class="relative image"
-            {src}
+            src={src ?? defaultSrc}
           />
         </div>
       {/if}
@@ -127,8 +120,8 @@
         <div class="first-line connected" class:connected>
           {$_('text.login-with-facebook')}
         </div>
-        {#if _email}
-          <div class="email-line">{_email}</div>
+        {#if email}
+          <div class="email-line">{email}</div>
         {/if}
       </div>
     </div>

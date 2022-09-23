@@ -43,8 +43,7 @@
       }
     : {
         message: $_('text.login-text'),
-        type: 'success',
-        permanent: true
+        type: 'success'
       });
 
   onMount(() => {});
