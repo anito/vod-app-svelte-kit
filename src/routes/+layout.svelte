@@ -113,6 +113,10 @@
    * @type {boolean}
    */
   let isMounted = false;
+  /**
+   * @type {boolean}
+   */
+  let waitforConfig = false;
 
   setContext('fab', {
     setFab: (/** @type {any} */ name) => fabs.update(name),
@@ -149,11 +153,6 @@
     }
   });
 
-  browser &&
-    get('/config').then((res) => {
-      settings.update(res);
-    });
-
   setContext('mounted', {
     mounted
   });
@@ -176,6 +175,7 @@
     }));
   $: searchParams = $page.url.searchParams.toString();
   $: search = searchParams && `?${searchParams}`;
+  $: waitforConfig && checkSession();
 
   onMount(async () => {
     $mounted = true;
@@ -185,7 +185,7 @@
 
     reveal();
     initListener();
-    checkSession();
+    getConfig();
     initClasses();
     initStyles();
 
@@ -195,6 +195,13 @@
       removeClasses();
     };
   });
+
+  async function getConfig() {
+    await get('/config').then((res) => {
+      settings.update(res);
+      waitforConfig = true;
+    });
+  }
 
   function reveal() {
     setTimeout(() => {
@@ -212,16 +219,17 @@
   }
 
   function checkSession() {
-    const now = Date.now();
     const { start } = { start: 0, ...$session };
     const { lifetime } = $settings.Session;
-    const elapsed = now - new Date(start);
-    const remaining = parseInt(lifetime) - elapsed;
-    if (remaining > 0) {
-      proxyEvent('ticker:extend', { remaining });
+    const _expires = new Date(start).getTime() + parseInt(lifetime);
+    const valid = new Date() < new Date(_expires);
+    if (valid) {
+      console.log('REMAINING', displayRemainingTime(_expires));
+      proxyEvent('ticker:extend');
     } else {
+      console.error('SESSION EXPIRED');
       const pathname = $page.url.pathname;
-      proxyEvent('ticker:stop', {
+      proxyEvent('ticker:stop_', {
         redirect: pathname == '/' ? pathname : '/login'
       });
     }
@@ -237,6 +245,13 @@
       primary: styles.getPropertyValue('--prime'),
       secondary: styles.getPropertyValue('--second')
     });
+  }
+
+  function displayRemainingTime(timestamp) {
+    const now = Date.now();
+    const sec = Math.floor((timestamp - now) / 1000);
+    const min = Math.floor((timestamp - now) / (1000 * 60));
+    return `${min}:${sec % 60}`;
   }
 
   function removeListener() {
@@ -369,6 +384,7 @@
   }
 
   async function tickerStopHandler(ev) {
+    if (!$session.user) return;
     await killSession().then(() => {
       const path = ev.detail.redirect || '/';
       const search = createRedirectSlug($page.url);
@@ -391,8 +407,8 @@
 
   async function tickerExtendHandler() {
     if ($session.user) {
-      const start = new Date().toISOString();
-      await post('/session/extend', start);
+      const end = new Date().getTime() + parseInt($settings.Session.lifetime);
+      await post('/session/extend', end);
       invalidate('/session');
     }
   }

@@ -4,7 +4,7 @@ function createStore() {
   /** @type {import('$lib/types').Setting} */
   const defaults = {
     Session: {
-      lifetime: 60 * 60 * 1000
+      lifetime: 60 * 1000
     },
     Site: { defaultUserTab: 'profile' }
   };

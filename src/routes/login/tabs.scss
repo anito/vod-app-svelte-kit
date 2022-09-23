@@ -1,0 +1,14 @@
+@use '@material/tab';
+
+.mdc-tab {
+    @media (min-width: 768px) {
+      width: 200px;
+    }
+
+    .mdc-tab__text-label {
+      max-width: 80%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+}

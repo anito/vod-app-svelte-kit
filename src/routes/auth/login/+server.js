@@ -1,11 +1,15 @@
 import * as api from '$lib/api';
 import { error, json } from '@sveltejs/kit';
 import { get } from 'svelte/store';
-import { locale } from 'svelte-i18n';
+import { locale as i18n } from 'svelte-i18n';
+import { settings } from '$lib/stores';
 
 /** @type {string | null | undefined} */
-let _locale;
-locale.subscribe((val) => (_locale = val));
+let locale;
+i18n.subscribe((val) => (locale = val));
+/** @type {number} */
+let lifetime;
+settings.subscribe((val) => (lifetime = val.Session.lifetime));
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ locals, url }) {
@@ -21,16 +25,18 @@ export async function GET({ locals, url }) {
         await locals.session.destroy();
         await locals.session.set({
           start: new Date().toISOString(),
+          end: new Date(Date.now() + lifetime).toISOString(),
+          lifetime,
           user: { id, name, jwt, avatar },
           role,
           groups,
-          locale: get(locale)
+          locale
         });
         await locals.session.refresh();
       } else {
         await locals.session.destroy();
         await locals.session.set({
-          locale: _locale
+          locale
         });
       }
       return json(res);
@@ -43,7 +49,6 @@ export async function GET({ locals, url }) {
 export async function POST({ locals, request, url }) {
   const data = await request.json();
   const type = url.searchParams.get('type') || 'login';
-  const _locale = get(locale);
 
   return await api.post(`${type}`, { data, fetch }).then(async (res) => {
     if (res.success) {
@@ -53,10 +58,11 @@ export async function POST({ locals, request, url }) {
       await locals.session.destroy();
       await locals.session.set({
         start: new Date().toISOString(),
+        end: new Date(Date.now() + lifetime).toISOString(),
         user: { id, name, jwt, avatar },
         role,
         groups,
-        locale: _locale
+        locale
       });
       await locals.session.refresh();
     }

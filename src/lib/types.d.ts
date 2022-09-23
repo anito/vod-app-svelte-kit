@@ -67,7 +67,7 @@ export interface Avatar<AvatarType = Record<string, any>> {
 
 export interface Session<SessionType = Record<string, any>> {
   User: User
-  start: Date | any
+  end: Date | any
   role: string
 }
 
@@ -91,7 +91,7 @@ export interface Inbox<InboxType = Record<string, any>> {
 }
 
 export interface Setting<SettingType = Record<string, any>> {
-  Session
+  Session: any
   Site: Site
 }
 

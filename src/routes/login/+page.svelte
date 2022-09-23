@@ -1,6 +1,7 @@
 <script>
   // @ts-nocheck
 
+  import './tabs.scss';
   import { page } from '$app/stores';
   import { browser } from '$app/environment';
   import { goto, invalidate } from '$app/navigation';
@@ -28,12 +29,7 @@
 
   $: $mounted && init();
   $: loggedin = !!$session.user;
-  $: (async (withToken) => {
-    if (withToken) {
-      invalidate('/session');
-      await tick();
-    }
-  })(!!data.token && browser);
+  $: data.token && browser && invalidate('/session');
   $: ({ message, permanent, type } = $session.user
     ? {
         message: $_('text.welcome-message', { values: { name: $session.user?.name } }),
@@ -145,7 +141,7 @@
   }
   @media (min-width: 768px) {
     .wrapper {
-      width: 522px;
+      width: 600px;
     }
     .message .headline {
       max-width: 100%;

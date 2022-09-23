@@ -7,7 +7,7 @@ export async function POST({ locals, request }) {
 
   await locals.session.set({
     ...locals.session.data,
-    start: response
+    end: new Date(response).toISOString()
   });
   return json(locals.session.data);
 }

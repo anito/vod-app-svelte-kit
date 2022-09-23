@@ -15,7 +15,7 @@ function createStore() {
     {
       user,
       role: '',
-      start: ''
+      end: new Date().toISOString()
     } // initial value
   );
 }

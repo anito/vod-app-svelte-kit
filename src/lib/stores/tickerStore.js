@@ -1,5 +1,4 @@
 import { derived } from 'svelte/store';
-import { page } from '$app/stores';
 import { session, settings } from '$lib/stores';
 
 function createStore() {
@@ -10,13 +9,6 @@ function createStore() {
   /**
    * @type {number}
    */
-  /**
-   * @type {any}
-   */
-  let expires;
-  /**
-   * @type {number}
-   */
   let time;
   /**
    * @type {ReturnType<typeof setInterval>}
@@ -24,28 +16,21 @@ function createStore() {
   let intervalId;
 
   return derived(
-    [settings, session, page],
+    [session],
     /**
      *
      * @param {*} param0
      * @param {*} set
      * @returns
      */
-    ([$settings, $session, $page], set) => {
-      const startCustomSession = new Date($session.start).getTime();
-      const startPageSession = new Date($page.data.session.start).getTime();
-      const start = [startCustomSession, startPageSession].sort((a, b) => a - b)[1];
-      const lifetime = parseInt($settings.Session.lifetime);
-      expires = start + lifetime;
+    ([$session], set) => {
+      const expires = new Date($session.end).getTime();
       if (isNaN(expires)) {
         return;
       }
-      if (!(expires instanceof Date)) {
-        expires = new Date(expires);
-      }
 
       intervalId = setInterval(() => {
-        time = expires - new Date().getTime();
+        time = expires - Date.now();
         set(time > 0 ? time : 0);
       }, INTERVAL * 1000);
 

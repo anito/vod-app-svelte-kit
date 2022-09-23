@@ -1,5 +1,5 @@
 /** @type {import('./$types').PageLoad} */
-export async function load({ parent }) {
+export async function _load({ parent }) {
   const parentData = await parent();
-  return { ...parentData };
+  return { ...parentData, test: true };
 }
