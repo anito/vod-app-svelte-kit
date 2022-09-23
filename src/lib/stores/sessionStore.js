@@ -15,7 +15,9 @@ function createStore() {
     {
       user,
       role: '',
-      end: new Date().toISOString()
+      end: new Date().toISOString(),
+      message: '',
+      code: 200
     } // initial value
   );
 }

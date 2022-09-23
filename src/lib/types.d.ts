@@ -67,8 +67,10 @@ export interface Avatar<AvatarType = Record<string, any>> {
 
 export interface Session<SessionType = Record<string, any>> {
   User: User
+  start: Date | any
   end: Date | any
   role: string
+  message: string
 }
 
 export interface VideoElement<VideoElementType = Record<string, any>> {

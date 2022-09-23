@@ -12,6 +12,7 @@
   import { fabs, session, sitename, images, currentVideo } from '$lib/stores';
   import { _ } from 'svelte-i18n';
 
+  /** @type {import('./$types').PageData} */
   export let data = [];
 
   $: images.update(data.images);

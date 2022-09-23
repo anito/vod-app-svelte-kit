@@ -1,25 +1,28 @@
 import { writable } from 'svelte/store';
 
 function createStore() {
-  const { subscribe, update, set } = writable({}, () => {});
-  const TIMEOUT = 4000;
-  const PERMANENT = false;
-  const RESET = {
-    message: '',
-    type: 'success'
+  const defaults = {
+    timeout: 4000,
+    permanent: false,
+    type: 'success',
+    message: ''
   };
-  /** @type {ReturnType<typeof setTimeout>} */
+  const { subscribe, update, set } = writable(defaults, () => {});
+
+  let { permanent, timeout } = defaults;
+  /** @type {ReturnType <typeof setTimeout>} */
   let timeoutId;
+  /** @type {ReturnType<typeof setTimeout>} */
 
   return {
     subscribe,
-    /** @param {Object} value */
-    update: (value) =>
+    update: (/** @type {any} */ value) =>
       update(() => {
-        let { permanent, timeout } = { timeout: TIMEOUT, permanent: PERMANENT, ...value };
+        // @ts-ignore
+        ({ permanent, timeout } = { ...defaults, ...value });
         clearTimeout(timeoutId);
         if (!permanent === true) {
-          timeoutId = setTimeout((val) => set(val), timeout, { ...RESET });
+          timeoutId = setTimeout((val) => set(val), timeout, { ...defaults });
         }
         return { ...value, permanent };
       }),

@@ -5,7 +5,6 @@
   import '$lib/components/_notched_outline.scss';
   import * as api from '$lib/api';
   import { goto, invalidate } from '$app/navigation';
-  import { browser } from '$app/environment';
   import { page } from '$app/stores';
   import { getContext, onMount, setContext, tick } from 'svelte';
   import isMobile from 'ismobilejs';

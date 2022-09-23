@@ -1,6 +1,4 @@
 <script>
-  // @ts-nocheck
-
   import './_tabs.scss';
   import { page } from '$app/stores';
   import { browser } from '$app/environment';
@@ -13,6 +11,7 @@
   import { processRedirect } from '$lib/utils';
   import { _ } from 'svelte-i18n';
 
+  /** @type {import('./$types').PageData} */
   export let data;
 
   const transitionParams = {
@@ -22,13 +21,17 @@
   const textTransitionParams = { ...transitionParams, x: -80 };
   const { mounted } = getContext('mounted');
   const promise = new Promise((resolve) => {
-    setTimeout(() => resolve(), 500);
+    setTimeout(() => resolve(1), 500);
   });
-
-  let errors = null;
 
   $: $mounted && init();
   $: loggedin = !!$session.user;
+  $: if ($session.code >= 400) {
+    flash.update({
+      message: $session.message,
+      type: 'error'
+    });
+  }
   $: data.token && browser && invalidate('/session');
   $: ({ message, permanent, type } = $session.user
     ? {
@@ -93,11 +96,6 @@
       </div>
     </div>
   {/await}
-</div>
-
-<div class="hidden">
-  <ListErrors {errors} />
-  <ListMessages {message} />
 </div>
 
 <style>
