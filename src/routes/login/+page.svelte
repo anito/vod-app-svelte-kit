@@ -1,7 +1,7 @@
 <script>
   // @ts-nocheck
 
-  import './tabs.scss';
+  import './_tabs.scss';
   import { page } from '$app/stores';
   import { browser } from '$app/environment';
   import { goto, invalidate } from '$app/navigation';

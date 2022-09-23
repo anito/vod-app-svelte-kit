@@ -33,7 +33,6 @@
     urls,
     videos,
     videoEmitter,
-    sessionCookie,
     flash
   } from '$lib/stores';
   import { Modal } from '$lib/components';

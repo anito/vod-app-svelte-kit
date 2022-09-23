@@ -10,7 +10,7 @@
   import { getContext, onMount } from 'svelte';
   import Header from './_Header.svelte';
   import { fly } from 'svelte/transition';
-  import { flash, session, sessionCookie, users } from '$lib/stores';
+  import { flash, session, users } from '$lib/stores';
   import { createRedirectSlug, proxyEvent, ADMIN, SUPERUSER, post } from '$lib/utils';
   import Textfield from '@smui/textfield';
   import TextfieldIcon from '@smui/textfield/icon';
