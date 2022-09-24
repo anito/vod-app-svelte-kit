@@ -1,13 +1,13 @@
 // @ts-nocheck
 
-import { error, json } from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
 
 export async function POST({ locals, request }) {
-  const response = await request.json();
+  const _expires = await request.json();
 
   await locals.session.set({
     ...locals.session.data,
-    end: new Date(response).toISOString()
+    _expires
   });
   return json(locals.session.data);
 }

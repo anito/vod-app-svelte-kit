@@ -46,8 +46,6 @@
     last_scroll = scroll;
     hash_changed = false;
   }
-
-  $: $current = segment;
 </script>
 
 <svelte:window on:hashchange={handle_hashchange} on:scroll={handle_scroll} />

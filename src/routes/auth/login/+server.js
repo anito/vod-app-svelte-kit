@@ -4,7 +4,7 @@ import { get } from 'svelte/store';
 import { locale as i18n } from 'svelte-i18n';
 import { settings } from '$lib/stores';
 
-/** @type {number} */
+/** @type {number | any} */
 let lifetime;
 settings.subscribe((val) => (lifetime = val.Session.lifetime));
 
@@ -21,8 +21,7 @@ export async function GET({ locals, url }) {
         const { id, name, avatar, jwt, role, groups } = { ...res.data.user, ...res.data };
         await locals.session.destroy();
         await locals.session.set({
-          start: new Date().toISOString(),
-          end: new Date(Date.now() + lifetime).toISOString(),
+          _expires: new Date(Date.now() + parseInt(lifetime)).toISOString(),
           lifetime,
           user: { id, name, jwt, avatar },
           role,
@@ -54,8 +53,7 @@ export async function POST({ locals, request, url }) {
       const { id, name, avatar, jwt, role, groups } = { ...res.data.user, ...res.data };
       await locals.session.destroy();
       await locals.session.set({
-        start: new Date().toISOString(),
-        end: new Date(Date.now() + lifetime).toISOString(),
+        _expires: new Date(Date.now() + parseInt(lifetime)).toISOString(),
         user: { id, name, jwt, avatar },
         role,
         groups,

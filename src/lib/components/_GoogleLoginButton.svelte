@@ -48,7 +48,7 @@
           googleUser.update(data.user);
           proxyEvent('ticker:success', { ...data });
         } else {
-          proxyEvent('ticker:error', { ...data });
+          proxyEvent('ticker:error', { ...data, redirect: '/login' });
         }
         setTimeout(() => renderButton(), 500);
       });

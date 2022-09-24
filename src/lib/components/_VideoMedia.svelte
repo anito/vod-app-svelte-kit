@@ -6,8 +6,8 @@
   import { Media, MediaContent } from '@smui/card';
   import Textfield, { Textarea } from '@smui/textfield';
   import { VideoPlayer } from '$lib/components/Video';
-  import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo } from '$lib/utils';
-  import { session, users, videoEmitter } from '$lib/stores';
+  import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, log } from '$lib/utils';
+  import { session, settings, users, videoEmitter } from '$lib/stores';
   import { _ } from 'svelte-i18n';
 
   export let video;
@@ -53,7 +53,7 @@
   }
 
   function handleEmptied(e) {
-    console.log(
+    log(
       '%c EMPTIED   %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
@@ -62,7 +62,7 @@
   }
 
   function handleLoadStart(e) {
-    console.log(
+    log(
       '%c LOADSTART %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
@@ -71,7 +71,7 @@
   }
 
   function handleLoadedData(e) {
-    console.log(
+    log(
       '%c LOADEDDATA%c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
@@ -80,7 +80,7 @@
   }
 
   function handleAborted(e) {
-    console.log(
+    log(
       '%c ABORTED   %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',

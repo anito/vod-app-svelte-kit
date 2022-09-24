@@ -4,6 +4,7 @@
   import '../app.css';
   import '$lib/components/_notched_outline.scss';
   import * as api from '$lib/api';
+  import { writable } from 'svelte/store';
   import { goto, invalidate } from '$app/navigation';
   import { page } from '$app/stores';
   import { getContext, onMount, setContext, tick } from 'svelte';
@@ -15,24 +16,24 @@
   import { Label } from '@smui/common';
   import {
     createRedirectSlug,
+    createTabSearch,
+    get,
+    post,
     proxyEvent,
     svg,
     ADMIN,
-    SUPERUSER,
-    post,
-    createTabSearch,
-    get
+    SUPERUSER
   } from '$lib/utils';
   import {
     fabs,
+    flash,
     settings,
     session,
     theme,
     ticker,
     urls,
     videos,
-    videoEmitter,
-    flash
+    videoEmitter
   } from '$lib/stores';
   import { Modal } from '$lib/components';
   import { DoubleBounce } from 'svelte-loading-spinners';
@@ -46,8 +47,6 @@
   } from '$lib/components';
   import { svg_manifest } from '$lib/svg_manifest';
   import { _, locale } from 'svelte-i18n';
-  import { writable } from 'svelte/store';
-  import { append_hydration } from 'svelte/internal';
 
   /** @type {import('./$types').PageData} */
   export let data;
@@ -114,7 +113,7 @@
   /**
    * @type {boolean}
    */
-  let waitforConfig = false;
+  let configLoaded = false;
 
   setContext('fab', {
     setFab: (/** @type {any} */ name) => fabs.update(name),
@@ -173,7 +172,7 @@
     }));
   $: searchParams = $page.url.searchParams.toString();
   $: search = searchParams && `?${searchParams}`;
-  $: waitforConfig && checkSession();
+  $: configLoaded && checkSession();
 
   onMount(async () => {
     $mounted = true;
@@ -197,7 +196,7 @@
   async function getConfig() {
     await get('/config').then((res) => {
       settings.update(res);
-      waitforConfig = true;
+      configLoaded = true;
     });
   }
 
@@ -217,18 +216,20 @@
   }
 
   function checkSession() {
-    const { start } = { start: 0, ...$session };
-    const { lifetime } = $settings.Session;
-    const _expires = new Date(start).getTime() + parseInt(lifetime);
+    if (!$session.user) return;
+
+    const { _expires } = { ...$session };
     const valid = new Date() < new Date(_expires);
     if (valid) {
-      console.log('REMAINING', displayRemainingTime(_expires));
       proxyEvent('ticker:extend');
+      console.log('REMAINING', displayRemainingTime(new Date(_expires).getTime()));
     } else {
-      console.error('SESSION EXPIRED');
-      const pathname = $page.url.pathname;
-      proxyEvent('ticker:stop_', {
-        redirect: pathname == '/' ? pathname : '/login'
+      const base = Math.abs((new Date(_expires) - new Date()) / 1000);
+      const sec = Math.floor(base) % 60;
+      const min = Math.floor(base / 60);
+      console.error(`SESSION EXPIRED, ${min.minDigits(1)}:${sec.minDigits(2)} since expiration`);
+      proxyEvent('ticker:stop', {
+        redirect: '/login'
       });
     }
   }
@@ -247,8 +248,8 @@
 
   function displayRemainingTime(timestamp) {
     const now = Date.now();
-    const sec = Math.floor((timestamp - now) / 1000);
-    const min = Math.floor((timestamp - now) / (1000 * 60));
+    const sec = Math.floor((timestamp - now) / 1000).minDigits(2);
+    const min = Math.floor((timestamp - now) / (1000 * 60)).minDigits(2);
     return `${min}:${sec % 60}`;
   }
 
@@ -378,7 +379,7 @@
     const data = { ...ev.detail };
     invalidate('/session');
     await tick();
-    flash.update({ ...data, type: 'error', timeout: 2000 });
+    flash.update({ ...data, type: 'error', timeout: 3000 });
   }
 
   async function tickerStopHandler(ev) {
@@ -405,8 +406,10 @@
 
   async function tickerExtendHandler() {
     if ($session.user) {
-      const end = new Date().getTime() + parseInt($settings.Session.lifetime);
-      await post('/session/extend', end);
+      await post(
+        '/session/extend',
+        new Date(Date.now() + parseInt($settings.Session.lifetime)).toISOString()
+      );
       invalidate('/session');
     }
   }

@@ -67,10 +67,9 @@ export interface Avatar<AvatarType = Record<string, any>> {
 
 export interface Session<SessionType = Record<string, any>> {
   User: User
-  start: Date | any
-  end: Date | any
   role: string
   message: string
+  _expires: Date | any
 }
 
 export interface VideoElement<VideoElementType = Record<string, any>> {
@@ -99,6 +98,7 @@ export interface Setting<SettingType = Record<string, any>> {
 
 export interface Site<SiteType = Record<string, any>> {
   defaultUserTab: string
+  log: boolean
 }
 
 // export interface Session<SessionType = Record<string, any>> {

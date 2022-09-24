@@ -1,4 +1,5 @@
-import { browser } from '$app/environment';
+import { get } from 'svelte/store';
+import { settings } from '$lib/stores';
 import { ADMIN, SUPERUSER, INBOX } from './const';
 
 /**
@@ -291,6 +292,11 @@ export function searchParamsToObject(searchParams) {
     params[key] = val === 'true' ? true : val === 'false' ? false : val;
   }
   return params;
+}
+
+export function log() {
+  const { log } = get(settings).Site;
+  if (log) console.log(...arguments);
 }
 
 // @ts-ignore

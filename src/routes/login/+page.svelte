@@ -1,17 +1,16 @@
 <script>
   import './_tabs.scss';
   import { page } from '$app/stores';
-  import { browser } from '$app/environment';
-  import { goto, invalidate } from '$app/navigation';
+  import { goto } from '$app/navigation';
   import { onMount, getContext, tick } from 'svelte';
-  import { ListMessages, ListErrors, LoginForm } from '$lib/components';
+  import { LoginForm } from '$lib/components';
   import { flash, session } from '$lib/stores';
   import { sitename } from '$lib/stores';
   import { fly } from 'svelte/transition';
   import { processRedirect } from '$lib/utils';
   import { _ } from 'svelte-i18n';
 
-  /** @type {import('./$types').PageData} */
+  /** @type {import('./$types').PageData | any} */
   export let data;
 
   const transitionParams = {
@@ -26,23 +25,23 @@
 
   $: $mounted && init();
   $: loggedin = !!$session.user;
-  $: if ($session.code >= 400) {
+  $: loginError = $session.code >= 400;
+  $: if (loginError) {
     flash.update({
       message: $session.message,
-      type: 'error'
+      type: 'error',
+      timeout: 3000
     });
   }
-  $: data.token && browser && invalidate('/session');
-  $: ({ message, permanent, type } = $session.user
+  $: ({ message, type } = $session.user
     ? {
         message: $_('text.welcome-message', { values: { name: $session.user?.name } }),
-        type: 'success',
-        permanent: false
+        type: 'success'
       }
-    : data.token
+    : data.token && !loginError
     ? {
         message: $_('text.one-moment'),
-        permanent: true
+        type: 'success'
       }
     : {
         message: $_('text.login-text'),
@@ -55,9 +54,9 @@
 
   async function introendHandler() {
     if ($session.user) {
-      setTimeout(() => goto(processRedirect($page.url.searchParams, $session)), 1000);
+      setTimeout(() => goto(processRedirect($page.url.searchParams, $session)), 2000);
     } else {
-      setTimeout(() => goto('/login'), 1000);
+      setTimeout(() => goto('/login'), 2000);
     }
   }
 </script>

@@ -24,13 +24,13 @@ function createStore() {
      * @returns
      */
     ([$session], set) => {
-      const expires = new Date($session.end).getTime();
-      if (isNaN(expires)) {
+      const _expires = new Date($session._expires).getTime();
+      if (isNaN(_expires)) {
         return;
       }
 
       intervalId = setInterval(() => {
-        time = expires - Date.now();
+        time = _expires - Date.now();
         set(time > 0 ? time : 0);
       }, INTERVAL * 1000);
 

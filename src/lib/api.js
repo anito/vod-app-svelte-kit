@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { browser, dev } from '$app/environment';
 import { locale as i18n } from 'svelte-i18n';
+import { windowSize } from './utils';
 
 let locale;
 i18n.subscribe((val) => (locale = val));

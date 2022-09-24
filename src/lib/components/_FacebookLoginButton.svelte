@@ -11,16 +11,16 @@
   /** @type {string}*/
   export let appId;
 
-  const defaultSrc = 'favicon.png';
+  const defaultSrc = 'transparent.png';
 
+  /** @type {any | null} */
+  let authResponse = null;
+  /** @type {any | null} */
+  let src = null;
   let status = '';
   let id = '';
   let name = '';
   let email = '';
-  /** @type {any | null} */
-  let src = null;
-  /** @type {any | null} */
-  let authResponse = null;
 
   $: connected = status === 'connected';
 
