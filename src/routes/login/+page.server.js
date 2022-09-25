@@ -4,7 +4,7 @@ import { redirect } from '@sveltejs/kit';
 export async function load({ locals }) {
   // Already logged in:
   if (locals.session.data.user) {
-    throw redirect(302, '/');
+    // throw redirect(302, '/');
   }
   return {};
 }
