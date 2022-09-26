@@ -1,0 +1,12 @@
+// See https://github.com/material-components/material-components-web/blob/v13.0.0/packages/mdc-snackbar/
+@use '@material/snackbar/mixins';
+// See https://github.com/material-components/material-components-web/blob/v13.0.0/packages/mdc-theme/
+@use '@material/theme/color-palette';
+@use '@material/theme/theme-color';
+ 
+.modal-open .mdc-snackbar {
+  @include mixins.fill-color(color-palette.$grey-100);
+  @include mixins.label-ink-color(
+    theme-color.accessible-ink-color(color-palette.$grey-100)
+  );
+}

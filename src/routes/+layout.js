@@ -1,4 +1,4 @@
-import { register, waitLocale, init, getLocaleFromNavigator, locale as loc } from 'svelte-i18n';
+import { register, waitLocale, init, getLocaleFromNavigator } from 'svelte-i18n';
 
 register('de-DE', () => import('../messages/de_DE.json'));
 register('en-US', () => import('../messages/en_US.json'));
@@ -6,9 +6,9 @@ register('en-US', () => import('../messages/en_US.json'));
 const fallbackLocale = 'de-DE';
 
 /** @type {import('./$types').LayoutLoad} */
-export async function load({ fetch }) {
+export async function load({ fetch, depends }) {
   const session = await fetch('/session')
-    .then((res) => res.json())
+    .then(async (res) => await res.json())
     .catch((reason) => console.error(reason));
 
   init({
@@ -17,5 +17,5 @@ export async function load({ fetch }) {
   });
 
   await waitLocale();
-  return { session };
+  return { session: { ...session, test: 0 } };
 }

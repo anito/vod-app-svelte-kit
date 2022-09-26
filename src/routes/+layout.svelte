@@ -3,11 +3,12 @@
 
   import '../app.css';
   import '$lib/components/_notched_outline.scss';
+  import '$lib/components/_colored_snackbar.scss';
   import * as api from '$lib/api';
   import { writable } from 'svelte/store';
   import { goto, invalidate } from '$app/navigation';
   import { page } from '$app/stores';
-  import { getContext, onMount, setContext, tick } from 'svelte';
+  import { getContext, onMount, setContext } from 'svelte';
   import isMobile from 'ismobilejs';
   import { Icons } from '$lib/components';
   import Button, { Icon } from '@smui/button';
@@ -154,6 +155,7 @@
     mounted
   });
 
+  $: console.log($session);
   $: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
   $: token = $session.user?.jwt;
   $: person = svg(svg_manifest.person, $theme.primary);
@@ -216,18 +218,13 @@
   }
 
   function checkSession() {
-    if (!$session.user) return;
-
     const { _expires } = { ...$session };
+    if (!_expires) return;
+
     const valid = new Date() < new Date(_expires);
     if (valid) {
       proxyEvent('ticker:extend');
-      console.log('REMAINING', displayRemainingTime(new Date(_expires).getTime()));
     } else {
-      const base = Math.abs((new Date(_expires) - new Date()) / 1000);
-      const sec = Math.floor(base) % 60;
-      const min = Math.floor(base / 60);
-      console.error(`SESSION EXPIRED, ${min.minDigits(1)}:${sec.minDigits(2)} since expiration`);
       proxyEvent('ticker:stop', {
         redirect: '/login'
       });
@@ -248,9 +245,9 @@
 
   function displayRemainingTime(timestamp) {
     const now = Date.now();
-    const sec = Math.floor((timestamp - now) / 1000).minDigits(2);
+    const sec = Math.floor(((timestamp - now) / 1000) % 60).minDigits(2);
     const min = Math.floor((timestamp - now) / (1000 * 60)).minDigits(2);
-    return `${min}:${sec % 60}`;
+    return `${min}:${sec}`;
   }
 
   function removeListener() {
@@ -278,7 +275,6 @@
 
       if (show) {
         let message = res.message || res.data.message;
-        snackbar.isOpen() && snackbar.close();
         configSnackbar(message);
         snackbar.open();
       }
@@ -298,7 +294,6 @@
 
       if (show) {
         let message = res.message || res.data.message;
-        snackbar.isOpen() && snackbar.close();
         configSnackbar(message);
         snackbar.open();
       }
@@ -363,7 +358,6 @@
   async function tickerSuccessHandler(ev) {
     const { user, renewed, message } = { ...ev.detail };
     invalidate('/session');
-    await tick();
     flash.update({ message, type: 'success', timeout: 2000 });
 
     renewed && localStorage.setItem('renewed', renewed);
@@ -378,7 +372,6 @@
   async function tickerErrorHandler(ev) {
     const data = { ...ev.detail };
     invalidate('/session');
-    await tick();
     flash.update({ ...data, type: 'error', timeout: 3000 });
   }
 
@@ -512,6 +505,7 @@
 </LoadingModal>
 
 <Snackbar
+  style="z-index: 1001;"
   bind:this={snackbar}
   snackbarLifetimeMs={snackbarLifetime}
   labelText={message}

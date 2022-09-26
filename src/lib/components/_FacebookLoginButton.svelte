@@ -7,6 +7,7 @@
   import SvgIcon from './_SvgIcon.svelte';
   import { _ } from 'svelte-i18n';
   import { post, proxyEvent } from '$lib/utils';
+  import { goto } from '$app/navigation';
 
   /** @type {string}*/
   export let appId;

@@ -3,8 +3,7 @@
   import { goto, invalidate } from '$app/navigation';
   import { onMount } from 'svelte';
   import { flash, googleUser } from '$lib/stores';
-  import { get, proxyEvent } from '$lib/utils';
-
+  import { get, post, proxyEvent } from '$lib/utils';
   import { _ } from 'svelte-i18n';
 
   export let client_id = '';
@@ -41,18 +40,18 @@
   }
 
   async function decodeJwtResponse(token) {
-    goto(`/login`).then(async () => {
-      await get(`/auth/login?token=${token}&type=google`).then(async (res) => {
-        const { success, data } = { ...res };
-        if (success) {
-          googleUser.update(data.user);
-          proxyEvent('ticker:success', { ...data });
-        } else {
-          proxyEvent('ticker:error', { ...data, redirect: '/login' });
-        }
-        setTimeout(() => renderButton(), 500);
-      });
+    // goto(`/login`).then(async () => {
+    await post(`/auth/login?type=google`, { token }).then(async (res) => {
+      const { success, data } = { ...res };
+      if (success) {
+        googleUser.update(data.user);
+        proxyEvent('ticker:success', { ...data });
+      } else {
+        proxyEvent('ticker:error', { ...data, redirect: '/login' });
+      }
+      setTimeout(() => renderButton(), 500);
     });
+    // });
   }
 
   function renderButton() {

@@ -11,10 +11,9 @@ settings.subscribe((val) => (lifetime = val.Session.lifetime));
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ locals, url }) {
   const token = url.searchParams.get('token');
-  const type = url.searchParams.get('type') || 'login';
 
   if (token) {
-    return await api.get(`${type}`, { fetch, token }).then(async (res) => {
+    return await api.get('login', { fetch, token }).then(async (res) => {
       const locale = locals.session.data.locale || get(i18n);
       if (res.success) {
         /** @type {import('$lib/types').User} */
@@ -22,7 +21,6 @@ export async function GET({ locals, url }) {
         await locals.session.destroy();
         await locals.session.set({
           _expires: new Date(Date.now() + parseInt(lifetime)).toISOString(),
-          lifetime,
           user: { id, name, jwt, avatar },
           role,
           groups,
@@ -30,6 +28,8 @@ export async function GET({ locals, url }) {
         });
         await locals.session.refresh();
       } else {
+        /** @type {import('$lib/types').Error} */
+        const { code, message } = { ...res.data };
         await locals.session.destroy();
         await locals.session.set({
           locale
@@ -46,7 +46,7 @@ export async function POST({ locals, request, url }) {
   const data = await request.json();
   const type = url.searchParams.get('type') || 'login';
 
-  return await api.post(`${type}`, { data, fetch }).then(async (res) => {
+  return await api.post(`${type}`, { token: data.token, data, fetch }).then(async (res) => {
     const locale = locals.session.data.locale || get(i18n);
     if (res.success) {
       /** @type {import('$lib/types').User} */

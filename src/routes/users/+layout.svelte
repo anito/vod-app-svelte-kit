@@ -76,8 +76,8 @@
   $: query = searchParams && `?${searchParams}`;
 
   onMount(() => {
-    snackbar = getSnackbar();
     proxyEvent('ticker:extend');
+    snackbar = getSnackbar();
 
     let renewed;
     if ((renewed = localStorage.getItem('renewed')) && renewed == $session.user?.id) {

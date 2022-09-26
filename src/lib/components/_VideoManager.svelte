@@ -72,7 +72,11 @@
           duration: 500
         }
       },
-      { onClosed: openEditor }
+      {
+        onOpen: () => document.documentElement.classList.add('modal-open'),
+        onClose: () => document.documentElement.classList.remove('modal-open'),
+        onClosed: openEditor
+      }
     );
   };
 

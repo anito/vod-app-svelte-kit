@@ -2,7 +2,7 @@ import { users, videos, images, videosAll } from '$lib/stores';
 import { USER } from '$lib/utils';
 
 /** @type {import('./$types').PageLoad} */
-export async function load({ parent, fetch }) {
+export async function load({ parent, fetch, depends }) {
   const parentData = await parent();
   const { session } = parentData;
   await fetch('/repos/users')
@@ -32,16 +32,17 @@ export async function load({ parent, fetch }) {
     })
     .catch((reason) => console.error(reason));
 
-  if (session.role === USER) {
-    await fetch('/repos/videos/all')
-      .then(async (res) => {
-        if (res.ok) return await res.json();
-      })
-      .then((res) => {
-        videosAll.update(res.videos);
-      })
-      .catch((reason) => console.error(reason));
-  }
+  // if (session.role === USER) {
+  await fetch('/repos/videos/all')
+    .then(async (res) => {
+      if (res.ok) return await res.json();
+    })
+    .then((res) => {
+      videosAll.update(res.videos);
+    })
+    .catch((reason) => console.error(reason));
+  // }
+  depends('/session');
 
   return {};
 }

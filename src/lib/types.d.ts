@@ -93,12 +93,17 @@ export interface Inbox<InboxType = Record<string, any>> {
 
 export interface Setting<SettingType = Record<string, any>> {
   Session: any
-  Site: Site
+  Site: Site | any
 }
 
 export interface Site<SiteType = Record<string, any>> {
-  defaultUserTab: string
+  defaultUserTab: boolean
   log: boolean
+}
+
+export interface Error<ErrorType = Record<string, any>> {
+  code: any
+  message: string
 }
 
 // export interface Session<SessionType = Record<string, any>> {

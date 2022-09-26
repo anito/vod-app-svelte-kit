@@ -14,6 +14,8 @@
   const current = writable(null);
   setContext('nav', current);
 
+  $: $current = segment;
+
   let open = false;
   let visible = true;
 

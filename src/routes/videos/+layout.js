@@ -1,7 +1,7 @@
 import { videos, images } from '$lib/stores';
 
 /** @type {import('./$types').LayoutLoad} */
-export async function load({ fetch }) {
+export async function load({ fetch, depends }) {
   await fetch('/repos/videos')
     .then(async (res) => {
       if (res.ok) return await res.json();
@@ -19,6 +19,8 @@ export async function load({ fetch }) {
       images.update(res.images);
     })
     .catch((reason) => console.error(reason));
+
+  depends('/session');
 
   return {};
 }

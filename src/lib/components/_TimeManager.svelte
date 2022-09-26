@@ -72,28 +72,8 @@
   let itemsList = {};
 
   $: dateFormat = $locale.startsWith('de') ? 'dd. MMM yyyy' : 'yyyy-MM-dd';
-  $: currentUserIndex = ((id) => $users.findIndex((usr) => usr.id === id))(selectionUserId);
-  $: userVideos = ((idx) => {
-    const vids = () => {
-      if (hasPrivileges) {
-        return $users[idx]?.videos.sort(sortByEndDate);
-      } else {
-        return $users[idx]?.videos
-          .filter((v) => {
-            return (
-              new Date(v._joinData.start) <= new Date() && new Date(v._joinData.end) >= new Date()
-            );
-          })
-          .sort(sortByEndDate);
-      }
-    };
-    return vids()?.map((video) => {
-      const { image_id, title } = $videos.find((vid) => vid.id === video.id);
-      return { ...video, image_id, title };
-    });
-  })(currentUserIndex);
   $: (() => (selectionVideoId = null))(selectionUserId);
-  $: currentUser = ((id) => $users.find((usr) => usr.id === id))(selectionUserId);
+  $: currentUser = $users.find((usr) => usr.id === selectionUserId);
   $: name = currentUser?.name || '';
   $: role = currentUser?.role;
   $: jwt = currentUser?.jwt;
@@ -105,22 +85,6 @@
   $: endDate = (joinData && joinData.end && parseISO(joinData.end)) || endOfWeek(new Date(0));
   $: expires = currentUser?.expires;
   $: isExpired = (expires && expires * 1000 < +new Date().getTime()) || false;
-  $: noneUserVideos = ((videos) => {
-    if (hasPrivileges) {
-      return videos.sort(sortByTitle);
-    } else {
-      return $videosAll
-        .filter(
-          (v) =>
-            !userVideos?.find((uv) => {
-              return (
-                v.id === uv.id && (!uv._joinData.end || new Date(uv._joinData.end) > new Date())
-              );
-            })
-        )
-        .sort(sortByTitle);
-    }
-  })($videos);
   $: isDatapickerOpen = ((id) => {
     if (!root) return;
     !id && root.classList.remove('datapicker--open');
@@ -136,6 +100,34 @@
     [];
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: hasCurrentPrivileges = role === ADMIN || role === SUPERUSER;
+  $: displayedVideos = hasPrivileges
+    ? currentUser?.videos.sort(sortByEndDate) || []
+    : currentUser?.videos
+        .filter((v) => {
+          return (
+            new Date(v._joinData.start) <= new Date() && new Date(v._joinData.end) >= new Date()
+          );
+        })
+        .sort(sortByEndDate) || [];
+  $: userVideos =
+    (displayedVideos.length <= $videos.length &&
+      displayedVideos.map((video) => {
+        const { image_id, title } = $videos.find((vid) => vid.id === video.id);
+        return { ...video, image_id, title };
+      })) ||
+    [];
+  $: noneUserVideos = hasPrivileges
+    ? $videos.sort(sortByTitle)
+    : $videosAll
+        .filter(
+          (v) =>
+            !userVideos?.find((uv) => {
+              return (
+                v.id === uv.id && (!uv._joinData.end || new Date(uv._joinData.end) > new Date())
+              );
+            })
+        )
+        .sort(sortByTitle);
 
   onMount(() => {
     root = document.documentElement;
@@ -247,8 +239,8 @@
 
   async function removeVideo() {
     let idx = userVideos.findIndex((itm) => itm.id === schedulingVideoId);
-    let _userVideos = [...userVideos.slice(0, idx), ...userVideos.slice(idx + 1)];
-    let ids = _userVideos.map((v) => v.id);
+    let userVideos = [...userVideos.slice(0, idx), ...userVideos.slice(idx + 1)];
+    let ids = userVideos.map((v) => v.id);
 
     let data = { videos: { _ids: [...ids] } };
     const res = await saveUser(data);
@@ -329,7 +321,7 @@
   <div
     class="grid-item user-videos"
     class:no-user-selected={!currentUser}
-    class:no-videos={!userVideos?.length || hasCurrentPrivileges}
+    class:no-videos={!userVideos.length || hasCurrentPrivileges}
   >
     <Component variant="sm">
       <div slot="header">
@@ -354,7 +346,7 @@
           on:SMUIList:mount={(e) => receiveListMethods({ ...e.detail, listName: USERVIDEOSLIST })}
         >
           {#if !hasCurrentPrivileges}
-            {#if userVideos?.length}
+            {#if userVideos.length}
               {#each userVideos as video (video.id)}
                 <SimpleVideoCard
                   isUserVideo
@@ -406,7 +398,7 @@
                   {/if}
                 </SimpleVideoCard>
               {/each}
-            {:else if currentUser}
+            {:else}
               <div class="flex flex-1 flex-col self-center text-center">
                 <div class="m-5">
                   {@html $_('text.user-has-no-videos', {
@@ -451,7 +443,7 @@
           singleSelection
           bind:selectedIndex={selectedNoneUserIndex}
         >
-          {#if noneUserVideos?.length}
+          {#if noneUserVideos.length}
             {#each noneUserVideos as video (video.id)}
               <SimpleVideoCard
                 on:itemSelected={itemSelectedHandler}

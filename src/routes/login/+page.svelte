@@ -1,7 +1,7 @@
 <script>
   import './_tabs.scss';
   import { page } from '$app/stores';
-  import { goto } from '$app/navigation';
+  import { goto, invalidate } from '$app/navigation';
   import { onMount, getContext, tick } from 'svelte';
   import { LoginForm } from '$lib/components';
   import { flash, session } from '$lib/stores';
@@ -25,8 +25,8 @@
 
   $: $mounted && init();
   $: loggedin = !!$session.user;
-  $: loginError = $session.code >= 400;
-  $: if (loginError) {
+  $: error = $session.code >= 400;
+  $: if (error) {
     flash.update({
       message: $session.message,
       type: 'error',
@@ -38,7 +38,7 @@
         message: $_('text.welcome-message', { values: { name: $session.user?.name } }),
         type: 'success'
       }
-    : data.token && !loginError
+    : !error && data.token
     ? {
         message: $_('text.one-moment'),
         type: 'success'
@@ -48,7 +48,9 @@
         type: 'success'
       });
 
-  onMount(() => {});
+  onMount(() => {
+    invalidate('/session');
+  });
 
   function init() {}
 
