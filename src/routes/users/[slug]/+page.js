@@ -42,7 +42,7 @@ export async function load({ parent, fetch, depends }) {
       })
       .catch((reason) => console.error(reason));
   }
-  // depends('/session');
+  depends('/session');
 
   return {};
 }
