@@ -22,9 +22,7 @@
     .filter?.((video) => video.title?.toLowerCase().indexOf(search.toLowerCase()) !== -1)
     .sort?.(sortByTitle);
 
-  onMount(() => {
-    proxyEvent('ticker:extend');
-  });
+  onMount(() => {});
 
   function itemSelectedHandler(e) {
     let { video } = e.detail;

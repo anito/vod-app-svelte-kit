@@ -2,7 +2,7 @@
   // @ts-nocheck
   import * as api from '$lib/api';
   import { page } from '$app/stores';
-  import { goto } from '$app/navigation';
+  import { goto, invalidate } from '$app/navigation';
   import { onMount, getContext, tick } from 'svelte';
   import { fly } from 'svelte/transition';
   import { infos, fabs, session, users, videos, slim } from '$lib/stores';
@@ -76,7 +76,6 @@
   $: query = searchParams && `?${searchParams}`;
 
   onMount(() => {
-    proxyEvent('ticker:extend');
     snackbar = getSnackbar();
 
     let renewed;
