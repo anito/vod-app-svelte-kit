@@ -6,7 +6,7 @@ export function GET({ locals }) {
 }
 
 /** @type {import('./$types').RequestHandler} */
-export async function _POST({ locals, request }) {
+export async function POST({ locals, request }) {
   const response = await request.json();
   return await locals.session
     .set({

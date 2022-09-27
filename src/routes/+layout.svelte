@@ -155,7 +155,6 @@
     mounted
   });
 
-  $: console.log($session);
   $: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
   $: token = $session.user?.jwt;
   $: person = svg(svg_manifest.person, $theme.primary);
