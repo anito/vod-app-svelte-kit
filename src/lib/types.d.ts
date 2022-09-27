@@ -23,7 +23,7 @@ export declare type EventType = keyof GlobalEventHandlersEventMap;
 
 export interface User<UserType = Record<string, any>> {
   name: string;
-  email: string | undefined;
+  email: string;
   id: string;
   jwt: string;
   role: string;

@@ -24,16 +24,12 @@
   let invalidEmail = true;
   let selected;
   let snackbar;
+  let user;
 
   $: src = svg(svg_manifest.logo_hero_vod);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
-  $: user = hasPrivileges
-    ? { name: $session.user?.name, email: $session.user?.email }
-    : { name, email };
-  $: ((user) => {
-    name = user?.name || name;
-    email = user?.email || email;
-  })($session.user);
+  $: user = { name: $session.user?.name || '', email: $session.user?.email || '' };
+  $: ({ name, email } = user);
   $: options = [
     { key: '', label: '' },
     { key: 'send-more', label: $_('text.request-more-information') },

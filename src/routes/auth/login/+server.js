@@ -17,19 +17,17 @@ export async function GET({ locals, url }) {
       const locale = locals.session.data.locale || get(i18n);
       if (res.success) {
         /** @type {import('$lib/types').User} */
-        const { id, name, avatar, jwt, role, groups } = { ...res.data.user, ...res.data };
+        const { id, name, email, avatar, jwt, role, groups } = { ...res.data.user, ...res.data };
         await locals.session.destroy();
         await locals.session.set({
           _expires: new Date(Date.now() + parseInt(lifetime)).toISOString(),
-          user: { id, name, jwt, avatar },
+          user: { id, name, jwt, avatar, email },
           role,
           groups,
           locale
         });
         await locals.session.refresh();
       } else {
-        /** @type {import('$lib/types').Error} */
-        const { code, message } = { ...res.data };
         await locals.session.destroy();
         await locals.session.set({
           locale
@@ -50,11 +48,11 @@ export async function POST({ locals, request, url }) {
     const locale = locals.session.data.locale || get(i18n);
     if (res.success) {
       /** @type {import('$lib/types').User} */
-      const { id, name, avatar, jwt, role, groups } = { ...res.data.user, ...res.data };
+      const { id, name, email, avatar, jwt, role, groups } = { ...res.data.user, ...res.data };
       await locals.session.destroy();
       await locals.session.set({
         _expires: new Date(Date.now() + parseInt(lifetime)).toISOString(),
-        user: { id, name, jwt, avatar },
+        user: { id, name, email, jwt, avatar },
         role,
         groups,
         locale
