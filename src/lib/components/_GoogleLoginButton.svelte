@@ -40,7 +40,6 @@
   }
 
   async function decodeJwtResponse(token) {
-    // goto(`/login`).then(async () => {
     await post(`/auth/login?type=google`, { token }).then(async (res) => {
       const { success, data } = { ...res };
       if (success) {
@@ -51,7 +50,6 @@
       }
       setTimeout(() => renderButton(), 500);
     });
-    // });
   }
 
   function renderButton() {

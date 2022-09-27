@@ -7,7 +7,7 @@
   import { flash, session } from '$lib/stores';
   import { sitename } from '$lib/stores';
   import { fly } from 'svelte/transition';
-  import { processRedirect } from '$lib/utils';
+  import { createRedirectSlug, processRedirect } from '$lib/utils';
   import { _ } from 'svelte-i18n';
 
   /** @type {import('./$types').PageData | any} */
@@ -58,8 +58,6 @@
     if ($session.user) {
       const redirect = processRedirect($page.url, $session);
       setTimeout(() => goto(redirect), 1000);
-    } else {
-      goto('/login');
     }
   }
 </script>
