@@ -121,6 +121,10 @@
    */
   let editable;
   /**
+   * @type {HTMLElement}
+   */
+  let root;
+  /**
    * @type {{id: any, node: HTMLElement | null, value: string, editable: HTMLElement | null} }
    */
   let editor = {
@@ -198,7 +202,9 @@
         });
       });
 
-  onMount(async () => {
+  onMount(() => {
+    root = document.documentElement;
+    root.classList.add('mailmanager--open');
     snackbar = getSnackbar();
     getTemplates();
 
@@ -209,6 +215,10 @@
     }
 
     drawerOpen = drawerOpenOnMount;
+
+    return () => {
+      root.classList.remove('mailmanager--open');
+    };
   });
 
   /**

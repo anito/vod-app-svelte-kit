@@ -62,8 +62,8 @@
   $: selectedMode = $page.url.searchParams.has('mode')
     ? $page.url.searchParams.get('mode')
     : selectedMode;
-  $: ((m) => {
-    if (hasPrivileges && m === 'edit') {
+  $: ((mode) => {
+    if (hasPrivileges && mode === 'edit') {
       setFab('add-user');
     } else {
       setTimeout(() => reset(), 100);
@@ -71,8 +71,10 @@
     }
   })(selectedMode);
   $: selectedMode = mode;
-  $: root?.classList.toggle('add-user-view--open', selectedMode === 'add');
-  $: root?.classList.toggle('profile-view--open', selectedMode === 'edit');
+  $: root?.classList.toggle('user-add-view', selectedMode === 'add');
+  $: root?.classList.toggle('user-edit-view', selectedMode === 'edit');
+  $: root?.classList.toggle('user-password-view', selectedMode === 'pass');
+  $: root?.classList.toggle('user-delete-view', selectedMode === 'del');
   $: groups = $session.groups || [];
   $: currentUser = ((id) => {
     const user = $users.filter((usr) => usr?.id === id)[0];
@@ -126,7 +128,18 @@
 
   onMount(() => {
     root = document.documentElement;
+    root.classList.add('usermanager--open');
     snackbar = getSnackbar();
+
+    return () => {
+      root.classList.remove(
+        'usermanager--open',
+        'user-add-view',
+        'user-edit-view',
+        'user-password-view',
+        'user-delete-view'
+      );
+    };
   });
 
   let openUploader = () => {
@@ -910,7 +923,7 @@
     background: var(--surface);
     color: #c8dbe3;
   }
-  :global(.add-user-view--open) .button-close {
+  :global(.user-add-view--open) .button-close {
     display: block;
     position: absolute;
     right: 20px;
