@@ -200,11 +200,11 @@
   }
 
   async function saveTime(id, start, end) {
-    let associated = userVideos.filter((v) => v.id != id).map((v) => ({ id: v.id }));
-    let currentVideo = userVideos.find((v) => v.id == id);
-    let joinData = currentVideo?._joinData || {};
+    const associated = userVideos.filter((v) => v.id != id).map((v) => ({ id: v.id }));
+    const currentVideo = userVideos.find((v) => v.id == id);
+    const joinData = currentVideo?._joinData || {};
 
-    let data = {
+    const data = {
       videos: [
         {
           id,
@@ -238,11 +238,11 @@
   }
 
   async function removeVideo() {
-    let idx = userVideos.findIndex((itm) => itm.id === schedulingVideoId);
-    let userVideos = [...userVideos.slice(0, idx), ...userVideos.slice(idx + 1)];
-    let ids = userVideos.map((v) => v.id);
+    const idx = userVideos.findIndex((itm) => itm.id === schedulingVideoId);
+    const _userVideos = [...userVideos.slice(0, idx), ...userVideos.slice(idx + 1)];
+    const ids = _userVideos.map((v) => v.id);
 
-    let data = { videos: { _ids: [...ids] } };
+    const data = { videos: { _ids: [...ids] } };
     const res = await saveUser(data);
 
     if (res.success) {
