@@ -32,16 +32,16 @@ export async function load({ parent, fetch, depends }) {
     })
     .catch((reason) => console.error(reason));
 
-  // if (session.role === USER) {
-  await fetch('/repos/videos/all')
-    .then(async (res) => {
-      if (res.ok) return await res.json();
-    })
-    .then((res) => {
-      videosAll.update(res.videos);
-    })
-    .catch((reason) => console.error(reason));
-  // }
+  if (session.role === USER) {
+    await fetch('/repos/videos/all')
+      .then(async (res) => {
+        if (res.ok) return await res.json();
+      })
+      .then((res) => {
+        videosAll.update(res.videos);
+      })
+      .catch((reason) => console.error(reason));
+  }
   depends('/session');
 
   return {};

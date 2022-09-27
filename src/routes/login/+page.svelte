@@ -58,6 +58,8 @@
     if ($session.user) {
       const redirect = processRedirect($page.url, $session);
       setTimeout(() => goto(redirect), 1000);
+    } else {
+      goto('/login');
     }
   }
 </script>
