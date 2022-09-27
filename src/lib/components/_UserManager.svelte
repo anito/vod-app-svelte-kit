@@ -923,7 +923,7 @@
     background: var(--surface);
     color: #c8dbe3;
   }
-  :global(.user-add-view--open) .button-close {
+  :global(.user-add-view) .button-close {
     display: block;
     position: absolute;
     right: 20px;
