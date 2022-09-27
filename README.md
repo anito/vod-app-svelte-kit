@@ -8,7 +8,7 @@ Create and send tokens (sign-in link) to simplify the login process using build-
 
 [Landing Page](https://vod-app.doojoo.de)
 
-[Access Sample Administrators Mailbox](http://vod-app.doojoo.de/login?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyNCIsImV4cCI6MTg3OTE0NDIzMn0.--X1nVW58hZgWarXOFGvssNnvYz8Fmr2003HfTdn8jc&tab=mail&active=inboxes)
+[Access Sample Administrators Mailbox](http://vod-app.doojoo.de/login?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyNCIsImV4cCI6MTg3OTE0NDIzMn0.--X1nVW58hZgWarXOFGvssNnvYz8Fmr2003HfTdn8jc&redirect=/users/24%3Ftab%3Dmail%26active%3Dinboxes)
 
 [The application was originally made using Sapper (development abandoned)](https://github.com/anito/vod-app).
 
