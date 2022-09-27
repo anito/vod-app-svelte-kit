@@ -15,7 +15,7 @@ function createStore() {
     {
       user,
       role: '',
-      end: new Date().toISOString(),
+      _expires: new Date().toISOString(),
       message: '',
       code: 200
     } // initial value

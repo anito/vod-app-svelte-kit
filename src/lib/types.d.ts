@@ -66,7 +66,7 @@ export interface Avatar<AvatarType = Record<string, any>> {
 }
 
 export interface Session<SessionType = Record<string, any>> {
-  User: User
+  user: User
   role: string
   message: string
   _expires: Date | any

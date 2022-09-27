@@ -56,9 +56,8 @@
 
   async function introendHandler() {
     if ($session.user) {
-      setTimeout(() => goto(processRedirect($page.url.searchParams, $session)), 2000);
-    } else {
-      setTimeout(() => goto('/login'), 2000);
+      const redirect = processRedirect($page.url, $session);
+      setTimeout(() => goto(redirect), 1000);
     }
   }
 </script>

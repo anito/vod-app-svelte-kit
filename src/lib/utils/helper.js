@@ -105,26 +105,23 @@ export function createRedirectSlug(url, searchMap = new Map([])) {
     let regex = new RegExp(`\\b${ignore}`, 'g');
     path = path.replace(regex, '');
   }
-  return `?redirect=${path}${parseSearchParams(searchParams)}`;
+  return `?redirect=${path}${encodeURIComponent(parseSearchParams(searchParams))}`;
 }
 
 /**
  *
- * @param {URLSearchParams} searchParams
- * @param {Object} session
- * @param {Object} session.role
- * @param {import('$lib/types').User} session.user
+ * @param {URL} url
+ * @param {import('$lib/types').Session} session
  * @returns
  */
-export function processRedirect(searchParams, session) {
-  const hasPrivileges = session?.role === ADMIN || session?.role === SUPERUSER;
-  let redirect, uid, path;
-  if ((redirect = searchParams.get('redirect'))) {
+export function processRedirect(url, session) {
+  let redirect;
+  if ((redirect = url.searchParams.get('redirect'))) {
     return redirect;
   } else {
-    uid = session.user?.id;
-    path = hasPrivileges ? '/users' : '/videos';
-    return path.concat(parseSearchParams(searchParams));
+    const hasPrivileges = session?.role === ADMIN || session?.role === SUPERUSER;
+    const path = hasPrivileges ? '/users' : '/videos';
+    return path.concat(parseSearchParams(url.searchParams));
   }
 }
 
@@ -135,7 +132,7 @@ export function processRedirect(searchParams, session) {
  */
 export function parseSearchParams(search) {
   const excludeSet = new Set(['token', 'redirect', 'sessionend']);
-  let searchParams = new URLSearchParams(search);
+  const searchParams = new URLSearchParams(search);
   excludeSet.forEach((name) => searchParams.delete(name));
   return searchParams.toString() ? `?${searchParams.toString()}` : '';
 }
