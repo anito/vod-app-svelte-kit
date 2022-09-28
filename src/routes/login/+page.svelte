@@ -13,9 +13,6 @@
   /** @type {import('./$types').PageData | any} */
   export let data;
 
-  /** @type {boolean} */
-  let introStarted = false;
-
   const transitionParams = {
     delay: 100,
     duration: 600
@@ -26,9 +23,9 @@
     setTimeout(() => resolve(1), 500);
   });
 
-  $: mustReload = data.session.user?.id !== $session.user?.id;
-  $: mustReload && log(`${$session.user?.name} -> ${data.session.user?.name}`);
   $: $mounted && init();
+  $: mustReload = data.session.user && $session.user && data.session.user.id !== $session.user.id;
+  $: mustReload && reloadSession($session.user, data.session.user);
   $: loggedin = !!$session.user;
   $: error = $session.code >= 400;
   $: if (error) {
@@ -57,19 +54,20 @@
 
   function init() {}
 
-  async function introstartHandler() {
-    if (introStarted) return;
-    introStarted = true;
-    if ($session.user) {
-      proxyEvent('ticker:success', $session);
-    }
-  }
-
   async function introendHandler() {
     if ($session.user) {
       const redirect = processRedirect($page.url, $session);
       setTimeout(() => goto(redirect), 1000);
     }
+  }
+
+  /**
+   * @param {import('$lib/types').User} prev
+   * @param {import('$lib/types').User} next
+   */
+  function reloadSession(prev, next) {
+    log(`${prev.name} -> ${next.name}`);
+    proxyEvent('ticker:success', data.session);
   }
 </script>
 
@@ -95,7 +93,6 @@
             <div
               class="flex justify-center items-center message {type}"
               in:fly={textTransitionParams}
-              on:introstart={introstartHandler}
               on:introend={introendHandler}
             >
               <h5 class="m-2 mdc-typography--headline5 headline">{message}</h5>
