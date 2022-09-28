@@ -81,8 +81,8 @@
 
     setTimeout(() => {
       const search = createTabSearch($settings.Site.defaultUserTab);
-      firstItemUserId = getAttributeFromElementIndex(0, 'id');
-      goto(`/users/${firstItemUserId}${search}`);
+      // firstItemUserId = getAttributeFromElementIndex(0, 'id');
+      // goto(`/users/${firstItemUserId}${search}`);
     }, 200);
 
     let renewed;
@@ -307,7 +307,9 @@
   }
 
   function receiveListMethods({ detail }) {
-    ({ getAttributeFromElementIndex, focusItemAtIndex, items: listItems } = { ...detail });
+    console.log(detail)(
+      ({ getAttributeFromElementIndex, focusItemAtIndex, items: listItems } = { ...detail })
+    );
   }
 
   function itemSelectedHandler({ detail }) {
