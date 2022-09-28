@@ -6,7 +6,7 @@ register('en-US', () => import('../messages/en_US.json'));
 const fallbackLocale = 'de-DE';
 
 /** @type {import('./$types').LayoutLoad} */
-export async function load({ fetch, depends }) {
+export async function load({ fetch }) {
   const session = await fetch('/session')
     .then(async (res) => await res.json())
     .catch((reason) => console.error(reason));
@@ -17,5 +17,5 @@ export async function load({ fetch, depends }) {
   });
 
   await waitLocale();
-  return { session: { ...session, test: 0 } };
+  return { session: { ...session, file: 'LayoutLoad /+layout.js' } };
 }

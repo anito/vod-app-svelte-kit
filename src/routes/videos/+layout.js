@@ -1,7 +1,8 @@
 import { videos, images } from '$lib/stores';
 
 /** @type {import('./$types').LayoutLoad} */
-export async function load({ fetch, depends }) {
+export async function load({ fetch, depends, parent }) {
+  const parentData = await parent();
   await fetch('/repos/videos')
     .then(async (res) => {
       if (res.ok) return await res.json();
@@ -22,5 +23,5 @@ export async function load({ fetch, depends }) {
 
   depends('/session');
 
-  return {};
+  return { session: { ...parentData.session, file: 'LayoutLoad /videos/+layout.js' } };
 }

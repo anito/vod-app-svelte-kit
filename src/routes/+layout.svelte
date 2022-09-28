@@ -24,7 +24,7 @@
     svg,
     ADMIN,
     SUPERUSER,
-    processRedirect
+    log
   } from '$lib/utils';
   import {
     fabs,
@@ -132,7 +132,7 @@
   const mounted = writable(isMounted);
 
   ticker.subscribe((val) => {
-    // console.log(
+    // log(
     //   '%c TICKER %c %s',
     //   'background: #ffd54f; color: #000000; padding:4px 6px 3px 0;',
     //   'background: #ffff81; color: #000000; padding:4px 6px 3px 0;',
@@ -156,6 +156,7 @@
     mounted
   });
 
+  $: log($session);
   $: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
   $: token = $session.user?.jwt;
   $: person = svg(svg_manifest.person, $theme.primary);
@@ -202,6 +203,22 @@
     });
   }
 
+  async function checkSession() {
+    log($session);
+
+    const { _expires } = { ...$session };
+    if (!_expires) return;
+
+    const valid = new Date() < new Date(_expires);
+    if (valid) {
+      proxyEvent('ticker:success', $session);
+    } else {
+      proxyEvent('ticker:stop', {
+        redirect: `/login`
+      });
+    }
+  }
+
   function reveal() {
     setTimeout(() => {
       loaderBackgroundOpacity = 0.45;
@@ -215,21 +232,6 @@
     window.addEventListener('ticker:error', tickerErrorHandler);
     window.addEventListener('ticker:stop', tickerStopHandler);
     window.addEventListener('ticker:extend', tickerExtendHandler);
-  }
-
-  function checkSession() {
-    const { _expires } = { ...$session };
-    // if (!_expires) return;
-
-    const valid = new Date() < new Date(_expires);
-    console.log($session._expires, valid);
-    if (valid) {
-      proxyEvent('ticker:extend');
-    } else {
-      proxyEvent('ticker:stop', {
-        redirect: `/login`
-      });
-    }
   }
 
   function initClasses() {
@@ -374,7 +376,10 @@
     await post(
       '/session/extend',
       new Date(Date.now() + parseInt($settings.Session.lifetime)).toISOString()
-    ).then(() => invalidate('/session'));
+    ).then((res) => {
+      log(res);
+    });
+    invalidate('/session');
   }
 
   async function tickerErrorHandler(ev) {
@@ -384,11 +389,13 @@
   }
 
   async function tickerStopHandler(ev) {
-    if (!$session.user) return;
     await killSession().then(() => {
-      const path = ev.detail.redirect || '/';
-      const search = createRedirectSlug($page.url);
-      goto(`${path}${search}`);
+      const redirect = ev.detail.redirect;
+      const path = !!redirect ? redirect : redirect ?? '/';
+      if (path !== false) {
+        const search = createRedirectSlug($page.url);
+        goto(`${path}${search}`);
+      }
     });
   }
 

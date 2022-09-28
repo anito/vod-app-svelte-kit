@@ -7,11 +7,14 @@
   import { flash, session } from '$lib/stores';
   import { sitename } from '$lib/stores';
   import { fly } from 'svelte/transition';
-  import { createRedirectSlug, processRedirect } from '$lib/utils';
+  import { processRedirect, proxyEvent } from '$lib/utils';
   import { _ } from 'svelte-i18n';
 
   /** @type {import('./$types').PageData | any} */
   export let data;
+
+  /** @type {boolean} */
+  let introStarted = false;
 
   const transitionParams = {
     delay: 100,
@@ -48,11 +51,17 @@
         type: 'success'
       });
 
-  onMount(() => {
-    invalidate('/session');
-  });
+  onMount(() => {});
 
   function init() {}
+
+  async function introstartHandler() {
+    if (introStarted) return;
+    introStarted = true;
+    if ($session.user) {
+      proxyEvent('ticker:success', $session);
+    }
+  }
 
   async function introendHandler() {
     if ($session.user) {
@@ -84,6 +93,7 @@
             <div
               class="flex justify-center items-center message {type}"
               in:fly={textTransitionParams}
+              on:introstart={introstartHandler}
               on:introend={introendHandler}
             >
               <h5 class="m-2 mdc-typography--headline5 headline">{message}</h5>

@@ -15,25 +15,25 @@ export async function GET({ locals, url }) {
   if (token) {
     return await api.get('login', { fetch, token }).then(async (res) => {
       const locale = locals.session.data.locale || get(i18n);
-      if (res.success) {
+      const success = res.success;
+      const { renewed, message } = res.data;
+      let cookieData;
+      if (success) {
         /** @type {import('$lib/types').User} */
         const { id, name, email, avatar, jwt, role, groups } = { ...res.data.user, ...res.data };
-        await locals.session.destroy();
-        await locals.session.set({
+        cookieData = {
           _expires: new Date(Date.now() + parseInt(lifetime)).toISOString(),
           user: { id, name, jwt, avatar, email },
           role,
           groups,
           locale
-        });
-        await locals.session.refresh();
+        };
       } else {
-        await locals.session.destroy();
-        await locals.session.set({
-          locale
-        });
+        cookieData = { locale };
       }
-      return json(res);
+      await locals.session.destroy();
+      await locals.session.set(cookieData);
+      return json({ ...cookieData });
     });
   }
   throw error(401, 'This method is only allowed for token logins');
@@ -46,19 +46,22 @@ export async function POST({ locals, request, url }) {
 
   return await api.post(`${type}`, { token: data.token, data, fetch }).then(async (res) => {
     const locale = locals.session.data.locale || get(i18n);
+    let cookieData;
     if (res.success) {
       /** @type {import('$lib/types').User} */
       const { id, name, email, avatar, jwt, role, groups } = { ...res.data.user, ...res.data };
-      await locals.session.destroy();
-      await locals.session.set({
+      cookieData = {
         _expires: new Date(Date.now() + parseInt(lifetime)).toISOString(),
         user: { id, name, email, jwt, avatar },
         role,
         groups,
         locale
-      });
-      await locals.session.refresh();
+      };
+    } else {
+      cookieData = { locale };
     }
+    await locals.session.destroy();
+    await locals.session.set(cookieData);
     return json(res);
   });
 }

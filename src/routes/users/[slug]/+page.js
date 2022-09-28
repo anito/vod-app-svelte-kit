@@ -44,5 +44,5 @@ export async function load({ parent, fetch, depends }) {
   }
   depends('/session');
 
-  return {};
+  return { session: { ...parentData.session, file: 'PageLoad /users/[slug]/+page.js' } };
 }

@@ -69,6 +69,9 @@ export interface Session<SessionType = Record<string, any>> {
   user: User
   role: string
   message: string
+  success: boolean
+  renewed: boolean
+  code: number
   _expires: Date | any
 }
 

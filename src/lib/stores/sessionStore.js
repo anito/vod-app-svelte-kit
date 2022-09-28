@@ -17,7 +17,9 @@ function createStore() {
       role: '',
       _expires: new Date().toISOString(),
       message: '',
-      code: 200
+      code: 200,
+      success: false,
+      renewed: false
     } // initial value
   );
 }
