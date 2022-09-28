@@ -246,24 +246,27 @@
   }
 
   async function sendMail() {
-    const res = await api.post('sents/add/', {
-      data: {
-        email: currentUser.email,
-        ...working,
-        template: {
-          slug: currentTemplate.slug,
-          themeVars: [{ '--prime': '#ad1457' }],
-          data
+    await api
+      .post('sents/add/', {
+        data: {
+          user: { email: currentUser.email },
+          ...working,
+          template: {
+            slug: currentTemplate.slug,
+            themeVars: [{ '--prime': '#ad1457' }],
+            data
+          }
+        },
+        token: $session.user?.jwt
+      })
+      .then((res) => {
+        if (res.success) {
+          configSnackbar($_('text.message-sent-success'));
+          refreshMailData();
+        } else {
+          configSnackbar($_('text.message-sent-failed'));
         }
-      },
-      token: $session.user?.jwt
-    });
-    if (res.success) {
-      configSnackbar($_('text.message-sent-success'));
-      refreshMailData();
-    } else {
-      configSnackbar($_('text.message-sent-failed'));
-    }
+      });
     snackbar.open();
   }
 

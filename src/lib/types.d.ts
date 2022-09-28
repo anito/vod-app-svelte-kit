@@ -99,6 +99,7 @@ export interface Setting<SettingType = Record<string, any>> {
 export interface Site<SiteType = Record<string, any>> {
   defaultUserTab: boolean
   log: boolean
+  salutation: string
 }
 
 export interface Error<ErrorType = Record<string, any>> {

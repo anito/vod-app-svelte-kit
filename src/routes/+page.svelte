@@ -16,6 +16,7 @@
   import { _ } from 'svelte-i18n';
 
   const { getSnackbar, configSnackbar } = getContext('snackbar');
+  const void0 = void 0;
 
   let root;
   let name = '';
@@ -24,26 +25,33 @@
   let invalidEmail = true;
   let selected;
   let snackbar;
-  let user;
 
   $: src = svg(svg_manifest.logo_hero_vod);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
-  $: user = { name: $session.user?.name || '', email: $session.user?.email || '' };
-  $: ({ name, email } = user);
+  $: user = (({ name: _name, email: _email }) => {
+    name = _name;
+    email = _email;
+    return { name, email };
+  })({ name, email, ...$session.user });
   $: options = [
-    { key: '', label: '' },
-    { key: 'send-more', label: $_('text.request-more-information') },
+    { key: void0, label: '' },
+    {
+      key: 'send-more',
+      label: $_('text.request-more-information'),
+      subject: $_('text.request-more-information')
+    },
     {
       key: 'message',
-      label: $_('text.user-message')
+      label: $_('text.user-message'),
+      subject: $_('text.new-message-from-user', { values: { name } })
     }
   ];
   $: content = selected === 'message' ? message : '';
   $: continueWith = $session.user
     ? { title: $_('text.yourCourses'), url: 'videos' }
     : { title: $_('text.login'), url: 'login' };
-  $: filled = selected && name && email && !invalidEmail;
-  $: canSend = selected === 'message' ? message !== '' : filled;
+  $: formValid = selected !== void0 && name && email && !invalidEmail;
+  $: canSend = selected === 'message' ? formValid && message.length >= 5 : formValid;
 
   onMount(() => {
     root = document.documentElement;
@@ -51,28 +59,28 @@
   });
 
   async function submit(e) {
-    await api
-      .post('sents/add', {
-        data: {
-          user,
-          subject: options.find((option) => option.key === selected).label,
-          content
-        },
-        token: hasPrivileges && $session.user?.jwt
-      })
-      .then((res) => {
-        if (res?.success) {
-          configSnackbar($_('text.thank-you-for-your-message'));
-          reset();
-        } else {
-          configSnackbar($_('text.message-sent-failed'));
-        }
-        snackbar.open();
-      });
+    const data = {
+      data: {
+        user,
+        subject: options.find((option) => option.key === selected).subject,
+        content,
+        template: 'from-user'
+      },
+      token: hasPrivileges && $session.user?.jwt
+    };
+    await api.post('sents/add', { ...data }).then((res) => {
+      if (res?.success) {
+        configSnackbar($_('text.thank-you-for-your-message'));
+        reset();
+      } else {
+        configSnackbar($_('text.message-sent-failed'));
+      }
+      snackbar.open();
+    });
   }
 
   function reset() {
-    selected = options[0].key;
+    selected = null;
     message = '';
     name = '';
     email = '';

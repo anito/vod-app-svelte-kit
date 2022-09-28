@@ -221,7 +221,9 @@
     "no-videos-available": "Keine Videokurse verfügbar",
     "test-form": "Test-Formular",
     "formular": "Formular",
-    "logout-from-facebook": "Aus Facebook ausloggen"
+    "logout-from-facebook": "Aus Facebook ausloggen",
+    "please-select": "Bitte auswählen",
+    "new-message-from-user": "Neue Nachricht  von <strong>{name}</strong>"
   },
   "summary": {
     "copy-link": {

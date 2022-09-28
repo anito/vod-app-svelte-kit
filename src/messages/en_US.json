@@ -221,7 +221,9 @@
     "no-videos-available": "No videos available",
     "test-form": "Test-Form",
     "formular": "Form",
-    "logout-from-facebook": "Logout from Facebook"
+    "logout-from-facebook": "Logout from Facebook",
+    "please-select": "Please select",
+    "new-message-from-user": "New message from <strong>{name}</strong>"
   },
   "summary": {
     "copy-link": {
