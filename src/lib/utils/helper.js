@@ -97,7 +97,7 @@ export function createRedirectSlug(url, searchMap = new Map([])) {
     searchParams = url.searchParams;
   }
   searchMap.forEach((val, name) => {
-    searchParams.append(name, val);
+    !searchParams.has(name) && searchParams.append(name, val);
   });
   path = url.pathname;
 

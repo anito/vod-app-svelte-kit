@@ -8,7 +8,7 @@
   import { writable } from 'svelte/store';
   import { goto, invalidate } from '$app/navigation';
   import { page } from '$app/stores';
-  import { getContext, onMount, setContext } from 'svelte';
+  import { getContext, onMount, setContext, tick } from 'svelte';
   import isMobile from 'ismobilejs';
   import { Icons } from '$lib/components';
   import Button, { Icon } from '@smui/button';
@@ -219,14 +219,15 @@
 
   function checkSession() {
     const { _expires } = { ...$session };
-    if (!_expires) return;
+    // if (!_expires) return;
 
     const valid = new Date() < new Date(_expires);
+    console.log($session._expires, valid);
     if (valid) {
       proxyEvent('ticker:extend');
     } else {
       proxyEvent('ticker:stop', {
-        redirect: '/login'
+        redirect: `/login`
       });
     }
   }
@@ -357,7 +358,7 @@
 
   async function tickerSuccessHandler(ev) {
     const { user, renewed, message } = { ...ev.detail };
-    invalidate('/session');
+    proxyEvent('ticker:extend');
     flash.update({ message, type: 'success', timeout: 2000 });
 
     renewed && localStorage.setItem('renewed', renewed);
@@ -367,6 +368,13 @@
       })
     );
     snackbar?.open();
+  }
+
+  async function tickerExtendHandler() {
+    await post(
+      '/session/extend',
+      new Date(Date.now() + parseInt($settings.Session.lifetime)).toISOString()
+    ).then(() => invalidate('/session'));
   }
 
   async function tickerErrorHandler(ev) {
@@ -395,16 +403,6 @@
 
       return res.success;
     });
-  }
-
-  async function tickerExtendHandler() {
-    if ($session.user) {
-      await post(
-        '/session/extend',
-        new Date(Date.now() + parseInt($settings.Session.lifetime)).toISOString()
-      );
-      invalidate('/session');
-    }
   }
 </script>
 
