@@ -292,8 +292,13 @@ export function searchParamsToObject(searchParams) {
 }
 
 export function log() {
-  const { log } = get(settings).Site;
+  const { log } = get(settings).Console;
   if (log) console.log(...arguments);
+}
+
+export function info() {
+  const { info } = get(settings).Console;
+  if (info) console.log(...arguments);
 }
 
 // @ts-ignore

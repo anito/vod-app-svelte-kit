@@ -7,7 +7,7 @@
   import { flash, session } from '$lib/stores';
   import { sitename } from '$lib/stores';
   import { fly } from 'svelte/transition';
-  import { processRedirect, proxyEvent } from '$lib/utils';
+  import { log, processRedirect, proxyEvent } from '$lib/utils';
   import { _ } from 'svelte-i18n';
 
   /** @type {import('./$types').PageData | any} */
@@ -26,6 +26,8 @@
     setTimeout(() => resolve(1), 500);
   });
 
+  $: mustReload = data.session.user?.id !== $session.user?.id;
+  $: mustReload && log(`${$session.user?.name} -> ${data.session.user?.name}`);
   $: $mounted && init();
   $: loggedin = !!$session.user;
   $: error = $session.code >= 400;

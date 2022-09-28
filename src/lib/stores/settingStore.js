@@ -4,9 +4,10 @@ function createStore() {
   /** @type {import('$lib/types').Setting} */
   const defaults = {
     Session: {
-      lifetime: 12 * 30 * 24 * 60 * 60 * 1000
+      lifetime: 30 * 24 * 60 * 60 * 1000
     },
-    Site: { defaultUserTab: 'profile', salutation: 'Hi' }
+    Site: { defaultUserTab: 'profile', salutation: 'Hi' },
+    Console: { info: false, log: false }
   };
   const { subscribe, update, set } = writable(defaults);
 
@@ -19,8 +20,7 @@ function createStore() {
         /** @type {Object<any, any>}} */
         let ret = {};
         /** @type {string | any} */
-        let item;
-        for (item in val) {
+        for (let item in val) {
           // @ts-ignore
           ret[item] = (cur = current[item] || {}) && { ...cur, ...val[item] };
         }
