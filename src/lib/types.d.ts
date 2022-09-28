@@ -29,6 +29,7 @@ export interface User<UserType = Record<string, any>> {
   role: string;
   expires: number;
   token_id: string;
+  protected: boolean
   avatar: Avatar[];
   videos: Video[];
   groups: Group[];

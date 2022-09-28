@@ -7,18 +7,14 @@
   import { Meta, Item, Text, PrimaryText, SecondaryText } from '@smui/list';
   import { ADMIN, SUPERUSER } from '$lib/utils';
 
-  export /**
-   * @type {any}
-   */
-  let selectionUserId;
-  export /**
-   * @type {{id: any, role: string}}
-   */
-  let user;
-  export /**
-   * @type {any}
-   */
-  let query;
+  /** @type {any} */
+  export let selectionUserId;
+  /** @type {import('$lib/types').User} */
+  export let user;
+  /** @type {any} */
+  export let query;
+  /** @type {any} */
+  export let id;
   export { className as class };
 
   let className = '';
@@ -29,13 +25,19 @@
   $: hasPrivileges = user.role === ADMIN || user.role === SUPERUSER;
   $: isSuperuser = user.role === SUPERUSER;
 
-  function itemSelectHandler(e) {
-    setTimeout(() => dispatch('itemSelected', { user, target: e.target }), 10);
+  /** @param {CustomEvent} ev */
+  function itemSelectHandler(ev) {
+    setTimeout(() => dispatch('itemSelected', { user, target: ev.target }), 10);
     goto(`/users/${user.id}${query}`);
   }
 </script>
 
-<Item class={className} selected={selectionUserId == user.id} on:SMUI:action={itemSelectHandler}>
+<Item
+  {id}
+  class={className}
+  selected={selectionUserId == user.id}
+  on:SMUI:action={itemSelectHandler}
+>
   <UserGraphic
     size={40}
     {user}

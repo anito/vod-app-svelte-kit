@@ -414,7 +414,7 @@
   }
 
   function printCopyright(color) {
-    color = color || '#4D60A5';
+    color = color || '#ad1457';
     -1 < navigator.userAgent.toLowerCase().indexOf('chrome')
       ? window.console.log.apply(console, [
           '%c %c  Axel Nitzschner - Immersive Studio  %c %c  http://vod-app.vercel.app %c ',

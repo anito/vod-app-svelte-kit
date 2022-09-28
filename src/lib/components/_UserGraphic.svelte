@@ -18,7 +18,7 @@
   export let borderColor = '';
   export let extendedBorderSize = 0;
   export let extendedBorderColor = '';
-  /** @type {{color: string, size: number, icon: string, position: string}} */
+  /** @type {{color: string, size: number, icon: string, position: string} | null} */
   export let badge = {
     color: '',
     size: 20,

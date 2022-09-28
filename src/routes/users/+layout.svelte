@@ -2,10 +2,10 @@
   // @ts-nocheck
   import * as api from '$lib/api';
   import { page } from '$app/stores';
-  import { goto, invalidate } from '$app/navigation';
+  import { goto } from '$app/navigation';
   import { onMount, getContext, tick } from 'svelte';
   import { fly } from 'svelte/transition';
-  import { infos, fabs, session, users, videos, slim } from '$lib/stores';
+  import { infos, fabs, session, users, videos, slim, settings } from '$lib/stores';
   import Layout from './layout.svelte';
   import {
     InfoChips,
@@ -17,7 +17,7 @@
     SvgIcon,
     VideoEditorList
   } from '$lib/components';
-  import { get, proxyEvent } from '$lib/utils';
+  import { createTabSearch, get, proxyEvent } from '$lib/utils';
   import Button, { Icon as Icon_ } from '@smui/button';
   import Fab, { Label } from '@smui/fab';
   import Textfield from '@smui/textfield';
@@ -49,15 +49,16 @@
   let renewedTokenDialog;
   let removeTokenDialog;
   let redirectDialog;
-  let selectedIndex;
+  let selectionIndex;
   let uploadedData;
   let focusItemAtIndex;
-  let items;
-  let list;
+  let getAttributeFromElementIndex;
+  let listItems;
+  let firstItemUserId;
 
   $: active = $page.url.searchParams.get('active');
   $: selectionUserId = $page.params.slug || $session.user?.id;
-  $: selectionUserId && items && scrollIntoView();
+  $: selectionUserId && listItems && scrollIntoView();
   $: currentUser = ((id) => $users?.find((usr) => usr.id === id))(selectionUserId);
   $: ((usr) => {
     username = usr?.name;
@@ -77,6 +78,12 @@
 
   onMount(() => {
     snackbar = getSnackbar();
+
+    setTimeout(() => {
+      const search = createTabSearch($settings.Site.defaultUserTab);
+      firstItemUserId = getAttributeFromElementIndex(0, 'id');
+      goto(`/users/${firstItemUserId}${search}`);
+    }, 200);
 
     let renewed;
     if ((renewed = localStorage.getItem('renewed')) && renewed == $session.user?.id) {
@@ -300,7 +307,7 @@
   }
 
   function receiveListMethods({ detail }) {
-    ({ focusItemAtIndex, items } = { ...detail });
+    ({ getAttributeFromElementIndex, focusItemAtIndex, items: listItems } = { ...detail });
   }
 
   function itemSelectedHandler({ detail }) {
@@ -311,7 +318,7 @@
   function scrollIntoView() {
     const options = { block: 'nearest', behavior: 'smooth' };
     setTimeout(() => {
-      const item = items.find((item) => item.selected);
+      const item = listItems.find((item) => item.selected);
       item?.element.scrollIntoView(options);
       // item.selected && focusItemAtIndex(index)
     }, 100);
@@ -349,11 +356,12 @@
           twoLine
           avatarList
           singleSelection
-          bind:this={list}
+          bind:selectedIndex={selectionIndex}
           on:SMUIList:mount={receiveListMethods}
         >
           {#each filteredUsers as user (user.id)}
             <SimpleUserCard
+              id={user.id}
               class="flex"
               on:itemSelected={itemSelectedHandler}
               {selectionUserId}
