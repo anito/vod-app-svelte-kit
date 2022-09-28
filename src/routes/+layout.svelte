@@ -188,6 +188,7 @@
     getConfig();
     initClasses();
     initStyles();
+    printCopyright();
 
     return () => {
       removeListener();
@@ -410,6 +411,21 @@
 
       return res.success;
     });
+  }
+
+  function printCopyright(color) {
+    color = color || '#4D60A5';
+    -1 < navigator.userAgent.toLowerCase().indexOf('chrome')
+      ? window.console.log.apply(console, [
+          '%c %c  Axel Nitzschner - Immersive Studio  %c %c  http://vod-app.vercel.app %c ',
+          'background: #ad1457; padding:5px 0; margin:3px 0 10px 0;',
+          'background: #eee; color: #e2370f; padding:5px 0; margin:3px 0 10px 0;',
+          'background: #ad1457; padding:5px 0; margin:3px 0 10px 0;',
+          'background: #eee; color: #ad1457; padding:5px 0; margin:3px 0 10px 0;',
+          'background: #ad1457; padding:5px 0; margin:3px 0 10px 0;'
+        ])
+      : window.console &&
+        window.console.log('Axel Nitzschner - Immersive Studio - http://vod-app.vercel.app');
   }
 </script>
 

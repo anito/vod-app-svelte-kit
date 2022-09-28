@@ -36,7 +36,7 @@
     Actions,
     InitialFocus
   } from '@smui/dialog';
-  import { INBOX, SENT, ADMIN, SUPERUSER } from '$lib/utils';
+  import { INBOX, SENT, ADMIN, SUPERUSER, log } from '$lib/utils';
   import { get } from 'svelte/store';
 
   const sortAZProtected = (
@@ -228,7 +228,7 @@
     const ep = validateMailboxName(endpoint);
     if (!ep)
       return new Promise((res, rej) => rej(`The mailbox "${ep}" doesn'nt exist`)).catch((reason) =>
-        console.log(reason)
+        log(reason)
       );
     const id = validateUserId($page.params.slug);
     if (!id) return;
@@ -242,7 +242,7 @@
           return res.data;
         }
       })
-      .catch((reason) => console.log(reason));
+      .catch((reason) => log(reason));
   }
 
   async function sendMail() {
@@ -554,9 +554,9 @@
    */
   function keyListener(e) {
     e.stopPropagation();
-    // console.log('code', e.code);
-    // console.log('key', e.key);
-    // console.log('keyCode', e.keyCode);
+    // log('code', e.code);
+    // log('key', e.key);
+    // log('keyCode', e.keyCode);
 
     const isEnter = e.key === 'Enter' || e.keyCode === 13;
     const isEscape = e.key === 'Escape' || e.keyCode === 27;

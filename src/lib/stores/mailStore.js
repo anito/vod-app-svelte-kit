@@ -20,7 +20,6 @@ function createStore(endpoint, args) {
     getToken = () => token;
     return (set) => {
       get(data, set, args);
-      console.log('createStore:first subscriber');
       return unsubscribe;
     };
   }

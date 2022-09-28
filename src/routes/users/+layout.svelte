@@ -237,9 +237,7 @@
     }
   }
 
-  function chipInteractionHandler(e) {
-    console.log('chipInteractionHandler', e);
-  }
+  function chipInteractionHandler(e) {}
 
   let openUploader = (type) => {
     uploader.open(

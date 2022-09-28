@@ -1,9 +1,9 @@
-/** @type {import('@sveltejs/kit').HandleClientError} */
-export function _handleError({ error, event }) {
-  console.log(error, event);
+import { log } from '$lib/utils';
 
+/** @type {import('@sveltejs/kit').HandleClientError} */
+export function handleError({ error, event }) {
   return {
-    message: 'Whoops!',
+    message: 'An error occured!',
     code: error.code ?? 'UNKNOWN'
   };
 }

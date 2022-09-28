@@ -1,13 +1,13 @@
 <script>
   import * as api from '$lib/api';
   import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
   import { onMount, setContext } from 'svelte';
   import { UserManager, TimeManager, MailManager } from '$lib/components';
   import Button, { Group, Label, Icon } from '@smui/button';
-  import { users, slim, sitename, session, settings } from '$lib/stores';
-  import { proxyEvent, INBOX, ADMIN, SUPERUSER, TABS, createTabSearch } from '$lib/utils';
+  import { users, slim, sitename, session } from '$lib/stores';
+  import { proxyEvent, INBOX, ADMIN, SUPERUSER, TABS, log } from '$lib/utils';
   import { _ } from 'svelte-i18n';
-  import { goto } from '$app/navigation';
 
   let selectedMode = 'edit';
   /**
@@ -101,7 +101,7 @@
       .then((res) => {
         return res;
       })
-      .catch((reason) => console.log(reason));
+      .catch((reason) => log(reason));
   }
 </script>
 

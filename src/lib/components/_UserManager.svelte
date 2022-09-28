@@ -11,7 +11,7 @@
   import Header from './_Header.svelte';
   import { fly } from 'svelte/transition';
   import { flash, session, users } from '$lib/stores';
-  import { createRedirectSlug, proxyEvent, ADMIN, SUPERUSER, post } from '$lib/utils';
+  import { createRedirectSlug, proxyEvent, ADMIN, SUPERUSER, post, log } from '$lib/utils';
   import Textfield from '@smui/textfield';
   import TextfieldIcon from '@smui/textfield/icon';
   import HelperText from '@smui/textfield/helper-text';
@@ -51,7 +51,7 @@
   let protectedLabel;
   let textAreaMagicLink;
   let copyTimeoutId;
-  let copyButton = (node) => console.log(node);
+  let copyButton = (node) => log(node);
   let setCopyButton = (node) => (copyButton = node);
   let group_id;
   let name = '';

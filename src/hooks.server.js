@@ -1,6 +1,7 @@
 import { dev } from '$app/environment';
 import { handleSession } from 'svelte-kit-cookie-session';
 import { UsersRepo, VideosRepo, ImagesRepo, VideosAllRepo } from '$lib/repos';
+import { log } from '$lib/utils';
 
 export const handle = handleSession(
   {
@@ -29,5 +30,5 @@ export async function handleFetch({ request, fetch }) {
 
 /** @type {import('@sveltejs/kit').HandleServerError} */
 export async function handleError({ error, event }) {
-  console.log('ERROR (hooks.js)', error, event);
+  log('ERROR (hooks.js)', error, event);
 }

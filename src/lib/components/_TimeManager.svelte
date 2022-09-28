@@ -7,7 +7,7 @@
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { onMount, getContext, tick } from 'svelte';
-  import { createRedirectSlug, ADMIN, SUPERUSER } from '$lib/utils';
+  import { createRedirectSlug, ADMIN, SUPERUSER, log } from '$lib/utils';
   import List, { Item, Graphic, Separator, Text } from '@smui/list';
   import Button, { Label, Icon as ButtonIcon } from '@smui/button';
   import IconButton, { Icon } from '@smui/icon-button';
@@ -287,9 +287,7 @@
     }
   }
 
-  function onDateRangeSelected(e) {
-    // console.log('onDateRangeSelected');
-  }
+  function onDateRangeSelected(e) {}
 
   function toggleDataPicker(id, open) {
     selectionVideoId = id && root.classList.toggle('datapicker--open', open);

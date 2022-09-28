@@ -1,5 +1,6 @@
 import { derived } from 'svelte/store';
 import { session, settings } from '$lib/stores';
+import { info } from '$lib/utils';
 
 function createStore() {
   /**
@@ -38,7 +39,7 @@ function createStore() {
       return () => {
         clearInterval(intervalId);
 
-        // console.log(
+        // info(
         //   `%c TICKER ${time ? 'EXTEND' : 'END'}`,
         //   `background: ${time ? '#8bc44a' : '#ff5722'}; color: #000000; padding:4px 6px 3px 0;`
         // );

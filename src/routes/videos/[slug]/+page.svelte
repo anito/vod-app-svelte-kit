@@ -7,7 +7,7 @@
   import { fly } from 'svelte/transition';
   import { session, sitename, videos, users, videoEmitter } from '$lib/stores';
   import { VideoPlayer } from '$lib/components/Video';
-  import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo } from '$lib/utils';
+  import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, info } from '$lib/utils';
   import { _ } from 'svelte-i18n';
 
   let paused;
@@ -43,7 +43,7 @@
   }
 
   function handleEmptied(e) {
-    console.log(
+    info(
       '%c EMPTIED   %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
@@ -52,7 +52,7 @@
   }
 
   function handleLoadStart(e) {
-    console.log(
+    info(
       '%c LOADSTART %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
@@ -61,7 +61,7 @@
   }
 
   function handleLoadedData(e) {
-    console.log(
+    info(
       '%c LOADEDDATA%c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
@@ -70,7 +70,7 @@
   }
 
   function handleAborted(e) {
-    console.log(
+    info(
       '%c ABORTED   %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',

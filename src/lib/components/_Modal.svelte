@@ -60,7 +60,6 @@
   let onClosed = toVoid;
 
   const open = (NewComponent, newProps = {}, options = {}, callback = {}) => {
-    console.log();
     _Component = NewComponent;
     commonProps = newProps.commonProps || {};
     props = { ...newProps, ...commonProps };
