@@ -307,9 +307,7 @@
   }
 
   function receiveListMethods({ detail }) {
-    console.log(detail)(
-      ({ getAttributeFromElementIndex, focusItemAtIndex, items: listItems } = { ...detail })
-    );
+    ({ getAttributeFromElementIndex, focusItemAtIndex, items: listItems } = { ...detail });
   }
 
   function itemSelectedHandler({ detail }) {
