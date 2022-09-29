@@ -1,3 +1,4 @@
+import { redirect } from '@sveltejs/kit';
 import { users, videos, images, videosAll } from '$lib/stores';
 import { USER } from '$lib/utils';
 
@@ -5,6 +6,9 @@ import { USER } from '$lib/utils';
 export async function load({ parent, fetch, depends }) {
   const parentData = await parent();
   const { session } = parentData;
+  if (!session.user) {
+    throw redirect(301, `/`);
+  }
   await fetch('/repos/users')
     .then(async (res) => {
       if (res.ok) return await res.json();

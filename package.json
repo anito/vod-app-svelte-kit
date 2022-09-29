@@ -6,9 +6,9 @@
 	"scripts": {
 		"dev": "vite dev --port 3000 --https",
 		"build": "vite build",
-		"package": "vite package",
-		"preview": "vite preview",
-		"prepare": "svelte-kit sync && npm run smui-theme",
+		"package": "vite package --host",
+		"preview": "vite preview --host",
+		"prepare": "npm run smui-theme",
 		"smui-theme": "smui-theme compile static/smui.css -i src/theme",
 		"check": "svelte-check --tsconfig ./jsconfig.json",
 		"check:watch": "svelte-check --tsconfig ./jsconfig.json --watch",

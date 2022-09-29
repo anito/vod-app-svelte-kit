@@ -4,7 +4,6 @@
   import './_form.scss';
   import * as api from '$lib/api';
   import { getContext, onMount } from 'svelte';
-  import { invalidate } from '$app/navigation';
   import { sitename, session } from '$lib/stores';
   import Layout from './layout.svelte';
   import { Blurb, Hero } from '$lib/components';

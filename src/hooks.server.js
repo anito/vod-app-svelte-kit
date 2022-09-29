@@ -30,5 +30,5 @@ export async function handleFetch({ request, fetch }) {
 
 /** @type {import('@sveltejs/kit').HandleServerError} */
 export async function handleError({ error, event }) {
-  log('ERROR (hooks.js)', error, event);
+  console.log('ERROR (hooks.js)', error, event);
 }

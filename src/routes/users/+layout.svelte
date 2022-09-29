@@ -54,7 +54,6 @@
   let focusItemAtIndex;
   let getAttributeFromElementIndex;
   let listItems;
-  let firstItemUserId;
 
   $: active = $page.url.searchParams.get('active');
   $: selectionUserId = $page.params.slug || $session.user?.id;
@@ -78,12 +77,6 @@
 
   onMount(() => {
     snackbar = getSnackbar();
-
-    setTimeout(() => {
-      const search = createTabSearch($settings.Site.defaultUserTab);
-      // firstItemUserId = getAttributeFromElementIndex(0, 'id');
-      // goto(`/users/${firstItemUserId}${search}`);
-    }, 200);
 
     let renewed;
     if ((renewed = localStorage.getItem('renewed')) && renewed == $session.user?.id) {
@@ -307,7 +300,7 @@
   }
 
   function receiveListMethods({ detail }) {
-    ({ getAttributeFromElementIndex, focusItemAtIndex, items: listItems } = { ...detail });
+    ({ focusItemAtIndex, items: listItems } = { ...detail });
   }
 
   function itemSelectedHandler({ detail }) {
@@ -320,7 +313,7 @@
     setTimeout(() => {
       const item = listItems.find((item) => item.selected);
       item?.element.scrollIntoView(options);
-      // item.selected && focusItemAtIndex(index)
+      // item.selected && focusItemAtIndex(index);
     }, 100);
   }
 </script>

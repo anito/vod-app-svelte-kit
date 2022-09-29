@@ -7,7 +7,7 @@ let config;
 settings.subscribe((val) => (config = val));
 
 /** @type {import('./$types').PageLoad} */
-export async function load({ parent }) {
+export async function load({ params, parent }) {
   const parentData = await parent();
   const { session } = parentData;
   if (session.user) {
