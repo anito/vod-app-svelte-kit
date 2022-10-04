@@ -77,7 +77,7 @@
 <div class="flex flex-col relative">
   <button bind:this={signInButton} />
   {#if id}
-    <a href="." class="logout-link g_id_signout" on:click={() => signOut(id)}
+    <a href="." class="logout-link g_id_signout" on:click|preventDefault={() => signOut(id)}
       >{$_('text.revoke_app_from_user', { values: { name } })}</a
     >
   {/if}
