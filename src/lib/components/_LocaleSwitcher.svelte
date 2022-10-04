@@ -2,7 +2,6 @@
   // @ts-nocheck
 
   import { getContext, onMount } from 'svelte';
-  import { invalidate } from '$app/navigation';
   import Menu, { SelectionGroup, SelectionGroupIcon } from '@smui/menu';
   import { Anchor } from '@smui/menu-surface';
   import List, { Item, Text } from '@smui/list';

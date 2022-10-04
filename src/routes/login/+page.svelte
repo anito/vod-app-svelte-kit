@@ -1,11 +1,10 @@
 <script>
   import './_tabs.scss';
   import { page } from '$app/stores';
-  import { goto, invalidate } from '$app/navigation';
+  import { goto } from '$app/navigation';
   import { onMount, getContext, tick } from 'svelte';
   import { LoginForm } from '$lib/components';
-  import { flash, session } from '$lib/stores';
-  import { sitename } from '$lib/stores';
+  import { flash, session, sitename } from '$lib/stores';
   import { fly } from 'svelte/transition';
   import { log, processRedirect, proxyEvent } from '$lib/utils';
   import { _ } from 'svelte-i18n';

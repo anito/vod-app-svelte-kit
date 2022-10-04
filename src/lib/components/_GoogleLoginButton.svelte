@@ -1,8 +1,7 @@
 <script>
   // @ts-nocheck
-  import { goto, invalidate } from '$app/navigation';
   import { onMount } from 'svelte';
-  import { flash, googleUser } from '$lib/stores';
+  import { googleUser } from '$lib/stores';
   import { get, post, proxyEvent } from '$lib/utils';
   import { _ } from 'svelte-i18n';
 

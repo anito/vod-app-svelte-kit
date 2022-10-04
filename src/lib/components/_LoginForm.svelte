@@ -6,7 +6,6 @@
   // @ts-nocheck
 
   import { browser, dev } from '$app/environment';
-  import { invalidate } from '$app/navigation';
   import { onMount, getContext, tick } from 'svelte';
   import { post, proxyEvent } from '$lib/utils';
   import { flash } from '$lib/stores';

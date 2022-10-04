@@ -3,7 +3,7 @@ import { users, videos, images, videosAll } from '$lib/stores';
 import { USER } from '$lib/utils';
 
 /** @type {import('./$types').PageLoad} */
-export async function load({ parent, fetch, depends }) {
+export async function load({ parent, fetch }) {
   const parentData = await parent();
   const { session } = parentData;
   if (!session.user) {
