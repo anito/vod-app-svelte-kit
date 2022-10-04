@@ -219,21 +219,12 @@
     }
   }
 
-  async function tokenRedirectDialogCloseHandler(e) {
+  function tokenRedirectDialogCloseHandler(e) {
     if (
       'redirect' === e.detail.action &&
       /^(https?|ftp|torrent|image|irc):\/\/(-\.)?([^\s\/?\.#-&]+\.?)+(\/[^\s]*)?$/i.test(magicLink)
     ) {
-      await goto(`/login?token=${token}`).then(async () => {
-        // await get(`/auth/login?token=${token}`).then(async (res) => {
-        //   const { success, data } = { ...res };
-        //   if (success) {
-        //     proxyEvent('ticker:success', { ...data });
-        //   } else {
-        //     proxyEvent('ticker:error', { ...data });
-        //   }
-        // });
-      });
+      goto(`/login?token=${token}`);
     }
   }
 

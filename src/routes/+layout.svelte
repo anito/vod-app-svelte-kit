@@ -161,6 +161,7 @@
     mounted
   });
 
+  // $: log('SESSION:expires', $session._expires);
   $: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
   $: token = $session.user?.jwt;
   $: person = svg(svg_manifest.person, $theme.primary);
@@ -379,10 +380,8 @@
   }
 
   async function tickerExtendHandler() {
-    await post(
-      '/session/extend',
-      new Date(Date.now() + parseInt($settings.Session.lifetime)).toISOString()
-    );
+    const time = new Date(Date.now() + parseInt($settings.Session.lifetime)).toISOString();
+    await post('/session/extend', time);
     invalidate('/session');
   }
 

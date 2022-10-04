@@ -1,6 +1,5 @@
 import { derived } from 'svelte/store';
 import { session, settings } from '$lib/stores';
-import { info } from '$lib/utils';
 
 function createStore() {
   /**

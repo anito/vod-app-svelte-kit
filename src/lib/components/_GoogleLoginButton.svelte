@@ -40,7 +40,7 @@
   }
 
   async function decodeJwtResponse(token) {
-    await post(`/auth/login?type=google`, { token }).then(async (res) => {
+    await get(`/auth/login?token=${token}&type=google`, { token }).then(async (res) => {
       const { success, data } = { ...res };
       if (success) {
         googleUser.update(data.user);
