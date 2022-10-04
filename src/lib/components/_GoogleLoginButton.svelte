@@ -42,7 +42,7 @@
     await get(`/auth/login?token=${token}&type=google`, { token }).then(async (res) => {
       const { success, data } = { ...res };
       if (success) {
-        googleUser.update(data.user);
+        googleUser.set(data.user);
         proxyEvent('ticker:success', { ...data });
       } else {
         proxyEvent('ticker:error', { ...data, redirect: '/login' });
