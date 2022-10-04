@@ -110,12 +110,15 @@
         })
         .sort(sortByEndDate) || [];
   $: userVideos =
-    (displayedVideos.length <= $videos.length &&
-      displayedVideos.map((video) => {
-        const { image_id, title } = $videos.find((vid) => vid.id === video.id);
+    displayedVideos.map((video) => {
+      const _video = $videos.find((vid) => vid.id === video.id);
+      if (_video) {
+        const { image_id, title } = _video;
         return { ...video, image_id, title };
-      })) ||
-    [];
+      } else {
+        return { ...video };
+      }
+    }) || [];
   $: noneUserVideos = hasPrivileges
     ? $videos.sort(sortByTitle)
     : $videosAll
