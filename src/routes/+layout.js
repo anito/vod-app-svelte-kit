@@ -6,7 +6,8 @@ register('en-US', () => import('../messages/en_US.json'));
 const fallbackLocale = 'de-DE';
 
 /** @type {import('./$types').LayoutLoad} */
-export async function load({ fetch }) {
+export async function load({ fetch, url }) {
+  const token = url.searchParams.get('token');
   const session = await fetch('/session')
     .then(async (res) => await res.json())
     .catch((reason) => console.error(reason));
@@ -17,5 +18,5 @@ export async function load({ fetch }) {
   });
 
   await waitLocale();
-  return { session: { ...session, file: 'LayoutLoad /+layout.js' } };
+  return { session: { ...session, fromToken: !!token, file: 'LayoutLoad /+layout.js' } };
 }

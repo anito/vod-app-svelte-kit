@@ -86,6 +86,7 @@
   $: isSuperuser = $session.role === SUPERUSER;
   $: isCurrentSuperuser = currentUser?.role === SUPERUSER;
   $: isProtected = isCurrentSuperuser ? (!isSuperuser ? true : false) : !hasPrivileges;
+  $: hidden = currentUser?.id === $session.user?.id;
   $: userNotFound = selectionUserId && undefined === $users.find((u) => u.id === selectionUserId);
   $: _name = ((usr) => usr?.name || '')(selectedMode !== 'add' ? currentUser : false);
   $: _active = ((usr) => usr?.active || false)(selectedMode !== 'add' ? currentUser : false);
@@ -695,7 +696,7 @@
                       <div class="button-group magic-link-group token-action-buttons flex mb-3">
                         <Group style="max-width: 100%;">
                           <Button
-                            disabled={isProtected}
+                            disabled={isProtected || hidden}
                             class="action-magic-link"
                             on:click={() => isProtected || proxyEvent('INFO:token:Redirect')}
                             variant="outlined"

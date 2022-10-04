@@ -1,8 +1,6 @@
 /** @type {import('./$types').LayoutLoad} */
-export async function load({ depends, parent }) {
+export async function load({ parent }) {
   const parentData = await parent();
-
-  depends('/session');
 
   return { session: { ...parentData.session, file: 'LayoutLoad /users/+layout.js' } };
 }

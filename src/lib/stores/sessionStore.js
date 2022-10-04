@@ -13,11 +13,16 @@ function createStore() {
       set(session);
     },
     {
+      data: {
+        code: 200,
+        message: ''
+      },
       user,
       role: '',
       _expires: new Date().toISOString(),
       message: '',
       code: 200,
+      fromToken: false,
       success: false,
       renewed: false
     } // initial value

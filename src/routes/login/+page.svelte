@@ -24,23 +24,13 @@
   });
 
   $: $mounted && init();
-  $: mustReload = data.session.user && $session.user && data.session.user.id !== $session.user.id;
-  $: mustReload && reloadSession($session.user, data.session.user);
   $: loggedin = !!$session.user;
-  $: error = $session.code >= 400;
-  $: if (error) {
-    flash.update({
-      message: $session.message,
-      type: 'error',
-      timeout: 3000
-    });
-  }
   $: ({ message, type } = $session.user
     ? {
         message: $_('text.welcome-message', { values: { name: $session.user?.name } }),
         type: 'success'
       }
-    : !error && data.token
+    : data.fromToken
     ? {
         message: $_('text.one-moment'),
         type: 'success'
@@ -52,7 +42,12 @@
 
   onMount(() => {});
 
-  function init() {}
+  // listeners are ready
+  function init() {
+    if (data.fromToken) {
+      loginFromToken();
+    }
+  }
 
   async function introendHandler() {
     if ($session.user) {
@@ -61,13 +56,12 @@
     }
   }
 
-  /**
-   * @param {import('$lib/types').User} prev
-   * @param {import('$lib/types').User} next
-   */
-  function reloadSession(prev, next) {
-    log(`${prev.name} -> ${next.name}`);
-    proxyEvent('ticker:success', data.session);
+  async function loginFromToken() {
+    if (data.success) {
+      proxyEvent('ticker:success', { ...data.data });
+    } else {
+      proxyEvent('ticker:error', { ...data.data, redirect: '/login' });
+    }
   }
 </script>
 

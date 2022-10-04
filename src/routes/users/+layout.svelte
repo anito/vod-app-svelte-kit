@@ -219,20 +219,20 @@
     }
   }
 
-  async function redirectMagicLinkDialogCloseHandler(e) {
+  async function tokenRedirectDialogCloseHandler(e) {
     if (
       'redirect' === e.detail.action &&
       /^(https?|ftp|torrent|image|irc):\/\/(-\.)?([^\s\/?\.#-&]+\.?)+(\/[^\s]*)?$/i.test(magicLink)
     ) {
-      goto(`/login`).then(async () => {
-        await get(`/auth/login?token=${token}`).then(async (res) => {
-          const { success, data } = { ...res };
-          if (success) {
-            proxyEvent('ticker:success', { ...data });
-          } else {
-            proxyEvent('ticker:error', { ...data });
-          }
-        });
+      await goto(`/login?token=${token}`).then(async () => {
+        // await get(`/auth/login?token=${token}`).then(async (res) => {
+        //   const { success, data } = { ...res };
+        //   if (success) {
+        //     proxyEvent('ticker:success', { ...data });
+        //   } else {
+        //     proxyEvent('ticker:error', { ...data });
+        //   }
+        // });
       });
     }
   }
@@ -548,7 +548,7 @@
   bind:this={redirectDialog}
   aria-labelledby="event-title"
   aria-describedby="event-content"
-  on:SMUIDialog:closed={redirectMagicLinkDialogCloseHandler}
+  on:SMUIDialog:closed={tokenRedirectDialogCloseHandler}
 >
   <DialogTitle id="event-title">{$_('text.magic-link')}</DialogTitle>
   <Content id="event-content">

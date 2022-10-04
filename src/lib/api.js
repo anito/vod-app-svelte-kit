@@ -37,11 +37,11 @@ async function send(atts = {}) {
       try {
         return JSON.parse(res);
       } catch (err) {
-        log('API FETCH ERROR #1', err);
+        console.log('API FETCH ERROR #1', err);
       }
     })
     .catch((err) => {
-      log('API FETCH ERROR #2', err);
+      console.log('API FETCH ERROR #2', err);
     });
 }
 

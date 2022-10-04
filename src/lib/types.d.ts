@@ -67,6 +67,8 @@ export interface Avatar<AvatarType = Record<string, any>> {
 }
 
 export interface Session<SessionType = Record<string, any>> {
+  data: Object
+  fromToken: boolean
   user: User
   role: string
   message: string

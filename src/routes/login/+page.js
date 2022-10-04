@@ -5,8 +5,17 @@ export async function load({ fetch, url, parent }) {
   if (token) {
     return await fetch(`/auth/login?token=${token}`).then(async (res) => {
       const response = await res.json();
-      return { session: { ...response, token: true } };
+      return {
+        ...response,
+        fromToken: true,
+        file: 'PageLoad /login/+page.js'
+      };
     });
   }
-  return { session: { ...parentData.session, file: 'PageLoad /login/+page.js' } };
+  return {
+    session: {
+      ...parentData.session,
+      file: 'PageLoad /login/+page.js'
+    }
+  };
 }

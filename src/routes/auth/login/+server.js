@@ -11,9 +11,8 @@ settings.subscribe((val) => (lifetime = val.Session.lifetime));
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ locals, url }) {
   const token = url.searchParams.get('token');
-
   if (token) {
-    return await api.get('login', { fetch, token }).then(async (res) => {
+    return await api.get(`login?token=${token}`, { fetch }).then(async (res) => {
       const locale = locals.session.data.locale || get(i18n);
       const success = res.success;
       const { renewed, message } = res.data;
@@ -33,7 +32,7 @@ export async function GET({ locals, url }) {
       }
       await locals.session.destroy();
       await locals.session.set(cookieData);
-      return json({ ...cookieData });
+      return json(res);
     });
   }
   throw error(401, 'This method is only allowed for token logins');

@@ -49,6 +49,7 @@
   } from '$lib/components';
   import { svg_manifest } from '$lib/svg_manifest';
   import { _, locale } from 'svelte-i18n';
+  import { redirect } from '@sveltejs/kit';
 
   /** @type {import('./$types').PageData} */
   export let data;
@@ -80,6 +81,10 @@
    * @type {ReturnType<typeof setTimeout>}
    */
   let timeoutId;
+  /**
+   * @type {ReturnType<typeof setInterval>}
+   */
+  let pollId;
   /**
    * @type {any}
    */
@@ -156,7 +161,6 @@
     mounted
   });
 
-  $: log($session);
   $: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
   $: token = $session.user?.jwt;
   $: person = svg(svg_manifest.person, $theme.primary);
@@ -188,6 +192,7 @@
     getConfig();
     initClasses();
     initStyles();
+    startPolling();
     printCopyright();
 
     return () => {
@@ -205,10 +210,8 @@
   }
 
   async function checkSession() {
-    log($session);
-
-    const { _expires } = { ...$session };
-    if (!_expires) return;
+    const { user, _expires, fromToken } = { ...$session };
+    if (!user || fromToken) return;
 
     const valid = new Date() < new Date(_expires);
     if (valid) {
@@ -246,6 +249,8 @@
       secondary: styles.getPropertyValue('--second')
     });
   }
+
+  function startPolling() {}
 
   function displayRemainingTime(timestamp) {
     const now = Date.now();
@@ -377,16 +382,17 @@
     await post(
       '/session/extend',
       new Date(Date.now() + parseInt($settings.Session.lifetime)).toISOString()
-    ).then((res) => {
-      log(res);
-    });
+    );
     invalidate('/session');
   }
 
-  async function tickerErrorHandler(ev) {
+  function tickerErrorHandler(ev) {
     const data = { ...ev.detail };
     invalidate('/session');
-    flash.update({ ...data, type: 'error', timeout: 3000 });
+    flash.update({ ...data, type: 'error', timeout: 3500 });
+    if (data.redirect) {
+      setTimeout(async () => await goto(data.redirect), 3000);
+    }
   }
 
   async function tickerStopHandler(ev) {
