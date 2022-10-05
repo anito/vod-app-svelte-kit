@@ -5,9 +5,9 @@
   import Button from '@smui/button';
   import { onMount } from 'svelte';
   import SvgIcon from './_SvgIcon.svelte';
-  import { _ } from 'svelte-i18n';
   import { post, proxyEvent } from '$lib/utils';
-  import { goto } from '$app/navigation';
+  import { flash } from '$lib/stores';
+  import { _ } from 'svelte-i18n';
 
   /** @type {string}*/
   export let appId;
@@ -53,6 +53,7 @@
       FB.api(`/${userID}/picture`, 'GET', { type: 'large', redirect: false }, async ({ data }) => {
         ({ url: src } = { ...data }); // The src attribute for login buttton
         if (id && redirect) {
+          flash.update({ message: $_('text.authenticating'), permanent: true });
           await post(`/auth/login?type=facebook`, {
             id,
             email,

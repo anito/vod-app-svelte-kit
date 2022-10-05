@@ -1,7 +1,7 @@
 <script>
   // @ts-nocheck
   import { onMount } from 'svelte';
-  import { googleUser } from '$lib/stores';
+  import { flash, googleUser } from '$lib/stores';
   import { get, post, proxyEvent } from '$lib/utils';
   import { _ } from 'svelte-i18n';
 
@@ -39,6 +39,7 @@
   }
 
   async function decodeJwtResponse(token) {
+    flash.update({ message: $_('text.authenticating'), permanent: true });
     await get(`/auth/login?token=${token}&type=google`, { token }).then(async (res) => {
       const { success, data } = { ...res };
       if (success) {

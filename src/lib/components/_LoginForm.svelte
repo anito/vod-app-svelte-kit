@@ -88,13 +88,13 @@
 
     async function submitHandler(e) {
       e.preventDefault();
+      if (submitting) return;
+      submitting = true;
 
       const form = e.target;
       const data = {};
 
-      if (submitting) return;
-      flash.update({ message: $_('text.one-moment'), permanent: true });
-      submitting = true;
+      flash.update({ message: $_('text.authenticating'), permanent: true });
       block();
 
       // new FormData(form).forEach((value, key) => (data[key] = value));

@@ -199,7 +199,7 @@
     "goto-github": "Go to GitHub",
     "welcome-back-message": "Welcome back, {name}",
     "no-user-found": "No user found",
-    "one-moment": "One moment...",
+    "authenticating": "Authenticating",
     "add-user": "Add User",
     "waiting-for-users": "Retrieving user data...",
     "drop-your-files-here": "Drop your file here or click to upload",

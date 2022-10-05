@@ -29,9 +29,9 @@
         message: $_('text.welcome-message', { values: { name: $session.user?.name } }),
         type: 'success'
       }
-    : data.fromToken
+    : $page.url.searchParams.has('token')
     ? {
-        message: $_('text.one-moment'),
+        message: $_('text.authenticating'),
         type: 'success'
       }
     : {
