@@ -475,7 +475,7 @@
               </NavItem>
             {:else}
               <NavItem href="/login{search}" class="sign-in-out-item">
-                <Button formaction="/logout" color="surface" variant="raised" class="sign-in-out">
+                <Button formaction="/logout" variant="raised" class="sign-in-out">
                   <Label>{$_('nav.login')}</Label>
                   <Icon class="material-icons" style="vertical-align: middle;">login</Icon>
                 </Button>
