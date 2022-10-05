@@ -6,7 +6,7 @@ function createStore() {
     Session: {
       lifetime: 30 * 24 * 60 * 60 * 1000
     },
-    Site: { defaultUserTab: 'profile', salutation: 'Hi' },
+    Site: { defaultUserTab: 'profile', salutation: 'Hi', salutations: [] },
     Console: { info: false, log: false }
   };
   const { subscribe, update, set } = writable(defaults);

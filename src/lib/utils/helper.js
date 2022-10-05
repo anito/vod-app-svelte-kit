@@ -193,7 +193,6 @@ export let convert = (() => {
 })();
 
 /**
- *
  * @param {string} eventType
  * @param {*} detail
  */
@@ -203,6 +202,16 @@ export const proxyEvent = function (eventType, detail = {}) {
     window.dispatchEvent(new CustomEvent(eventType, { detail }));
   }
 };
+
+/**
+ * @param {Array<string>} arr
+ */
+export function randomItem(arr = []) {
+  if (arr.length) {
+    const index = Math.floor(Math.random() * arr.length);
+    return arr[index];
+  }
+}
 
 /**
  * see https://gist.github.com/codeguy/6684588

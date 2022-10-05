@@ -106,6 +106,7 @@ export interface Setting<SettingType = Record<string, any>> {
 export interface Site<SiteType = Record<string, any>> {
   defaultUserTab: boolean
   salutation: string
+  salutations: Array
 }
 
 export interface Console<ConsoleType = Record<string, any>> {

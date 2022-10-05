@@ -25,7 +25,8 @@
     svg,
     ADMIN,
     SUPERUSER,
-    log
+    log,
+    randomItem
   } from '$lib/utils';
   import {
     fabs,
@@ -158,7 +159,6 @@
     mounted
   });
 
-  // $: log('SESSION:expires', $session._expires);
   $: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
   $: token = $session.user?.jwt;
   $: person = svg(svg_manifest.person, $theme.primary);
@@ -171,9 +171,10 @@
   })(segment);
   $: isMobileDevice = isMobile.any;
   $: snackbarLifetime = action ? 6000 : snackbarLifetimeDefault;
+  $: salutation = randomItem($settings.Site.salutations);
   $: $session.user &&
-    (loggedInButtonTextSecondLine = $_('text.logged-in-button-second-line', {
-      values: { name: $session.user?.name }
+    (loggedInButtonTextSecondLine = $_('text.welcome-message', {
+      values: { salutation, name: $session.user.name }
     }));
   $: searchParams = $page.url.searchParams.toString();
   $: search = searchParams && `?${searchParams}`;
