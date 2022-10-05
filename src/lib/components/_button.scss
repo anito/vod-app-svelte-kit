@@ -45,3 +45,46 @@
     font-size: var(--fontSize);
   }
 }
+
+.is-login-page {
+  .sign-in-out {
+    &.mdc-button {
+      transform: translateY(-60px);
+    }
+  }
+}
+.signing-in .sign-in-out {
+  &.mdc-button {
+    pointer-events: none;
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+.sign-in-out {
+  &.mdc-button {
+    height: 94px;
+    width: 180px;
+    opacity: 1;
+    display: flex;
+    padding-top: 10px;
+    transform: translateY(0px);
+    transition: all 0.4s ease-in;
+
+    .mdc-button__label {
+      padding: 0;
+    }
+    .first-line {
+      position: absolute;
+      width: 84%;
+      text-overflow: ellipsis;
+      display: inline-block;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .second-line {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}

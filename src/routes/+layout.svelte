@@ -2,6 +2,7 @@
   // @ts-nocheck
 
   import '../app.css';
+  import '$lib/components/_button.scss';
   import '$lib/components/_notched_outline.scss';
   import '$lib/components/_colored_snackbar.scss';
   import * as api from '$lib/api';
@@ -466,8 +467,8 @@
                   on:mouseenter={() => (emphasize = 'v-emph-active')}
                   on:mouseleave={() => (emphasize = '')}
                 >
-                  <span class="button-first-line v-emph-primary v-emph-down">Logout</span>
-                  <Label class="no-break v-emph-secondary v-emph-up">
+                  <Label class="first-line v-emph-primary v-emph-down">Logout</Label>
+                  <Label class="second-line v-emph-secondary v-emph-up">
                     {@html loggedInButtonTextSecondLine}
                   </Label>
                 </Button>
@@ -547,44 +548,10 @@
   .transition {
     transition: all 0.4s ease-in;
   }
-  .button-first-line {
-    position: absolute;
-    width: 84%;
-    text-overflow: ellipsis;
-    display: inline-block;
-    overflow: hidden;
-    white-space: nowrap;
-  }
   :global(.home .grid-inner) {
     display: inline-block;
   }
   :global(.is-login-page .sign-in-out-item a) {
     pointer-events: none;
-  }
-  :global(button.sign-in-out) {
-    height: 74px;
-    width: 130px;
-  }
-  :global(.is-login-page button.sign-in-out) {
-    transform: translateY(-60px);
-    transition: all 0.4s ease-out;
-  }
-  :global(button.sign-in-out) {
-    transform: translateY(0px);
-    transition: all 0.4s ease-in;
-  }
-  :global(button .no-break) {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  :global(button.sign-in-out) {
-    transition: all 0.4s ease-in;
-    opacity: 1;
-  }
-  :global(.signing-in button.sign-in-out) {
-    pointer-events: none;
-    cursor: not-allowed;
-    opacity: 0.5;
   }
 </style>
