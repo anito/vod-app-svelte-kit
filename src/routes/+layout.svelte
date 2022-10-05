@@ -316,7 +316,7 @@
     async function submitHandler(e) {
       e.preventDefault();
 
-      loggedInButtonTextSecondLine = $_('text.authenticating');
+      loggedInButtonTextSecondLine = $_('text.one-moment');
 
       const form = e.target;
       const data = {};
