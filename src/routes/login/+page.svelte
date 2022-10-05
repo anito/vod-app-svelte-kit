@@ -4,9 +4,9 @@
   import { goto } from '$app/navigation';
   import { onMount, getContext, tick } from 'svelte';
   import { LoginForm } from '$lib/components';
-  import { flash, session, sitename, settings } from '$lib/stores';
+  import { flash, session, sitename, salutation } from '$lib/stores';
   import { fly } from 'svelte/transition';
-  import { log, processRedirect, proxyEvent, randomItem } from '$lib/utils';
+  import { log, processRedirect, proxyEvent } from '$lib/utils';
   import { _ } from 'svelte-i18n';
 
   /** @type {import('./$types').PageData | any} */
@@ -24,12 +24,9 @@
 
   $: $mounted && init();
   $: loggedin = !!$session.user;
-  $: salutation = randomItem($settings.Site.salutations);
   $: ({ message, type } = $session.user
     ? {
-        message: $_('text.welcome-message', {
-          values: { salutation, name: $session.user?.name }
-        }),
+        message: `${$salutation}, ${$session.user.name}`,
         type: 'success'
       }
     : $page.url.searchParams.has('token')

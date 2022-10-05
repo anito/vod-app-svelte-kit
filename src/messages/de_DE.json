@@ -10,7 +10,7 @@
     "copy": "Kopieren",
     "copied": "Kopiert!",
     "select-mode": "Modus wählen",
-    "welcome-message": "{salutation}, {name}",
+    "welcome-message": "{salutation}, ",
     "external-login-welcome-message": "Herzlich Willkommen {name}",
     "logged-in-button-second-line": "Hallo, {name}",
     "login-text": "Bitte anmelden",

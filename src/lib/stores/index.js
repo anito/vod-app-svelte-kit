@@ -13,6 +13,7 @@ export { default as mails } from './mailStore';
 export { default as sessionCookie } from './sessionCookieStore';
 export { default as session } from './sessionStore';
 export { default as settings } from './settingStore';
+export { default as salutation } from './salutationStore';
 export { default as slim } from './slimStore';
 export { default as sitename } from './sitenameStore';
 export { default as templates } from './templateStore';

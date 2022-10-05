@@ -31,6 +31,7 @@
   import {
     fabs,
     flash,
+    salutation,
     settings,
     session,
     theme,
@@ -112,7 +113,7 @@
    */
   let loaderColor = 'var(--prime)';
   /**
-   * @type {boolean}
+   * @type {string}
    */
   let isMounted = false;
   /**
@@ -171,11 +172,9 @@
   })(segment);
   $: isMobileDevice = isMobile.any;
   $: snackbarLifetime = action ? 6000 : snackbarLifetimeDefault;
-  $: salutation = randomItem($settings.Site.salutations);
-  $: $session.user &&
-    (loggedInButtonTextSecondLine = $_('text.welcome-message', {
-      values: { salutation, name: $session.user.name }
-    }));
+  $: if ($session.user) {
+    loggedInButtonTextSecondLine = `${$salutation}, `;
+  }
   $: searchParams = $page.url.searchParams.toString();
   $: search = searchParams && `?${searchParams}`;
   $: configLoaded && checkSession();
@@ -468,9 +467,17 @@
                   on:mouseenter={() => (emphasize = 'v-emph-active')}
                   on:mouseleave={() => (emphasize = '')}
                 >
-                  <Label class="first-line v-emph-primary v-emph-down">Logout</Label>
+                  <Label class="first-line v-emph-primary v-emph-down">
+                    <Icon
+                      class="material-icons"
+                      style="vertical-align: middle; font-size: 0.6rem; line-height: 1rem;"
+                      >logout</Icon
+                    >
+                    Logout
+                  </Label>
                   <Label class="second-line v-emph-secondary v-emph-up">
                     {@html loggedInButtonTextSecondLine}
+                    {@html $session.user.name}
                   </Label>
                 </Button>
               </NavItem>
