@@ -49,10 +49,6 @@
   } from '$lib/components';
   import { svg_manifest } from '$lib/svg_manifest';
   import { _, locale } from 'svelte-i18n';
-  import { redirect } from '@sveltejs/kit';
-
-  /** @type {import('./$types').PageData} */
-  export let data;
 
   const snackbarLifetimeDefault = 4000;
   const redirectDelay = 300;
@@ -316,13 +312,13 @@
     async function submitHandler(e) {
       e.preventDefault();
 
+      if (submitting) return;
+      submitting = true;
+
       loggedInButtonTextSecondLine = $_('text.one-moment');
 
       const form = e.target;
       const data = {};
-
-      if (submitting) return;
-      submitting = true;
 
       // new FormData(form).forEach((value, key) => (data[key] = value));
       await post(form.action, {}).then(async (res) => {
