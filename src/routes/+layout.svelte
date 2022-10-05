@@ -173,7 +173,7 @@
   $: isMobileDevice = isMobile.any;
   $: snackbarLifetime = action ? 6000 : snackbarLifetimeDefault;
   $: if ($session.user) {
-    loggedInButtonTextSecondLine = `${$salutation}, `;
+    loggedInButtonTextSecondLine = `${$salutation}, ${$session.user.name}`;
   }
   $: searchParams = $page.url.searchParams.toString();
   $: search = searchParams && `?${searchParams}`;
@@ -477,7 +477,6 @@
                   </Label>
                   <Label class="second-line v-emph-secondary v-emph-up">
                     {@html loggedInButtonTextSecondLine}
-                    {@html $session.user.name}
                   </Label>
                 </Button>
               </NavItem>
