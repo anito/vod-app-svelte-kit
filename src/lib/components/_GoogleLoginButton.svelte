@@ -34,8 +34,8 @@
     renderButton();
   }
 
-  async function googleHandleCredentialResponse(response) {
-    decodeJwtResponse(response.credential);
+  async function googleHandleCredentialResponse({ credential }) {
+    decodeJwtResponse(credential);
   }
 
   async function decodeJwtResponse(token) {
