@@ -1,3 +1,4 @@
+@import url(./fonts.css);
 /*
 -----------------------------------------------
 	vars – css custom-properties
@@ -118,84 +119,6 @@
   --font-mono: "Fira Mono", monospace;
   --caption-font: "Material Icons Outlined", sans-serif;
 }
-/* overpass-300normal - latin */
-@font-face {
-  font-family: "Overpass";
-  font-style: normal;
-  font-weight: 300;
-  src: local("Overpass Light "), local("Overpass-Light"),
-    url("/fonts/overpass/overpass-latin-300.woff2") format("woff2");
-}
-/* overpass-600normal - latin */
-@font-face {
-  font-family: "Overpass";
-  font-style: normal;
-  font-weight: 600;
-  src: local("Overpass Bold "), local("Overpass-Bold"),
-    url("/fonts/overpass/overpass-latin-600.woff2") format("woff2");
-}
-/* bell-gothic-300normal - latin */
-@font-face {
-  font-family: "BellGothic";
-  font-style: normal;
-  font-weight: 300;
-  src: local("BellGothic Light "), local("BellGothic Light"),
-    url("/fonts/bell-gothic/BellGothicStd-Light.woff2") format("woff2");
-}
-/* bell-gothic-600normal - latin */
-@font-face {
-  font-family: "BellGothic";
-  font-style: normal;
-  font-weight: 600;
-  src: local("BellGothic Bold "), local("BellGothic Bold"),
-    url("/fonts/bell-gothic/BellGothicStd-Bold.woff2") format("woff2");
-}
-/* bell-gothic-600normal - latin */
-@font-face {
-  font-family: "BellGothic";
-  font-style: normal;
-  font-weight: 600;
-  src: local("BellGothic Black "), local("BellGothic Black"),
-    url("/fonts/bell-gothic/BellGothicStd-Black.woff2") format("woff2");
-}
-/* fira-mono-400normal - latin */
-@font-face {
-  font-family: "Fira Mono";
-  font-style: normal;
-  font-weight: 400;
-  src: local("Fira Mono Regular "), local("Fira Mono-Regular"),
-    url("/fonts/fira-mono/fira-mono-latin-400.woff2") format("woff2");
-}
-/* Material Icons */
-@font-face {
-  font-family: "Material Icons";
-  font-style: normal;
-  font-weight: 400;
-  src: url(/fonts/material-icons/material-icons.woff2) format("woff2");
-}
-/* Material Icons Outlined */
-@font-face {
-  font-family: "Material Icons Outlined";
-  font-style: normal;
-  font-weight: 400;
-  src: url(/fonts/material-icons/material-icons-outlined.woff2) format("woff2");
-}
-.material-icons-outlined {
-  font-family: "Material Icons Outlined";
-  font-weight: normal;
-  font-style: normal;
-  font-size: 24px;
-  line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  display: inline-block;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
-  -webkit-font-feature-settings: "liga";
-  -webkit-font-smoothing: antialiased;
-}
-
 /*	base reset ----------------------------- */
 html {
   font-size: 100%;

@@ -8,39 +8,31 @@
   import { users, slim, sitename, session } from '$lib/stores';
   import { proxyEvent, INBOX, ADMIN, SUPERUSER, TABS, log } from '$lib/utils';
   import { _ } from 'svelte-i18n';
+  import { browser } from '$app/environment';
 
+  /**  * @type {string} */
   let selectedMode = 'edit';
-  /**
-   * @type {any}
-   */
+
+  /** * @type {any} */
   let userExpires;
-  /**
-   * @type {boolean}
-   */
+
+  /** @type {boolean} */
   let hasExpired;
-  /**
-   * @type {string}
-   */
+
+  /**  * @type {string} */
   let jwt;
-  /**
-   * @type {string}
-   */
+
+  /** @type {string} */
   let magicLink;
-  /**
-   * @type {{ role: string; name: any; jwt: string; expires: boolean}}
-   */
+
+  /** @type {{ id: string; role: string; name: any; jwt: string; expires: number | never}} */
   let currentUser;
-  /**
-   * @type {any}
-   */
+
+  /** @type {any} */
   let username;
-  /**
-   * @type {boolean}
-   */
-  let waitForSettings = false;
 
   $: selectionUserId = $page.params.slug;
-  $: currentUser = ((id) => $users.length && $users.filter((usr) => usr.id === id)[0])(
+  $: currentUser = ((id) => $users.find((usr) => usr.id === id) || ($users.length && $users[0]))(
     selectionUserId
   );
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
@@ -55,7 +47,7 @@
       magicLink = '';
     } else {
       userExpires = user.expires;
-      hasExpired = (userExpires && userExpires * 1000 < +new Date().getTime()) || false;
+      hasExpired = (!isNaN(userExpires) && userExpires * 1000 < +new Date().getTime()) || false;
       jwt = user.jwt;
       magicLink = jwt && `${$page.url.origin}/login?token=${jwt}`;
     }
@@ -72,8 +64,6 @@
   });
 
   onMount(() => {
-    waitForSettings = true;
-
     window.addEventListener('USER:add', addUserHandler);
 
     return () => {
@@ -81,10 +71,8 @@
     };
   });
 
-  /**
-   * @param {any} e
-   */
-  async function addUserHandler(e) {
+  /** @param {any} ev */
+  async function addUserHandler(ev) {
     const searchParams = new URLSearchParams($page.url.searchParams.toString());
     if (!searchParams.has('mode')) {
       searchParams.append('mode', 'add');

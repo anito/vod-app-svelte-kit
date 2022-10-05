@@ -33,7 +33,7 @@
   const privilegedActions = ['edit', 'pass', 'del'];
   const userActions = ['edit', 'pass'];
 
-  export let selectionUserId = null;
+  export let selectionUserId;
   export let selectedMode = 'edit';
 
   let code;

@@ -81,81 +81,65 @@
 
   let sort = 'DESC';
   let drawer;
-  /**
-   * @type {{ open: () => void; }}
-   */
+
+  /** @type {{ open: () => void; }} */
   let snackbar;
-  /**
-   * @type {boolean | undefined}
-   */
+
+  /** @type {boolean | undefined} */
   let drawerOpen;
+
   let drawerOpenOnMount = true;
-  /**
-   * @type {null | undefined}
-   */
+
+  /** @type {null | undefined} */
   let selection;
+
   let unreadInboxes = 0;
-  /**
-   * @type {string}
-   */
+
+  /**  @type {string} */
   let activeTemplate = '';
-  /**
-   * @type {boolean}
-   */
+
+  /** @type {boolean} */
   let canSave;
 
-  /**
-   * @type {{} | undefined}
-   */
+  /** @type {{} | undefined}  */
   let working;
-  /**
-   * @type {MailTemplate}
-   */
+
+  /** @type {MailTemplate} */
   let mailTemplate;
-  /**
-   * @type {import("@smui/dialog").DialogComponentDev}
-   */
+
+  /** @type {import("@smui/dialog").DialogComponentDev} */
   let unsavedChangesDialog;
-  /**
-   * @type {HTMLElement}
-   */
+
+  /** @type {HTMLElement} */
   let editable;
-  /**
-   * @type {HTMLElement}
-   */
+
+  /** @type {HTMLElement} */
   let root;
-  /**
-   * @type {{id: any, node: HTMLElement | null, value: string, editable: HTMLElement | null} }
-   */
+
+  /** @type {{id: any, node: HTMLElement | null, value: string, editable: HTMLElement | null} } */
   let editor = {
     id: '',
     node: null,
     value: '',
     editable: null
   };
-  /**
-   * @type {string | null | undefined}
-   */
+
+  /** @type {string | null | undefined} */
   let pendingActiveTemplate;
-  /**
-   * @type {string | null}
-   */
+
+  /** @type {string | null} */
   let activeListItem;
-  /**
-   * @type {number}
-   */
+
+  /** @type {number} */
   let selectionIndex;
   let totalInboxes = 0;
   let totalSents = 0;
-  /**
-   * @type {string}
-   */
+
+  /** @type {string} */
   let currentSlug;
 
-  export /**
-   * @type {string | null}
-   */
-  let selectionUserId = null;
+  /** @type {string} */
+  export let selectionUserId;
 
   $: currentUser = ((id) => $users.filter((usr) => usr.id === id))(selectionUserId)[0];
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;

@@ -21,7 +21,7 @@
     font-size: 1.25rem;
     align-items: center;
     flex-shrink: 0;
-    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    font-family: Roboto, 'Helvetica', 'Arial', sans-serif;
     line-height: 1;
     user-select: none;
     border-radius: 50%;
