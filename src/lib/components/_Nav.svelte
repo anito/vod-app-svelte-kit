@@ -176,7 +176,7 @@
   .primary > :global(li.nav-item a) {
     font-size: var(--h4);
     font-weight: 600;
-    padding: 0 0.5rem;
+    padding: 0 0.7rem;
     border: none;
     color: inherit;
     display: inline-block !important;
@@ -255,7 +255,7 @@
 
     .primary.open > :global(li.nav-item a) {
       font-size: var(--h4);
-      padding: 0 0.5rem;
+      padding: 0 0.7rem;
     }
 
     .primary.open > :global(li.nav-item):first-child :global(a) {

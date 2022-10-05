@@ -276,7 +276,7 @@
     "blog": "Blog",
     "privacy": "Datenschutz",
     "library": "Bibliothek",
-    "login": "Zum Login"
+    "login": "Login"
   },
   "messages": {
     "error": "Error: {status}",
