@@ -470,8 +470,8 @@
                   <Label class="first-line v-emph-primary v-emph-down">
                     <Icon
                       class="material-icons"
-                      style="vertical-align: middle; font-size: 0.6rem; line-height: 1rem;"
-                      >logout</Icon
+                      style="vertical-align: middle; font-size: 0.6rem; line-height: 1rem; margin-right: 0 !important;
+                      opacity: .8;">logout</Icon
                     >
                     Logout
                   </Label>
