@@ -10,7 +10,6 @@
     "copy": "Copy",
     "copied": "Copied!",
     "select-mode": "Select mode",
-    "welcome-message": "{salutation}, ",
     "external-login-welcome-message": "Welcome {name}",
     "logged-in-button-second-line": "Hallo, {name}",
     "login-text": "Please sign in",
@@ -224,7 +223,8 @@
     "logout-from-facebook": "Logout from Facebook",
     "please-select": "Please select",
     "new-message-from-user": "New message from <strong>{name}</strong>",
-    "one-moment": "One Moment..."
+    "one-moment": "One Moment...",
+    "welcome": "Welcome"
   },
   "summary": {
     "copy-link": {

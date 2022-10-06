@@ -187,7 +187,7 @@
 
     reveal();
     initListener();
-    getConfig();
+    loadConfig();
     initClasses();
     initStyles();
     startPolling();
@@ -200,7 +200,7 @@
     };
   });
 
-  async function getConfig() {
+  async function loadConfig() {
     await get('/config').then((res) => {
       settings.update(res);
       configLoaded = true;
