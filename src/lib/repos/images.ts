@@ -10,10 +10,6 @@ export class ImagesRepo extends Repo {
     this.endpoint = 'images';
   }
 
-  public static getInstance(): ImagesRepo {
-    if (!ImagesRepo.instance) {
-      ImagesRepo.instance = new ImagesRepo()
-    }
-    return ImagesRepo.instance
-  }
+  public static getInstance = (): ImagesRepo =>
+    ImagesRepo.instance || (ImagesRepo.instance = new ImagesRepo())
 }

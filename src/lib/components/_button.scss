@@ -49,7 +49,7 @@
 .is-login-page {
   .sign-in-out {
     &.mdc-button {
-      transform: translateY(-73px);
+      transform: translateY(-65px);
     }
   }
 }
@@ -62,13 +62,11 @@
 }
 .sign-in-out {
   &.mdc-button {
-    min-height: 94px;
-    height: 94px;
-    width: 160px;
+    width: 150px;
     opacity: 1;
     display: flex;
-    padding-top: 60px;
-    padding-bottom: 45px;
+    padding-top: 50px;
+    padding-bottom: 40px;
     transform: translateY(0px);
     transition: all 0.3s ease-in;
 
@@ -81,6 +79,7 @@
       text-overflow: ellipsis;
       display: inline-block;
       overflow: hidden;
+      text-overflow: ellipsis;
       white-space: nowrap;
     }
     .second-line {

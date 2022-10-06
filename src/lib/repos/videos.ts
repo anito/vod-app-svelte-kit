@@ -10,10 +10,6 @@ export class VideosRepo extends Repo {
     this.endpoint = 'videos';
   }
 
-  public static getInstance(): VideosRepo {
-    if (!VideosRepo.instance) {
-      VideosRepo.instance = new VideosRepo()
-    }
-    return VideosRepo.instance
-  }
+  public static getInstance = (): VideosRepo =>
+    VideosRepo.instance || (VideosRepo.instance = new VideosRepo())
 }

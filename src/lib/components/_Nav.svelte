@@ -173,7 +173,8 @@
     display: none;
   }
 
-  .primary > :global(li.nav-item a) {
+  .primary > :global(li.nav-item a),
+  .primary > :global(li.nav-item > span) {
     font-size: var(--h4);
     font-weight: 600;
     padding: 0 0.7rem;
@@ -268,7 +269,7 @@
 
     .primary :global(li.nav-item) {
       display: inline !important;
-      padding-left: 10px;
+      padding-left: 5px;
     }
 
     .hide-if-desktop {

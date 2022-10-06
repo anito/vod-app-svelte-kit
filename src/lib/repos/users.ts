@@ -10,10 +10,6 @@ export class UsersRepo extends Repo {
     this.endpoint = 'users';
   }
 
-  public static getInstance(): UsersRepo {
-    if (!UsersRepo.instance) {
-      UsersRepo.instance = new UsersRepo();
-    }
-    return UsersRepo.instance;
-  }
+  public static getInstance = (): UsersRepo =>
+    UsersRepo.instance || (UsersRepo.instance = new UsersRepo());
 }
