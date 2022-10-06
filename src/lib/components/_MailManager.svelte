@@ -5,7 +5,7 @@
   import { onMount, tick, getContext } from 'svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { fabs, sents, inboxes, session, templates, users, slim } from '$lib/stores';
+  import { fabs, sents, inboxes, session, templates, users, salutation, slim } from '$lib/stores';
   import {
     MailViewer,
     MailList,
@@ -234,6 +234,7 @@
       .post('sents/add/', {
         data: {
           user: { email: currentUser.email },
+          salutation: $salutation,
           ...working,
           template: {
             slug: currentTemplate.slug,
