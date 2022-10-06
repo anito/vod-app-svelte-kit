@@ -25,9 +25,9 @@
   $: hasPrivileges = user.role === ADMIN || user.role === SUPERUSER;
   $: isSuperuser = user.role === SUPERUSER;
 
-  /** @param {CustomEvent} ev */
-  function itemSelectHandler(ev) {
-    setTimeout(() => dispatch('itemSelected', { user, target: ev.target }), 10);
+  /** @param {CustomEvent} e */
+  function itemSelectHandler(e) {
+    setTimeout(() => dispatch('itemSelected', { user, target: e.target }), 10);
     goto(`/users/${user.id}${query}`);
   }
 </script>

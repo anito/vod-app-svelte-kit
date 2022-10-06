@@ -362,8 +362,8 @@
 
   function handleSnackbarClosed() {}
 
-  async function tickerSuccessHandler(ev) {
-    const { user, renewed, message } = { ...ev.detail };
+  async function tickerSuccessHandler(e) {
+    const { user, renewed, message } = { ...e.detail };
     proxyEvent('ticker:extend');
     flash.update({ message, type: 'success', timeout: 2000 });
 
@@ -382,8 +382,8 @@
     invalidate('/session');
   }
 
-  function tickerErrorHandler(ev) {
-    const data = { ...ev.detail };
+  function tickerErrorHandler(e) {
+    const data = { ...e.detail };
     invalidate('/session');
     flash.update({ ...data, type: 'error', timeout: 3500 });
     if (data.redirect) {
@@ -391,9 +391,9 @@
     }
   }
 
-  async function tickerStopHandler(ev) {
+  async function tickerStopHandler(e) {
     await killSession().then(() => {
-      const redirect = ev.detail.redirect;
+      const redirect = e.detail.redirect;
       const path = !!redirect ? redirect : redirect ?? '/';
       if (path !== false) {
         const search = createRedirectSlug($page.url);

@@ -119,6 +119,13 @@ export interface Error<ErrorType = Record<string, any>> {
   message: string
 }
 
+export interface Editor<EditorType = Record<string, any>> {
+  id: any,
+  node: Element | any,
+  value: any,
+  editable: Element | any
+}
+
 // export interface Session<SessionType = Record<string, any>> {
 //   data: SessionType;
 //   expires: Date | undefined;

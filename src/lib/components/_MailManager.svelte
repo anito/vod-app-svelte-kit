@@ -38,6 +38,7 @@
   } from '@smui/dialog';
   import { INBOX, SENT, ADMIN, SUPERUSER, log } from '$lib/utils';
   import { get } from 'svelte/store';
+  import { Editor } from '$lib/classes';
 
   const sortAZProtected = (
     /** @type {{ [x: string]: string; }} */ a,
@@ -116,13 +117,12 @@
   /** @type {HTMLElement} */
   let root;
 
-  /** @type {{id: any, node: HTMLElement | null, value: string, editable: HTMLElement | null} } */
-  let editor = {
+  let editor = new Editor({
     id: '',
     node: null,
     value: '',
     editable: null
-  };
+  });
 
   /** @type {string | null | undefined} */
   let pendingActiveTemplate;
@@ -492,7 +492,7 @@
   /**
    * @param {MouseEvent | CustomEvent} e
    */
-  function overEditable(/** @type { {currentTarget: HTMLElement}  | any} */ e) {
+  function overEditable(/** @type { {currentTarget: HTMLElement} | any} */ e) {
     editable = e.currentTarget;
     editable?.classList.add('hover');
   }
@@ -513,20 +513,20 @@
     cancelEvent(e);
     const range = document.createRange();
     const selection = window.getSelection();
-    /** @type  {HTMLCollectionOf<HTMLElement> | HTMLCollectionOf<Element> } */
+    /** @type  {HTMLCollectionOf<Element> } */
     const children = editable.getElementsByClassName('editable') || [];
     if (children.length) {
-      /** @type {HTMLElement} */
-      // @ts-ignore
+      /** @type {Element} */
       const node = children[0];
       editor.node?.classList.remove('editor');
 
-      editor = { ...editor, id, node, value: node?.innerText, editable };
-      editor?.node.classList.add('editor');
-      editor?.node.setAttribute('contenteditable', 'true');
-      editor?.node.addEventListener('keydown', keyListener);
-      editor?.node.addEventListener('click', cancelEvent);
-      editor?.node.focus();
+      editor = new Editor({ ...editor, id, node, value: node.innerHTML, editable });
+      // console.log(editor);
+      editor.node.classList.add('editor');
+      editor.node.setAttribute('contenteditable', 'true');
+      editor.node.addEventListener('keydown', keyListener);
+      editor.node.addEventListener('click', cancelEvent);
+      editor.node.focus();
       range.selectNodeContents(editor?.node);
       range.collapse(false);
       selection?.removeAllRanges();
@@ -539,9 +539,6 @@
    */
   function keyListener(e) {
     e.stopPropagation();
-    // log('code', e.code);
-    // log('key', e.key);
-    // log('keyCode', e.keyCode);
 
     const isEnter = e.key === 'Enter' || e.keyCode === 13;
     const isEscape = e.key === 'Escape' || e.keyCode === 27;
@@ -578,7 +575,7 @@
       !success && restoreTemplateName();
     }
 
-    editor.id = void 0;
+    editor.id = null;
   }
 
   /**

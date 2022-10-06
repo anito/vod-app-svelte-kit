@@ -3,7 +3,7 @@
 
   import './_textfield.scss';
   import './_button.scss';
-  import { settings } from '$lib/stores';
+  import { settings, salutation } from '$lib/stores';
   import Button, { Icon, Label } from '@smui/button';
   import Textfield from '@smui/textfield';
   import { _ } from 'svelte-i18n';
@@ -57,7 +57,7 @@
   </div>
   <div class="grid content main-grid-area">
     <div class="starter grid-item">
-      <span>{$settings.Site.salutation}, {user?.name}!</span>
+      <span>{$salutation}, {user?.name}!</span>
     </div>
     <div class="before-content grid-item">
       <Textfield

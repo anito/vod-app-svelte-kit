@@ -71,8 +71,8 @@
     };
   });
 
-  /** @param {any} ev */
-  async function addUserHandler(ev) {
+  /** @param {any} e */
+  async function addUserHandler(e) {
     const searchParams = new URLSearchParams($page.url.searchParams.toString());
     if (!searchParams.has('mode')) {
       searchParams.append('mode', 'add');
