@@ -1,3 +1,5 @@
+<img src="./images/hero_frontpage.jpg" alt="banner hero immercive studio">
+
 # Video On Demand Manager (SvelteKit)
 
 *This Project is still under development.*
