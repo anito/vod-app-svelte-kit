@@ -30,9 +30,9 @@ export interface User<UserType = Record<string, any>> {
   expires: number;
   token_id: string;
   protected: boolean
-  avatar: Avatar[];
-  videos: Video[];
-  groups: Group[];
+  avatar: Avatar[] | any;
+  videos: Video[] | any;
+  groups: Group[] | any;
 }
 
 export interface GoogleUser<GoogleUserType = Record<string, void>> {

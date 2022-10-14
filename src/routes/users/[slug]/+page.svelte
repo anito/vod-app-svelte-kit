@@ -3,7 +3,7 @@
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { onMount, setContext } from 'svelte';
-  import { UserManager, TimeManager, MailManager } from '$lib/components';
+  import { UserManager, TimeManager, MailManager, UserGraphic } from '$lib/components';
   import Button, { Group, Label, Icon } from '@smui/button';
   import { users, slim, sitename, session } from '$lib/stores';
   import { proxyEvent, INBOX, ADMIN, SUPERUSER, TABS, log } from '$lib/utils';
@@ -25,7 +25,7 @@
   /** @type {string} */
   let magicLink;
 
-  /** @type {{ id: string; role: string; name: any; jwt: string; expires: number | never}} */
+  /** @type {import('$lib/types').User} */
   let currentUser;
 
   /** @type {any} */
@@ -133,8 +133,16 @@
         on:click={() => proxyEvent('INFO:token:Redirect')}
         disabled={!magicLink}
         variant="unelevated"
+        user
       >
-        <Icon class="material-icons">{(hasExpired && 'link_off') || 'link'}</Icon>
+        <UserGraphic
+          borderSize="2"
+          borderColor="--surface"
+          size="22"
+          dense
+          style="margin-right: 10px;"
+          user={currentUser}
+        />
         <Label>{$_('text.change-account')}</Label>
       </Button>
     </div>

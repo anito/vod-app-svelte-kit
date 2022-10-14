@@ -4,21 +4,16 @@
   import { Icon } from '@smui/common';
   import { getMediaAvatar, placeholderDotComAvatar } from '$lib/utils';
 
-  /**
-   * @type {{ role: string | null | undefined, avatar: any | undefined, email: string }}
-   */
-  export let user = {
-    role: '',
-    avatar: null,
-    email: ''
-  };
-  export let dense = '';
-  export let size = 24;
-  export let borderSize = 0;
+  /** @type {import('$lib/types').User} */
+  export let user;
+  /** @type {any} */
+  export let dense;
+  export let size = '24';
+  export let borderSize = '0';
   export let borderColor = '';
   export let extendedBorderSize = 0;
   export let extendedBorderColor = '';
-  /** @type {{color: string, size: number, icon: string, position: string} | null} */
+  /** @type {{color: string, size: number, icon: string, position: string}} */
   export let badge = {
     color: '',
     size: 20,
@@ -31,18 +26,18 @@
 
   const width = size;
   const height = size;
-  const f = (size * 30) / 100;
+  const f = (parseInt(size) * 30) / 100;
   /** @type {{TOP_RIGHT: string, TOP_LEFT: string, BOTTOM_RIGHT: string, BOTTOM_LEFT: string} | any} */
   const badgePosition = {
-    TOP_RIGHT: `top: ${8 - f}px; left:${width - f}px;`,
+    TOP_RIGHT: `top: ${8 - f}px; left:${parseInt(width) - f}px;`,
     TOP_LEFT: `top:${0 - f}px; left: ${0 - f}px;`,
-    BOTTOM_RIGHT: `top: ${width - f}px; left:${width - f}px;`,
-    BOTTOM_LEFT: `top: ${width - f}px; left:${width - f}px;`
+    BOTTOM_RIGHT: `top: ${parseInt(width) - f}px; left:${parseInt(width) - f}px;`,
+    BOTTOM_LEFT: `top: ${parseInt(width) - f}px; left:${parseInt(width) - f}px;`
   };
   /** @type {string | undefined}} */
   let src;
 
-  borderSize = !isNaN(borderSize) ? borderSize : borderSize ? 1 : borderSize;
+  borderSize = !isNaN(parseInt(borderSize)) ? borderSize : borderSize ? '1' : borderSize;
   borderColor = borderColor.startsWith('--')
     ? `var(${borderColor})`
     : borderColor
@@ -61,8 +56,8 @@
   badge.color?.startsWith('--') && (badge.color = `var(${badge.color})`);
 
   $: (async (user) => {
-    if (user.avatar?.src?.startsWith('http')) {
-      Promise.resolve(user.avatar?.src).then((val) => (src = val));
+    if (user?.avatar.src?.startsWith('http')) {
+      Promise.resolve(user.avatar.src).then((val) => (src = val));
     } else if (user.avatar) {
       await getMediaAvatar(user.avatar?.id, $session.user, {
         width,
@@ -87,7 +82,7 @@
       class="user-graphics relative"
       style="display: inline-flex; vertical-align: middle; width: {width}px; height: {height}px; box-shadow: 0px 0px 0px {borderSize}px {borderColor} {extendedBorderSize
         ? `, 0px 0px 0px ${extendedBorderSize}px ${extendedBorderColor}`
-        : ''}; background-image: url('{src}'); background-size: cover;"
+        : ''}; background-image: url('{src}'); background-size: cover; background-color: var(--back-light);"
     />
     {#if badge.icon}
       <div class="badge {badge.size}" style={badge.position}>
