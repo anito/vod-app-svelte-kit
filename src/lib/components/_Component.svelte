@@ -35,7 +35,7 @@
   .component .header {
     display: flex;
     position: absolute;
-    z-index: auto;
+    z-index: 1;
     justify-content: center;
     flex-direction: column;
     width: 100%;
@@ -47,6 +47,7 @@
     margin-top: 0px;
     background-color: var(--prime, rgb(179, 116, 1));
     position: relative;
+    z-index: 0;
   }
   :global(.transparent).component::before {
     color: inherit;
