@@ -1,7 +1,7 @@
 <div style="display: none">
   <!-- wrapper div allows use of innerHTML -->
   <svg>
-    <style type="text/css">
+    <style>
       .st0 {
         fill: #ff3e00;
       }
