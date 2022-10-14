@@ -58,7 +58,7 @@
   $: (async (user) => {
     if (user?.avatar?.src?.startsWith('http')) {
       Promise.resolve(user.avatar.src).then((val) => (src = val));
-    } else if (user.avatar) {
+    } else if (user?.avatar) {
       await getMediaAvatar(user?.avatar?.id, $session.user, {
         width,
         height,
