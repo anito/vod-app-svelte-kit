@@ -4,7 +4,7 @@ import { settings } from '$lib/stores';
 import { createTabSearch } from '$lib/utils';
 
 /** @type {import('./$types').PageLoad} */
-export async function load({ params, parent }) {
+export async function load({ parent }) {
   const parentData = await parent();
   const { session } = parentData;
   if (session.user) {
