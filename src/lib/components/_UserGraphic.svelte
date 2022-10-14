@@ -56,10 +56,10 @@
   badge.color?.startsWith('--') && (badge.color = `var(${badge.color})`);
 
   $: (async (user) => {
-    if (user?.avatar.src?.startsWith('http')) {
+    if (user?.avatar?.src?.startsWith('http')) {
       Promise.resolve(user.avatar.src).then((val) => (src = val));
     } else if (user.avatar) {
-      await getMediaAvatar(user.avatar?.id, $session.user, {
+      await getMediaAvatar(user?.avatar?.id, $session.user, {
         width,
         height,
         square: 1,
