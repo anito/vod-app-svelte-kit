@@ -224,7 +224,8 @@
     "please-select": "Bitte auswählen",
     "new-message-from-user": "Neue Nachricht  von <strong>{name}</strong>",
     "one-moment": "Einen Moment...",
-    "welcome": "Willkommen"
+    "welcome": "Willkommen",
+    "change-account": "Konto wechseln"
   },
   "summary": {
     "copy-link": {
@@ -283,8 +284,8 @@
     "permanently-remove-user": "{name} wird dauerhaft gelöscht. Bestätigen Sie mit OK",
     "video-available-until": "gültig bis",
     "transfer-token-reminder": "Denken Sie daran, dem Benutzer <strong>{name}</strong> den neuen Token zu übermitteln.",
-    "you-will-be-logged-out": "Wenn Sie fortfahren, werden Sie von Ihrer aktuellen Sitzung abgemeldet.",
-    "login-will-fail": "Die Anmeldung als <strong>{name}</strong> wird fehlschlagen. Die folgende Aktionen müssen erst durchgeführt werden: ",
+    "you-will-be-logged-out": "Aktuelle Sitzung beenden und als <strong>{name}</strong> anmelden?",
+    "login-will-fail": "Die Anmeldung als <strong>{name}</strong> wird fehlschlagen. Folgende Aktionen sollten zuvor gemacht werden: ",
     "class-has-active-time-slot": "Dieser Kurs hat ein aktives Zeitfenster.<br /> <strong>{title}</strong> trotzdem entfernen?",
     "content-inaccessible": "<p>Der Benutzer <strong>{name}</strong> kann momentan nicht auf die von ihm gebuchten Inhalte zugreifen.</p><p>Um die Inhalte verfügbar zu machen, müssen folgende Aktionen ausgeführt werden:</p>",
     "should-user-be-activated": "<p>Soll Benutzer <strong>{name}</strong> aktiviert werden?</p>",

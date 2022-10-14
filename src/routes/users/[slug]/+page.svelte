@@ -135,7 +135,7 @@
         variant="unelevated"
       >
         <Icon class="material-icons">{(hasExpired && 'link_off') || 'link'}</Icon>
-        <Label>Magic Link</Label>
+        <Label>{$_('text.change-account')}</Label>
       </Button>
     </div>
   </div>

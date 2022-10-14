@@ -541,7 +541,7 @@
   aria-describedby="event-content"
   on:SMUIDialog:closed={tokenRedirectDialogCloseHandler}
 >
-  <DialogTitle id="event-title">{$_('text.magic-link')}</DialogTitle>
+  <DialogTitle id="event-title">{$_('text.change-account')}</DialogTitle>
   <Content id="event-content">
     {#if userIssues.length}
       <p>
@@ -559,7 +559,7 @@
         {/each}
       </div>
     {/if}
-    <p>{$_('messages.you-will-be-logged-out')}</p>
+    <p>{@html $_('messages.you-will-be-logged-out', { values: { name: username } })}</p>
   </Content>
   <Actions>
     <Button action="none">
