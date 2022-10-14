@@ -3,9 +3,10 @@ import { users, videos, images, videosAll } from '$lib/stores';
 import { USER } from '$lib/utils';
 
 /** @type {import('./$types').PageLoad} */
-export async function load({ parent, fetch }) {
+export async function load({ parent, fetch, params, url }) {
   const parentData = await parent();
   const { session } = parentData;
+  let notFound = false;
   if (!session.user) {
     throw redirect(301, `/`);
   }
@@ -14,6 +15,14 @@ export async function load({ parent, fetch }) {
       if (res.ok) return await res.json();
     })
     .then((res) => {
+      if (
+        !res.users.find(
+          /** @param {import('$lib/types').User} usr */
+          (usr) => usr.id === params.slug
+        )
+      ) {
+        notFound = true;
+      }
       users.update(res.users);
     })
     .catch((reason) => console.error(reason));
@@ -45,6 +54,10 @@ export async function load({ parent, fetch }) {
         videosAll.update(res.videos);
       })
       .catch((reason) => console.error(reason));
+  }
+
+  if (notFound) {
+    throw redirect(404, `/users/${session.user.id}${url.search}`);
   }
   return { session: { ...parentData.session, file: 'PageLoad /users/[slug]/+page.js' } };
 }
