@@ -6,7 +6,7 @@ import { USER } from '$lib/utils';
 export async function load({ parent, fetch, params, url }) {
   const parentData = await parent();
   const { session } = parentData;
-  let notFound = false;
+  let temporaryRedirect = false;
   if (!session.user) {
     throw redirect(301, `/`);
   }
@@ -21,7 +21,7 @@ export async function load({ parent, fetch, params, url }) {
           (usr) => usr.id === params.slug
         )
       ) {
-        notFound = true;
+        temporaryRedirect = true;
       }
       users.update(res.users);
     })
@@ -56,8 +56,8 @@ export async function load({ parent, fetch, params, url }) {
       .catch((reason) => console.error(reason));
   }
 
-  if (notFound) {
-    throw redirect(404, `/users/${session.user.id}${url.search}`);
+  if (temporaryRedirect) {
+    throw redirect(307, `/users/${session.user.id}${url.search}`);
   }
   return { session: { ...parentData.session, file: 'PageLoad /users/[slug]/+page.js' } };
 }
