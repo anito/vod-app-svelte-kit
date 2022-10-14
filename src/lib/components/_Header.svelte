@@ -1,53 +1,62 @@
 <script>
-	// @ts-nocheck
+  // @ts-nocheck
 
-	import { onMount } from 'svelte';
+  import { onMount } from 'svelte';
 
-	let container;
-	let match;
-	let className = '';
+  const regex = /[1-6]/g;
+  const DEFAULT_LEVEL = '1';
 
-	const regex = /[1-6]/g;
-	const DEFAULT_LEVEL = '1';
+  export let h = DEFAULT_LEVEL;
+  export let mdc = false;
+  export { className as class };
+  export let style = '';
 
-	export let h = DEFAULT_LEVEL;
-	export { className as class };
-	export let mdc = false;
-	export let style = '';
+  let className = '';
+  let container;
 
-	onMount(() => {
-		h = h.toString();
-		h = (match = h.match(regex)) && match.length && match[0];
+  $: level = (regex.test(h) && h.match(regex)[0]) || DEFAULT_LEVEL;
 
-		if (!h) h = LEVEL;
+  onMount(() => {});
 
-		const header = document.createElement(`h${h}`);
-		mdc && (className = className.concat(` mdc-typography--headline${h}`));
-		className
-			.trim()
-			.split(/\s+/g)
-			.map((cls) => cls && header.classList.add(cls));
-		for (const node of container.childNodes) header.append(node);
-		style && header.setAttribute('style', style);
-		container.prepend(header);
-	});
+  function createHeader(el) {
+    const children = el.childNodes;
+    const header = document.createElement(`h${h}`);
+
+    className
+      .trim()
+      .split(/\s+/g)
+      .map((cls) => cls && header.classList.add(cls));
+
+    mdc && (className = header.classList.add(`mdc-typography--headline${level}`));
+    style && header.setAttribute('style', style);
+
+    for (const node of children) header.append(node);
+    el.prepend(header);
+  }
 </script>
 
-<div bind:this={container} class="svelte-header">
-	<slot />
+<div use:createHeader bind:this={container} class="svelte-header">
+  <slot />
 </div>
 
-<style>
-	:global([class*='mdc-typography--headline']) {
-		color: inherit;
-	}
-	.svelte-header {
-		margin: auto 0;
-	}
-	.svelte-header > :global(:first-child) {
-		text-overflow: ellipsis;
-		overflow: hidden;
-		white-space: nowrap;
-		line-height: initial;
-	}
+<style lang="scss">
+  :global([class*='mdc-typography--headline']) {
+    color: inherit;
+  }
+  .svelte-header {
+    margin: auto 0;
+    :global {
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        line-height: initial;
+      }
+    }
+  }
 </style>

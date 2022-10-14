@@ -9,7 +9,7 @@
 
 <div class="component flex flex-1 flex-col {className} {variant}" class:extended class:transparent>
   <div class="header">
-    <slot name="header">No Header provided</slot>
+    <slot name="header">You must provide a header</slot>
   </div>
   <div class="content flex-1">
     <slot />

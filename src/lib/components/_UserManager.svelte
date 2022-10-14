@@ -384,18 +384,14 @@
     <div class="grid-item user" style="height: 100%;">
       <Component variant="sm" extended>
         <div slot="header">
-          <div class="">
-            <Header h="5" mdc>
-              <span>
-                {#if selectedMode === 'add'}
-                  {$_('text.create-new-user')}
-                {:else if currentUser}{currentUser.name}{/if}
-              </span>
-            </Header>
-            <button on:click={() => closeAddUserHandler()} class="button-close" variant="outlined">
-              <Icon class="material-icons" style="vertical-align: middle;">close</Icon>
-            </button>
-          </div>
+          <Header mdc h="5" style="padding-right: 12rem;">
+            {#if selectedMode === 'add'}
+              {$_('text.create-new-user')}
+            {:else if currentUser}{currentUser.name}{/if}
+          </Header>
+          <button on:click={() => closeAddUserHandler()} class="button-close" variant="outlined">
+            <Icon class="material-icons" style="vertical-align: middle;">close</Icon>
+          </button>
         </div>
         <div class="flex flex-shrink flex-wrap height-100" style="height: 100%;">
           {#if userNotFound}

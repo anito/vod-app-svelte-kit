@@ -326,15 +326,15 @@
   >
     <Component variant="sm">
       <div slot="header">
-        <Header mdc h="5">
-          {#if currentUser}
-            <div class="flex">
-              <span><strong>{name}</strong></span>
-              <span class="uppercase flex-auto" style="font-weight: 400; text-align: right;"
+        <Header mdc h="5" class="xxx">
+          <div class="flex">
+            {#if currentUser}
+              <span class="header-name pr-5">{name}</span>
+              <span class="uppercase flex-auto text-right" style="font-weight: 400;"
                 >| {$_('text.booked-classes')}</span
               >
-            </div>
-          {/if}
+            {/if}
+          </div>
         </Header>
       </div>
       {#if currentUser}
@@ -660,6 +660,12 @@
   }
   :global(.no-user-selected .content) {
     display: flex;
+  }
+  .header-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 600;
   }
   .empty-selection {
     display: flex;
