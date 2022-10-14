@@ -138,7 +138,7 @@
         <UserGraphic
           borderSize="2"
           borderColor="--surface"
-          size="22"
+          size="18"
           dense
           style="margin-right: 10px;"
           user={currentUser}

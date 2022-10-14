@@ -11,7 +11,7 @@
   export let size = '24';
   export let borderSize = '0';
   export let borderColor = '';
-  export let extendedBorderSize = 0;
+  export let extendedBorderSize = '10';
   export let extendedBorderColor = '';
   /** @type {{color: string, size: number, icon: string, position: string}} */
   export let badge = {
@@ -43,11 +43,6 @@
     : borderColor
     ? borderColor
     : 'transparent';
-  extendedBorderSize = !isNaN(extendedBorderSize)
-    ? extendedBorderSize
-    : extendedBorderSize
-    ? 10
-    : extendedBorderSize;
   extendedBorderColor = extendedBorderColor.startsWith('--')
     ? `var(${extendedBorderColor})`
     : extendedBorderColor
@@ -68,7 +63,7 @@
     } else if (fallback) {
       Promise.resolve(fallback).then((val) => (src = val));
     } else {
-      Promise.resolve(placeholderDotComAvatar(user.email?.split('@').join(' '))).then(
+      Promise.resolve(placeholderDotComAvatar(user?.email?.split('@').join(' '))).then(
         (val) => (src = val)
       );
     }

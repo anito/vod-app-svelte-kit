@@ -15,7 +15,8 @@
     MediaUploader,
     Component,
     SvgIcon,
-    VideoEditorList
+    VideoEditorList,
+    UserGraphic
   } from '$lib/components';
   import { createTabSearch, get, proxyEvent } from '$lib/utils';
   import Button, { Icon as Icon_ } from '@smui/button';
@@ -540,6 +541,7 @@
   aria-labelledby="event-title"
   aria-describedby="event-content"
   on:SMUIDialog:closed={tokenRedirectDialogCloseHandler}
+  class="redirect-dialog"
 >
   <DialogTitle id="event-title">{$_('text.change-account')}</DialogTitle>
   <Content id="event-content">
@@ -559,6 +561,16 @@
         {/each}
       </div>
     {/if}
+    <div class="absolute" style="top: -20px; right: -40px;">
+      <UserGraphic
+        size="60"
+        borderSize="2"
+        borderColor="--prime"
+        extendedBorderSize="5"
+        extendedBorderColor="--surface"
+        user={currentUser}
+      />
+    </div>
     <p>{@html $_('messages.you-will-be-logged-out', { values: { name: username } })}</p>
   </Content>
   <Actions>
@@ -638,5 +650,8 @@
   .reasons-list li {
     margin-left: 1em;
     font-weight: 600;
+  }
+  :global(.redirect-dialog .mdc-dialog__surface) {
+    overflow-y: visible;
   }
 </style>
