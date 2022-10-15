@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { derived } from 'svelte/store';
 import { default as users } from './userStore';
-import { isExpired } from '$lib/utils';
+import { isExpired, SUPERUSER } from '$lib/utils';
 
 function createStore() {
   function hasActiveVideos(usr) {
@@ -57,7 +57,7 @@ function createStore() {
         flag: 'flash',
         type: 'issue'
       },
-      value: (usr) => !usr.jwt
+      value: (usr) => !usr.jwt && usr.role !== SUPERUSER
     }
   ];
 
