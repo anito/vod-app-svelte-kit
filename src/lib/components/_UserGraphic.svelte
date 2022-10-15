@@ -120,7 +120,7 @@
       transform: translate(0px, calc(var(--size) * -1));
     }
     &.small {
-      --badge-size: 14px;
+      --badge-size: 18px;
       width: var(--badge-size);
       height: var(--badge-size);
 
@@ -129,16 +129,16 @@
       }
     }
     &.medium {
-      --badge-size: 18px;
+      --badge-size: 30px;
       width: var(--badge-size);
       height: var(--badge-size);
 
       :global(.material-icons) {
-        font-size: 1.3em;
+        font-size: 1.4em;
       }
     }
     &.large {
-      --badge-size: 22px;
+      --badge-size: 34px;
       width: var(--badge-size);
       height: var(--badge-size);
 
