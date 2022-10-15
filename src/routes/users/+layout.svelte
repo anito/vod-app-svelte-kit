@@ -582,12 +582,12 @@
         }}
       />
     </div>
-    <div class="absolute" style="z-index: 0; top: -20px; right: 10px;">
+    <div class="absolute" style="z-index: 0; top: -7px; right: 23px;">
       <UserGraphic
-        size="60"
+        size="45"
         borderSize="2"
         borderColor="--prime"
-        extendedBorderSize="5"
+        extendedBorderSize="4"
         dense
         extendedBorderColor="--surface"
         user={$session.user}
