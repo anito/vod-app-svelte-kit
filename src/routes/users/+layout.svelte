@@ -565,7 +565,7 @@
     {:else}
       <p>{@html $_('messages.you-will-be-logged-out', { values: { name: username } })}</p>
     {/if}
-    <div class="absolute" style="top: -20px; right: -20px;">
+    <div class="absolute" style="z-index: 1; top: -20px; right: -20px;">
       <UserGraphic
         size="60"
         borderSize="2"
@@ -580,6 +580,17 @@
           position: 'BOTTOM_LEFT',
           size: 'medium'
         }}
+      />
+    </div>
+    <div class="absolute" style="z-index: 0; top: -20px; right: 10px;">
+      <UserGraphic
+        size="60"
+        borderSize="2"
+        borderColor="--prime"
+        extendedBorderSize="5"
+        dense
+        extendedBorderColor="--surface"
+        user={$session.user}
       />
     </div>
   </Content>
