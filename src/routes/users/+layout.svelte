@@ -576,7 +576,7 @@
         user={currentUser}
         inactive={!!userIssues.length}
         badge={{
-          icon: 'change_circle',
+          icon: 'swap_horiz',
           position: 'BOTTOM_LEFT',
           size: 'medium'
         }}

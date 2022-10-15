@@ -24,6 +24,12 @@
   $: _infos = ($infos?.has(user.id) && $infos.get(user.id).params) || [];
   $: hasPrivileges = user.role === ADMIN || user.role === SUPERUSER;
   $: isSuperuser = user.role === SUPERUSER;
+  $: badge = {
+    icon: (hasPrivileges && 'admin_panel_settings') || '',
+    color: isSuperuser ? 'rgb(26, 4, 4)' : 'rgb(206, 4, 4)',
+    position: 'TOP_RIGHT',
+    size: 'small'
+  };
 
   /** @param {CustomEvent} e */
   function itemSelectHandler(e) {
@@ -38,20 +44,7 @@
   selected={selectionUserId == user.id}
   on:SMUI:action={itemSelectHandler}
 >
-  <UserGraphic
-    size="40"
-    {user}
-    badge={(hasPrivileges && {
-      icon: 'admin_panel_settings',
-      color: isSuperuser ? 'rgb(26, 4, 4)' : 'rgb(206, 4, 4)',
-      position: 'TOP_RIGHT',
-      size: 'small',
-      active: hasPrivileges
-    }) ||
-      {}}
-    borderSize="1"
-    borderColor="#c5c5c5"
-  />
+  <UserGraphic size="40" {user} {badge} borderSize="1" borderColor="#c5c5c5" />
   <Text>
     <PrimaryText>{user.name}</PrimaryText>
     <SecondaryText>{user.email}</SecondaryText>

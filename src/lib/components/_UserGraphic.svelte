@@ -13,6 +13,8 @@
   export let borderColor = '';
   export let extendedBorderSize = '10';
   export let extendedBorderColor = '';
+  export let overlayColor = '';
+  export let overlayOpacity = 0.5;
 
   /**
    * @type {{icon: string, position: any, color: string, size: string}}
@@ -29,7 +31,6 @@
 
   const width = parseInt(size);
   const height = parseInt(size);
-  const sizeVar = `--size: ${size}px;`;
 
   /**
    * @type {{TOP_RIGHT: string, BOTTOM_RIGHT: string, BOTTOM_LEFT: string, TOP_LEFT: string} | any}
@@ -43,7 +44,6 @@
   /** @type {string | undefined}} */
   let src;
 
-  borderSize = !isNaN(parseInt(borderSize)) ? borderSize : borderSize ? '1' : borderSize;
   borderColor = borderColor.startsWith('--')
     ? `var(${borderColor})`
     : borderColor
@@ -54,10 +54,19 @@
     : extendedBorderColor
     ? extendedBorderColor
     : 'transparent';
+  overlayColor = overlayColor.startsWith('--')
+    ? `var(${overlayColor})`
+    : overlayColor
+    ? overlayColor
+    : 'transparent';
   badge.color?.startsWith('--') && (badge.color = `var(${badge.color})`);
 
+  $: sizeVar = `--size: ${size}px;`;
+  $: overlayVars =
+    (overlayColor && `--overlay-color: ${overlayColor}; --overlay-opacity: ${overlayOpacity}`) ||
+    null;
   $: (badge.icon && (badge.position = badgePosition[badge.position])) || badgePosition['TOP_LEFT'];
-  $: style = `${style} ${sizeVar}`;
+  $: style = ((style) => style.trim())(`${style} ${sizeVar} ${overlayVars}`);
   $: (async (user) => {
     if (user?.avatar?.src?.startsWith('http')) {
       Promise.resolve(user.avatar.src).then((val) => (src = val));
@@ -82,9 +91,18 @@
   {#if src}
     <Graphic
       class="user-graphics relative"
-      style="display: inline-flex; vertical-align: middle; width: {width}px; height: {height}px; box-shadow: 0px 0px 0px {borderSize}px {borderColor} {extendedBorderSize
+      title={`${user?.name} (${user?.role || $session.role})`}
+      style="
+        display: inline-flex;
+        vertical-align: middle;
+        width: {width}px;
+        height: {height}px;
+        box-shadow: 0px 0px 0px {borderSize}px {borderColor} {extendedBorderSize
         ? `, 0px 0px 0px ${extendedBorderSize}px ${extendedBorderColor}`
-        : ''}; background-image: url('{src}'); background-size: cover; background-color: var(--back-light);"
+        : ''};
+        background-image: url('{src}');
+        background-size: cover;
+        background-color: var(--back-light);"
     />
     {#if badge.icon}
       <div class="badge {badge.size} {badge.position}">
@@ -125,7 +143,7 @@
       height: var(--badge-size);
 
       :global(.material-icons) {
-        font-size: 0.8em;
+        font-size: 0.875em;
       }
     }
     &.medium {
@@ -134,7 +152,7 @@
       height: var(--badge-size);
 
       :global(.material-icons) {
-        font-size: 1.4em;
+        font-size: 1.4444em;
       }
     }
     &.large {
@@ -143,7 +161,7 @@
       height: var(--badge-size);
 
       :global(.material-icons) {
-        font-size: 1.7em;
+        font-size: 1.6666em;
       }
     }
     :global(.material-icons) {
@@ -153,11 +171,16 @@
       background-color: #ffffff;
     }
   }
-  .inactive :global(.user-graphics::before) {
+  :global(.user-graphics::before) {
     content: '';
-    border-radius: 50%;
     width: 100%;
     height: 100%;
-    background-color: rgb(255 255 255 / 70%);
+    background-color: var(--overlay-color);
+    border-radius: 50%;
+    opacity: var(--overlay-opacity);
+  }
+  .inactive :global(.user-graphics::before) {
+    background-color: #fff;
+    opacity: 0.7;
   }
 </style>

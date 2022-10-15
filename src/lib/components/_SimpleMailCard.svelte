@@ -1,114 +1,114 @@
 <script>
-	// @ts-nocheck
+  // @ts-nocheck
 
-	import './_meta.scss';
-	import { localeFormat, isToday, INBOX, SENT } from '$lib/utils';
-	import { onMount, onDestroy, createEventDispatcher } from 'svelte';
-	import UserGraphic from './_UserGraphic.svelte';
-	import { Item, Text, PrimaryText, SecondaryText } from '@smui/list';
-	import { locale } from 'svelte-i18n';
+  import './_meta.scss';
+  import { localeFormat, isToday, INBOX, SENT } from '$lib/utils';
+  import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+  import UserGraphic from './_UserGraphic.svelte';
+  import { Item, Text, PrimaryText, SecondaryText } from '@smui/list';
+  import { locale } from 'svelte-i18n';
 
-	export let selection = null;
-	export let mail;
-	export let type;
-	export { className as class };
+  export let selection = null;
+  export let mail;
+  export let type;
+  export { className as class };
 
-	const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher();
 
-	let userItems = [];
-	let created = '';
-	let className = '';
+  let userItems = [];
+  let created = '';
+  let className = '';
 
-	$: unread = !mail._read;
-	$: dateFormat =
-		$locale.indexOf('de') != -1
-			? isToday(mail.created)
-				? 'HH:mm'
-				: 'dd.MM yy HH:mm'
-			: isToday(mail.created)
-			? 'hh:mm a'
-			: 'yy-MM-dd hh:mm a';
+  $: unread = !mail._read;
+  $: dateFormat =
+    $locale.indexOf('de') != -1
+      ? isToday(mail.created)
+        ? 'HH:mm'
+        : 'dd.MM yy HH:mm'
+      : isToday(mail.created)
+      ? 'hh:mm a'
+      : 'yy-MM-dd hh:mm a';
 
-	$: created = localeFormat(new Date(mail.created), dateFormat);
-	$: mail?.id === selection?.id && (selection = mail);
+  $: created = localeFormat(new Date(mail.created), dateFormat);
+  $: mail?.id === selection?.id && (selection = mail);
 
-	onMount(() => {
-		userItems = type === INBOX ? mail._from : type === SENT ? mail._to : [];
-		setTimeout(() => {}, 100);
-	});
+  onMount(() => {
+    userItems = type === INBOX ? mail._from : type === SENT ? mail._to : [];
+    setTimeout(() => {}, 100);
+  });
 
-	onDestroy(() => {
-		selection = null;
-		userItems = [];
-		dispatch('mail:destroyed');
-	});
+  onDestroy(() => {
+    selection = null;
+    userItems = [];
+    dispatch('mail:destroyed');
+  });
 
-	function focusHandler(e) {
-		selection = mail;
-		if (type === INBOX) {
-			unread && dispatch('mail:toggleRead', { selection, _read: true });
-		}
-	}
+  function focusHandler(e) {
+    selection = mail;
+    if (type === INBOX) {
+      unread && dispatch('mail:toggleRead', { selection, _read: true });
+    }
+  }
 
-	function keydownHandler(e) {
-		const isBackspace = e.key === 'Backspace' || e.keyCode === 8;
-		if (isBackspace) {
-			dispatch('mail:delete', { selection });
-		}
-	}
+  function keydownHandler(e) {
+    const isBackspace = e.key === 'Backspace' || e.keyCode === 8;
+    if (isBackspace) {
+      dispatch('mail:delete', { selection });
+    }
+  }
 </script>
 
 <Item
-	on:focus={(e) => focusHandler(e)}
-	on:keydown={(e) => keydownHandler(e)}
-	class="{className} {mail._read ? 'read' : 'unread'}"
-	selected={selection?.id === mail.id}
-	><div class="staggered">
-		{#each userItems as user, i}
-			<UserGraphic size="30" {user} borderSize style={`z-index: ${10 - i};`} title />
-		{/each}
-	</div>
-	<Text style="flex: 1; align-self: auto;">
-		<PrimaryText style="display: flex;">
-			{#each userItems as user}
-				<span class="mr-3 mail-list" class:unread>{user.name || user.email}</span>
-			{/each}
-		</PrimaryText>
-		<SecondaryText style="display: flex; align-items: baseline; justify-content: center;">
-			<span class="subject">{mail.subject || '--'}</span><span class="date-created">{created}</span>
-		</SecondaryText>
-	</Text>
+  on:focus={(e) => focusHandler(e)}
+  on:keydown={(e) => keydownHandler(e)}
+  class="{className} {mail._read ? 'read' : 'unread'}"
+  selected={selection?.id === mail.id}
+  ><div class="staggered">
+    {#each userItems as user, i}
+      <UserGraphic size="30" {user} style={`z-index: ${10 - i};`} />
+    {/each}
+  </div>
+  <Text style="flex: 1; align-self: auto;">
+    <PrimaryText style="display: flex;">
+      {#each userItems as user}
+        <span class="mr-3 mail-list" class:unread>{user.name || user.email}</span>
+      {/each}
+    </PrimaryText>
+    <SecondaryText style="display: flex; align-items: baseline; justify-content: center;">
+      <span class="subject">{mail.subject || '--'}</span><span class="date-created">{created}</span>
+    </SecondaryText>
+  </Text>
 </Item>
 
 <style>
-	.unread {
-		font-weight: 700;
-	}
-	.mail-list {
-		overflow: hidden;
-		white-space: nowrap;
-		text-overflow: ellipsis;
-		align-self: unset;
-	}
-	.subject {
-		flex: 1 0 60%;
-		padding-right: 10px;
-		overflow: hidden;
-		white-space: nowrap;
-		text-overflow: ellipsis;
-	}
-	.date-created {
-		font-size: 0.8em;
-		flex: 1 0 40%;
-		overflow: hidden;
-		white-space: nowrap;
-		text-overflow: ellipsis;
-		text-align: end;
-	}
-	:global(.next-active) {
-		background: chocolate;
-	}
-	.staggered :global(.user-graphics-outer:not(:first-child)) {
-		margin-left: -36px;
-	}
+  .unread {
+    font-weight: 700;
+  }
+  .mail-list {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    align-self: unset;
+  }
+  .subject {
+    flex: 1 0 60%;
+    padding-right: 10px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .date-created {
+    font-size: 0.8em;
+    flex: 1 0 40%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: end;
+  }
+  :global(.next-active) {
+    background: chocolate;
+  }
+  .staggered :global(.user-graphics-outer:not(:first-child)) {
+    margin-left: -36px;
+  }
 </style>
