@@ -19,7 +19,7 @@
    */
   export let badge = {
     icon: '',
-    position: 'BOTTOM_TIGHT',
+    position: 'BOTTOM_RIGHT',
     color: '#ff0000',
     size: '20'
   };
@@ -55,8 +55,8 @@
     ? extendedBorderColor
     : 'transparent';
   badge.color?.startsWith('--') && (badge.color = `var(${badge.color})`);
-  (badge.icon && (badge.position = badgePosition[badge.position])) || badgePosition['TOP_LEFT'];
 
+  $: (badge.icon && (badge.position = badgePosition[badge.position])) || badgePosition['TOP_LEFT'];
   $: style = `${style} ${sizeVar}`;
   $: (async (user) => {
     if (user?.avatar?.src?.startsWith('http')) {
