@@ -6,33 +6,39 @@
 
   /** @type {import('$lib/types').User} */
   export let user;
-  /** @type {any} */
-  export let dense;
+  export let dense = false;
+  export let inactive = false;
   export let size = '24';
   export let borderSize = '0';
   export let borderColor = '';
   export let extendedBorderSize = '10';
   export let extendedBorderColor = '';
-  /** @type {{color: string, size: number, icon: string, position: string}} */
+
+  /**
+   * @type {{icon: string, position: any, color: string, size: string}}
+   */
   export let badge = {
-    color: '',
-    size: 20,
     icon: '',
-    position: 'TOP_RIGHT'
+    position: 'BOTTOM_TIGHT',
+    color: '#ff0000',
+    size: '20'
   };
   export let style = '';
   export let fallback = '';
-  export let title = false;
+  export let title = user?.role || '';
 
-  const width = size;
-  const height = size;
-  const f = (parseInt(size) * 30) / 100;
-  /** @type {{TOP_RIGHT: string, TOP_LEFT: string, BOTTOM_RIGHT: string, BOTTOM_LEFT: string} | any} */
+  const width = parseInt(size);
+  const height = parseInt(size);
+  const sizeVar = `--size: ${size}px;`;
+
+  /**
+   * @type {{TOP_RIGHT: string, BOTTOM_RIGHT: string, BOTTOM_LEFT: string, TOP_LEFT: string} | any}
+   */
   const badgePosition = {
-    TOP_RIGHT: `top: ${8 - f}px; left:${parseInt(width) - f}px;`,
-    TOP_LEFT: `top:${0 - f}px; left: ${0 - f}px;`,
-    BOTTOM_RIGHT: `top: ${parseInt(width) - f}px; left:${parseInt(width) - f}px;`,
-    BOTTOM_LEFT: `top: ${parseInt(width) - f}px; left:${parseInt(width) - f}px;`
+    TOP_RIGHT: 'tr',
+    BOTTOM_RIGHT: 'br',
+    BOTTOM_LEFT: 'bl',
+    TOP_LEFT: 'tl'
   };
   /** @type {string | undefined}} */
   let src;
@@ -49,7 +55,9 @@
     ? extendedBorderColor
     : 'transparent';
   badge.color?.startsWith('--') && (badge.color = `var(${badge.color})`);
+  (badge.icon && (badge.position = badgePosition[badge.position])) || badgePosition['TOP_LEFT'];
 
+  $: style = `${style} ${sizeVar}`;
   $: (async (user) => {
     if (user?.avatar?.src?.startsWith('http')) {
       Promise.resolve(user.avatar.src).then((val) => (src = val));
@@ -68,10 +76,9 @@
       );
     }
   })(user);
-  $: badge.icon && (badge.position = badgePosition[badge.position] || badgePosition['TOP_RIGHT']);
 </script>
 
-<div class="user-graphics-outer" class:dense {style} title={title ? user?.role : ''}>
+<div class="user-graphics-outer" class:inactive class:dense title={title ? user?.role : ''} {style}>
   {#if src}
     <Graphic
       class="user-graphics relative"
@@ -80,14 +87,14 @@
         : ''}; background-image: url('{src}'); background-size: cover; background-color: var(--back-light);"
     />
     {#if badge.icon}
-      <div class="badge {badge.size}" style={badge.position}>
+      <div class="badge {badge.size} {badge.position}">
         <Icon style="color:{badge.color}" class="material-icons">{badge.icon}</Icon>
       </div>
     {/if}
   {/if}
 </div>
 
-<style>
+<style lang="scss">
   .user-graphics-outer {
     display: inline-block;
     position: relative;
@@ -100,33 +107,57 @@
   }
   .badge {
     position: absolute;
+    &.tr {
+      transform: translate(calc(var(--size) - var(--badge-size)), calc(var(--size) * -1));
+    }
+    &.br {
+      transform: translate(calc(var(--size) - var(--badge-size)), calc(var(--badge-size) * -1));
+    }
+    &.bl {
+      transform: translate(0px, calc(var(--badge-size) * -1));
+    }
+    &.tl {
+      transform: translate(0px, calc(var(--size) * -1));
+    }
+    &.small {
+      --badge-size: 14px;
+      width: var(--badge-size);
+      height: var(--badge-size);
+
+      :global(.material-icons) {
+        font-size: 0.8em;
+      }
+    }
+    &.medium {
+      --badge-size: 18px;
+      width: var(--badge-size);
+      height: var(--badge-size);
+
+      :global(.material-icons) {
+        font-size: 1.3em;
+      }
+    }
+    &.large {
+      --badge-size: 22px;
+      width: var(--badge-size);
+      height: var(--badge-size);
+
+      :global(.material-icons) {
+        font-size: 1.7em;
+      }
+    }
+    :global(.material-icons) {
+      font-size: 1.1em;
+      border-radius: 50%;
+      border-width: 2px;
+      background-color: #ffffff;
+    }
   }
-  .badge:global() {
-    position: absolute;
-    width: 14px;
-    height: 14px;
-  }
-  .badge:global(.medium) {
-    width: 18px;
-    height: 18px;
-  }
-  .badge:global(.large) {
-    width: 22px;
-    height: 22px;
-  }
-  .badge.small :global(.material-icons) {
-    font-size: 0.8em;
-  }
-  .badge :global(.material-icons) {
-    font-size: 1.1em;
+  .inactive :global(.user-graphics::before) {
+    content: '';
     border-radius: 50%;
-    border-width: 2px;
-    background-color: #ffffff;
-  }
-  .badge.medium :global(.material-icons) {
-    font-size: 1.3em;
-  }
-  .badge.large :global(.material-icons) {
-    font-size: 1.7em;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(255 255 255 / 70%);
   }
 </style>

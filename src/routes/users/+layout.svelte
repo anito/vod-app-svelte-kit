@@ -549,38 +549,51 @@
       <p>
         {@html $_('messages.login-will-fail', { values: { name: username } })}
       </p>
-      <div class="reasons">
+      <div class="flex mt-3 mb-3">
         {#each userIssues as issue}
-          <Button
-            style="display: block;"
-            variant="raised"
-            on:click={() => proxyEvent(issue.eventType, { silent: true })}
-          >
-            <Label>{$_(issue.label)}</Label>
-          </Button>
+          <span class="self-center mr-2"><strong>{$_(issue.reason)}:</strong></span>
+          <span>
+            <Button variant="raised" on:click={() => proxyEvent(issue.eventType, { silent: true })}>
+              <Label>{$_(issue.label)}</Label>
+            </Button>
+          </span>
         {/each}
       </div>
+      <p>
+        <a href={magicLink}>{@html $_('text.continue-anyways', { values: { name: username } })}</a>
+      </p>
+    {:else}
+      <p>{@html $_('messages.you-will-be-logged-out', { values: { name: username } })}</p>
     {/if}
-    <div class="absolute" style="top: -20px; right: -40px;">
+    <div class="absolute" style="top: -20px; right: -20px;">
       <UserGraphic
         size="60"
         borderSize="2"
         borderColor="--prime"
         extendedBorderSize="5"
+        dense
         extendedBorderColor="--surface"
         user={currentUser}
+        inactive={!!userIssues.length}
+        badge={{
+          icon: 'change_circle',
+          position: 'BOTTOM_LEFT',
+          size: 'medium'
+        }}
       />
     </div>
-    <p>{@html $_('messages.you-will-be-logged-out', { values: { name: username } })}</p>
   </Content>
   <Actions>
     <Button action="none">
       <Label>{$_('text.cancel')}</Label>
     </Button>
-    <Button variant="unelevated" action="redirect" use={[InitialFocus]}>
-      <Label class="token-button-label"
-        >{hasExpired || !active ? $_('text.continue-anyways') : $_('text.switch-user')}</Label
-      >
+    <Button
+      disabled={userIssues.length}
+      variant="unelevated"
+      action="redirect"
+      use={[InitialFocus]}
+    >
+      <Label class="token-button-label">{$_('text.switch-user')}</Label>
     </Button>
   </Actions>
 </Dialog>
@@ -638,10 +651,6 @@
   }
   :global(.cancel-search) {
     cursor: pointer;
-  }
-  .reasons > :global(*) {
-    display: block;
-    margin: 1em 0;
   }
   .reasons-list {
     list-style: disc;

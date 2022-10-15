@@ -136,7 +136,7 @@
         user
       >
         <UserGraphic
-          borderSize="2"
+          borderSize="1"
           borderColor="--surface"
           size="18"
           dense

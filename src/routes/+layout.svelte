@@ -492,10 +492,10 @@
             {#if $session.user}
               <NavItem title="Avatar" href="/users/{$session.user?.id}?tab=profile">
                 <UserGraphic
+                  size="40"
                   borderSize="3"
                   borderColor="--prime"
                   dense
-                  size="40"
                   user={$session.user}
                   badge={{
                     icon: 'settings',
