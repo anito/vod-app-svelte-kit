@@ -27,7 +27,6 @@
   };
   export let style = '';
   export let fallback = '';
-  export let title = user?.role || '';
 
   const width = parseInt(size);
   const height = parseInt(size);
@@ -64,9 +63,11 @@
   $: sizeVar = `--size: ${size}px;`;
   $: overlayVars =
     (overlayColor && `--overlay-color: ${overlayColor}; --overlay-opacity: ${overlayOpacity}`) ||
-    null;
+    '';
   $: (badge.icon && (badge.position = badgePosition[badge.position])) || badgePosition['TOP_LEFT'];
-  $: style = ((style) => style.trim())(`${style} ${sizeVar} ${overlayVars}`);
+  $: style = ((style) => style.trim().replace(/ +(?= )/g, ''))(
+    `${style} ${sizeVar} ${overlayVars}`
+  );
   $: (async (user) => {
     if (user?.avatar?.src?.startsWith('http')) {
       Promise.resolve(user.avatar.src).then((val) => (src = val));
@@ -87,7 +88,7 @@
   })(user);
 </script>
 
-<div class="user-graphics-outer" class:inactive class:dense title={title ? user?.role : ''} {style}>
+<div class="user-graphics-outer" class:inactive class:dense {style}>
   {#if src}
     <Graphic
       class="user-graphics relative"
