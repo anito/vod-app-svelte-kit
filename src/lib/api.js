@@ -10,7 +10,7 @@ export const base = dev ? `https://physio.mbp/v1` : `https://vod.webpremiere.de/
 
 async function send(atts = {}) {
   if (browser) atts = { fetch: window.fetch, ...atts };
-  const { method, path, token, fetch, data } = { ...atts };
+  const { method, path, token, fetch, data } = { token: atts.data?.token, ...atts };
   let fullpath = path.startsWith('http') ? path : `${base}/${path}`;
 
   const opts = {

@@ -21,7 +21,7 @@ export declare type EventType = keyof GlobalEventHandlersEventMap;
 // export declare type WindowEventType = keyof WindowEventMap;
 // export declare type SpecificWindowEventListener<K extends WindowEventType> = (evt: WindowEventMap[K]) => void;
 
-export interface User<UserType = Record<string, any>> {
+export interface User<UserType = Record<string, void>> {
   name: string;
   email: string;
   id: string;
@@ -30,6 +30,8 @@ export interface User<UserType = Record<string, any>> {
   expires: number;
   token_id: string;
   protected: boolean
+  active: boolean
+  group_id: string
   avatar: Avatar[] | any;
   videos: Video[] | any;
   groups: Group[] | any;

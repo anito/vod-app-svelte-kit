@@ -1,11 +1,11 @@
 <script>
-  // @ts-nocheck
-
   import './_switch.scss';
   import './_button.scss';
   import './_icon_size.scss';
+  import { enhance } from '$app/forms';
   import * as api from '$lib/api';
   import { page } from '$app/stores';
+  import { browser } from '$app/environment';
   import { goto, invalidate, invalidateAll } from '$app/navigation';
   import { getContext, onMount } from 'svelte';
   import Header from './_Header.svelte';
@@ -30,55 +30,81 @@
   const { setFab } = getContext('fab');
   const { open, close } = getContext('default-modal');
   const { getSnackbar, configSnackbar } = getContext('snackbar');
-  const privilegedActions = ['edit', 'pass', 'del'];
-  const userActions = ['edit', 'pass'];
 
+  const EDIT = 'edit';
+  const ADD = 'add';
+  const DEL = 'del';
+  const PASS = 'pass';
+  const privilegedActions = [EDIT, PASS, DEL];
+  const userActions = [EDIT, PASS];
+
+  /** @type {import('.svelte-kit/types/src/routes/$types').PageData} */
+  export let data;
+  /** @type {import('.svelte-kit/types/src/routes/users/[slug]/$types').ActionData} */
+  export let form;
+  /**  @type{string | null} */
   export let selectionUserId;
-  export let selectedMode = 'edit';
+  /**  @type{string | null} */
+  export let selectedMode = EDIT;
 
+  /**  @type{number} */
   let code;
+  /** @type {Element}*/
   let root;
-  let mode = 'edit';
+  /**  @type{boolean} */
   let invalidEmail = false;
+  /**  @type{string} */
   let password = '';
+  /**  @type{string} */
   let repeatedPassword = '';
+  /** @type {import("@smui/snackbar").SnackbarComponentDev} */
   let snackbar;
+  /**  @type{string} */
   let message;
+
+  /** @type {import('@smui/menu').MenuComponentDev} */
   let avatarMenu;
   let avatarMenuAnchor;
   let token = '';
-  let activeLabel;
-  let protectedLabel;
-  let textAreaMagicLink;
+  let activeLabel = '';
+  let protectedLabel = '';
+  /** @type {HTMLInputElement} */
+  let inputElementMagicLink;
+  /** @type {ReturnType <typeof setTimeout>} */
   let copyTimeoutId;
-  let copyButton = (node) => log(node);
+  /** @type {HTMLButtonElement} */
+  let copyButton;
+  /** @param {HTMLButtonElement | any} node */
   let setCopyButton = (node) => (copyButton = node);
+  /** @type {string} */
   let group_id;
   let name = '';
   let email = '';
   let active = false;
   let __protected = false;
+  /** @type {string} */
+  let mode = EDIT;
 
+  $: redirectMode(mode);
   $: selectedMode = $page.url.searchParams.has('mode')
     ? $page.url.searchParams.get('mode')
-    : selectedMode;
+    : (mode = EDIT);
   $: ((mode) => {
-    if (hasPrivileges && mode === 'edit') {
+    if (hasPrivileges && mode !== ADD) {
       setFab('add-user');
     } else {
       setTimeout(() => reset(), 100);
       setFab();
     }
   })(selectedMode);
-  $: selectedMode = mode;
-  $: root?.classList.toggle('user-add-view', selectedMode === 'add');
-  $: root?.classList.toggle('user-edit-view', selectedMode === 'edit');
-  $: root?.classList.toggle('user-password-view', selectedMode === 'pass');
-  $: root?.classList.toggle('user-delete-view', selectedMode === 'del');
+  $: root?.classList.toggle('user-add-view', selectedMode === ADD);
+  $: root?.classList.toggle('user-edit-view', selectedMode === EDIT);
+  $: root?.classList.toggle('user-password-view', selectedMode === PASS);
+  $: root?.classList.toggle('user-delete-view', selectedMode === DEL);
   $: groups = $session.groups || [];
   $: currentUser = ((id) => {
     const user = $users.filter((usr) => usr?.id === id)[0];
-    if (user && selectedMode !== 'add') copy(user);
+    if (user && selectedMode !== ADD) copy(user);
     return user;
   })(selectionUserId);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
@@ -87,16 +113,19 @@
   $: isCurrentSuperuser = currentUser?.role === SUPERUSER;
   $: isProtected = isCurrentSuperuser ? (!isSuperuser ? true : false) : !hasPrivileges;
   $: hidden = currentUser?.id === $session.user?.id;
-  $: userNotFound = selectionUserId && undefined === $users.find((u) => u.id === selectionUserId);
-  $: _name = ((usr) => usr?.name || '')(selectedMode !== 'add' ? currentUser : false);
-  $: _active = ((usr) => usr?.active || false)(selectedMode !== 'add' ? currentUser : false);
-  $: _protected = ((usr) => usr?.protected || false)(selectedMode !== 'add' ? currentUser : false);
-  $: _email = ((usr) => usr?.email || '')(selectedMode !== 'add' ? currentUser : false);
-  $: _group_id = ((usr) => usr?.group_id || void 0)(selectedMode !== 'add' ? currentUser : false);
+  $: notFound =
+    selectedMode !== ADD &&
+    selectionUserId &&
+    undefined === $users.find((u) => u.id === selectionUserId);
+  $: _name = ((usr) => usr?.name || '')(selectedMode !== ADD ? currentUser : false);
+  $: _active = ((usr) => usr?.active || false)(selectedMode !== ADD ? currentUser : false);
+  $: _protected = ((usr) => usr?.protected || false)(selectedMode !== ADD ? currentUser : false);
+  $: _email = ((usr) => usr?.email || '')(selectedMode !== ADD ? currentUser : false);
+  $: _group_id = ((usr) => usr?.group_id || void 0)(selectedMode !== ADD ? currentUser : false);
   $: invalidPassword = password.length < 8;
   $: invalidRepeatedPassword = password !== repeatedPassword || invalidPassword;
   $: canSave =
-    selectedMode === 'add'
+    selectedMode === ADD
       ? name && group_id && !invalidEmail && !invalidRepeatedPassword
       : name !== _name ||
         (email !== _email && !invalidEmail) ||
@@ -111,10 +140,12 @@
     __protected !== _protected ||
     password ||
     repeatedPassword;
-  $: (() => resetPassword())(selectionUserId);
+  $: selectionUserId && resetPassword();
   $: actions = hasPrivileges ? privilegedActions : userActions;
   $: userCan = ((userActions) =>
-    [...actionsLookup].filter((s) => userActions.find((u) => s.action === u)))(actions);
+    [...actionsLookup].filter((userAction) =>
+      userActions.find((usrAction) => userAction.name === usrAction)
+    ))(actions);
   $: ((user) => {
     token = user?.jwt || '';
     activeLabel = (active && $_('text.deactivate-user')) || $_('text.activate-user');
@@ -122,10 +153,12 @@
   })(currentUser);
   $: magicLink = (token && `${$page.url.origin}/login?token=${token}`) || '';
   $: actionsLookup = new Set([
-    { action: 'edit', name: 'text.edit-user' },
-    { action: 'pass', name: 'text.edit-password' },
-    { action: 'del', name: 'text.delete-user' }
+    { name: EDIT, i18n: 'text.edit-user', formAction: 'edit' },
+    { name: PASS, i18n: 'text.edit-password', formAction: 'edit' },
+    { name: DEL, i18n: 'text.delete-user', formAction: 'del' },
+    { name: ADD, i18n: 'text.add-user', formAction: 'add' }
   ]);
+  $: formAction = [...actionsLookup].find((action) => action.name === selectedMode)?.formAction;
 
   onMount(() => {
     root = document.documentElement;
@@ -165,8 +198,18 @@
     );
   };
 
-  async function uploadDoneHandler(e) {
-    const { success, message, data } = { ...e.detail };
+  /** @param {string | any} m */
+  function redirectMode(m = EDIT) {
+    if (browser) {
+      mode = m;
+      $page.url.searchParams.set('mode', mode);
+      goto(`${$page.url.pathname}${$page.url.search}`);
+    }
+  }
+  /** @param {CustomEvent} ev */
+  async function uploadDoneHandler(ev) {
+    /** @type {any} */
+    const { success, message, data } = { ...ev.detail };
 
     if (success) {
       users.put(data);
@@ -190,11 +233,12 @@
     await api
       .del(`avatars/${currentUser.avatar.id}`, { token: $session.user?.jwt, fetch })
       .then(async (res) => {
+        /** @type {any} */
         const { data, success, message } = { ...res };
         msg = message || res.data?.message;
 
         if (success) {
-          users.put({ id: data.id, avatar: data.avatar });
+          users.put({ ...currentUser, id: data.id, avatar: data.avatar });
 
           // also reflect the change in the session cookie
           if ($session.user.id === currentUser.id) {
@@ -227,7 +271,7 @@
           }
 
           configSnackbar(message);
-          snackbar.isOpen && snackbar.close();
+          snackbar.isOpen() && snackbar.close();
           snackbar.open();
         }
       });
@@ -252,32 +296,33 @@
           }
 
           configSnackbar(message);
-          snackbar.isOpen && snackbar.close();
+          snackbar.isOpen() && snackbar.close();
           snackbar.open();
         }
       });
   }
 
+  /** @param {import('$lib/types').User} user */
   function copy(user) {
     ({ name, email, active, group_id, __protected } = { ...user, __protected: !!user.protected });
   }
 
   async function submit() {
     let res, data, path, action;
-    snackbar.isOpen && snackbar.close();
+    snackbar.isOpen() && snackbar.close();
 
     switch (selectedMode) {
-      case 'add':
+      case ADD:
         data = { active, email, name, password, group_id };
         res = await api.post(`users/add`, { data, token: $session.user?.jwt });
         break;
-      case 'edit':
+      case EDIT:
         data = { active, email, name, group_id };
-      case 'pass':
+      case PASS:
         data = data || { password, token };
         res = await api.put(`users/${selectionUserId}`, { data, token: $session.user?.jwt });
         break;
-      case 'del':
+      case DEL:
         if (!confirm($_('messages.permanently-remove-user', { values: { name } }))) return;
         res = await api.del(`users/${selectionUserId}`, { token: $session.user?.jwt });
         break;
@@ -293,7 +338,7 @@
 
       if (res.success) {
         switch (selectedMode) {
-          case 'add':
+          case ADD:
             // fetch users and offer to jump to new user
             const resUsers = await api.get('users', { token: $session.user?.jwt });
             if (resUsers.success) {
@@ -306,15 +351,15 @@
               snackbar.open();
             }
             break;
-          case 'pass':
+          case PASS:
             resetPassword();
-          case 'edit':
+          case EDIT:
             users.put(({ ...data } = { ...res.data }));
 
             configSnackbar(message);
             snackbar.open();
             break;
-          case 'del':
+          case DEL:
             users.del(selectionUserId);
             selectionUserId = null;
 
@@ -349,14 +394,17 @@
     password = repeatedPassword = '';
   }
 
-  function copyToClipBoard(e) {
-    if (textAreaMagicLink) {
-      let didCopy,
-        inputEl,
-        label = copyButton && copyButton.getElementsByClassName('token-button-label').item(0);
-      inputEl = textAreaMagicLink.getElementsByTagName('input').item(0);
-      inputEl.focus();
-      inputEl.select();
+  function copyToClipBoard() {
+    if (inputElementMagicLink) {
+      /** @type {boolean} */
+      let didCopy;
+      /** @type {HTMLInputElement | null} */
+      let inputEl;
+      /** @type {HTMLLabelElement | any} */
+      let label = copyButton.getElementsByClassName('token-button-label').item(0);
+      inputEl = inputElementMagicLink.getElementsByTagName('input').item(0);
+      inputEl?.focus();
+      inputEl?.select();
       didCopy = document.execCommand('copy');
       if (didCopy) {
         label.innerText = $_('text.copied');
@@ -367,15 +415,7 @@
   }
 
   async function closeAddUserHandler() {
-    const searchParams = new URLSearchParams($page.url.searchParams.toString());
-    if (searchParams.has('mode')) {
-      searchParams.set('mode', 'edit');
-    } else {
-      searchParams.append('mode', 'edit');
-    }
-    const search = searchParams.toString();
-
-    await goto(`${$page.url.pathname}?${search}`);
+    redirectMode(EDIT);
   }
 </script>
 
@@ -385,16 +425,18 @@
       <Component variant="sm" extended>
         <div slot="header">
           <Header mdc h="5" style="padding-right: 12rem;">
-            {#if selectedMode === 'add'}
+            {#if selectedMode === ADD}
               {$_('text.create-new-user')}
-            {:else if currentUser}{currentUser.name}{/if}
+              <button on:click={closeAddUserHandler} class="button-close">
+                <Icon class="material-icons" style="vertical-align: middle;">close</Icon>
+              </button>
+            {:else if currentUser}
+              {currentUser.name}
+            {/if}
           </Header>
-          <button on:click={() => closeAddUserHandler()} class="button-close" variant="outlined">
-            <Icon class="material-icons" style="vertical-align: middle;">close</Icon>
-          </button>
         </div>
         <div class="flex flex-shrink flex-wrap height-100" style="height: 100%;">
-          {#if userNotFound}
+          {#if notFound}
             <div class="exception user-not-found">
               <div class="flex justify-center items-center flex-1">
                 <div class="empty-selection">
@@ -403,7 +445,7 @@
               </div>
             </div>
           {:else}
-            {#if selectionUserId && selectedMode !== 'add'}
+            {#if selectionUserId && selectedMode !== ADD}
               <div class="avatar-container" on:click={() => avatarMenu.setOpen(true)}>
                 <div bind:this={avatarMenuAnchor} use:Anchor>
                   <UserGraphic
@@ -413,13 +455,12 @@
                     borderColor="--prime"
                     extendedBorderColor="--back-grid-item"
                     extendedBorderSize="10"
-                    badge={hasCurrentPrivileges && {
-                      icon: 'admin_panel_settings',
+                    badge={{
+                      icon: hasCurrentPrivileges ? 'admin_panel_settings' : '',
                       color: isCurrentSuperuser ? 'rgb(26, 4, 4)' : 'rgb(206, 4, 4)',
                       size: 'large',
                       position: 'BOTTOM_RIGHT'
                     }}
-                    title
                   />
                   <Menu
                     bind:this={avatarMenu}
@@ -443,9 +484,54 @@
                 </div>
               </div>
             {/if}
-            <form on:submit|preventDefault={submit} method="post" class="table">
-              <div class="user-items">
-                {#if selectedMode !== 'add'}
+            <form
+              use:enhance={({ form, data, action, cancel }) => {
+                switch (formAction) {
+                  case 'del': {
+                    if (
+                      !confirm(
+                        $_('messages.permanently-remove-user', {
+                          values: { name: currentUser.name }
+                        })
+                      )
+                    )
+                      cancel();
+                    break;
+                  }
+                }
+
+                return async ({ result, update }) => {
+                  if (result.type === 'success') {
+                    if (result.data?.success) {
+                      switch (formAction) {
+                        case 'add': {
+                          setTimeout(async () => {
+                            await invalidate('/repos/users');
+                            await goto(`/users/${result.data?.data.id}?tab=profile&mode=edit`);
+                          }, 200);
+                          break;
+                        }
+                        case 'edit': {
+                          users.put(result.data.data);
+                          break;
+                        }
+                        case 'del': {
+                          users.del(currentUser.id);
+                          break;
+                        }
+                      }
+                    }
+                    reset();
+                    configSnackbar(result.data?.message || result.data?.data.message);
+                    snackbar.open();
+                  }
+                };
+              }}
+              method="POST"
+              action={`?/${formAction}`}
+            >
+              <div class="user-items h-full">
+                {#if selectedMode !== ADD}
                   <div class="flex justify-between flex-wrap">
                     <div class="select-item item">
                       <Select
@@ -456,13 +542,13 @@
                         variant="filled"
                       >
                         {#each userCan as can}
-                          <Option value={can.action} selected={mode === can.action}>
-                            {$_(can.name)}
+                          <Option value={can.name} selected={mode === can.name}>
+                            {$_(can.i18n)}
                           </Option>
                         {/each}
                       </Select>
                     </div>
-                    {#if selectedMode === 'edit' && hasPrivileges}
+                    {#if selectedMode === EDIT && hasPrivileges}
                       <div class="switches-wrapper">
                         <div class="item flex flex-col items-center">
                           <div class="ml-3" style="flex: 0.5;">
@@ -470,7 +556,7 @@
                               <Switch
                                 class="user-activation"
                                 bind:checked={active}
-                                on:SMUISwitch:change={() => activateUser()}
+                                on:SMUISwitch:change={activateUser}
                               />
                               <span slot="label" class="switch-label">{activeLabel}</span>
                             </FormField>
@@ -482,7 +568,7 @@
                                   <Switch
                                     class="user-protection"
                                     bind:checked={__protected}
-                                    on:SMUISwitch:change={() => changeProtection()}
+                                    on:SMUISwitch:change={changeProtection}
                                   />
                                   <span slot="label" class="switch-label">{protectedLabel}</span>
                                 </FormField>
@@ -494,7 +580,7 @@
                     {/if}
                   </div>
                 {/if}
-                {#if selectedMode === 'add' || selectedMode === 'edit'}
+                {#if selectedMode === ADD || selectedMode === EDIT}
                   <div class="item">
                     <Textfield
                       bind:value={name}
@@ -503,6 +589,7 @@
                       input$aria-controls="helper-text-name"
                       input$aria-describedby="helper-text-name"
                     >
+                      <input type="hidden" name="name" bind:value={name} />
                       <TextfieldIcon slot="leadingIcon" class="material-icons"
                         >contact_page</TextfieldIcon
                       >
@@ -521,6 +608,7 @@
                       updateInvalid
                       input$autocomplete="email"
                     >
+                      <input type="hidden" name="email" bind:value={email} />
                       <TextfieldIcon
                         slot="leadingIcon"
                         class="material-icons"
@@ -535,10 +623,12 @@
                   <div class="item">
                     <Select
                       disabled={!hasPrivileges}
-                      bind:value={group_id}
                       label={$_('text.user-role')}
                       class="select-width"
+                      name="group_id"
+                      bind:value={group_id}
                     >
+                      <input type="hidden" name="group_id" bind:value={group_id} />
                       <SelectIcon slot="leadingIcon" class="material-icons">contact_page</SelectIcon
                       >
                       {#each groups as group}
@@ -549,17 +639,19 @@
                     </Select>
                   </div>
                 {/if}
-                {#if selectedMode === 'add' || selectedMode === 'pass'}
+                {#if selectedMode === ADD || selectedMode === PASS}
                   <div class="item">
                     <Textfield
                       type="password"
                       bind:invalid={invalidPassword}
                       bind:value={password}
                       label={$_('text.password')}
+                      name="password"
                       input$aria-controls="helper-password"
                       input$aria-describedby="helper-password"
                       style="min-width: 250px;"
                     >
+                      <input type="hidden" name="password" bind:value={password} />
                       <TextfieldIcon slot="leadingIcon" class="material-icons"
                         >fingerprint</TextfieldIcon
                       >
@@ -587,25 +679,18 @@
                     </Textfield>
                   </div>
                 {/if}
-                {#if selectedMode === 'add' || selectedMode === 'edit' || selectedMode === 'pass'}
+                {#if selectedMode === ADD || selectedMode === EDIT || selectedMode === PASS}
                   <div class="item">
                     <div class="button-group">
                       <Group>
-                        {#if selectedMode !== 'pass'}
-                          <Button disabled={!canSave} color="primary" variant="unelevated">
-                            <Label>{$_('text.save')}</Label>
-                            <Icon class="material-icons">save</Icon>
-                          </Button>
-                        {:else}
-                          <Button
-                            disabled={invalidRepeatedPassword}
-                            color="primary"
-                            variant="unelevated"
-                          >
-                            <Label>{$_('text.save')}</Label>
-                            <Icon class="material-icons">save</Icon>
-                          </Button>
-                        {/if}
+                        <Button
+                          disabled={selectedMode === PASS ? invalidRepeatedPassword : !canSave}
+                          color="primary"
+                          variant="unelevated"
+                        >
+                          <Label>{$_('text.save')}</Label>
+                          <Icon class="material-icons">save</Icon>
+                        </Button>
                         <Button
                           disabled={!canReset}
                           type="reset"
@@ -620,7 +705,7 @@
                     </div>
                   </div>
                 {/if}
-                {#if selectedMode === 'del'}
+                {#if selectedMode === DEL}
                   <div class="item">
                     <div class="alert mt-3" role="alert">
                       <div class="mdc-theme-error-bg rounded-t px-4 py-2">
@@ -639,19 +724,14 @@
                   </div>
                 {/if}
                 {#if !selectedMode}
-                  <div class="exception no-selection">
-                    <Paper color="primary">
-                      <Title style="color: var(--text-light)">
-                        {$_('text.select-edit-mode')}
-                        {selectedMode}
-                      </Title>
-                    </Paper>
+                  <div class="exception empty-selection">
+                    <span style="text-align: center;">{$_('text.empty-edit-mode')}</span>
                   </div>
                 {/if}
               </div>
             </form>
           {/if}
-          {#if currentUser && hasPrivileges && selectedMode !== 'add'}
+          {#if currentUser && hasPrivileges && selectedMode !== ADD}
             <div class="table-wrapper">
               <div class="token-factory" class:no-token={!token}>
                 <div class="main-info">
@@ -662,7 +742,7 @@
                         variant="raised"
                         disabled={isProtected}
                         on:click={() =>
-                          isProtected || proxyEvent('INFO:token:Generate', { open: !!token })}
+                          !isProtected && proxyEvent('INFO:token:Generate', { open: !!token })}
                       >
                         <Icon class="material-icons">link</Icon>
                         <Label class="token-button-label">
@@ -674,7 +754,7 @@
                         label={$_('text.can-not-remove-admin-token')}
                         variant="raised"
                         on:click={() =>
-                          isProtected || proxyEvent('INFO:token:Remove', { open: true })}
+                          !isProtected && proxyEvent('INFO:token:Remove', { open: true })}
                       >
                         <Icon class="material-icons">link_off</Icon>
                         <Label class="token-button-label">{$_('text.remove-token')}</Label>
@@ -694,7 +774,7 @@
                           <Button
                             disabled={isProtected || hidden}
                             class="action-magic-link"
-                            on:click={() => isProtected || proxyEvent('INFO:token:Redirect')}
+                            on:click={() => !isProtected && proxyEvent('INFO:token:Redirect')}
                             variant="outlined"
                           >
                             <Icon class="material-icons">link</Icon>
@@ -712,7 +792,10 @@
                           </Button>
                           <Button
                             class="input"
-                            use={[(node) => (textAreaMagicLink = node)]}
+                            use={[
+                              /** @param {HTMLInputElement | any} node */ (node) =>
+                                (inputElementMagicLink = node)
+                            ]}
                             disabled={isProtected || !token}
                             variant="outlined"
                           >
@@ -723,7 +806,7 @@
                             class="action-copy"
                             disabled={isProtected || !token}
                             variant="unelevated"
-                            on:click={(e) => isProtected || copyToClipBoard(e)}
+                            on:click={(e) => !isProtected && copyToClipBoard()}
                           >
                             <Icon class="material-icons">file_copy</Icon>
                             <Label class="token-button-label">

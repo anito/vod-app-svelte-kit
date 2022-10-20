@@ -282,7 +282,7 @@
   }
 
   function getSearchParams() {
-    const omit = ['mode'];
+    const omit = [];
     const searchParamsString = $page.url.searchParams.toString();
     const searchParams = new URLSearchParams(searchParamsString);
     omit.forEach((key) => {

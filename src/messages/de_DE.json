@@ -226,7 +226,8 @@
     "new-message-from-user": "Neue Nachricht  von <strong>{name}</strong>",
     "one-moment": "Einen Moment...",
     "welcome": "Willkommen",
-    "change-account": "Konto wechseln"
+    "change-account": "Konto wechseln",
+    "empty-edit-mode": "Kein Bearbeitungsmodus ausgewählt"
   },
   "summary": {
     "copy-link": {

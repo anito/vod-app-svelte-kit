@@ -8,7 +8,12 @@
   import { users, slim, sitename, session } from '$lib/stores';
   import { proxyEvent, INBOX, ADMIN, SUPERUSER, TABS, log } from '$lib/utils';
   import { _ } from 'svelte-i18n';
-  import { browser } from '$app/environment';
+
+  /** @type {import('./$types').PageData} */
+  export let data;
+
+  /** @type {import('./$types').ActionData} */
+  export let form;
 
   /**  * @type {string} */
   let selectedMode = 'edit';
@@ -161,6 +166,8 @@
       on:open:InfoDialog
       {selectedMode}
       {selectionUserId}
+      {data}
+      {form}
     />
   {/if}
   {#if tab === TABS[2]}

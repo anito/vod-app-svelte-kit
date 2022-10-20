@@ -4,6 +4,8 @@ import { sessionCookie } from '$lib/stores';
 
 /** @type {import('$lib/types').User} */
 let user;
+/** @type {import('$lib/types').Group[]} */
+let groups = [];
 
 function createStore() {
   return derived(
@@ -19,6 +21,7 @@ function createStore() {
       },
       user,
       role: '',
+      groups,
       _expires: new Date().toISOString(),
       message: '',
       code: 200,

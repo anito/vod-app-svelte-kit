@@ -264,7 +264,7 @@
   }
 
   function handleSuccess(res, msg) {
-    snackbar.isOpen && snackbar.close();
+    snackbar.isOpen() && snackbar.close();
     users.put(res.data);
 
     message = msg || res.message || res.data.message;
@@ -274,7 +274,7 @@
 
   function handleError(res) {
     let path, code;
-    snackbar.isOpen && snackbar.close();
+    snackbar.isOpen() && snackbar.close();
 
     message = res?.message || res?.data?.message || res?.statusText;
     code = res.data?.code || res.status;
