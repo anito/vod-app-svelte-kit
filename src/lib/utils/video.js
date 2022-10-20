@@ -33,7 +33,6 @@ export function posterRemoveHandler() {
 
 /** @param {string} image_id */
 function selectPoster(image_id) {
-  console.log(selectedVideo);
   if (selectedVideo) {
     if (selectedVideo.image_id != image_id) {
       videoEmitter.dispatch({
