@@ -30,10 +30,10 @@
     padding: var(--nav-h) 0 0 0;
   }
   :global(.grid-item.has-background.content) {
-    background: var(--background, --prime);
+    background: var(--background, --primary);
   }
   :global(.grid-item.has-background.side) {
-    background: var(--background, --second);
+    background: var(--background, --secondary);
   }
   :global(.grid-item.has-background.footer) {
     background: var(--background, --flash);
@@ -93,7 +93,7 @@
     grid-area: ad;
   }
   .layout-grid :global(.inner-grid) {
-    background-color: var(--back);
+    background-color: var(--background);
   }
 
   @media (min-width: 900px) {

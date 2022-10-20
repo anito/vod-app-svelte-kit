@@ -698,7 +698,7 @@
     --inline-controls-inside-margin: 6px;
     --fullscreen-controls-bar-height: 75px;
     --primary-glyph-color: rgba(255, 255, 255, 0.75);
-    --secondary-glyph-color: rgba(255, 255, 255, 0.55);
+    --secondaryary-glyph-color: rgba(255, 255, 255, 0.55);
   }
 
   :host(audio),
@@ -1116,7 +1116,7 @@
   }
 
   .tracks-panel section {
-    border-top: 2px solid var(--secondary-glyph-color);
+    border-top: 2px solid var(--secondaryary-glyph-color);
     will-change: transform;
   }
 

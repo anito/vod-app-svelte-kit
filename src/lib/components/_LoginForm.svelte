@@ -337,7 +337,7 @@
     text-align: center;
     height: 30px;
     border-radius: 15px;
-    color: var(--prime);
+    color: var(--primary);
     font-size: 12px;
     flex-basis: 20%;
     width: 50%;

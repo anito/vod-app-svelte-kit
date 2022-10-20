@@ -193,10 +193,10 @@
     width: 1.5rem;
     height: 1.5rem;
     border: 0;
-    color: var(--on-prime);
+    color: var(--on-primary);
     border-radius: 1.5rem;
-    background: var(--prime);
-    box-shadow: 0 0 0 1px var(--on-prime);
+    background: var(--primary);
+    box-shadow: 0 0 0 1px var(--on-primary);
     transition: transform 0.2s cubic-bezier(0.25, 0.1, 0.25, 1),
       background 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
     -webkit-appearance: none;
@@ -210,7 +210,7 @@
     top: 50%;
     width: 1rem;
     height: 1px;
-    background: var(--on-prime);
+    background: var(--on-primary);
     transform-origin: center;
     transition: height 0.2s cubic-bezier(0.25, 0.1, 0.25, 1),
       background 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -228,13 +228,13 @@
     left: 0.25rem;
   }
   .close:hover {
-    color: var(--prime);
-    background: var(--on-prime);
+    color: var(--primary);
+    background: var(--on-primary);
   }
   .close:hover:before,
   .close:hover:after {
     height: 2px;
-    background: var(--prime);
+    background: var(--primary);
   }
   .close:focus {
     border-color: #3399ff;

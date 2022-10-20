@@ -238,7 +238,7 @@
           ...working,
           template: {
             slug: currentTemplate.slug,
-            themeVars: [{ '--prime': '#ad1457' }],
+            themeVars: [{ '--primary': '#ad1457' }],
             data
           }
         },
@@ -926,7 +926,7 @@
     grid-template-columns: 4fr 4fr;
     grid-template-rows: auto;
     align-items: initial;
-    background-color: var(--back);
+    background-color: var(--background);
     overflow: auto;
   }
   .mail {
@@ -956,7 +956,7 @@
       'toolbar toolbar'
       'one two';
     grid-template-columns: 2fr 3fr;
-    grid-template-rows: 38px auto;
+    grid-template-rows: 48px auto;
     grid-gap: var(--grid-gap);
     height: 100%;
   }

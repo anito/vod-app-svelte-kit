@@ -7,7 +7,7 @@
 	$primary: color-palette.$pink-800,
 	$secondary: color-palette.$light-blue-400,
 	$background: color-palette.$grey-300,
-	$surface: #e0e9ee,
+	$surface: #ffffff,
 	$error: color-palette.$deep-orange-a700,
 	$on-primary: color-palette.$pink-50,
 	$on-secondary: color-palette.$light-blue-50,
@@ -25,12 +25,12 @@ $mdc-typography-font-family: var(--font, 'sans-serif');
 }
 
 .theme-default, ::before, ::after {
-	--prime: #{theme.$primary};
-	--on-prime: #{theme.$on-primary};
-	--second: #{theme.$secondary};
-	--on-second: #{theme.$on-secondary};
+	--primary: #{theme.$primary};
+	--on-primary: #{theme.$on-primary};
+	--secondary: #{theme.$secondary};
+	--on-secondary: #{theme.$on-secondary};
 	--surface: #{theme.$surface};
 	--on-surface: #{theme.$on-surface};
 	--error: #{theme.$error};
-	--back: #{theme.$background};
+	--background: #{theme.$background};
 }

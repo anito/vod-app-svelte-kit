@@ -10,6 +10,7 @@
   import { session, settings, users, videoEmitter } from '$lib/stores';
   import { _ } from 'svelte-i18n';
 
+  /** @type {import('$lib/types').Video} */
   export let video;
   export let title = '';
   export let description = '';
@@ -99,7 +100,7 @@
       if (Math.round(video.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
       videoEmitter.dispatch({
         method: 'put',
-        data: { ...video, playhead }
+        data: { id: video.id, playhead }
       });
     } else if (video) {
       if (Math.round(joinData.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;

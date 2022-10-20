@@ -147,7 +147,7 @@
           dense
           style="margin-right: 10px;"
           user={currentUser}
-          overlayColor="--prime"
+          overlayColor="--primary"
           overlayOpacity={0.3}
         />
         <Label>{$_('text.change-account')}</Label>

@@ -70,8 +70,8 @@
   --warning-200: #ffbfa9;
   --warning-100: #ffd1c2;
   --info: #536b86;
-  --success: var(--prime);
-  --heading: var(--second);
+  --success: var(--primary);
+  --heading: var(--secondary);
   --text: #444;
   --text-light: #ebebeb;
   --text-grey: #a5a5a5;
@@ -83,17 +83,17 @@
 
   --mdc-typography-font-family: var(--font);
 
-  --mdc-theme-primary: var(--prime);
-  --mdc-theme-on-primary: var(--on-prime);
-  --mdc-theme-secondary: var(--second);
-  --mdc-theme-on-secondary: var(--on-second);
+  --mdc-theme-primary: var(--primary);
+  --mdc-theme-on-primary: var(--on-primary);
+  --mdc-theme-secondary: var(--secondary);
+  --mdc-theme-on-secondary: var(--on-secondary);
   --mdc-theme-error: var(--error);
-  --mdc-theme-background: var(--back);
-  --mdc-theme-surface: var(--back-white);
+  --mdc-theme-background: var(--background);
+  --mdc-theme-surface: var(--surface);
 
-  --drp-theme-primary: var(--prime);
+  --drp-theme-primary: var(--primary);
   --drp-theme-selection: #c98fbd;
-  --drp-theme-readout-bg: var(--prime);
+  --drp-theme-readout-bg: var(--primary);
   --drp-theme-readout-c: var(--text-light);
   --drp-theme-border-c: none;
   --drp-theme-border-r: 0;
@@ -163,7 +163,7 @@ a:active {
 /*	typography ----------------------------- */
 body {
   font: 300 var(--h4) / var(--lh) var(--font);
-  background-color: var(--back);
+  background-color: var(--background);
   color: var(--text);
 
   /* default spacing of Overpass is a bit too airy */
@@ -255,7 +255,7 @@ details summary {
 /*	opinionated styles --------------------- */
 
 li:not(.white) > h2 {
-  color: var(--second);
+  color: var(--secondary);
 }
 blockquote {
   position: relative;
@@ -367,7 +367,7 @@ html a.no-underline {
   position: absolute;
   margin-top: 0.6875rem;
   margin-left: -1.125rem;
-  background-color: var(--second);
+  background-color: var(--secondary);
   width: 0.375rem;
   height: 0.375rem;
   border-radius: 2px;
@@ -504,7 +504,7 @@ figcaption,
   color: var(--prime);
 }
 .second {
-  color: var(--second);
+  color: var(--secondary);
 }
 .flash {
   color: var(--flash);
@@ -517,16 +517,16 @@ figcaption,
 }
 
 .back {
-  background-color: var(--back);
+  background-color: var(--background);
 }
 .back-light {
   background-color: var(--back-light);
 }
 .bg-prime {
-  background-color: var(--prime);
+  background-color: var(--primary);
 }
 .bg-second {
-  background-color: var(--second);
+  background-color: var(--secondary);
 }
 .bg-alt {
   background-color: var(--alt);
@@ -554,7 +554,7 @@ i.button {
   vertical-align: baseline;
 }
 .breadcrumb-container {
-  color: var(--back);
+  color: var(--background);
 }
 [slot="footer"] {
   color: var(--text-light-grey);

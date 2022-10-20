@@ -37,6 +37,6 @@
 
 <style>
   [aria-current='true'] {
-    color: var(--prime);
+    color: var(--primary);
   }
 </style>

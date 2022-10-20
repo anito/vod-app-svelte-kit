@@ -1,41 +1,44 @@
-// @ts-nocheck
-import { images, currentVideo, videoEmitter } from '../stores';
+import { images, derivedCurrentVideo, videoEmitter } from '../stores';
 
+/**
+ * @type {import('$lib/types').Video | null}
+ */
 let selectedVideo;
-currentVideo.subscribe((video) => (selectedVideo = video));
+derivedCurrentVideo.subscribe((video) => (selectedVideo = video));
 
-export function posterCreatedHandler(e) {
-  let { data } = { ...e.detail };
+/** @param {CustomEvent} ev */
+export function posterCreatedHandler(ev) {
+  /** @type {any} */
+  let { data } = { ...ev.detail };
   if (data.length) {
     images.add(data);
     selectPoster(data[0].id);
   }
 }
 
-export function posterSelectedHandler(e) {
-  selectPoster(e.detail);
+/** @param {CustomEvent} ev */
+export function posterSelectedHandler(ev) {
+  selectPoster(ev.detail);
 }
 
 export function posterRemoveHandler() {
   if (selectedVideo) {
-    selectedVideo.image = null;
-    selectedVideo.image_id = null;
     videoEmitter.dispatch({
       method: 'put',
-      data: selectedVideo,
+      data: { id: selectedVideo.id, image_id: null, image: null },
       show: true
     });
   }
 }
 
-function selectPoster(id) {
+/** @param {string} image_id */
+function selectPoster(image_id) {
+  console.log(selectedVideo);
   if (selectedVideo) {
-    if (selectedVideo.image_id != id) {
-      selectedVideo.image = null;
-      selectedVideo.image_id = id;
+    if (selectedVideo.image_id != image_id) {
       videoEmitter.dispatch({
         method: 'put',
-        data: selectedVideo,
+        data: { id: selectedVideo.id, image_id, image: null },
         show: true
       });
     }

@@ -52,9 +52,12 @@ export interface Video<VideoType = Record<string, never>> {
   id: string | any
   title: string
   description: string | never
+  image: Image | any
   image_id: string | any
   playhead: number | any
   _joinData: any[] | any
+  _matchingData: any[] | any
+  created: Date
 }
 
 export interface Image<ImageType = Record<string, any>> {

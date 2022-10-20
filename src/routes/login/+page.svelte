@@ -117,7 +117,7 @@
   }
   .message {
     margin: 0 auto;
-    color: var(--prime);
+    color: var(--primary);
   }
   .message .headline {
     max-width: 400px;

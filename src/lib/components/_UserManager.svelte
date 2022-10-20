@@ -206,6 +206,7 @@
       goto(`${$page.url.pathname}${$page.url.search}`);
     }
   }
+
   /** @param {CustomEvent} ev */
   async function uploadDoneHandler(ev) {
     /** @type {any} */
@@ -372,13 +373,17 @@
             </div>
           {:else}
             {#if selectionUserId && selectedMode !== ADD}
-              <div class="avatar-container" on:click={() => avatarMenu.setOpen(true)}>
+              <div
+                class="avatar-container"
+                on:keydown={() => {}}
+                on:click={() => avatarMenu.setOpen(true)}
+              >
                 <div bind:this={avatarMenuAnchor} use:Anchor>
                   <UserGraphic
                     size="100"
                     user={currentUser}
                     borderSize="4"
-                    borderColor="--prime"
+                    borderColor="--primary"
                     extendedBorderColor="--back-grid-item"
                     extendedBorderSize="10"
                     badge={{
@@ -808,7 +813,7 @@
     grid-template-columns: 4fr 4fr;
     grid-template-rows: auto;
     align-items: initial;
-    background-color: var(--back);
+    background-color: var(--background);
     overflow: auto;
   }
   form {
@@ -926,7 +931,7 @@
     align-items: center;
     font-size: 0.9em;
     border: 1px solid #c8dbe3;
-    background: var(--surface);
+    background: #e0e9ee;
     color: #c8dbe3;
   }
   :global(.user-add-view) .button-close {

@@ -6,7 +6,7 @@ function createStore() {
   return {
     subscribe,
     update,
-    dispatch: (/** @type {import('$lib/types').VideoEmitter} */ val) => update(() => val),
+    dispatch: (/** @type {import('$lib/types').VideoEmitter | any} */ val) => update(() => val),
     set
   };
 }

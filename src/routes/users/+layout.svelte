@@ -357,7 +357,7 @@
         </List>
       {:else}
         <div class="loader flex justify-center">
-          <SvgIcon name="animated-loader-3" size="50" fillColor="var(--prime)" class="mr-2" />
+          <SvgIcon name="animated-loader-3" size="50" fillColor="var(--primary)" class="mr-2" />
         </div>
       {/if}
     </Component>
@@ -565,29 +565,29 @@
     {:else}
       <p>{@html $_('messages.you-will-be-logged-out', { values: { name: username } })}</p>
     {/if}
-    <div class="absolute" style="z-index: 1; top: -20px; right: -20px;">
+    <div class="absolute" style="z-index: 1; top: -11px; right: -6px;">
       <UserGraphic
-        size="60"
+        size="40"
         borderSize="2"
-        borderColor="--prime"
-        extendedBorderSize="5"
-        dense
+        borderColor="--primary"
+        extendedBorderSize="6"
         extendedBorderColor="--surface"
+        dense
         user={currentUser}
         inactive={!!userIssues.length}
         badge={{
           icon: 'swap_horiz',
           position: 'BOTTOM_LEFT',
-          size: 'medium'
+          size: 'small'
         }}
       />
     </div>
     <div class="absolute" style="z-index: 0; top: -7px; right: 23px;">
       <UserGraphic
-        size="45"
+        size="35"
         borderSize="2"
-        borderColor="--prime"
-        extendedBorderSize="4"
+        borderColor="--primary"
+        extendedBorderSize="6"
         dense
         extendedBorderColor="--surface"
         user={$session.user}

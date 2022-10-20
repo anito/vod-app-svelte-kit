@@ -1,4 +1,4 @@
-import { videos, images } from '$lib/stores';
+import { users, videos, images } from '$lib/stores';
 
 /** @type {import('./$types').LayoutLoad} */
 export async function load({ fetch, parent }) {
@@ -18,6 +18,15 @@ export async function load({ fetch, parent }) {
     })
     .then((res) => {
       images.update(res.images);
+    })
+    .catch((reason) => console.error(reason));
+
+  await fetch('/repos/users')
+    .then(async (res) => {
+      if (res.ok) return await res.json();
+    })
+    .then((res) => {
+      users.update(res.users);
     })
     .catch((reason) => console.error(reason));
 

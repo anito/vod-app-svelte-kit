@@ -26,7 +26,7 @@
     justify-content: space-between;
     flex: 1 1 auto;
     color: var(--text-grey);
-    background: var(--back);
+    background: var(--background);
     height: var(--page-bar);
   }
 </style>

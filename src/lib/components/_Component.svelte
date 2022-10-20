@@ -39,13 +39,13 @@
     justify-content: center;
     flex-direction: column;
     width: 100%;
-    color: var(--on-prime);
+    color: var(--on-primary);
   }
   .component::before {
     content: '';
     display: flex;
     margin-top: 0px;
-    background-color: var(--prime, rgb(179, 116, 1));
+    background-color: var(--primary, rgb(179, 116, 1));
     position: relative;
     z-index: auto;
   }

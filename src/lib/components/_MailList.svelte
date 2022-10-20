@@ -94,7 +94,7 @@
 {#if currentStore}
   {#await waitForData}
     <div class="loader flex justify-center">
-      <SvgIcon name="animated-loader-3" size="50" fillColor="var(--prime)" class="mr-2" />
+      <SvgIcon name="animated-loader-3" size="50" fillColor="var(--primary)" class="mr-2" />
     </div>
   {:then mails}
     <List

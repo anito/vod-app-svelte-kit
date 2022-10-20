@@ -175,8 +175,8 @@
   }
   .banner {
     grid-area: banner;
-    background-color: var(--prime);
-    color: var(--back);
+    background-color: var(--primary);
+    color: var(--background);
     height: 80px;
     display: flex;
     align-items: center;

@@ -111,7 +111,7 @@
   /**
    * @type {string}
    */
-  let loaderColor = 'var(--prime)';
+  let loaderColor = 'var(--primary)';
   /**
    * @type {string}
    */
@@ -243,8 +243,8 @@
   function initStyles() {
     let styles = window.getComputedStyle(root);
     theme.set({
-      primary: styles.getPropertyValue('--prime'),
-      secondary: styles.getPropertyValue('--second')
+      primary: styles.getPropertyValue('--primary'),
+      secondary: styles.getPropertyValue('--secondary')
     });
   }
 
@@ -494,12 +494,12 @@
                 <UserGraphic
                   size="40"
                   borderSize="3"
-                  borderColor="--prime"
+                  borderColor="--primary"
                   dense
                   user={$session.user}
                   badge={{
                     icon: 'settings',
-                    color: '--prime',
+                    color: '--primary',
                     size: 'small',
                     position: 'BOTTOM_RIGHT'
                   }}
@@ -509,7 +509,7 @@
               <NavItem title="Avatar">
                 <UserGraphic
                   borderSize="3"
-                  borderColor="--prime"
+                  borderColor="--primary"
                   dense
                   size="40"
                   fallback={person}

@@ -234,7 +234,7 @@
   }
 
   function timeRemaining(video) {
-    if (!(video._joinData && video._joinData.end)) return 0;
+    if (!video._joinData?.end) return 0;
     let end = new Date(video._joinData.end).toISOString();
     let now = new Date().toISOString();
     return Math.max(0, new Date(end) - new Date(now));
@@ -622,7 +622,7 @@
     grid-template-columns: 4fr 4fr;
     grid-template-rows: auto;
     align-items: initial;
-    background-color: var(--back);
+    background-color: var(--background);
     overflow: auto;
   }
   .grid-item {

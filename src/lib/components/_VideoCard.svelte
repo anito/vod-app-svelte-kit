@@ -1,9 +1,6 @@
 <script>
-  // @ts-nocheck
-
   import './_button.scss';
   import './_menu-surface.scss';
-  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { getContext, createEventDispatcher } from 'svelte';
   import { fly } from 'svelte/transition';
@@ -20,6 +17,7 @@
   import List, { Item, Separator, Text } from '@smui/list';
   import { _, locale } from 'svelte-i18n';
 
+  /** @type {import('$lib/types').Video} */
   export let video;
   export { className as class };
   export let key = 'default-modal';
@@ -27,13 +25,19 @@
   const uploader = getContext(key);
 
   let className = '';
+  /** @type {import('@smui/menu').MenuComponentDev} */
   let cardMenu;
+  /** @type {import('@smui/menu').MenuComponentDev} */
   let deleteMenu;
   let dispatch = createEventDispatcher();
+  /** @type {import('@smui/menu-surface').MenuSurfaceComponentDev} */
   let imageList;
+  /** @type {HTMLDivElement} */
   let imageListAnchor;
   let isEditMode = false;
+  /** @type {string} */
   let title;
+  /** @type {string} */
   let description;
   let dateOptions = {
     day: '2-digit',
@@ -54,11 +58,10 @@
   $: canSave = description !== video.description || title !== video.title;
 
   function save() {
-    video.title = title;
-    video.description = description;
+    const data = { id: video.id, title, description };
     videoEmitter.dispatch({
       method: 'put',
-      data: video,
+      data,
       show: true
     });
     isEditMode = false;
@@ -71,19 +74,25 @@
     return true;
   }
 
-  function setDeleteMenuOpen(bol) {
-    deleteMenu.setOpen(bol);
+  /**
+   * @param {boolean} open
+   */
+  function setDeleteMenuOpen(open) {
+    deleteMenu.setOpen(open);
     return false;
   }
 
   function del() {
     videoEmitter.dispatch({
       method: 'del',
-      data: video,
+      data: { id: video.id },
       show: true
     });
   }
 
+  /**
+   * @param {any} type
+   */
   function createPoster(type) {
     uploader.open(
       MediaUploader,
@@ -107,6 +116,7 @@
     );
   }
 
+  /** @param {string} id */
   function getCachedImage(id) {
     let res = getMedia('IMAGE', id, user, {
       width: 100,
@@ -116,27 +126,28 @@
     return res;
   }
 
-  function uploadDoneHandler(e) {
-    dispatch('Video:posterCreated', e.detail);
+  /** @param {CustomEvent} ev */
+  function uploadDoneHandler(ev) {
+    dispatch('Video:posterCreated', ev.detail);
     uploader.close();
   }
 
-  function imageListOpenedHandler(e) {
+  function imageListOpenedHandler() {
     isImageListOpen = true;
   }
 
-  function imageListClosedHandler(e) {
+  function imageListClosedHandler() {
     isImageListOpen = false;
   }
 
-  function cardMenuOpenedHandler(e) {
+  function cardMenuOpenedHandler() {
     $currentVideo !== video && currentVideo.set(video);
   }
 </script>
 
 <Card class="card {className}">
-  <PrimaryAction onclick={(e) => $currentVideo.set(video)}>
-    <VideoMedia {video} bind:title bind:description {isEditMode} curtain />
+  <PrimaryAction onclick={() => $currentVideo.set(video)}>
+    <VideoMedia {video} bind:title bind:description {isEditMode} />
     <Content class="mdc-typography--body2">
       <div class="wrapper flex flex-row justify-between">
         <div class="flex flex-col" style="flex-basis: 50%; max-width: 50%">

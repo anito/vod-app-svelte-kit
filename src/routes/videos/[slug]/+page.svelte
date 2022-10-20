@@ -18,11 +18,10 @@
   let canPlay;
 
   $: video = $videos.find((v) => v.id === $page.params.slug);
-  $: loggedInUser = $users.find((user) => user.id == $session.user?.id);
-  $: currentUser = loggedInUser || currentUser;
-  $: hasPrivileges = currentUser?.role === ADMIN || currentUser?.role === SUPERUSER;
-  $: joinData = currentUser?.videos.find((v) => video?.id == v.id)?._joinData;
-  $: token = currentUser?.jwt;
+  $: user = $users.find((user) => user.id == $session.user?.id);
+  $: hasPrivileges = user?.role === ADMIN || user?.role === SUPERUSER;
+  $: joinData = user?.videos.find((v) => video?.id == v.id)?._joinData;
+  $: token = user?.jwt;
   $: ((time) => {
     if (!paused || !canPlay) return;
     let pauseTime = time;
@@ -83,19 +82,18 @@
     canPlay = false;
   }
 
+  /** @param {string} id */
   async function savePlayhead() {
     if (!canPlay) return;
     if (hasPrivileges) {
       if (Math.round(video.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
       videoEmitter.dispatch({
         method: 'put',
-        data: { ...video, playhead }
+        data: { id: video.id, playhead }
       });
     } else {
       if (Math.round(joinData.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
-      let associated = currentUser.videos
-        .filter((v) => v.id != video.id)
-        .map((v) => ({ id: v.id }));
+      let associated = user.videos.filter((v) => v.id != video.id).map((v) => ({ id: v.id }));
       let data = {
         videos: [
           {
@@ -111,7 +109,7 @@
   }
 
   async function saveUser(data) {
-    await api.put(`users/${currentUser.id}`, { data, token }).then((res) => {
+    await api.put(`users/${user.id}`, { data, token }).then((res) => {
       res.success && users.put(res.data);
     });
   }

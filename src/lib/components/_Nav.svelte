@@ -212,7 +212,7 @@
   }
 
   .primary > :global(li.nav-item.active a) {
-    color: var(--prime);
+    color: var(--primary);
   }
 
   .modal-background {
