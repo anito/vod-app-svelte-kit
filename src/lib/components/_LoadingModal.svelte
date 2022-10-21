@@ -21,15 +21,11 @@
    */
   const pathnames = [];
 
-  /**
-   * @type {HTMLElement}
-   */
+  /** @type {HTMLElement} */
   let root;
-  let disabled = false;
-  /**
-   * @type {ReturnType<typeof setTimeout>}
-   */
+  /** @type {ReturnType<typeof setTimeout>} */
   let timeoutId;
+  let disabled = false;
   let omitt = new Map([
     [
       SUPRESS_SEARCHES_KEY,

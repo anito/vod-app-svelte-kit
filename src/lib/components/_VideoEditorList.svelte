@@ -1,6 +1,4 @@
 <script>
-  // @ts-nocheck
-
   import { getContext, onMount } from 'svelte';
   import { videos } from '$lib/stores';
   import { Modal, VideoCard } from '$lib/components';
@@ -10,6 +8,7 @@
   const key = 'editor-uploader-modal';
   const { close } = getContext('editor-modal');
 
+  /** @type {import('$lib/types').Video[]} */
   export let data = [];
 
   $: storeData = $videos.filter(

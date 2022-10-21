@@ -13,7 +13,7 @@ export async function load({ parent, fetch }) {
       if (res.ok) return await res.json();
     })
     .then((res) => {
-      users.update(res.users);
+      users.update(res);
     })
     .catch((reason) => console.error(reason));
 
@@ -22,7 +22,7 @@ export async function load({ parent, fetch }) {
       if (res.ok) return await res.json();
     })
     .then((res) => {
-      videos.update(res.videos);
+      videos.update(res);
     })
     .catch((reason) => console.error(reason));
 
@@ -31,7 +31,7 @@ export async function load({ parent, fetch }) {
       if (res.ok) return await res.json();
     })
     .then((res) => {
-      images.update(res.images);
+      images.update(res);
     })
     .catch((reason) => console.error(reason));
 
@@ -41,10 +41,10 @@ export async function load({ parent, fetch }) {
         if (res.ok) return await res.json();
       })
       .then((res) => {
-        videosAll.update(res.videos);
+        videosAll.update(res);
       })
       .catch((reason) => console.error(reason));
   }
 
-  return { session: { ...parentData.session, file: 'LayoutLoad /+layout.js' }, users: get(users) };
+  return { session: { ...session, file: 'LayoutLoad /+layout.js' }, users: get(users) };
 }

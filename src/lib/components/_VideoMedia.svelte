@@ -1,6 +1,4 @@
 <script>
-  // @ts-nocheck
-
   import * as api from '$lib/api';
   import { onDestroy, onMount } from 'svelte';
   import { Media, MediaContent } from '@smui/card';
@@ -12,25 +10,32 @@
 
   /** @type {import('$lib/types').Video} */
   export let video;
+  /** @type {string | undefined} */
+  export let emptyPoster = '/empty-poster.jpg';
   export let title = '';
   export let description = '';
   export let isEditMode = false;
-  export let emptyPoster = '/empty-poster.jpg';
 
+  /** @type {string | undefined} */
+  let src;
+  /** @type {number} */
+  let playhead;
+  /** @type {ReturnType<typeof setTimeout>} */
+  let timeoutId;
+  let canPlay = false;
   let paused = true;
   let poster = emptyPoster;
-  let src = '';
-  let playhead;
-  let canPlay = false;
-  let timeoutId;
 
   $: currentUser = $users.find((user) => user.id == $session.user?.id);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: token = currentUser?.jwt;
-  $: joinData = currentUser?.videos.find((v) => v.id == video.id)?._joinData;
-  $: (video.image_id && getMediaImage(video.image_id, $session.user).then((v) => (poster = v))) ||
+  $: joinData = currentUser?.videos.find(
+    /** @param {import('$lib/types').Video} v */ (v) => v.id == video.id
+  )?._joinData;
+  $: (video.image_id &&
+    getMediaImage(video.image_id, $session.user).then((res) => (poster = res))) ||
     (poster = emptyPoster);
-  $: video.id && getMediaVideo(video.id, $session.user).then((v) => (src = v));
+  $: video.id && getMediaVideo(video.id, $session.user).then((res) => (src = res));
   $: ((time) => {
     if (!paused || !canPlay) return;
     let pauseTime = time;
@@ -47,45 +52,57 @@
   });
 
   // set playhead to the last saved position when the video is ready to play
-  function handleCanPlay(e) {
+  function handleCanPlay() {
     if (canPlay) return;
     canPlay = true;
     playhead = hasPrivileges ? video.playhead : joinData.playhead;
   }
 
-  function handleEmptied(e) {
+  /**
+   * @param {CustomEvent} ev
+   */
+  function handleEmptied(ev) {
     info(
       '%c EMPTIED   %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      e.detail.title
+      ev.detail.title
     );
   }
 
-  function handleLoadStart(e) {
+  /**
+   * @param {CustomEvent} ev
+   */
+  function handleLoadStart(ev) {
     info(
       '%c LOADSTART %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      e.detail.title
+      ev.detail.title
     );
   }
 
-  function handleLoadedData(e) {
+  /**
+   * @param {CustomEvent} ev
+   */
+  function handleLoadedData(ev) {
     info(
       '%c LOADEDDATA%c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      e.detail.title
+      ev.detail.title
     );
   }
 
-  function handleAborted(e) {
+  /**
+   * @param {CustomEvent} ev
+   */
+  function handleAborted(ev) {
     info(
       '%c ABORTED   %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      e.detail.title
+      ev.detail.title
     );
     // in Chrome we have to limit streams due to Chromes limitation
     // this is done by emptying src attribute on the video which forgets the playheads position
@@ -105,8 +122,8 @@
     } else if (video) {
       if (Math.round(joinData.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
       let associated = currentUser.videos
-        .filter((v) => v.id != video.id)
-        .map((v) => ({ id: v.id }));
+        .filter(/** @param {import('$lib/types').Video} v */ (v) => v.id != video.id)
+        .map(/** @param {import('$lib/types').Video} v */ (v) => ({ id: v.id }));
       let data = {
         videos: [
           {
@@ -121,6 +138,9 @@
     }
   }
 
+  /**
+   * @param {any} data
+   */
   async function saveUser(data) {
     await api.put(`users/${currentUser.id}`, { data, token }).then((res) => {
       res.success && users.put(res.data);

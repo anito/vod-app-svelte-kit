@@ -4,7 +4,14 @@ import { error, json } from '@sveltejs/kit';
 export const GET = async ({ locals: { usersRepo, session }, url }) => {
   const token = session.data.user?.jwt;
   const limit = parseInt(url.searchParams.get('limit') || '250');
-  const users = await usersRepo.getAll({ limit, token });
 
-  return json({ users });
+  let users = [];
+  if (url.searchParams.has('id')) {
+    const id = url.searchParams.get('id');
+    users = await usersRepo.get(id, { token });
+  } else {
+    users = await usersRepo.getAll({ limit, token });
+  }
+
+  return json(users);
 };

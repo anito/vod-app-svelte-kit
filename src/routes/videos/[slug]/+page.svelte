@@ -1,6 +1,4 @@
 <script>
-  // @ts-nocheck
-
   import * as api from '$lib/api';
   import { page, navigating } from '$app/stores';
   import { onMount, tick } from 'svelte';
@@ -10,17 +8,28 @@
   import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, info } from '$lib/utils';
   import { _ } from 'svelte-i18n';
 
+  /** @type {boolean} */
   let paused;
-  let poster = '';
-  let src = '';
-  let playhead;
-  let timeoutId;
+  /** @type {boolean} */
   let canPlay;
+  /** @type {number} */
+  let playhead;
+  /** @type {ReturnType <typeof setTimeout>} */
+  let timeoutId;
+  /** @type {string | undefined} */
+  let poster;
+  /** @type {string | undefined} */
+  let src;
+
+  /** @type {import('./$types').PageData} */
+  export let data;
 
   $: video = $videos.find((v) => v.id === $page.params.slug);
-  $: user = $users.find((user) => user.id == $session.user?.id);
+  $: user = data.user;
   $: hasPrivileges = user?.role === ADMIN || user?.role === SUPERUSER;
-  $: joinData = user?.videos.find((v) => video?.id == v.id)?._joinData;
+  $: joinData = user?.videos.find(
+    /** @param {import('$lib/types').Video} v */ (v) => video?.id == v.id
+  )?._joinData;
   $: token = user?.jwt;
   $: ((time) => {
     if (!paused || !canPlay) return;
@@ -35,45 +44,49 @@
   onMount(() => {});
 
   // set playhead to the last saved position when the video is ready to play
-  function handleCanPlay(e) {
+  function handleCanPlay() {
     if (canPlay) return;
     canPlay = true;
     playhead = hasPrivileges ? video.playhead : joinData.playhead;
   }
 
-  function handleEmptied(e) {
+  /** @param {CustomEvent} ev */
+  function handleEmptied(ev) {
     info(
       '%c EMPTIED   %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      e.detail.title
+      ev.detail.title
     );
   }
 
-  function handleLoadStart(e) {
+  /** @param {CustomEvent} ev */
+  function handleLoadStart(ev) {
     info(
       '%c LOADSTART %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      e.detail.title
+      ev.detail.title
     );
   }
 
-  function handleLoadedData(e) {
+  /** @param {CustomEvent} ev */
+  function handleLoadedData(ev) {
     info(
       '%c LOADEDDATA%c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      e.detail.title
+      ev.detail.title
     );
   }
 
-  function handleAborted(e) {
+  /** @param {CustomEvent} ev */
+  function handleAborted(ev) {
     info(
       '%c ABORTED   %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      e.detail.title
+      ev.detail.title
     );
     // in Chrome we have to limit streams due to Chromes limitation
     // this is done by emptying src attribute on the video which forgets the playheads position
@@ -82,7 +95,6 @@
     canPlay = false;
   }
 
-  /** @param {string} id */
   async function savePlayhead() {
     if (!canPlay) return;
     if (hasPrivileges) {
@@ -93,7 +105,9 @@
       });
     } else {
       if (Math.round(joinData.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
-      let associated = user.videos.filter((v) => v.id != video.id).map((v) => ({ id: v.id }));
+      let associated = user.videos
+        .filter(/** @param {import('$lib/types').Video} v */ (v) => v.id != video.id)
+        .map(/** @param {import('$lib/types').Video} v */ (v) => ({ id: v.id }));
       let data = {
         videos: [
           {
@@ -108,6 +122,10 @@
     }
   }
 
+  /**
+   *
+   * @param {any} data
+   */
   async function saveUser(data) {
     await api.put(`users/${user.id}`, { data, token }).then((res) => {
       res.success && users.put(res.data);

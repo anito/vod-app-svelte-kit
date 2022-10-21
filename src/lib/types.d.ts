@@ -21,7 +21,13 @@ export declare type EventType = keyof GlobalEventHandlersEventMap;
 // export declare type WindowEventType = keyof WindowEventMap;
 // export declare type SpecificWindowEventListener<K extends WindowEventType> = (evt: WindowEventMap[K]) => void;
 
-export interface User<UserType = Record<string, void>> {
+export interface Repo<RepoType = Record<string, void>> {
+  get: any
+  getAll: any
+  setToken: any
+}
+
+export interface User<UserType = Record<string, any>> {
   name: string;
   email: string;
   id: string;
@@ -37,7 +43,7 @@ export interface User<UserType = Record<string, void>> {
   groups: Group[] | any;
 }
 
-export interface GoogleUser<GoogleUserType = Record<string, void>> {
+export interface GoogleUser<GoogleUserType = Record<string, any>> {
   id: string
   name: string
   email: string | undefined

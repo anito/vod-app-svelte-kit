@@ -38,10 +38,6 @@
   const privilegedActions = [EDIT, PASS, DEL];
   const userActions = [EDIT, PASS];
 
-  /** @type {import('.svelte-kit/types/src/routes/$types').PageData} */
-  export let data;
-  /** @type {import('.svelte-kit/types/src/routes/users/[slug]/$types').ActionData} */
-  export let form;
   /**  @type{string | null} */
   export let selectionUserId;
   /**  @type{string | null} */

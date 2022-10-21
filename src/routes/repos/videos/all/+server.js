@@ -6,5 +6,5 @@ export const GET = async ({ locals: { videosAllRepo, session }, url }) => {
   const limit = parseInt(url.searchParams.get('limit') || '250');
   const videos = await videosAllRepo.getAll({ limit, token });
 
-  return json({ videos });
+  return json(videos);
 };

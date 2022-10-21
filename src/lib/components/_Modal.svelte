@@ -8,7 +8,8 @@
   import { _ } from 'svelte-i18n';
 
   export let key = 'default-modal';
-  export let header = 'Header';
+  /** @type {any} */
+  export let header;
   export let closeButton = true;
   export let closeOnEsc = true;
   export let closeOnOuterClick = true;
@@ -114,6 +115,7 @@
 {#if _Component}
   <div
     class="bg"
+    on:keydown={() => {}}
     on:click={handleOuterClick}
     bind:this={background}
     transition:currentTransitionBg={state.transitionBgProps}
