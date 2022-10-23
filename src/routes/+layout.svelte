@@ -87,10 +87,6 @@
    */
   let pollId;
   /**
-   * @type {any}
-   */
-  let isMobileDevice;
-  /**
    * @type {string}
    */
   let loggedInButtonTextSecondLine;
@@ -169,7 +165,6 @@
   $: ((seg) => {
     root && ((seg && root.classList.remove('home')) || (!seg && root.classList.add('home')));
   })(segment);
-  $: isMobileDevice = isMobile().any;
   $: snackbarLifetime = action ? 6000 : snackbarLifetimeDefault;
   $: if ($session.user) {
     loggedInButtonTextSecondLine = `${$salutation}, ${$session.user.name}`;
@@ -228,7 +223,7 @@
   }
 
   function initClasses() {
-    isMobileDevice && root.classList.add('ismobile');
+    isMobile().any && root.classList.add('ismobile');
   }
 
   function initStyles() {
