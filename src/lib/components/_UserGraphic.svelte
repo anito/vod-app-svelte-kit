@@ -4,8 +4,8 @@
   import { Icon } from '@smui/common';
   import { getMediaAvatar, placeholderDotComAvatar } from '$lib/utils';
 
-  /** @type {import('$lib/types').User} */
-  export let user;
+  /** @type {import('$lib/types').User | null} */
+  export let user = null;
   export let dense = false;
   export let inactive = false;
   export let size = '24';

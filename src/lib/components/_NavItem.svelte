@@ -4,7 +4,7 @@
   import { page } from '$app/stores';
   import { getContext } from 'svelte';
 
-  export let segment = null;
+  export let segment = '';
   export let external = null;
   export let href = '';
   export let title = '';

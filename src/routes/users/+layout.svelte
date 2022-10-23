@@ -5,7 +5,7 @@
   import { goto } from '$app/navigation';
   import { onMount, getContext, tick } from 'svelte';
   import { fly } from 'svelte/transition';
-  import { infos, fabs, session, users, videos, slim, settings } from '$lib/stores';
+  import { infos, fabs, session, users, videos, images, slim, videosAll } from '$lib/stores';
   import Layout from './layout.svelte';
   import {
     InfoChips,
@@ -18,7 +18,7 @@
     VideoEditorList,
     UserGraphic
   } from '$lib/components';
-  import { createTabSearch, get, proxyEvent } from '$lib/utils';
+  import { proxyEvent } from '$lib/utils';
   import Button, { Icon as Icon_ } from '@smui/button';
   import Fab, { Label } from '@smui/fab';
   import Textfield from '@smui/textfield';
@@ -31,6 +31,13 @@
   const uploader = getContext('default-modal');
   const { getSnackbar, configSnackbar } = getContext('snackbar');
 
+  /** @type {import('./$types').LayouteData} */
+  export let data;
+
+  $: users.update(data.users);
+  $: videos.update(data.videos);
+  $: videosAll.update(data.videosAll);
+  $: images.update(data.images);
   $: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1]; // slug (user.id ) in case we start from a specific user e.g. /users/23
 
   let currentUser;

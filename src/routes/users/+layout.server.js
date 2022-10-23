@@ -1,19 +1,20 @@
-import { redirect } from '@sveltejs/kit';
-import { get } from 'svelte/store';
-import { users, videos, images, videosAll } from '$lib/stores';
 import { USER } from '$lib/utils';
 
-/** @type {import('./$types').LayoutLoad} */
-export async function load({ parent, fetch }) {
-  const parentData = await parent();
-  const { session } = parentData;
+/** @type {import('./$types').LayoutServerLoad} */
+export async function load({ parent, fetch, locals }) {
+  const { role } = locals.session.data;
+
+  let users;
+  let images;
+  let videos;
+  let videosAll;
 
   await fetch('/repos/users')
     .then(async (res) => {
       if (res.ok) return await res.json();
     })
     .then((res) => {
-      users.update(res);
+      users = res;
     })
     .catch((reason) => console.error(reason));
 
@@ -22,7 +23,7 @@ export async function load({ parent, fetch }) {
       if (res.ok) return await res.json();
     })
     .then((res) => {
-      videos.update(res);
+      videos = res;
     })
     .catch((reason) => console.error(reason));
 
@@ -31,20 +32,22 @@ export async function load({ parent, fetch }) {
       if (res.ok) return await res.json();
     })
     .then((res) => {
-      images.update(res);
+      images = res;
     })
     .catch((reason) => console.error(reason));
 
-  if (session.role === USER) {
+  if (role === USER) {
     await fetch('/repos/videos/all')
       .then(async (res) => {
         if (res.ok) return await res.json();
       })
       .then((res) => {
-        videosAll.update(res);
+        videosAll = res;
       })
       .catch((reason) => console.error(reason));
+  } else {
+    videosAll = [];
   }
 
-  return { session: { ...session, file: 'LayoutLoad /+layout.js' }, users: get(users) };
+  return { users, videos, images, videosAll };
 }

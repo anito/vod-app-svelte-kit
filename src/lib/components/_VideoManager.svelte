@@ -1,7 +1,4 @@
 <script>
-  // @ts-nocheck
-
-  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { onMount, getContext } from 'svelte';
   import { fly } from 'svelte/transition';
@@ -26,16 +23,24 @@
     duration: 200
   };
   const flyTransitionParams = { ...transitionParams, x: -80 };
-  const sortAZ = (a, b) => {
-    let _a, _b;
-    a = (_a = a.title || a.src) && _a.toLowerCase();
-    b = (_b = b.title || b.src) && _b.toLowerCase();
-    if (a < b) return -1;
-    if (a > b) return 1;
-    return 0;
-  };
+  const sortAZ =
+    /**
+     * @param {any} a
+     * @param {any} b
+     *
+     */
+    (a, b) => {
+      let _a, _b;
+      a = (_a = a.title || a.src) && _a.toLowerCase();
+      b = (_b = b.title || b.src) && _b.toLowerCase();
+      if (a < b) return -1;
+      if (a > b) return 1;
+      return 0;
+    };
 
+  /** @type {import("@smui/snackbar").SnackbarComponentDev} */
   let snackbar;
+  /** @type {any} */
   let uploadedData;
 
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
@@ -50,38 +55,44 @@
     }
   });
 
-  let openUploader = (type) => {
-    uploader.open(
-      MediaUploader,
-      {
-        commonProps: { type },
-        options: {
-          // acceptedFiles: '.mov .mp4 .m4a .m4v .3gp .3g2 .webm',
-          uploadMultiple: true,
-          parallelUploads: 2,
-          maxFiles: 2,
-          timeout: 3600 * 1000, // 60min
-          maxFilesize: 1024 // Megabyte
+  let openUploader =
+    /**
+     * @param {any} type
+     */
+    (type) => {
+      uploader.open(
+        MediaUploader,
+        {
+          commonProps: { type },
+          options: {
+            // acceptedFiles: '.mov .mp4 .m4a .m4v .3gp .3g2 .webm',
+            uploadMultiple: true,
+            parallelUploads: 2,
+            maxFiles: 2,
+            timeout: 3600 * 1000, // 60min
+            maxFilesize: 1024 // Megabyte
+          },
+          events: { 'upload:done': uploadDoneHandler }
         },
-        events: { 'upload:done': uploadDoneHandler }
-      },
-      {
-        transitionWindow: fly,
-        transitionWindowProps: {
-          y: -200,
-          duration: 500
+        {
+          transitionWindow: fly,
+          transitionWindowProps: {
+            y: -200,
+            duration: 500
+          }
+        },
+        {
+          onOpen: () => document.documentElement.classList.add('modal-open'),
+          onClose: () => document.documentElement.classList.remove('modal-open'),
+          onClosed: openEditor
         }
-      },
-      {
-        onOpen: () => document.documentElement.classList.add('modal-open'),
-        onClose: () => document.documentElement.classList.remove('modal-open'),
-        onClosed: openEditor
-      }
-    );
-  };
+      );
+    };
 
-  function uploadDoneHandler(e) {
-    const { data, message, success } = { ...e.detail };
+  /** @param {CustomEvent} ev */
+  function uploadDoneHandler(ev) {
+    /** @type {{data: any, message: string, success: boolean}} */
+    const { data, message, success } = { ...ev.detail };
 
     if (message) {
       configSnackbar(message);

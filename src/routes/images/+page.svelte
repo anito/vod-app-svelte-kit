@@ -1,6 +1,4 @@
 <script>
-  // @ts-nocheck
-
   import { goto } from '$app/navigation';
   import { onMount, getContext } from 'svelte';
   import { fly } from 'svelte/transition';
@@ -13,7 +11,7 @@
   import { _ } from 'svelte-i18n';
 
   /** @type {import('./$types').PageData} */
-  export let data = [];
+  export let data;
 
   $: images.update(data.images);
 
@@ -24,6 +22,9 @@
     if ($session.user) setFab('add-image');
   });
 
+  /**
+   * @param {any} type
+   */
   let openUploader = (type) => {
     open(
       MediaUploader,
@@ -56,7 +57,7 @@
       <div class="flex flex-wrap flex-row justify-center lg:justify-start">
         {#each $images as image (image.id)}
           <div class="flex m-1">
-            <ImageCard {image} user={$session.user} />
+            <ImageCard {image} />
           </div>
         {/each}
       </div>

@@ -248,7 +248,7 @@ export function placeholderDotComAvatar(name = '?') {
 /**
  *
  * @param {Function} fn
- * @param {string[]} colors
+ * @param {string | string[]} colors
  * @returns {string}
  */
 export function svg(fn, colors) {
@@ -269,6 +269,18 @@ export function svg(fn, colors) {
   );
 }
 
+/**
+ *
+ * @param {*} $page
+ * @returns {string}
+ */
+export function getSegment($page) {
+  const matches = $page.url.pathname.match(/\/([a-z_-]*)/);
+  if (matches?.length >= 1) {
+    return matches[1];
+  }
+  return '';
+}
 /**
  *
  * @param {string} tab

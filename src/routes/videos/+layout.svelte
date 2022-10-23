@@ -9,13 +9,16 @@
   import Textfield from '@smui/textfield';
   import Icon from '@smui/textfield/icon';
   import { Legal, PageBar, SimpleVideoCard, Component } from '$lib/components';
-  import { proxyEvent, sortByTitle } from '$lib/utils';
-  import { videos } from '$lib/stores';
+  import { sortByTitle } from '$lib/utils';
+  import { videos, images } from '$lib/stores';
   import { _ } from 'svelte-i18n';
 
+  export let data;
   let selectedIndex;
   let search = '';
 
+  $: videos.update(data.videos);
+  $: images.update(data.images);
   $: sidebar = !!$page.params.slug;
   $: selectionVideoId = $page.params.slug;
   $: filteredVideos = $videos

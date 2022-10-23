@@ -7,7 +7,7 @@ export const handle = handleSession(
     secret: 'ALKDSFH§%&24LKFDJSD/&$§&ÖLDKFJSDL§&%$&=&=SLKAF'
   },
   async ({ event, resolve }) => {
-    dev && (process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0);
+    dev && (process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0');
 
     event.locals.usersRepo = UsersRepo.getInstance();
     event.locals.videosRepo = VideosRepo.getInstance();

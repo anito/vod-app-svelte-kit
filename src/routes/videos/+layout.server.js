@@ -1,16 +1,14 @@
-import { users, videos, images } from '$lib/stores';
-
-/** @type {import('./$types').LayoutLoad} */
-export async function load({ fetch, parent }) {
-  const parentData = await parent();
-  const { session } = parentData;
+/** @type {import('./$types').LayoutServerLoad} */
+export async function load({ fetch }) {
+  let images;
+  let videos;
 
   await fetch('/repos/videos')
     .then(async (res) => {
       if (res.ok) return await res.json();
     })
     .then((res) => {
-      videos.update(res);
+      videos = res;
     })
     .catch((reason) => console.error(reason));
 
@@ -19,9 +17,9 @@ export async function load({ fetch, parent }) {
       if (res.ok) return await res.json();
     })
     .then((res) => {
-      images.update(res);
+      images = res;
     })
     .catch((reason) => console.error(reason));
 
-  return { session: { ...session, file: 'LayoutLoad /videos/+layout.js' } };
+  return { videos, images };
 }

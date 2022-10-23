@@ -1,6 +1,4 @@
 <script>
-  // @ts-nocheck
-
   import '../app.css';
   import '$lib/components/_button.scss';
   import '$lib/components/_notched_outline.scss';
@@ -26,7 +24,8 @@
     ADMIN,
     SUPERUSER,
     log,
-    randomItem
+    randomItem,
+    getSegment
   } from '$lib/utils';
   import {
     fabs,
@@ -52,6 +51,9 @@
   } from '$lib/components';
   import { svg_manifest } from '$lib/svg_manifest';
   import { _, locale } from 'svelte-i18n';
+
+  /** @type {import('./$types').LayoutData} */
+  export let data;
 
   const snackbarLifetimeDefault = 4000;
   const redirectDelay = 300;
@@ -113,13 +115,9 @@
    */
   let loaderColor = 'var(--primary)';
   /**
-   * @type {string}
-   */
-  let isMounted = false;
-  /**
    * @type {boolean}
    */
-  let configLoaded = false;
+  let isMounted = false;
 
   setContext('fab', {
     setFab: (/** @type {any} */ name) => fabs.update(name),
@@ -160,7 +158,8 @@
     mounted
   });
 
-  $: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
+  $: settings.update(data.config);
+  $: segment = getSegment($page);
   $: token = $session.user?.jwt;
   $: person = svg(svg_manifest.person, $theme.primary);
   $: logo = svg(svg_manifest.logo_vod, $theme.primary);
@@ -170,14 +169,13 @@
   $: ((seg) => {
     root && ((seg && root.classList.remove('home')) || (!seg && root.classList.add('home')));
   })(segment);
-  $: isMobileDevice = isMobile.any;
+  $: isMobileDevice = isMobile().any;
   $: snackbarLifetime = action ? 6000 : snackbarLifetimeDefault;
   $: if ($session.user) {
     loggedInButtonTextSecondLine = `${$salutation}, ${$session.user.name}`;
   }
   $: searchParams = $page.url.searchParams.toString();
   $: search = searchParams && `?${searchParams}`;
-  $: configLoaded && checkSession();
 
   onMount(async () => {
     $mounted = true;
@@ -185,9 +183,9 @@
 
     snackbar = getSnackbar();
 
+    checkSession();
     reveal();
     initListener();
-    loadConfig();
     initClasses();
     initStyles();
     startPolling();
@@ -199,13 +197,6 @@
       removeClasses();
     };
   });
-
-  async function loadConfig() {
-    await get('/config').then((res) => {
-      settings.update(res);
-      configLoaded = true;
-    });
-  }
 
   async function checkSession() {
     const { user, _expires, fromToken } = { ...$session };
@@ -250,9 +241,15 @@
 
   function startPolling() {}
 
+  /**
+   *
+   * @param {number} timestamp
+   */
   function displayRemainingTime(timestamp) {
     const now = Date.now();
+    // @ts-ignore
     const sec = Math.floor(((timestamp - now) / 1000) % 60).minDigits(2);
+    // @ts-ignore
     const min = Math.floor((timestamp - now) / (1000 * 60)).minDigits(2);
     return `${min}:${sec}`;
   }
@@ -307,22 +304,36 @@
     });
   }
 
+  /**
+   *
+   * @param {HTMLFormElement} node
+   */
   async function submit(node) {
     let submitting = false;
 
-    async function submitHandler(e) {
-      e.preventDefault();
+    /**
+     *
+     * @param {SubmitEvent | Event} ev
+     */
+    async function submitHandler(ev) {
+      ev.preventDefault();
 
       if (submitting) return;
       submitting = true;
 
       loggedInButtonTextSecondLine = $_('text.one-moment');
 
-      const form = e.target;
+      /**
+       * @type {HTMLFormElement | any}
+       */
+      const form = ev.target;
       const data = {};
 
       // new FormData(form).forEach((value, key) => (data[key] = value));
-      await post(form.action, {}).then(async (res) => {
+      await post(form?.action, {}).then(async (res) => {
+        /**
+         * @type {{success: boolean, data: any}}
+         */
         const { success, data } = { ...res };
 
         if (success) {
@@ -337,6 +348,11 @@
     return () => node.removeEventListener('submit', submitHandler);
   }
 
+  /**
+   *
+   * @param {string} msg
+   * @param {string | void} link
+   */
   function configSnackbar(msg, link) {
     try {
       snackbar.close();
@@ -344,6 +360,11 @@
     configureAction(msg, link);
   }
 
+  /**
+   *
+   * @param {string} msg
+   * @param {any} link
+   */
   function configureAction(msg = '', link) {
     message = msg;
     action = path = '';
@@ -362,8 +383,15 @@
 
   function handleSnackbarClosed() {}
 
-  async function tickerSuccessHandler(e) {
-    const { user, renewed, message } = { ...e.detail };
+  /**
+   *
+   * @param {CustomEvent} ev
+   */
+  async function tickerSuccessHandler(ev) {
+    /**
+     * @type {{user: import('$lib/types').User, renewed: string, message: string}}
+     */
+    const { user, renewed, message } = { ...ev.detail };
     proxyEvent('ticker:extend');
     flash.update({ message, type: 'success', timeout: 2000 });
 
@@ -382,8 +410,12 @@
     invalidate('/session');
   }
 
-  function tickerErrorHandler(e) {
-    const data = { ...e.detail };
+  /**
+   *
+   * @param {CustomEvent} ev
+   */
+  function tickerErrorHandler(ev) {
+    const data = { ...ev.detail };
     invalidate('/session');
     flash.update({ ...data, type: 'error', timeout: 3500 });
     if (data.redirect) {
@@ -391,9 +423,13 @@
     }
   }
 
-  async function tickerStopHandler(e) {
+  /**
+   *
+   * @param {CustomEvent} ev
+   */
+  async function tickerStopHandler(ev) {
     await killSession().then(() => {
-      const redirect = e.detail.redirect;
+      const redirect = ev.detail.redirect;
       const path = !!redirect ? redirect : redirect ?? '/';
       if (path !== false) {
         const search = createRedirectSlug($page.url);
@@ -415,6 +451,10 @@
     });
   }
 
+  /**
+   *
+   * @param {string | void} color
+   */
   function printCopyright(color) {
     color = color || '#ad1457';
     -1 < navigator.userAgent.toLowerCase().indexOf('chrome')
@@ -531,7 +571,7 @@
     </Modal>
   </Modal>
 {/if}
-<LoadingModal backgroundColor="#ffffff" opacity={loaderBackgroundOpacity} wait="350">
+<LoadingModal backgroundColor="#ffffff" opacity={loaderBackgroundOpacity} wait={350}>
   <DoubleBounce color={loaderColor} unit="px" size="200" />
 </LoadingModal>
 

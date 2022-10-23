@@ -96,7 +96,7 @@ export interface VideoElement<VideoElementType = Record<string, any>> {
 
 export interface VideoEmitter<VideoEmitterType = Record<string, any>> {
   method: string
-  data: Video
+  data: Video | any
   show: boolean
 }
 
