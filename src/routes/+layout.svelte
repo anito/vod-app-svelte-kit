@@ -109,10 +109,6 @@
    */
   let loaderColor = 'var(--primary)';
   /**
-   * @type {string}
-   */
-  let salut;
-  /**
    * @type {boolean}
    */
   let isMounted = false;
