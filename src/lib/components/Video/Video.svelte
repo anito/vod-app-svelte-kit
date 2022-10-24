@@ -1,6 +1,7 @@
 <script>
   // @ts-nocheck
 
+  import { log } from '$lib/utils';
   import { tick, createEventDispatcher, onMount } from 'svelte';
   import { _ } from 'svelte-i18n';
   import Ui from './Ui.svelte';
