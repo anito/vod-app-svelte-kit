@@ -1,6 +1,4 @@
 <script>
-  // @ts-nocheck
-
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
@@ -13,7 +11,9 @@
   import { videos, images } from '$lib/stores';
   import { _ } from 'svelte-i18n';
 
+  /** @type {import('./$types').LayoutData} */
   export let data;
+  /** @type {number} */
   let selectedIndex;
   let search = '';
 
@@ -27,8 +27,12 @@
 
   onMount(() => {});
 
-  function itemSelectedHandler(e) {
-    let { video } = e.detail;
+  /**
+   *
+   * @param {CustomEvent} ev
+   */
+  function itemSelectedHandler(ev) {
+    let { video } = ev.detail;
 
     if (video.id != selectionVideoId) {
       goto(`/videos/${video.id}`);

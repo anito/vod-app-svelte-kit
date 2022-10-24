@@ -59,6 +59,7 @@
   let timespanSelection = timespanSelections[0].value;
   let timespanSelected;
   let firstDayOfWeek = 'monday';
+  /** @type {import("@smui/snackbar").SnackbarComponentDev} */
   let snackbar;
   let message;
   let selectedIndex;

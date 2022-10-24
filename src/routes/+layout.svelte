@@ -17,15 +17,13 @@
   import {
     createRedirectSlug,
     createTabSearch,
-    get,
     post,
     proxyEvent,
     svg,
     ADMIN,
     SUPERUSER,
-    log,
-    randomItem,
-    getSegment
+    getSegment,
+    randomItem
   } from '$lib/utils';
   import {
     fabs,
@@ -111,6 +109,10 @@
    */
   let loaderColor = 'var(--primary)';
   /**
+   * @type {string}
+   */
+  let salut;
+  /**
    * @type {boolean}
    */
   let isMounted = false;
@@ -154,7 +156,8 @@
     mounted
   });
 
-  $: settings.update(data.config);
+  settings.update(data.config);
+
   $: segment = getSegment($page);
   $: token = $session.user?.jwt;
   $: person = svg(svg_manifest.person, $theme.primary);
@@ -166,6 +169,7 @@
     root && ((seg && root.classList.remove('home')) || (!seg && root.classList.add('home')));
   })(segment);
   $: snackbarLifetime = action ? 6000 : snackbarLifetimeDefault;
+  $: salutation.update(randomItem(data.config.Site.salutations));
   $: if ($session.user) {
     loggedInButtonTextSecondLine = `${$salutation}, ${$session.user.name}`;
   }
@@ -301,46 +305,28 @@
 
   /**
    *
-   * @param {HTMLFormElement} node
+   * @param {SubmitEvent} ev
    */
-  async function submit(node) {
-    let submitting = false;
+  async function submitHandler(ev) {
+    loggedInButtonTextSecondLine = $_('text.one-moment');
 
     /**
-     *
-     * @param {SubmitEvent | Event} ev
+     * @type {HTMLFormElement | any}
      */
-    async function submitHandler(ev) {
-      ev.preventDefault();
+    const form = ev.target;
+    // const data = {};
+    // new FormData(form).forEach((value, key) => (data[key] = value));
 
-      if (submitting) return;
-      submitting = true;
-
-      loggedInButtonTextSecondLine = $_('text.one-moment');
-
+    await post(form.action, {}).then((res) => {
       /**
-       * @type {HTMLFormElement | any}
+       * @type {{success: boolean, data: any}}
        */
-      const form = ev.target;
-      const data = {};
+      const { success, data } = { ...res };
 
-      // new FormData(form).forEach((value, key) => (data[key] = value));
-      await post(form?.action, {}).then(async (res) => {
-        /**
-         * @type {{success: boolean, data: any}}
-         */
-        const { success, data } = { ...res };
-
-        if (success) {
-          proxyEvent('ticker:stop', { ...data });
-        }
-        submitting = false;
-      });
-    }
-
-    node.addEventListener('submit', submitHandler);
-
-    return () => node.removeEventListener('submit', submitHandler);
+      if (success) {
+        proxyEvent('ticker:stop', { ...data });
+      }
+    });
   }
 
   /**
@@ -472,7 +458,12 @@
   <Modal header={{ name: 'text.upload-type' }}>
     <Modal header={{ name: 'text.edit-uploaded-content' }} key="editor-modal">
       <div bind:this={base} class="transition opacity-0">
-        <form use:submit class="main-menu login-form" method="POST" action="/auth/logout">
+        <form
+          on:submit|preventDefault={submitHandler}
+          class="main-menu login-form"
+          method="POST"
+          action="/auth/logout"
+        >
           <Nav {segment} {page} {logo}>
             {#if $session.user}
               <NavItem href="/videos" title="Videothek" segment="videos">

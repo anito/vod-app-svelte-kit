@@ -1,6 +1,4 @@
 <script>
-  // @ts-nocheck
-
   import { getContext, onMount } from 'svelte';
   import Menu, { SelectionGroup, SelectionGroupIcon } from '@smui/menu';
   import { Anchor } from '@smui/menu-surface';
@@ -15,9 +13,12 @@
     ['en', 'English']
   ]);
 
+  /** @type {import("@smui/snackbar").SnackbarComponentDev} */
   let snackbar;
+  /** @type {import("@smui/menu").MenuComponentDev} */
   let localeMenu;
   let localeMenuAnchor;
+  /** @type {string | null | undefined} */
   let currentLocale;
 
   $: currentLocale = $locale;
@@ -26,6 +27,10 @@
     snackbar = getSnackbar();
   });
 
+  /**
+   *
+   * @param {string} value
+   */
   async function setLocale(value) {
     $locale = value;
     await post('/locale', value);
@@ -39,7 +44,7 @@
 <span class="relative">
   <a href="." on:click|preventDefault={() => localeMenu.setOpen(true)}>
     <div class="menu-anchor switcher lg:-mr-8" bind:this={localeMenuAnchor} use:Anchor>
-      <div class="current-locale">{currentLocale.toUpperCase().slice(0, 2)}</div>
+      <div class="current-locale">{currentLocale?.toUpperCase().slice(0, 2)}</div>
     </div>
   </a>
   <Menu

@@ -7,7 +7,6 @@ export { default as googleUser } from './googleUser';
 export { default as frameworks } from './frameworkStore';
 export { default as images } from './imageStore';
 export { default as inboxes } from './inboxStore';
-export { default as infos } from './infoStore'; // derived
 export { default as sents } from './sentStore';
 export { default as mails } from './mailStore';
 export { default as sessionCookie } from './sessionCookieStore'; // derived
@@ -25,4 +24,5 @@ export { default as videos } from './videoStore';
 export { default as videosAll } from './videoAllStore';
 export { default as videoEmitter } from './videoEmitter';
 
+export { default as infos } from './infoStore'; // derived
 export { default as derivedCurrentVideo } from './derivedCurrentVideoStore'; // derived

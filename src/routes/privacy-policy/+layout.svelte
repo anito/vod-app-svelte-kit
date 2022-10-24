@@ -1,10 +1,9 @@
 <script>
-  // @ts-nocheck
-
   import { page } from '$app/stores';
+  import { getSegment } from '$lib/utils';
   import Layout from './layout.svelte';
 
-  $: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
+  $: segment = getSegment($page);
 </script>
 
 <Layout {segment}>

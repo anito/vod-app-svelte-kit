@@ -9,12 +9,11 @@ export async function load({ parent, params, url }) {
     throw redirect(301, `/`);
   }
 
-  if (
-    !users.find(
-      /** @param {import('$lib/types').User} usr */
-      (usr) => usr.id === params.slug
-    )
-  ) {
+  const user = users.find(
+    /** @param {import('$lib/types').User} usr */
+    (usr) => usr.id === params.slug
+  );
+  if (!user) {
     throw redirect(307, `/users/${session.user.id}${url.search}`);
   }
 

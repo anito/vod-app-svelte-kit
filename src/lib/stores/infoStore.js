@@ -1,9 +1,14 @@
 // @ts-nocheck
 import { derived } from 'svelte/store';
-import { default as users } from './userStore';
+import { users } from '$lib/stores';
 import { isExpired, SUPERUSER } from '$lib/utils';
 
 function createStore() {
+  /**
+   *
+   * @param {import('$lib/types').User} usr
+   * @returns boolean
+   */
   function hasActiveVideos(usr) {
     let end,
       active,
@@ -24,6 +29,10 @@ function createStore() {
         flag: 'warning',
         type: ''
       },
+      /**
+       *
+       * @param {import('$lib/types').User} usr
+       */
       value: (usr) =>
         hasActiveVideos(usr) && (!usr.jwt || !usr.active || (usr.expires && isExpired(usr.expires)))
     },
@@ -36,6 +45,10 @@ function createStore() {
         flag: 'flash',
         type: 'issue'
       },
+      /**
+       *
+       * @param {import('$lib/types').User} usr
+       */
       value: (usr) => usr.expires && isExpired(usr.expires)
     },
     {
@@ -47,6 +60,10 @@ function createStore() {
         flag: 'flash',
         type: 'issue'
       },
+      /**
+       *
+       * @param {import('$lib/types').User} usr
+       */
       value: (usr) => !usr.active
     },
     {
@@ -57,12 +74,17 @@ function createStore() {
         flag: 'flash',
         type: 'issue'
       },
+      /**
+       *
+       * @param {import('$lib/types').User} usr
+       */
       value: (usr) => !usr.jwt && usr.role !== SUPERUSER
     }
   ];
 
   return derived(users, ($users, set) => {
     if (!$users) return;
+
     for (let user of $users) {
       let res = [];
       for (const def of DEFS) {

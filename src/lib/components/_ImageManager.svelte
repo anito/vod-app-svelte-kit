@@ -16,6 +16,7 @@
   const { getSnackbar, configSnackbar } = getContext('snackbar');
   const { setFab } = getContext('fab');
 
+  /** @type {import("@smui/snackbar").SnackbarComponentDev} */
   let snackbar;
   let openUploader = () => {
     open(

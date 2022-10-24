@@ -1,17 +1,17 @@
-// @ts-nocheck
-import { randomItem } from '$lib/utils';
-import { derived } from 'svelte/store';
-import { session, settings } from '.';
+import { writable } from 'svelte/store';
 
-let user;
-export default derived(
-  [settings, session],
-  ([$settings, $session], set) => {
-    if ($session.user && $session.user !== user) {
-      user = $session.user;
-      const salutation = randomItem($settings.Site.salutations);
-      set(salutation);
-    }
-  },
-  'Hi'
-);
+function createStore() {
+  const { subscribe, update, set } = writable([]);
+
+  return {
+    subscribe,
+    /**
+     *
+     * @param {*} val
+     * @returns
+     */
+    update: (val) => update(() => val),
+    set
+  };
+}
+export default createStore();

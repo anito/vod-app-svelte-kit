@@ -23,6 +23,7 @@
   let message = '';
   let invalidEmail = true;
   let selected;
+  /** @type {import("@smui/snackbar").SnackbarComponentDev} */
   let snackbar;
 
   $: src = svg(svg_manifest.logo_hero_vod);

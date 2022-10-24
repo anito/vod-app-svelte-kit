@@ -1,5 +1,3 @@
-import { json } from '@sveltejs/kit';
-
 /** @type {import("@sveltejs/kit").Actions} */
 export const actions = {
   add: async ({ request, locals, params, fetch }) => {

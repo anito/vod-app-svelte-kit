@@ -1,14 +1,12 @@
 <script>
-  // @ts-nocheck
-
   import Layout from './layout.svelte';
   import { Info, Legal } from '$lib/components';
   import { page } from '$app/stores';
   import { session } from '$lib/stores';
   import { goto } from '$app/navigation';
-  import { ADMIN, SUPERUSER } from '$lib/utils';
+  import { getSegment, ADMIN, SUPERUSER } from '$lib/utils';
 
-  $: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1];
+  $: segment = getSegment($page);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
 </script>
 

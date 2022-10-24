@@ -39,6 +39,7 @@
   let root;
   let password = '';
   let email = '';
+  /** @type {import("@smui/snackbar").SnackbarComponentDev} */
   let snackbar;
   let invalidTokenUserDialog;
   let foundActive;

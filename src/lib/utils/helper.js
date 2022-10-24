@@ -206,11 +206,9 @@ export const proxyEvent = function (eventType, detail = {}) {
 /**
  * @param {Array<string>} arr
  */
-export function randomItem(arr = []) {
-  if (arr.length) {
-    const index = Math.floor(Math.random() * arr.length);
-    return arr[index];
-  }
+export function randomItem(arr) {
+  const index = Math.floor(Math.random() * arr.length);
+  return arr[index];
 }
 
 /**
@@ -276,7 +274,7 @@ export function svg(fn, colors) {
  */
 export function getSegment($page) {
   const matches = $page.url.pathname.match(/\/([a-z_-]*)/);
-  if (matches?.length >= 1) {
+  if (matches?.length >= 2) {
     return matches[1];
   }
   return '';

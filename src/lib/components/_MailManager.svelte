@@ -83,7 +83,7 @@
   let sort = 'DESC';
   let drawer;
 
-  /** @type {{ open: () => void; }} */
+  /** @type {import("@smui/snackbar").SnackbarComponentDev} */
   let snackbar;
 
   /** @type {boolean | undefined} */

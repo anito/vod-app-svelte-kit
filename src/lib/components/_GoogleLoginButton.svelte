@@ -2,8 +2,10 @@
   // @ts-nocheck
   import { onMount } from 'svelte';
   import { flash, googleUser } from '$lib/stores';
-  import { get, post, proxyEvent } from '$lib/utils';
+  import { createRedirectSlug, get, proxyEvent } from '$lib/utils';
   import { _ } from 'svelte-i18n';
+  import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
 
   export let client_id = '';
 
@@ -35,6 +37,8 @@
   }
 
   async function googleHandleCredentialResponse({ credential }) {
+    // await goto(`/login`).then(() => {
+    // });
     decodeJwtResponse(credential);
   }
 
@@ -48,7 +52,6 @@
       } else {
         proxyEvent('ticker:error', { ...data, redirect: '/login' });
       }
-      setTimeout(() => renderButton(), 500);
     });
   }
 

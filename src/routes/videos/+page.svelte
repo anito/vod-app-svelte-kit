@@ -76,7 +76,7 @@
         </span>
       </div>
     </div>
-    <div class="p-8" style="height: 100%;">
+    <div class="p-8" style="height: auto">
       <VideoManager />
     </div>
   </Component>

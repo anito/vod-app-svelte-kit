@@ -1,5 +1,4 @@
 <script>
-  // @ts-nocheck
   import * as api from '$lib/api';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
@@ -18,7 +17,7 @@
     VideoEditorList,
     UserGraphic
   } from '$lib/components';
-  import { proxyEvent } from '$lib/utils';
+  import { getSegment, proxyEvent } from '$lib/utils';
   import Button, { Icon as Icon_ } from '@smui/button';
   import Fab, { Label } from '@smui/fab';
   import Textfield from '@smui/textfield';
@@ -31,39 +30,59 @@
   const uploader = getContext('default-modal');
   const { getSnackbar, configSnackbar } = getContext('snackbar');
 
-  /** @type {import('./$types').LayouteData} */
+  /** @type {import('./$types').LayoutData} */
   export let data;
 
   $: users.update(data.users);
   $: videos.update(data.videos);
   $: videosAll.update(data.videosAll);
   $: images.update(data.images);
-  $: segment = $page.url.pathname.match(/\/([a-z_-]*)/)[1]; // slug (user.id ) in case we start from a specific user e.g. /users/23
+  $: segment = getSegment($page);
 
+  /** @type {import('$lib/types').User} */
   let currentUser;
+  /** @type {string} */
   let username;
   let tokenExpires;
+  /** @type {boolean} */
   let hasExpired;
+  /** @type {string} */
   let token;
+  /** @type {string | null} */
   let tokenId;
+  /** @type {string} */
   let magicLink;
+  /** @type {string} */
   let search = '';
+  /** @type {import("@smui/snackbar").SnackbarComponentDev} */
   let snackbar;
+  /** @type {string} */
   let message;
+  /** @type {import("@smui/dialog").DialogComponentDev} */
   let infoDialog;
+  /** @type {import("@smui/dialog").DialogComponentDev} */
   let generateTokenDialog;
+  /** @type {import("@smui/dialog").DialogComponentDev} */
   let activateUserDialog;
+  /** @type {import("@smui/dialog").DialogComponentDev} */
   let resolveAllDialog;
+  /** @type {import("@smui/dialog").DialogComponentDev} */
   let renewedTokenDialog;
+  /** @type {import("@smui/dialog").DialogComponentDev} */
   let removeTokenDialog;
+  /** @type {import("@smui/dialog").DialogComponentDev} */
   let redirectDialog;
+  /** @type {number} */
   let selectionIndex;
+  /** @type {any} */
   let uploadedData;
+  /** @type {any} */
   let focusItemAtIndex;
-  let getAttributeFromElementIndex;
+  /** @type {any} */
   let listItems;
+  /** @type {boolean} */
+  let active;
 
-  $: active = $page.url.searchParams.get('active');
   $: selectionUserId = $page.params.slug || $session.user?.id;
   $: selectionUserId && listItems && scrollIntoView();
   $: currentUser = ((id) => $users?.find((usr) => usr.id === id))(selectionUserId);
@@ -79,7 +98,13 @@
   $: filteredUsers =
     $users?.filter((user) => user.name.toLowerCase().indexOf(search.toLowerCase()) !== -1) || [];
   $: userInfos = ($infos?.has(selectionUserId) && $infos.get(selectionUserId).params) || [];
-  $: userIssues = userInfos.filter((info) => info.type === 'issue');
+  $: userIssues = userInfos.filter(
+    /**
+     *
+     * @param {any} info
+     */
+    (info) => info.type === 'issue'
+  );
   $: searchParams = $page && getSearchParams();
   $: query = searchParams && `?${searchParams}`;
 
@@ -94,8 +119,10 @@
     // window.addEventListener('MDCChip:interaction', chipInteractionHandler);
     window.addEventListener('INFO:open:ResolveAllDialog', resolveAllHandler);
     window.addEventListener('INFO:open:InfoDialog', infoDialogHandler);
+    // @ts-ignore
     window.addEventListener('INFO:user:Activate', activateUserHandler);
     window.addEventListener('INFO:token:Remove', removeTokenHandler);
+    // @ts-ignore
     window.addEventListener('INFO:token:Generate', generateTokenHandler);
     window.addEventListener('INFO:token:Redirect', tokenRedirectHandler);
 
@@ -103,8 +130,10 @@
       // window.removeEventListener('MDCChip:interaction', chipInteractionHandler);
       window.removeEventListener('INFO:open:ResolveAllDialog', resolveAllHandler);
       window.removeEventListener('INFO:open:InfoDialog', infoDialogHandler);
+      // @ts-ignore
       window.removeEventListener('INFO:user:Activate', activateUserHandler);
       window.removeEventListener('INFO:token:Remove', removeTokenHandler);
+      // @ts-ignore
       window.removeEventListener('INFO:token:Generate', generateTokenHandler);
       window.removeEventListener('INFO:token:Redirect', tokenRedirectHandler);
     };
@@ -118,7 +147,11 @@
     proxyEvent('USER:add');
   }
 
-  async function generateToken(config = {}) {
+  /**
+   *
+   * @param {{constrained: any }} config
+   */
+  async function generateToken(config) {
     const { constrained } = { ...config };
     const res = await api.post(`tokens?locale=${$locale}`, {
       data: { user_id: currentUser.id, constrained },
@@ -173,71 +206,112 @@
     }
   }
 
-  function resolveAllHandler(e) {
+  function resolveAllHandler() {
     resolveAllDialog.setOpen(true);
   }
 
-  function activateUserHandler(e) {
-    (e.detail.silent && activateUser({ active: true })) || activateUserDialog.setOpen(true);
+  /**
+   *
+   * @param {CustomEvent} event
+   */
+  function activateUserHandler(event) {
+    (event.detail.silent && activateUser({ active: true })) || activateUserDialog.setOpen(true);
   }
 
-  function generateTokenHandler(e) {
-    (e.detail.silent && generateToken({ constrained: false })) || generateTokenDialog.setOpen(true);
+  /**
+   *
+   * @param {CustomEvent} event
+   */
+  function generateTokenHandler(event) {
+    (event.detail.silent && generateToken({ constrained: false })) ||
+      generateTokenDialog.setOpen(true);
   }
 
-  function removeTokenHandler(e) {
+  function removeTokenHandler() {
     removeTokenDialog.setOpen(true);
   }
 
-  function tokenRedirectHandler(e) {
+  function tokenRedirectHandler() {
     redirectDialog.setOpen(true);
   }
 
-  function infoDialogHandler(e) {
+  function infoDialogHandler() {
     infoDialog.setOpen(true);
   }
 
-  function resolveAllDialogCloseHandler(e) {
-    if (e.detail.action === 'approved') {
+  /**
+   *
+   * @param {CustomEvent} event
+   */
+  function resolveAllDialogCloseHandler(event) {
+    if (event.detail.action === 'approved') {
       resolveAll();
     }
   }
 
-  function activateUserDialogCloseHandler(e) {
-    if (e.detail.action === 'approved') {
+  /**
+   *
+   * @param {CustomEvent} event
+   */
+  function activateUserDialogCloseHandler(event) {
+    if (event.detail.action === 'approved') {
       activateUser({ active: true });
     }
   }
 
-  function generateTokenDialogCloseHandler(e) {
-    if (e.detail.action === 'approved') {
+  /**
+   *
+   * @param {CustomEvent} event
+   */
+  function generateTokenDialogCloseHandler(event) {
+    if (event.detail.action === 'approved') {
       generateToken({ constrained: false });
     }
   }
 
-  function removeTokenDialogCloseHandler(e) {
-    if (e.detail.action === 'approved') {
+  /**
+   *
+   * @param {CustomEvent} event
+   */
+  function removeTokenDialogCloseHandler(event) {
+    if (event.detail.action === 'approved') {
       removeToken();
     }
   }
 
-  function renewTokenDialogCloseHandler(e) {
-    if (e.detail.action === 'approved') {
+  /**
+   *
+   * @param {CustomEvent} event
+   */
+  function renewTokenDialogCloseHandler(event) {
+    if (event.detail.action === 'approved') {
       localStorage.removeItem('renewed');
     }
   }
 
-  function tokenRedirectDialogCloseHandler(e) {
+  /**
+   *
+   * @param {CustomEvent} event
+   */
+  function tokenRedirectDialogCloseHandler(event) {
     if (
-      'redirect' === e.detail.action &&
+      'redirect' === event.detail.action &&
       /^(https?|ftp|torrent|image|irc):\/\/(-\.)?([^\s\/?\.#-&]+\.?)+(\/[^\s]*)?$/i.test(magicLink)
     ) {
       goto(`/login?token=${token}`);
     }
   }
 
-  function chipInteractionHandler(e) {}
+  /**
+   *
+   * @param {CustomEvent} event
+   */
+  function chipInteractionHandler(event) {}
 
+  /**
+   *
+   * @param {any} type
+   */
   let openUploader = (type) => {
     uploader.open(
       MediaUploader,
@@ -264,8 +338,15 @@
     );
   };
 
-  function uploadDoneHandler(e) {
-    const { data, message, success } = { ...e.detail };
+  /**
+   *
+   * @param {CustomEvent} event
+   */
+  function uploadDoneHandler(event) {
+    /**
+     * @type {{data: any, message: string, success: boolean}}
+     */
+    const { data, message, success } = { ...event.detail };
 
     if (message) {
       configSnackbar(message);
@@ -289,6 +370,9 @@
   }
 
   function getSearchParams() {
+    /**
+     * @type {any[]}
+     */
     const omit = [];
     const searchParamsString = $page.url.searchParams.toString();
     const searchParams = new URLSearchParams(searchParamsString);
@@ -298,10 +382,18 @@
     return searchParams.toString();
   }
 
+  /**
+   *
+   * @param {any} param0
+   */
   function receiveListMethods({ detail }) {
     ({ focusItemAtIndex, items: listItems } = { ...detail });
   }
 
+  /**
+   *
+   * @param {any} param0
+   */
   function itemSelectedHandler({ detail }) {
     const { target } = detail;
     // target.scrollIntoView({ behavior: 'smooth' });
@@ -364,7 +456,7 @@
         </List>
       {:else}
         <div class="loader flex justify-center">
-          <SvgIcon name="animated-loader-3" size="50" fillColor="var(--primary)" class="mr-2" />
+          <SvgIcon name="animated-loader-3" size={50} fillColor="var(--primary)" class="mr-2" />
         </div>
       {/if}
     </Component>
