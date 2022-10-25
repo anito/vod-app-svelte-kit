@@ -67,7 +67,7 @@
         width: '221'
       } // customization attributes
     );
-    google.accounts.id.prompt(); // display the One Tap dialog
+    // google.accounts.id.prompt(); // display the One Tap dialog
   }
 
   function signOut(id) {
