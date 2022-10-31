@@ -364,7 +364,7 @@
      * @type {{user: import('$lib/types').User, renewed: string, message: string}}
      */
     const { user, renewed, message } = { ...event.detail };
-    proxyEvent('ticker:extend');
+    proxyEvent('ticker:extend', { start: true });
     flash.update({ message, type: 'success', timeout: 2000 });
 
     renewed && localStorage.setItem('renewed', renewed);
@@ -376,10 +376,18 @@
     snackbar?.open();
   }
 
-  async function tickerExtendHandler() {
+  /**
+   *
+   * @param {CustomEvent} event
+   */
+  async function tickerExtendHandler(event) {
     const time = new Date(Date.now() + parseInt($settings.Session.lifetime)).toISOString();
     await post('/session/extend', time);
-    await invalidate('app:session');
+    if (event.detail?.start) {
+      await invalidateAll();
+    } else {
+      await invalidate('app:session');
+    }
   }
 
   /**
