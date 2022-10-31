@@ -1,8 +1,13 @@
 /** @type {import('./$types').LayoutServerLoad} */
-export async function load({ fetch }) {
+export async function load({ fetch, depends }) {
+  const session = await fetch('/session')
+    .then(async (res) => await res.json())
+    .catch((reason) => console.error(reason));
   const config = await fetch('/config')
     .then(async (res) => await res.json())
     .catch((reason) => console.error(reason));
 
-  return { config };
+  depends('app:session');
+
+  return { session, config };
 }

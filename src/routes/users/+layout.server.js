@@ -8,26 +8,17 @@ export async function load({ fetch, locals }) {
     .then(async (res) => {
       if (res.ok) return await res.json();
     })
-    .then((res) => {
-      return res;
-    })
     .catch((reason) => console.error(reason));
 
   const videos = await fetch('/repos/videos')
     .then(async (res) => {
       if (res.ok) return await res.json();
     })
-    .then((res) => {
-      return res;
-    })
     .catch((reason) => console.error(reason));
 
   const images = await fetch('/repos/images')
     .then(async (res) => {
       if (res.ok) return await res.json();
-    })
-    .then((res) => {
-      return res;
     })
     .catch((reason) => console.error(reason));
 
@@ -36,9 +27,6 @@ export async function load({ fetch, locals }) {
       (await fetch('/repos/videos/all')
         .then(async (res) => {
           if (res.ok) return await res.json();
-        })
-        .then((res) => {
-          return res;
         })
         .catch((reason) => console.error(reason)))) ||
     [];

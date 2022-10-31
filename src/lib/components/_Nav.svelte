@@ -63,7 +63,11 @@
     >
 
     {#if open}
-      <div class="modal-background hide-if-desktop" on:click={() => (open = false)} />
+      <div
+        class="modal-background hide-if-desktop"
+        on:keydown={() => {}}
+        on:click={() => (open = false)}
+      />
     {/if}
 
     <ul

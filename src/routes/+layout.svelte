@@ -5,7 +5,7 @@
   import '$lib/components/_colored_snackbar.scss';
   import * as api from '$lib/api';
   import { writable } from 'svelte/store';
-  import { goto, invalidate } from '$app/navigation';
+  import { goto, invalidate, invalidateAll } from '$app/navigation';
   import { page } from '$app/stores';
   import { getContext, onMount, setContext, tick } from 'svelte';
   import isMobile from 'ismobilejs';
@@ -49,6 +49,7 @@
   } from '$lib/components';
   import { svg_manifest } from '$lib/svg_manifest';
   import { _, locale } from 'svelte-i18n';
+  import { enhance } from '$app/forms';
 
   /** @type {import('./$types').LayoutData} */
   export let data;
@@ -300,29 +301,23 @@
   }
 
   /**
-   *
-   * @param {SubmitEvent} ev
+   * @this {{ "on:submit": () => Promise<void>; class: string; method: string; action: string; }}
    */
-  async function submitHandler(ev) {
+  async function submitHandler() {
     loggedInButtonTextSecondLine = $_('text.one-moment');
+    const form = this;
+    await post(form.action, {})
+      .then((res) => {
+        /**
+         * @type {{success: boolean, data: any}}
+         */
+        const { success, data } = { ...res };
 
-    /**
-     * @type {HTMLFormElement | any}
-     */
-    const form = ev.target;
-    // const data = {};
-    // new FormData(form).forEach((value, key) => (data[key] = value));
-
-    await post(form.action, {}).then((res) => {
-      /**
-       * @type {{success: boolean, data: any}}
-       */
-      const { success, data } = { ...res };
-
-      if (success) {
-        proxyEvent('ticker:stop', { ...data });
-      }
-    });
+        if (success) {
+          proxyEvent('ticker:stop', { ...data });
+        }
+      })
+      .catch((reason) => console.error(reason));
   }
 
   /**
@@ -362,13 +357,13 @@
 
   /**
    *
-   * @param {CustomEvent} ev
+   * @param {CustomEvent} event
    */
-  async function tickerSuccessHandler(ev) {
+  async function tickerSuccessHandler(event) {
     /**
      * @type {{user: import('$lib/types').User, renewed: string, message: string}}
      */
-    const { user, renewed, message } = { ...ev.detail };
+    const { user, renewed, message } = { ...event.detail };
     proxyEvent('ticker:extend');
     flash.update({ message, type: 'success', timeout: 2000 });
 
@@ -384,16 +379,16 @@
   async function tickerExtendHandler() {
     const time = new Date(Date.now() + parseInt($settings.Session.lifetime)).toISOString();
     await post('/session/extend', time);
-    invalidate('/session');
+    await invalidate('app:session');
   }
 
   /**
    *
-   * @param {CustomEvent} ev
+   * @param {CustomEvent} event
    */
-  function tickerErrorHandler(ev) {
-    const data = { ...ev.detail };
-    invalidate('/session');
+  function tickerErrorHandler(event) {
+    const data = { ...event.detail };
+    invalidate('app:session');
     flash.update({ ...data, type: 'error', timeout: 3500 });
     if (data.redirect) {
       setTimeout(async () => await goto(data.redirect), 3000);
@@ -402,29 +397,25 @@
 
   /**
    *
-   * @param {CustomEvent} ev
+   * @param {CustomEvent} event
    */
-  async function tickerStopHandler(ev) {
-    await killSession().then(() => {
-      const redirect = ev.detail.redirect;
-      const path = !!redirect ? redirect : redirect ?? '/';
-      if (path !== false) {
-        const search = createRedirectSlug($page.url);
-        goto(`${path}${search}`);
-      }
-    });
+  async function tickerStopHandler(event) {
+    await killSession();
+    const path = event.detail.redirect ?? '/';
+    const search = createRedirectSlug($page.url);
+    await goto(`${path}${search}`);
+
+    invalidate('app:session');
   }
 
   async function killSession() {
-    return await post(`/auth/logout`, {}).then(async (res) => {
-      invalidate('/session');
+    return await post('/auth/logout').then((res) => {
       message = res.message || res.data?.message;
 
       configSnackbar(message);
       snackbar = getSnackbar();
       snackbar?.open();
-
-      return res.success;
+      return res;
     });
   }
 
@@ -504,7 +495,7 @@
               </NavItem>
             {:else}
               <NavItem href="/login{search}" class="sign-in-out-item">
-                <Button formaction="/logout" variant="raised" class="sign-in-out">
+                <Button variant="raised" class="sign-in-out">
                   <Label>{$_('nav.login')}</Label>
                   <Icon class="material-icons" style="vertical-align: middle;">login</Icon>
                 </Button>

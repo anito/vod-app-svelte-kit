@@ -78,29 +78,14 @@
     };
   });
 
-  /**
-   * see https://svelte.dev/repl/a153f60d46374c1eb3da1678f9337fea?version=3.50.1
-   * for progressivly enhanced forms
-   * @param node
-   * @param options
-   */
-  function submit(node, options) {
-    let submitting = false;
+  async function submitHandler() {
+    const form = this;
 
-    async function submitHandler(e) {
-      e.preventDefault();
-      if (submitting) return;
-      submitting = true;
+    flash.update({ message: $_('text.authenticating'), permanent: true });
+    block();
 
-      const form = e.target;
-      const data = {};
-
-      flash.update({ message: $_('text.authenticating'), permanent: true });
-      block();
-
-      // new FormData(form).forEach((value, key) => (data[key] = value));
-
-      await post(form.action, { email, password }).then(async (res) => {
+    await post(form.action, { email, password })
+      .then(async (res) => {
         const { success, data } = { ...res };
 
         if (success) {
@@ -113,18 +98,10 @@
            */
           if (++loginAttempts > 3) invalidTokenUserDialog.setOpen(true);
         }
-        submitting = false;
         reset();
         unblock();
-      });
-    }
-
-    node.addEventListener('submit', submitHandler);
-
-    return () => node.removeEventListener('submit', submitHandler);
-
-    // TODO handle network errors
-    // errors = res.errors;
+      })
+      .catch((reason) => console.error(reason));
   }
 
   function reset() {
@@ -172,11 +149,7 @@
     </TabBar>
   </div>
   <form
-    use:submit={{
-      start: () => {},
-      error: () => {},
-      end: () => {}
-    }}
+    on:submit|preventDefault={submitHandler}
     method="POST"
     class="login-form flex justify-center"
     action="/auth/login"
