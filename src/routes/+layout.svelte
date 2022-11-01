@@ -384,8 +384,9 @@
     const time = new Date(Date.now() + parseInt($settings.Session.lifetime)).toISOString();
     await post('/session/extend', time);
     await invalidate('app:session').then(() => {
-      if ($page.routeId?.endsWith('videos')) invalidate('app:videos');
-      if ($page.routeId?.endsWith('users')) invalidate('app:repos');
+      const { start } = event.detail;
+      start && $page.routeId?.endsWith('videos') && invalidate('app:videos');
+      start && $page.routeId?.endsWith('users') && invalidate('app:users');
     });
   }
 
