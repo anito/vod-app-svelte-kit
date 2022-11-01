@@ -385,8 +385,8 @@
     await post('/session/extend', time);
     await invalidate('app:session').then(() => {
       const { start } = event.detail;
-      start && $page.routeId?.endsWith('videos') && invalidate('app:videos');
-      start && $page.routeId?.endsWith('users') && invalidate('app:users');
+      start && $page.routeId?.startsWith('/videos') && invalidate('app:videos');
+      start && $page.routeId?.startsWith('/users') && invalidate('app:users');
     });
   }
 
