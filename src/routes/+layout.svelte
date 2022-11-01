@@ -383,11 +383,10 @@
   async function tickerExtendHandler(event) {
     const time = new Date(Date.now() + parseInt($settings.Session.lifetime)).toISOString();
     await post('/session/extend', time);
-    if (event.detail?.start) {
-      await invalidateAll();
-    } else {
-      await invalidate('app:session');
-    }
+    await invalidate('app:session').then(() => {
+      if ($page.routeId?.endsWith('videos')) invalidate('app:videos');
+      if ($page.routeId?.endsWith('users')) invalidate('app:repos');
+    });
   }
 
   /**

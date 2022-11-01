@@ -1,5 +1,5 @@
 /** @type {import('./$types').LayoutServerLoad} */
-export async function load({ fetch }) {
+export async function load({ fetch, depends }) {
   /**
    * @type {import('$lib/types').Video[]}
    */
@@ -17,6 +17,8 @@ export async function load({ fetch }) {
       if (res.ok) return await res.json();
     })
     .catch((reason) => console.error(reason));
+
+  depends('app:videos');
 
   return { videos, images };
 }
