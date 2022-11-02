@@ -36,7 +36,6 @@
   /** @type {any} */
   let username;
 
-  $: console.log(data);
   $: selectionUserId = $page.params.slug;
   $: currentUser = ((id) => $users.find((usr) => usr.id === id) || ($users.length && $users[0]))(
     selectionUserId
