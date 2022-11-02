@@ -50,6 +50,7 @@
       } else {
         proxyEvent('ticker:error', { ...data, redirect: '/login' });
       }
+      google.accounts.id.prompt(); // display the One Tap dialog
     });
   }
 
