@@ -217,7 +217,7 @@
         });
         await invalidate('app:session');
       }
-      users.put(data);
+      await invalidate('app:users');
     }
     close();
     configSnackbar(message);
@@ -242,7 +242,7 @@
             });
             await invalidate('app:session');
           }
-          users.put({ ...currentUser, id: data.id, avatar: data.avatar });
+          await invalidate('app:users');
         }
       });
 

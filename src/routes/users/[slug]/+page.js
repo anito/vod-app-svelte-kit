@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 
 /** @type {import('./$types').PageLoad} */
-export async function load({ parent, params, url }) {
+export async function load({ parent, params, url, data }) {
   const parentData = await parent();
   const { session, users } = parentData;
 
