@@ -217,7 +217,7 @@
           ...$session,
           user: { ...$session.user, avatar: data.avatar }
         });
-        invalidate('/session');
+        invalidate('app:session');
       }
     }
     close();
@@ -243,7 +243,7 @@
               ...$session,
               user: { ...$session.user, avatar: data.avatar }
             });
-            invalidate('/session');
+            invalidate('app:session');
           }
         }
       });
