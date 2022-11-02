@@ -209,16 +209,15 @@
     const { success, message, data } = { ...ev.detail };
 
     if (success) {
-      users.put(data);
-
-      // also reflect the change in the session cookie
+      // reflect the change in the session cookie
       if ($session.user.id === data.id) {
         await post('/session', {
           ...$session,
           user: { ...$session.user, avatar: data.avatar }
         });
-        invalidate('app:session');
+        await invalidate('app:session');
       }
+      users.put(data);
     }
     close();
     configSnackbar(message);
@@ -235,16 +234,15 @@
         msg = message || res.data?.message;
 
         if (success) {
-          users.put({ ...currentUser, id: data.id, avatar: data.avatar });
-
-          // also reflect the change in the session cookie
+          // reflect the change in the session cookie
           if ($session.user.id === currentUser.id) {
             await post('/session', {
               ...$session,
               user: { ...$session.user, avatar: data.avatar }
             });
-            invalidate('app:session');
+            await invalidate('app:session');
           }
+          users.put({ ...currentUser, id: data.id, avatar: data.avatar });
         }
       });
 
