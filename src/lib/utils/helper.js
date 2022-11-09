@@ -268,19 +268,6 @@ export function svg(fn, colors) {
 }
 
 /**
- *
- * @param {*} $page
- * @returns {string}
- */
-export function getSegment($page) {
-  const matches = $page.url.pathname.match(/\/([a-z_-]*)/);
-  if (matches?.length >= 2) {
-    return matches[1];
-  }
-  return '';
-}
-/**
- *
  * @param {string} tab
  * @returns {string}
  */

@@ -9,7 +9,7 @@ export async function GET({ locals, url }) {
   const token = url.searchParams.get('token');
   const type = url.searchParams.get('type') || 'login';
   if (token) {
-    return await api.get(`${type}?token=${token}`, { fetch }).then(async (res) => {
+    return await api.get(`${type}?token=${token}`).then(async (res) => {
       const locale = locals.session.data.locale || get(i18n);
       let cookieData;
       if (res.success) {
@@ -41,16 +41,16 @@ export async function POST({ locals, request, url }) {
   const data = await request.json();
   const type = url.searchParams.get('type') || 'login';
 
-  return await api.post(`${type}`, { token: data.token, data, fetch }).then(async (res) => {
+  return await api.post(`${type}`, { token: data.token, data }).then(async (res) => {
     const locale = locals.session.data.locale || get(i18n);
-    let cookieData;
+    let sessionCookieData;
     if (res.success) {
       /** @type {import('$lib/types').User} */
       const { id, name, email, avatar, jwt, role, groups } = { ...res.data.user, ...res.data };
       const $settings = get(settings);
       const lifetime = url.searchParams.get('lifetime') || $settings.Session.lifetime;
       const _expires = new Date(Date.now() + parseInt(lifetime)).toISOString();
-      cookieData = {
+      sessionCookieData = {
         _expires,
         user: { id, name, email, jwt, avatar },
         role,
@@ -58,10 +58,10 @@ export async function POST({ locals, request, url }) {
         locale
       };
     } else {
-      cookieData = { locale };
+      sessionCookieData = { locale };
     }
     await locals.session.destroy();
-    await locals.session.set(cookieData);
+    await locals.session.set(sessionCookieData);
     return json(res);
   });
 }

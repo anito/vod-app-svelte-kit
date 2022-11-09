@@ -1,14 +1,13 @@
 // @ts-nocheck
-import { browser, dev } from '$app/environment';
+import { dev } from '$app/environment';
 import { locale as i18n } from 'svelte-i18n';
 
 let locale;
 i18n.subscribe((val) => (locale = val));
 
-export const base = dev ? `https://physio.mbp/v1` : `https://vod.webpremiere.de/v1`;
+export const base = dev ? `https://vod.mbp/v1` : `https://vod.webpremiere.de/v1`;
 
 async function send(atts = {}) {
-  // if (browser) atts = { fetch: window.fetch, ...atts };
   const { method, path, token, data } = { ...atts };
   let url = path.startsWith('http') ? path : `${base}/${path}`;
 

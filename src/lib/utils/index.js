@@ -4,7 +4,6 @@ import {
   createTabSearch,
   equals,
   formatter,
-  getSegment,
   info,
   log,
   parseSearchParams,
@@ -33,6 +32,7 @@ import {
   toLocalDate,
   toLocalTime
 } from './time-functions';
+import { getFragment, getSegment } from './navigation';
 import { getMedia, getExt, getMediaAvatar, getMediaImage, getMediaVideo } from './media';
 import { localeFormat } from './locale-format';
 import { get, post, put, del } from './http';
@@ -50,6 +50,7 @@ export {
   get,
   getExt,
   getAuxSession,
+  getFragment,
   getMedia,
   getMediaAvatar,
   getMediaImage,
