@@ -121,9 +121,9 @@
     <div class="grid lg:grid-cols-3 md:grid-cols-2 grid-flow-row gap-4">
       {#each $videos.sort(sortAZ) as video (video.id)}
         <VideoCard
-          on:Video:posterCreated={posterCreatedHandler}
-          on:Video:selectedPoster={posterSelectedHandler}
-          on:Video:removePoster={posterRemoveHandler}
+          on:Video:posterCreated={(event) => posterCreatedHandler(event, video.id)}
+          on:Video:selectedPoster={(event) => posterSelectedHandler(event, video.id)}
+          on:Video:removePoster={() => posterRemoveHandler(video.id)}
           {video}
         />
       {/each}

@@ -1,6 +1,6 @@
 <script>
   import { getContext, onMount } from 'svelte';
-  import { videos } from '$lib/stores';
+  import { videos, derivedCurrentVideo } from '$lib/stores';
   import { Modal, VideoCard } from '$lib/components';
   import { posterCreatedHandler, posterRemoveHandler, posterSelectedHandler } from '$lib/utils';
   import { _ } from 'svelte-i18n';
@@ -24,9 +24,9 @@
     {#each storeData as video}
       <VideoCard
         class="mb-3"
-        on:Video:posterCreated={posterCreatedHandler}
-        on:Video:selectedPoster={posterSelectedHandler}
-        on:Video:removePoster={posterRemoveHandler}
+        on:Video:posterCreated={(event) => posterCreatedHandler(event, $derivedCurrentVideo.id)}
+        on:Video:selectedPoster={(event) => posterSelectedHandler(event, $derivedCurrentVideo.id)}
+        on:Video:removePoster={() => posterRemoveHandler($derivedCurrentVideo.id)}
         {video}
         {key}
       />
