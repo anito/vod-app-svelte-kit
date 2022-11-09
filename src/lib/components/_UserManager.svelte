@@ -439,10 +439,12 @@
                           break;
                         }
                         case 'edit': {
+                          users.put(user);
                           await invalidate('app:users');
                           break;
                         }
                         case 'del': {
+                          users.del(user.id);
                           await invalidate('app:users');
                           break;
                         }
