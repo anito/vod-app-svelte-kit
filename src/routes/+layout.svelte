@@ -152,8 +152,7 @@
     mounted
   });
 
-  settings.update(data.config);
-
+  $: settings.update(data.config);
   $: segment = getSegment($page);
   $: token = $session.user?.jwt;
   $: person = svg(svg_manifest.person, $theme.primary);
