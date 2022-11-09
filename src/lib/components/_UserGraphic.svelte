@@ -17,7 +17,7 @@
   export let overlayOpacity = 0.5;
 
   /**
-   * @type {{icon: string, position: any, color: string | null, size: string}}
+   * @type {{icon?: string, position?: any, color?: string | null, size?: string}}
    */
   export let badge = {
     icon: '',

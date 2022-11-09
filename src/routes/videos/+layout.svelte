@@ -17,8 +17,8 @@
   let selectedIndex;
   let search = '';
 
-  $: videos.update(data.videos);
-  $: images.update(data.images);
+  $: !$videos.length && videos.update(data.videos);
+  $: !$images.length && images.update(data.images);
   $: sidebar = !!$page.params.slug;
   $: selectionVideoId = $page.params.slug;
   $: filteredVideos = $videos

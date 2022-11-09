@@ -78,14 +78,14 @@
   let uploadedData;
   /** @type {any} */
   let focusItemAtIndex;
-  /** @type {any} */
+  /** @type {import("@smui/list").ItemComponentDev}[] */
   let listItems;
   /** @type {boolean} */
   let active;
 
   $: selectionUserId = $page.params.slug || $session.user?.id;
   $: selectionUserId && listItems && scrollIntoView();
-  $: currentUser = ((id) => $users?.find((usr) => usr.id === id))(selectionUserId);
+  $: currentUser = ((id) => $users.find((usr) => usr.id === id))(selectionUserId);
   $: ((usr) => {
     username = usr?.name;
     active = usr?.active || false;
@@ -96,7 +96,7 @@
     magicLink = token ? `${$page.url.origin}/login?token=${token}` : '';
   })(currentUser);
   $: filteredUsers =
-    $users?.filter((user) => user.name.toLowerCase().indexOf(search.toLowerCase()) !== -1) || [];
+    $users.filter((user) => user.name.toLowerCase().indexOf(search.toLowerCase()) !== -1) || [];
   $: userInfos = ($infos?.has(selectionUserId) && $infos.get(selectionUserId).params) || [];
   $: userIssues = userInfos.filter(
     /**
@@ -387,6 +387,7 @@
    * @param {any} param0
    */
   function receiveListMethods({ detail }) {
+    // @ts-ignore
     ({ focusItemAtIndex, items: listItems } = { ...detail });
   }
 
@@ -402,7 +403,9 @@
   function scrollIntoView() {
     const options = { block: 'nearest', behavior: 'smooth' };
     setTimeout(() => {
-      const item = listItems.find((item) => item.selected);
+      const item = listItems.find(
+        /** @param {import("@smui/list").ItemComponentDev} item */ (item) => item.selected
+      );
       item?.element.scrollIntoView(options);
       // item.selected && focusItemAtIndex(index);
     }, 100);

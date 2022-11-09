@@ -4,7 +4,7 @@
 	"description": "VoD Manager",
 	"license": "UNLICENSED",
 	"scripts": {
-		"dev": "vite dev --port 3000 --https --host",
+		"dev": "vite dev --https --host",
 		"build": "vite build",
 		"package": "vite package --host",
 		"preview": "vite preview --host",

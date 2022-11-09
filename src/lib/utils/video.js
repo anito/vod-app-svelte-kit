@@ -1,4 +1,4 @@
-import { images, derivedCurrentVideo, videoEmitter } from '../stores';
+import { images, derivedCurrentVideo, videoEmitter } from '$lib/stores';
 
 /**
  * @type {import('$lib/types').Video | null}

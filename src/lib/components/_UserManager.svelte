@@ -61,7 +61,7 @@
   /** @type {import('@smui/menu').MenuComponentDev} */
   let avatarMenu;
   let avatarMenuAnchor;
-  let token = '';
+  let jwt = '';
   let activeLabel = '';
   let protectedLabel = '';
   /** @type {HTMLInputElement} */
@@ -81,6 +81,7 @@
   /** @type {string} */
   let mode = EDIT;
 
+  $: token = $session.user?.jwt;
   $: redirectMode(mode);
   $: selectedMode = $page.url.searchParams.has('mode')
     ? $page.url.searchParams.get('mode')
@@ -99,8 +100,10 @@
   $: root?.classList.toggle('user-delete-view', selectedMode === DEL);
   $: groups = $session.groups || [];
   $: currentUser = ((id) => {
-    const user = $users.filter((usr) => usr?.id === id)[0];
-    if (user && selectedMode !== ADD) copy(user);
+    const user = $users.find((usr) => usr?.id === id);
+    if (user && selectedMode !== ADD) {
+      copy(user);
+    }
     return user;
   })(selectionUserId);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
@@ -143,11 +146,11 @@
       userActions.find((usrAction) => userAction.name === usrAction)
     ))(actions);
   $: ((user) => {
-    token = user?.jwt || '';
+    jwt = user?.jwt || '';
     activeLabel = (active && $_('text.deactivate-user')) || $_('text.activate-user');
     protectedLabel = (__protected && $_('text.unprotect-user')) || $_('text.protect-user');
   })(currentUser);
-  $: magicLink = (token && `${$page.url.origin}/login?token=${token}`) || '';
+  $: magicLink = (jwt && `${$page.url.origin}/login?token=${jwt}`) || '';
   $: actionsLookup = new Set([
     { name: EDIT, i18n: 'text.edit-user', formAction: 'edit' },
     { name: PASS, i18n: 'text.edit-password', formAction: 'edit' },
@@ -226,57 +229,53 @@
 
   async function deleteAvatar() {
     let msg;
-    await api
-      .del(`avatars/${currentUser.avatar.id}`, { token: $session.user?.jwt, fetch })
-      .then(async (res) => {
-        /** @type {any} */
-        const { data, success, message } = { ...res };
-        msg = message || res.data?.message;
+    await api.del(`avatars/${currentUser.avatar.id}`, { token }).then(async (res) => {
+      /** @type {any} */
+      const { data, success, message } = { ...res };
+      msg = message || res.data?.message;
 
-        if (success) {
-          // reflect the change in the session cookie
-          if ($session.user.id === currentUser.id) {
-            await post('/session', {
-              ...$session,
-              user: { ...$session.user, avatar: data.avatar }
-            });
-            await invalidate('app:session');
-          }
-          await invalidate('app:users');
+      if (success) {
+        // reflect the change in the session cookie
+        if ($session.user.id === currentUser.id) {
+          await post('/session', {
+            ...$session,
+            user: { ...$session.user, avatar: data.avatar }
+          });
+          await invalidate('app:session');
         }
-      });
+        await invalidate('app:users');
+      }
+    });
 
     configSnackbar(msg);
     snackbar.open();
   }
 
   async function activateUser() {
-    await api
-      .put(`users/${selectionUserId}`, { data: { active }, token: $session.user?.jwt })
-      .then((res) => {
-        if (res) {
-          message = res.message || res.data.message || res.statusText;
-          code = (res.data && res.data.code) || res.status;
+    await api.put(`users/${selectionUserId}`, { data: { active }, token }).then((res) => {
+      if (res) {
+        message = res.message || res.data.message || res.statusText;
+        code = (res.data && res.data.code) || res.status;
 
-          if (res.success) {
-            users.put({ ...currentUser, active });
-          } else if (200 < code && code < 500) {
-            // Sample Users are protected
-            reset();
-          }
-
-          configSnackbar(message);
-          snackbar.isOpen() && snackbar.close();
-          snackbar.open();
+        if (res.success) {
+          users.put({ ...currentUser, active });
+        } else if (200 < code && code < 500) {
+          // Sample Users are protected
+          reset();
         }
-      });
+
+        configSnackbar(message);
+        snackbar.isOpen() && snackbar.close();
+        snackbar.open();
+      }
+    });
   }
 
   async function changeProtection() {
     await api
       .put(`users/${selectionUserId}`, {
         data: { protected: __protected },
-        token: $session.user?.jwt
+        token
       })
       .then((res) => {
         if (res) {
@@ -427,27 +426,30 @@
 
                 return async ({ result, update }) => {
                   if (result.type === 'success') {
-                    if (result.data?.success) {
+                    /** @type {any | undefined} */
+                    const { success, message, data: user } = result.data;
+                    if (success) {
                       switch (formAction) {
                         case 'add': {
-                          setTimeout(async () => {
-                            await invalidate('/repos/users');
-                            await goto(`/users/${result.data?.data.id}?tab=profile&mode=edit`);
-                          }, 200);
+                          await invalidate('app:users').then(() => {
+                            setTimeout(async () => {
+                              await goto(`/users/${user.id}?tab=profile&mode=edit`);
+                            }, 200);
+                          });
                           break;
                         }
                         case 'edit': {
-                          users.put(result.data.data);
+                          await invalidate('app:users');
                           break;
                         }
                         case 'del': {
-                          users.del(currentUser.id);
+                          await invalidate('app:users');
                           break;
                         }
                       }
                     }
                     reset();
-                    configSnackbar(result.data?.message || result.data?.data.message);
+                    configSnackbar(message);
                     snackbar.open();
                   }
                 };
@@ -658,7 +660,7 @@
           {/if}
           {#if currentUser && hasPrivileges && selectedMode !== ADD}
             <div class="table-wrapper">
-              <div class="token-factory" class:no-token={!token}>
+              <div class="token-factory" class:no-token={!jwt}>
                 <div class="main-info">
                   <div class="button-group token-action-buttons flex mt-1 mb-3">
                     <Group>
@@ -667,7 +669,7 @@
                         variant="raised"
                         disabled={isProtected}
                         on:click={() =>
-                          !isProtected && proxyEvent('INFO:token:Generate', { open: !!token })}
+                          !isProtected && proxyEvent('INFO:token:Generate', { open: !!jwt })}
                       >
                         <Icon class="material-icons">link</Icon>
                         <Label class="token-button-label">
@@ -675,7 +677,7 @@
                         </Label>
                       </Button>
                       <Button
-                        disabled={isProtected || !token}
+                        disabled={isProtected || !jwt}
                         label={$_('text.can-not-remove-admin-token')}
                         variant="raised"
                         on:click={() =>
@@ -693,7 +695,7 @@
                     <InfoChips {selectionUserId} />
                   </div>
                   <div class="item">
-                    {#if token}
+                    {#if jwt}
                       <div class="button-group magic-link-group token-action-buttons flex mb-3">
                         <Group style="max-width: 100%;">
                           <Button
@@ -721,7 +723,7 @@
                               /** @param {HTMLInputElement | any} node */ (node) =>
                                 (inputElementMagicLink = node)
                             ]}
-                            disabled={isProtected || !token}
+                            disabled={isProtected || !jwt}
                             variant="outlined"
                           >
                             <input type="text" value={isProtected ? '' : magicLink} />
@@ -729,7 +731,7 @@
                           <Button
                             use={[setCopyButton]}
                             class="action-copy"
-                            disabled={isProtected || !token}
+                            disabled={isProtected || !jwt}
                             variant="unelevated"
                             on:click={(e) => !isProtected && copyToClipBoard()}
                           >
@@ -744,7 +746,7 @@
                   </div>
                 </div>
                 <div class="additional-info">
-                  {#if token}
+                  {#if jwt}
                     <div class="item">
                       <h5 class="mb-4">{$_('text.next-steps')}</h5>
                       <details>

@@ -5,7 +5,7 @@
   import { onMount, setContext } from 'svelte';
   import { UserManager, TimeManager, MailManager, UserGraphic } from '$lib/components';
   import Button, { Group, Label, Icon } from '@smui/button';
-  import { users, slim, sitename, session } from '$lib/stores';
+  import { users, slim, sitename, session, videos, videosAll, images } from '$lib/stores';
   import { proxyEvent, INBOX, ADMIN, SUPERUSER, TABS, log } from '$lib/utils';
   import { _ } from 'svelte-i18n';
 
@@ -36,6 +36,10 @@
   /** @type {any} */
   let username;
 
+  $: users.update(data.users);
+  $: videos.update(data.videos);
+  $: videosAll.update(data.videosAll);
+  $: images.update(data.images);
   $: selectionUserId = $page.params.slug;
   $: currentUser = ((id) => $users.find((usr) => usr.id === id) || ($users.length && $users[0]))(
     selectionUserId

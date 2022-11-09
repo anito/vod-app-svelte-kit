@@ -1,7 +1,6 @@
 // @ts-nocheck
 import { browser, dev } from '$app/environment';
 import { locale as i18n } from 'svelte-i18n';
-import { windowSize } from './utils';
 
 let locale;
 i18n.subscribe((val) => (locale = val));
@@ -9,9 +8,9 @@ i18n.subscribe((val) => (locale = val));
 export const base = dev ? `https://physio.mbp/v1` : `https://vod.webpremiere.de/v1`;
 
 async function send(atts = {}) {
-  if (browser) atts = { fetch: window.fetch, ...atts };
-  const { method, path, token, fetch, data } = { token: atts.data?.token, ...atts };
-  let fullpath = path.startsWith('http') ? path : `${base}/${path}`;
+  // if (browser) atts = { fetch: window.fetch, ...atts };
+  const { method, path, token, data } = { ...atts };
+  let url = path.startsWith('http') ? path : `${base}/${path}`;
 
   const opts = {
     method,
@@ -31,7 +30,7 @@ async function send(atts = {}) {
     opts.headers['Authorization'] = `Bearer ${token}`;
   }
 
-  return fetch(`${fullpath}`, opts)
+  return fetch(`${url}`, opts)
     .then((res) => res.text())
     .then((res) => {
       try {

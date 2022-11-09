@@ -49,7 +49,6 @@
   } from '$lib/components';
   import { svg_manifest } from '$lib/svg_manifest';
   import { _, locale } from 'svelte-i18n';
-  import { enhance } from '$app/forms';
 
   /** @type {import('./$types').LayoutData} */
   export let data;
@@ -276,7 +275,7 @@
       if (show) {
         let message = res.message || res.data.message;
         configSnackbar(message);
-        snackbar.open();
+        snackbar?.open();
       }
     });
   }
@@ -295,7 +294,7 @@
       if (show) {
         let message = res.message || res.data.message;
         configSnackbar(message);
-        snackbar.open();
+        snackbar?.open();
       }
     });
   }
@@ -383,11 +382,7 @@
   async function tickerExtendHandler(event) {
     const time = new Date(Date.now() + parseInt($settings.Session.lifetime)).toISOString();
     await post('/session/extend', time);
-    await invalidate('app:session').then(() => {
-      const { start } = event.detail;
-      start && $page.routeId?.startsWith('/videos') && invalidate('app:videos');
-      start && $page.routeId?.startsWith('/users') && invalidate('app:users');
-    });
+    await invalidate('app:session');
   }
 
   /**
