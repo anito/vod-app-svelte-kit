@@ -380,13 +380,16 @@
    */
   async function tickerExtendHandler(event) {
     const time = new Date(Date.now() + parseInt($settings.Session.lifetime)).toISOString();
-    await post('/session/extend', time);
-    await invalidate('app:session').then(async () => {
-      if (event.detail.start) {
-        if ($page.route.id?.startsWith('/users')) await invalidate('app:users');
-        if ($page.route.id?.startsWith('/videos')) await invalidate('app:videos');
-      }
-    });
+
+    // if we start a fresh session, the session 'expires' parameter is already set, no need to extend it again
+    if (event.detail.start) {
+      // reload data in case we've logged user in on the fly
+      if ($page.route.id?.startsWith('/users')) await invalidate('app:users');
+      if ($page.route.id?.startsWith('/videos')) await invalidate('app:videos');
+    } else {
+      await post('/session/extend', time);
+    }
+    await invalidate('app:session');
   }
 
   /**

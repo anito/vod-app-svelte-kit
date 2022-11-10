@@ -4,6 +4,11 @@ import * as api from '$lib/api';
 import { urls } from '$lib/stores';
 import { log } from '$lib/utils';
 
+const MediaTypes = new Map([
+  ['a', { name: 'AVATAR' }],
+  ['i', { name: 'IMAGE' }],
+  ['v', { name: 'VIDEO' }]
+]);
 async function uri(id, user, type, options = {}) {
   let query = [];
   for (var key in options) {
@@ -15,7 +20,9 @@ async function uri(id, user, type, options = {}) {
     if (res?.success) {
       return res.data;
     } else {
-      throw `The Uri method was unable to fetch a mediafile type: ${type.toUpperCase()}, id: ${id}`;
+      throw `The Uri method was unable to fetch a mediafile type: ${
+        MediaTypes.get(type)?.name || 'unknown'
+      }, id: ${id}`;
     }
   });
 }

@@ -6,7 +6,7 @@
   // @ts-nocheck
 
   import { browser, dev } from '$app/environment';
-  import { onMount, getContext, tick } from 'svelte';
+  import { onMount, getContext } from 'svelte';
   import { post, proxyEvent } from '$lib/utils';
   import { flash } from '$lib/stores';
   import Button from '@smui/button';
@@ -18,6 +18,7 @@
   import Dialog, { Title as DialogTitle, Content, Actions, InitialFocus } from '@smui/dialog';
   import { FacebookLoginButton, GoogleLoginButton, Header } from '$lib/components';
   import { _ } from 'svelte-i18n';
+  import { enhance } from '$app/forms';
 
   const client_id = import.meta.env.VITE_CLIENT_ID; // Ggogle Client ID
   const appId = import.meta.env.VITE_APP_ID; // Facebook App ID
@@ -26,31 +27,21 @@
   const toplevel = dev ? 'dev' : 'de';
 
   // Fixtures
-  const adminEmail = `sampleadmin@webpremiere.${toplevel}`;
-  const adminPassword = 'Test@005';
-  // const userEmail = `sampleuser@webpremiere.${toplevel}`;
-  const userEmail = `sampleuser@webpremiere.${toplevel}`;
-  const userPassword = 'Angela@005';
+  const ADMIN_EMAIL = `sampleadmin@webpremiere.${toplevel}`;
+  const ADMIN_PASS = 'Test@005';
+  const USER_EMAIL = `sampleuser@webpremiere.${toplevel}`;
+  const USER_PASS = 'Angela@005';
   const ONE = 'one-row';
   const TWO = 'two-rows';
   const THREE = 'three-rows';
-  const DefaultTab = 'Presets';
+  const defaultTab = 'Presets';
 
-  let root;
-  let password = '';
-  let email = '';
-  /** @type {import("@smui/snackbar").SnackbarComponentDev} */
-  let snackbar;
-  let invalidTokenUserDialog;
-  let foundActive;
-  let active;
-
-  $: tabMap = new Map([
+  const tabMap = new Map([
     ['Default', { rows: THREE, text: $_('text.formular'), icon: 'notes' }],
     ['Presets', { rows: TWO, text: $_('text.presets'), icon: 'people_alt' }],
     ['Social', { rows: TWO, text: $_('text.social'), icon: 'mood' }]
   ]);
-  $: tabs = {
+  const tabs = {
     names: () => {
       const names = [];
       tabMap.forEach((val, key) => {
@@ -62,7 +53,17 @@
     text: (key) => tabMap.get(key).text,
     icon: (key) => tabMap.get(key).icon
   };
-  $: tabNames = tabs.names();
+  const tabNames = tabs.names();
+
+  let root;
+  let password = '';
+  let email = '';
+  /** @type {import("@smui/snackbar").SnackbarComponentDev} */
+  let snackbar;
+  let invalidTokenUserDialog;
+  let foundActive;
+  let active;
+
   $: rows = active && tabs.rows(active);
   $: active && browser && localStorage.setItem('activeSignIn', active);
 
@@ -70,7 +71,7 @@
     root = document.documentElement;
     unblock();
     foundActive = localStorage.getItem('activeSignIn');
-    active = (tabMap.has(foundActive) && foundActive) || DefaultTab;
+    active = (tabMap.has(foundActive) && foundActive) || defaultTab;
     snackbar = getSnackbar();
 
     return () => {
@@ -78,31 +79,25 @@
     };
   });
 
-  async function submitHandler() {
-    const form = this;
-
+  const loginHandler = ({ form, action, cancel, data }) => {
     flash.update({ message: $_('text.authenticating'), permanent: true });
     block();
+    return ({ result, update }) => {
+      const { success, data } = { ...result.data };
+      if (success) {
+        proxyEvent('ticker:success', { ...data });
+      } else {
+        proxyEvent('ticker:error', { ...data });
 
-    await post(form.action, { email, password })
-      .then(async (res) => {
-        const { success, data } = { ...res };
-
-        if (success) {
-          proxyEvent('ticker:success', { ...data });
-        } else {
-          proxyEvent('ticker:error', { ...data });
-
-          /**
-           * Show dialog after 3 login fails
-           */
-          if (++loginAttempts > 3) invalidTokenUserDialog.setOpen(true);
-        }
-        reset();
-        unblock();
-      })
-      .catch((reason) => console.error(reason));
-  }
+        /**
+         * Show dialog after 3 fails
+         */
+        if (++loginAttempts > 3) invalidTokenUserDialog.setOpen(true);
+      }
+      reset();
+      unblock();
+    };
+  };
 
   function reset() {
     email = '';
@@ -115,18 +110,6 @@
 
   function unblock() {
     root.classList.remove('signing-in');
-  }
-
-  function setFields(type) {
-    switch (type) {
-      case 'admin':
-        email = adminEmail;
-        password = adminPassword;
-        break;
-      case 'user':
-        email = userEmail;
-        password = userPassword;
-    }
   }
 
   function invalidTokenDialogCloseHandler(e) {
@@ -149,10 +132,10 @@
     </TabBar>
   </div>
   <form
-    on:submit|preventDefault={submitHandler}
+    use:enhance={loginHandler}
     method="POST"
     class="login-form flex justify-center"
-    action="/auth/login"
+    action="/auth?/login"
   >
     <div class="login-grid {rows}">
       {#if active === tabNames[0]}
@@ -160,6 +143,7 @@
           <Textfield
             variant="outlined"
             bind:value={email}
+            bind:input$name={email}
             label="Email"
             autocomplete="user-email"
             input$aria-controls="helper-text-outlined-email"
@@ -172,9 +156,10 @@
           <Textfield
             variant="outlined"
             type="password"
+            bind:value={password}
+            bind:input$name={password}
             label={$_('text.password')}
             autocomplete="user-password"
-            bind:value={password}
             input$aria-controls="helper-text-outlined-password"
             input$aria-describedby="helper-text-outlined-password"
           >
@@ -194,32 +179,42 @@
         </div>
       {/if}
       {#if active === tabNames[1]}
-        <div class="one flex justify-center">
-          <Button
-            on:click={() => setFields('admin')}
-            color=""
-            class="login-button"
-            type="submit"
-            variant="raised"
-            style="flex: 0 0 221px;"
-          >
-            <Icon class="material-icons">supervisor_account</Icon>
-            <Label>Sample Admin</Label>
-          </Button>
-        </div>
-        <div class="two flex justify-center">
-          <Button
-            on:click={() => setFields('user')}
-            color=""
-            class="login-button flex-1"
-            type="submit"
-            variant="raised"
-            style="flex: 0 0 221px;"
-          >
-            <Icon class="material-icons">person</Icon>
-            <Label>Sample User</Label>
-          </Button>
-        </div>
+        <span class="one flex flex-col">
+          <form use:enhance={loginHandler} action="/auth?/login">
+            <div class="one flex justify-center">
+              <Button
+                color=""
+                class="login-button"
+                type="submit"
+                variant="raised"
+                style="flex: 0 0 221px;"
+              >
+                <Icon class="material-icons">supervisor_account</Icon>
+                <Label>Sample Admin</Label>
+              </Button>
+            </div>
+            <input type="hidden" name="email" value={ADMIN_EMAIL} />
+            <input type="hidden" name="password" value={ADMIN_PASS} />
+          </form>
+        </span>
+        <span class="two flex flex-col">
+          <form use:enhance={loginHandler} action="/auth?/login">
+            <div class="two flex justify-center">
+              <Button
+                color=""
+                class="login-button flex-1"
+                type="submit"
+                variant="raised"
+                style="flex: 0 0 221px;"
+              >
+                <Icon class="material-icons">person</Icon>
+                <Label>Sample User</Label>
+              </Button>
+            </div>
+            <input type="hidden" name="email" value={USER_EMAIL} />
+            <input type="hidden" name="password" value={USER_PASS} />
+          </form>
+        </span>
       {/if}
       {#if active === tabNames[2]}
         <div class="one flex relative justify-center">

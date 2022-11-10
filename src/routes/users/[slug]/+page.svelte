@@ -12,9 +12,6 @@
   /** @type {import('./$types').PageData} */
   export let data;
 
-  /** @type {import('./$types').ActionData} */
-  export let form;
-
   /**  * @type {string} */
   let selectedMode = 'edit';
 
