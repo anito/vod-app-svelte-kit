@@ -424,35 +424,33 @@
                   }
                 }
 
-                return async ({ result, update }) => {
+                return async ({ result }) => {
                   if (result.type === 'success') {
                     /** @type {any | undefined} */
-                    const { success, message, data: user } = result.data;
+                    const { success, message, data: user } = { ...result.data };
                     if (success) {
                       switch (formAction) {
                         case 'add': {
-                          await invalidate('app:users').then(() => {
-                            setTimeout(async () => {
-                              await goto(`/users/${user.id}?tab=profile&mode=edit`);
-                            }, 200);
-                          });
+                          await invalidate('app:users');
+                          setTimeout(async () => {
+                            await goto(`/users/${user.id}?tab=profile&mode=edit`);
+                          }, 200);
                           break;
                         }
                         case 'edit': {
                           users.put(user);
-                          // await invalidate('app:users');
                           break;
                         }
                         case 'del': {
-                          users.del(user.id);
-                          // await invalidate('app:users');
+                          await invalidate('app:users');
+                          mode = EDIT;
                           break;
                         }
                       }
+                      reset();
+                      configSnackbar(message);
+                      snackbar.open();
                     }
-                    reset();
-                    configSnackbar(message);
-                    snackbar.open();
                   }
                 };
               }}

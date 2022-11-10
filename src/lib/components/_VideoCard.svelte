@@ -24,28 +24,48 @@
 
   const uploader = getContext(key);
 
-  let className = '';
-  /** @type {import('@smui/menu').MenuComponentDev} */
-  let cardMenu;
-  /** @type {import('@smui/menu').MenuComponentDev} */
-  let deleteMenu;
   let dispatch = createEventDispatcher();
-  /** @type {import('@smui/menu-surface').MenuSurfaceComponentDev} */
-  let imageList;
-  /** @type {HTMLDivElement} */
-  let imageListAnchor;
+  let className = '';
   let isEditMode = false;
-  /** @type {string} */
+  let isImageListOpen = false;
+  /**
+   * @type {import('@smui/menu').MenuComponentDev}
+   */
+  let cardMenu;
+  /**
+   * @type {import('@smui/menu').MenuComponentDev}
+   *
+   */
+  let deleteMenu;
+  /**
+   * @type {import('@smui/menu-surface').MenuSurfaceComponentDev}
+   *
+   */
+  let imageList;
+  /**
+   * @type {HTMLDivElement}
+   *
+   */
+  let imageListAnchor;
+  /**
+   * @type {string}
+   *
+   */
   let title;
-  /** @type {string} */
+  /**
+   * @type {string}
+   *
+   */
   let description;
-  /** @type {any} */
+  /**
+   * @type {any}
+   *
+   */
   let dateOptions = {
     day: '2-digit',
     year: 'numeric',
     month: '2-digit'
   };
-  let isImageListOpen = false;
 
   $: user = $session.user;
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
@@ -57,6 +77,7 @@
     : { label: $_('text.delete'), icon: 'delete' };
   $: matchingData = (video?.['_matchingData'] && video['_matchingData']['UsersVideos']) || null;
   $: canSave = description !== video.description || title !== video.title;
+  $: hidden = !hasPrivileges;
 
   function save() {
     const data = { id: video.id, title, description };
@@ -118,7 +139,7 @@
   }
 
   /** @param {string} id */
-  function getCachedImage(id) {
+  function getImage(id) {
     let res = getMedia('IMAGE', id, user, {
       width: 100,
       height: 100,
@@ -194,94 +215,99 @@
       </div>
     </Content>
   </PrimaryAction>
-  {#if hasPrivileges}
-    <Actions class="card-actions">
-      <ActionButtons class="action-buttons">
-        <Button
-          color="primary"
-          class="action-button"
-          disabled={isEditMode && !canSave}
-          on:click={() => (isEditMode = !isEditMode && edit()) || save()}
-        >
-          <Label>{leftButton.label}</Label>
-          <Icon class="material-icons">{leftButton.icon}</Icon>
-        </Button>
-        <Button
-          color="primary"
-          class="action-button"
-          on:click={() => (isEditMode = !isEditMode && setDeleteMenuOpen(true))}
-        >
-          <Label>{rightButton.label}</Label>
-          <Icon class="material-icons">{rightButton.icon}</Icon>
-        </Button>
-        <ActionIcons style="position: relative;">
-          <IconButton
-            class="material-icons"
-            on:click={() => cardMenu.setOpen(true)}
-            toggle
-            aria-label={$_('text.more-options')}
-            title={$_('text.more-options')}>more_vert</IconButton
+  <!-- Todo -->
+  {#if hasPrivileges || 1}
+    <div class:hidden>
+      <Actions class="card-actions">
+        <ActionButtons class="action-buttons">
+          <Button
+            color="primary"
+            class="action-button"
+            disabled={isEditMode && !canSave}
+            on:click={() => (isEditMode = !isEditMode && edit()) || save()}
           >
-          <Menu bind:this={cardMenu} on:MDCMenuSurface:opened={cardMenuOpenedHandler}>
-            <List class="menu-list">
-              <Item on:click={() => createPoster('image')}>
-                <Text>{$_('text.new-poster')}</Text>
-              </Item>
-              <Item disabled={!$images.length} on:click={() => imageList.setOpen(true)}>
-                <Text>{$_('text.select-poster')}</Text>
-              </Item>
-              <Separator />
-              <Item
-                disabled={!video.image_id}
-                on:SMUI:action={() => dispatch('Video:removePoster', video.image_id)}
-              >
-                <Text>{$_('text.remove-poster')}</Text>
-              </Item>
-              <Item class="text-red-700" on:SMUI:action={() => del()}>
-                <Text>{$_('text.delete-video')}</Text>
-              </Item>
-            </List>
-          </Menu>
-          <Menu bind:this={deleteMenu}>
-            <List>
-              <Item class="text-red-700" on:SMUI:action={() => del()}>
-                <Text>{$_('text.delete-video')}</Text>
-              </Item>
-            </List>
-          </Menu>
-        </ActionIcons>
-      </ActionButtons>
-      <div use:Anchor bind:this={imageListAnchor} style="top: -320px; right: 250px;">
-        <MenuSurface
-          bind:this={imageList}
-          bind:anchorElement={imageListAnchor}
-          anchor={false}
-          anchorCorner="TOP_RIGHT"
-          on:MDCMenuSurface:opened={imageListOpenedHandler}
-          on:MDCMenuSurface:closed={imageListClosedHandler}
-        >
-          <ImageList class="menu-surface-image-list">
-            {#if isImageListOpen}
-              {#each $images as image, i (image.id)}
-                {#await getCachedImage(image.id)}
-                  <div />
-                {:then src}
-                  <ImageListItem>
+            <Label>{leftButton.label}</Label>
+            <Icon class="material-icons">{leftButton.icon}</Icon>
+          </Button>
+          <Button
+            color="primary"
+            class="action-button"
+            on:click={() => (isEditMode = !isEditMode && setDeleteMenuOpen(true))}
+          >
+            <Label>{rightButton.label}</Label>
+            <Icon class="material-icons">{rightButton.icon}</Icon>
+          </Button>
+          <ActionIcons style="position: relative;">
+            <IconButton
+              class="material-icons"
+              on:click={() => cardMenu.setOpen(true)}
+              toggle
+              aria-label={$_('text.more-options')}
+              title={$_('text.more-options')}>more_vert</IconButton
+            >
+            <Menu bind:this={cardMenu} on:MDCMenuSurface:opened={cardMenuOpenedHandler}>
+              <List class="menu-list">
+                <Item on:click={() => createPoster('image')}>
+                  <Text>{$_('text.new-poster')}</Text>
+                </Item>
+                <Item disabled={!$images.length} on:click={() => imageList.setOpen(true)}>
+                  <Text>{$_('text.select-poster')}</Text>
+                </Item>
+                <Separator />
+                <Item
+                  disabled={!video.image_id}
+                  on:SMUI:action={() => dispatch('Video:removePoster', video.image_id)}
+                >
+                  <Text>{$_('text.remove-poster')}</Text>
+                </Item>
+                <Item class="text-red-700" on:SMUI:action={() => del()}>
+                  <Text>{$_('text.delete-video')}</Text>
+                </Item>
+              </List>
+            </Menu>
+            <Menu bind:this={deleteMenu}>
+              <List>
+                <Item class="text-red-700" on:SMUI:action={() => del()}>
+                  <Text>{$_('text.delete-video')}</Text>
+                </Item>
+              </List>
+            </Menu>
+          </ActionIcons>
+        </ActionButtons>
+        <div use:Anchor bind:this={imageListAnchor} style="top: -320px; right: 250px;">
+          <MenuSurface
+            bind:this={imageList}
+            bind:anchorElement={imageListAnchor}
+            anchor={false}
+            anchorCorner="TOP_RIGHT"
+            on:MDCMenuSurface:opened={imageListOpenedHandler}
+            on:MDCMenuSurface:closed={imageListClosedHandler}
+          >
+            <ImageList class="menu-surface-image-list">
+              {#if isImageListOpen}
+                {#each $images as image, i (image.id)}
+                  {#await getImage(image.id)}
                     <ImageAspectContainer>
-                      <Image
-                        class="preview-image"
-                        on:click={() => dispatch('Video:selectedPoster', image.id)}
-                        {src}
-                      />
+                      <Image src="/empty-poster.jpg" />
                     </ImageAspectContainer>
-                  </ImageListItem>
-                {/await}
-              {/each}
-            {/if}
-          </ImageList>
-        </MenuSurface>
-      </div>
-    </Actions>
+                  {:then src}
+                    <ImageListItem>
+                      <ImageAspectContainer>
+                        <Image
+                          class="preview-image"
+                          on:click={() => dispatch('Video:selectedPoster', image.id)}
+                          {src}
+                        />
+                      </ImageAspectContainer>
+                    </ImageListItem>
+                  {/await}
+                {/each}
+              {/if}
+            </ImageList>
+          </MenuSurface>
+        </div>
+      </Actions>
+    </div>
   {/if}
 </Card>
 
