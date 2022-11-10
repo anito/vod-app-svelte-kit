@@ -177,9 +177,9 @@
 
     snackbar = getSnackbar();
 
-    checkSession();
     reveal();
     initListener();
+    checkSession();
     initClasses();
     initStyles();
     startPolling();
@@ -198,7 +198,7 @@
 
     const valid = new Date() < new Date(_expires);
     if (valid) {
-      proxyEvent('ticker:success', $session);
+      proxyEvent('ticker:success', { ...$session });
     } else {
       proxyEvent('ticker:stop', {
         redirect: `/login`
@@ -354,15 +354,19 @@
   function handleSnackbarClosed() {}
 
   /**
-   *
+   * You must provide Session data in event.detail
    * @param {CustomEvent} event
    */
   async function tickerSuccessHandler(event) {
     /**
-     * @type {{user: import('$lib/types').User, renewed: string, message: string}}
+     * @type {{user: import('$lib/types').User, renewed: string, message: string, extended: boolean}}
      */
-    const { user, renewed, message } = { ...event.detail };
-    proxyEvent('ticker:extend', { start: true });
+    const { extended, user, renewed, message } = { extended: false, ...event.detail };
+    proxyEvent('ticker:extend', { extended });
+
+    if ($page.route.id?.startsWith('/users')) await invalidate('app:users');
+    if ($page.route.id?.startsWith('/videos')) await invalidate('app:videos');
+
     flash.update({ message, type: 'success', timeout: 2000 });
 
     renewed && localStorage.setItem('renewed', renewed);
@@ -379,14 +383,14 @@
    * @param {CustomEvent} event
    */
   async function tickerExtendHandler(event) {
+    /** @type {{extended: boolean}} */
+    const { extended } = { ...event.detail };
     const time = new Date(Date.now() + parseInt($settings.Session.lifetime)).toISOString();
 
-    // if we start a fresh session, the session 'expires' parameter is already set, no need to extend it again
-    if (event.detail.start) {
-      // reload data in case we've logged user in on the fly
-      if ($page.route.id?.startsWith('/users')) await invalidate('app:users');
-      if ($page.route.id?.startsWith('/videos')) await invalidate('app:videos');
-    } else {
+    /**
+     * if we start a fresh session, the session 'expires' parameter is already set, no need to extend it again
+     */
+    if (!extended) {
       await post('/session/extend', time);
     }
     await invalidate('app:session');

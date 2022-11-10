@@ -39,6 +39,7 @@
   let title;
   /** @type {string} */
   let description;
+  /** @type {any} */
   let dateOptions = {
     day: '2-digit',
     year: 'numeric',
@@ -161,7 +162,7 @@
               <span class="ellipsed pl-2"
                 >{$_('text.uploaded-on', {
                   values: {
-                    date: new Date(video.created).toLocaleDateString($locale, dateOptions)
+                    date: new Date(video.created).toLocaleDateString($locale || '', dateOptions)
                   }
                 })}</span
               >
@@ -174,7 +175,7 @@
                   values: {
                     date:
                       matchingData &&
-                      new Date(matchingData.end).toLocaleDateString($locale, dateOptions)
+                      new Date(matchingData.end).toLocaleDateString($locale || '', dateOptions)
                   }
                 })}</span
               >

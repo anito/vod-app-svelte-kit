@@ -3,24 +3,18 @@ import { settings } from '$lib/stores';
 
 /** @type {import('./$types').PageLoad} */
 export async function load({ fetch, url, parent }) {
-  const parentData = await parent();
   const token = url.searchParams.get('token');
   if (token) {
     const $settings = get(settings);
     const { lifetime } = $settings.Session;
-    return await fetch(`/auth/login?token=${token}&lifetime=${lifetime}`).then(async (res) => {
-      const response = await res.json();
-      return {
-        ...response,
-        fromToken: true,
-        file: 'PageLoad /login/+page.js'
-      };
-    });
-  }
-  return {
-    session: {
-      ...parentData.session,
+    const res = await fetch(`/auth/login?token=${token}&lifetime=${lifetime}`);
+    const response = await res.json();
+    return {
+      ...response,
+      fromToken: true,
       file: 'PageLoad /login/+page.js'
-    }
-  };
+    };
+  }
+  const parentData = await parent();
+  return { session: { ...parentData.session } };
 }

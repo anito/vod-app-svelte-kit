@@ -1,35 +1,49 @@
-// @ts-nocheck
 import { get } from 'svelte/store';
 import * as api from '$lib/api';
 import { urls } from '$lib/stores';
 import { log } from '$lib/utils';
 
 const MediaTypes = new Map([
-  ['a', { name: 'AVATAR' }],
-  ['i', { name: 'IMAGE' }],
-  ['v', { name: 'VIDEO' }]
+  ['VIDEO', { base: 'v' }],
+  ['IMAGE', { base: 'i' }],
+  ['AVATAR', { base: 'a' }]
 ]);
-async function uri(id, user, type, options = {}) {
+
+/**
+ *
+ * @param {string} id
+ * @param {import('$lib/types').User} user
+ * @param {string} type
+ * @param {any} param3
+ * @returns
+ */
+async function uri(id, user, type, { ...options }) {
+  /** @type {{base: string} | any} */
+  const { base } = MediaTypes.get(type);
   let query = [];
   for (var key in options) {
     query.push(`${key}=${options[key]}`);
   }
-  let url = `u/${type}/${id}/${query.length && '?' + query.join('&')}`;
+  let url = `u/${base}/${id}/${query.length && '?' + query.join('&')}`;
 
   return await api.get(`${url}`, { token: user?.jwt, fetch }).then((res) => {
     if (res?.success) {
       return res.data;
     } else {
-      throw `The Uri method was unable to fetch a mediafile type: ${
-        MediaTypes.get(type)?.name || 'unknown'
-      }, id: ${id}`;
+      throw `The Uri method was unable to fetch a mediafile type: ${type || 'unknown'}, id: ${id}`;
     }
   });
 }
-export async function getMedia(type, id, user, { ...options }) {
-  type = type.length && type.toLowerCase();
-  const TYPE = type === 'video' ? 'v' : type === 'avatar' ? 'a' : 'i';
 
+/**
+ *
+ * @param {string} type
+ * @param {string} id
+ * @param {import('$lib/types').User} user
+ * @param {any} param3
+ * @returns
+ */
+export async function getMedia(type, id, user, { ...options }) {
   if (user?.jwt) {
     let defaults = {
       width: 300,
@@ -44,15 +58,21 @@ export async function getMedia(type, id, user, { ...options }) {
     url = cached = ((_urls = get(urls)) && _urls.has(id) && _urls.get(id)[stringified]) || false;
 
     if (!cached) {
-      await uri(id, user, TYPE, params)
+      await uri(id, user, type, params)
         .then((res) => (url = res['url']) && urls.add(res))
-        .catch((e) => {
-          log(e);
-        });
+        .catch((err) => log(err));
     }
     if (url) return `${url}/?token=${user.jwt}`;
   }
 }
+
+/**
+ *
+ * @param {string} id
+ * @param {import('$lib/types').User} user
+ * @param {any} options
+ * @returns
+ */
 export function getMediaAvatar(id, user, options = {}) {
   const defaults = {
     width: 100,
@@ -62,6 +82,14 @@ export function getMediaAvatar(id, user, options = {}) {
   let settings = { ...defaults, ...options };
   return getMedia('AVATAR', id, user, settings);
 }
+
+/**
+ *
+ * @param {string} id
+ * @param {import('$lib/types').User} user
+ * @param {any} options
+ * @returns
+ */
 export function getMediaImage(id, user, options = {}) {
   const defaults = {
     width: 512,
@@ -71,12 +99,26 @@ export function getMediaImage(id, user, options = {}) {
   let settings = { ...defaults, ...options };
   return getMedia('IMAGE', id, user, settings);
 }
+
+/**
+ *
+ * @param {string} id
+ * @param {import('$lib/types').User} user
+ * @param {any} options
+ * @returns
+ */
 export async function getMediaVideo(id, user, options = {}) {
   const defaults = { square: 2 };
   let settings = { ...defaults, ...options };
   return getMedia('VIDEO', id, user, settings);
 }
+
+/**
+ *
+ * @param {*} fn
+ * @returns
+ */
 export function getExt(fn) {
-  let match = (fn && fn.match(/[A-Za-z0-9]+$/)) || [];
+  let match = fn?.match(/[A-Za-z0-9]+$/) || [];
   return match.length && match[0].toLowerCase();
 }
