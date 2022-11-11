@@ -1,5 +1,5 @@
 import { derived } from 'svelte/store';
-import { session } from '$lib/stores';
+import { session, settings } from '$lib/stores';
 
 function createStore() {
   /**
@@ -19,8 +19,8 @@ function createStore() {
     [session],
     /**
      *
-     * @param {[import('$lib/types').Session]} param0
-     * @param {Function} set
+     * @param {*} param0
+     * @param {*} set
      * @returns
      */
     ([$session], set) => {

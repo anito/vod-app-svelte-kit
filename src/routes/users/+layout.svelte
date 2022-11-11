@@ -30,6 +30,13 @@
   const uploader = getContext('default-modal');
   const { getSnackbar, configSnackbar } = getContext('snackbar');
 
+  /** @type {import('./$types').LayoutData} */
+  export let data;
+
+  $: users.update(data.users);
+  $: videos.update(data.videos);
+  $: videosAll.update(data.videosAll);
+  $: images.update(data.images);
   $: segment = getSegment($page);
 
   /** @type {import('$lib/types').User} */
