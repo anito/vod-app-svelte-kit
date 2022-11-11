@@ -79,6 +79,26 @@
     };
   });
 
+  const loginHandler = () => {
+    flash.update({ message: $_('text.authenticating'), permanent: true });
+    block();
+    return ({ result, update }) => {
+      const { success, data } = { ...result.data };
+      if (success) {
+        proxyEvent('ticker:success', { ...data });
+      } else {
+        proxyEvent('ticker:error', { ...data });
+
+        /**
+         * Show dialog after 3 fails
+         */
+        if (++loginAttempts > 3) invalidTokenUserDialog.setOpen(true);
+      }
+      reset();
+      unblock();
+    };
+  };
+
   function reset() {
     email = '';
     password = '';
@@ -112,25 +132,7 @@
     </TabBar>
   </div>
   <form
-    use:enhance={() => {
-      flash.update({ message: $_('text.authenticating'), permanent: true });
-      block();
-      return ({ result, update }) => {
-        const { success, data } = { ...result.data };
-        if (success) {
-          proxyEvent('ticker:success', { ...data });
-        } else {
-          proxyEvent('ticker:error', { ...data });
-
-          /**
-           * Show dialog after 3 fails
-           */
-          if (++loginAttempts > 3) invalidTokenUserDialog.setOpen(true);
-        }
-        reset();
-        unblock();
-      };
-    }}
+    use:enhance={loginHandler}
     method="POST"
     class="login-form flex justify-center"
     action="/auth?/login"
