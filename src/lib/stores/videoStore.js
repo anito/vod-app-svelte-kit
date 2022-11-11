@@ -7,7 +7,7 @@ function createStore() {
   /**
    *
    * @param {string} id
-   * @param {import('svelte/store').Updater<never>[]} items
+   * @param {import('../types').Video[]} items
    * @returns {number}
    */
   let findIndexById = (id, items) => {
@@ -22,15 +22,13 @@ function createStore() {
      * @returns
      */
     add: (val) =>
-      update(
-        /** @param {import('svelte/store').Updater<never[]>} items */ (items) => [...items, ...val]
-      ),
+      update(/** @param {import('../types').Video} items */ (items) => [...items, ...val]),
     /**
      * @param {import('../types').Video} val
      */
     put: (val) =>
       update(
-        /** @param {import('svelte/store').Updater<never>[]} items */ (items) => {
+        /** @param {import('../types').Video[]} items */ (items) => {
           const index = findIndexById(val.id, items);
           return [...items.slice(0, index), { ...items[index], ...val }, ...items.slice(index + 1)];
         }
@@ -42,7 +40,7 @@ function createStore() {
       update((items) =>
         items.filter(/** @param {import('../types').Video} itm */ (itm) => itm.id !== id)
       ),
-    update: (/** @type {never[]} */ val) => update((items) => val),
+    update: (/** @type {any} */ val) => update((items) => val),
     set
   };
 }
