@@ -409,7 +409,7 @@
               </div>
             {/if}
             <form
-              use:enhance={({ form, data, action, cancel }) => {
+              use:enhance={({ cancel }) => {
                 switch (formAction) {
                   case 'del': {
                     if (

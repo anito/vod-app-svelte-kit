@@ -383,17 +383,13 @@
    * @param {CustomEvent} event
    */
   async function tickerExtendHandler(event) {
-    /** @type {{extended: boolean}} */
-    const { extended } = { ...event.detail };
     const time = new Date(Date.now() + parseInt($settings.Session.lifetime)).toISOString();
-
-    /**
-     * if we start a fresh session, the session 'expires' parameter is already set, no need to extend it again
-     */
-    if (!extended) {
-      await post('/session/extend', time);
-    }
+    await post('/session/extend', time);
     await invalidate('app:session');
+    if (event.detail.start) {
+      if ($page.route.id?.startsWith('/users')) await invalidate('app:users');
+      if ($page.route.id?.startsWith('/videos')) await invalidate('app:videos');
+    }
   }
 
   /**
