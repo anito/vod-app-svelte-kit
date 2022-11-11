@@ -54,7 +54,7 @@ export interface Group<GroupType = Record<string, any>> {
   name: string
 }
 
-export interface Video<VideoType = Record<string, never>> {
+export interface Video<VideoType = Record<string, any>> {
   id: string | any
   title: string
   description: string | never
