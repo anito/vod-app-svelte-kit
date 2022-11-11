@@ -427,34 +427,37 @@
                 return async ({ result }) => {
                   if (result.type === 'success') {
                     /** @type {any | undefined} */
-                    const { success, message, data: user } = { ...result.data };
-                    if (success) {
-                      switch (formAction) {
-                        case 'add': {
+                    const { success, message: message$1, data: user } = { ...result.data };
+                    /** @type {any | undefined} */
+                    const { message: message$2 } = { ...user };
+                    switch (formAction) {
+                      case 'add': {
+                        if (success) {
                           await invalidate('app:users');
                           setTimeout(async () => {
                             await goto(`/users/${user.id}?tab=profile&mode=edit`);
                           }, 200);
-                          break;
                         }
-                        case 'edit': {
-                          users.put(user);
-                          break;
-                        }
-                        case 'del': {
-                          await invalidate('app:users');
-                          mode = EDIT;
-                          break;
-                        }
+                        break;
                       }
-                      reset();
-                      configSnackbar(message);
-                      snackbar.open();
+                      case 'edit': {
+                        if (success) users.put(user);
+                        break;
+                      }
+                      case 'del': {
+                        if (success) {
+                          await invalidate('app:users');
+                        }
+                        mode = EDIT;
+                        break;
+                      }
                     }
+                    reset();
+                    configSnackbar(message$1 || message$2);
+                    snackbar.open();
                   }
                 };
               }}
-              method="POST"
               action={`?/${formAction}`}
             >
               <div class="user-items h-full">

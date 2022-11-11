@@ -8,5 +8,5 @@ export async function POST({ locals, request }) {
     ...locals.session.data,
     _expires
   });
-  return json(locals.session.data);
+  return json({ success: true, _expires });
 }

@@ -1,9 +1,7 @@
 <script>
-  // @ts-nocheck
-  import { fly } from 'svelte/transition';
   import { GridItem, LayoutGrid } from '$lib/components';
 
-  export let segment;
+  export let segment = '';
   export let stretch = false;
   export let sidebar = false;
 </script>

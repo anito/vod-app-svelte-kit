@@ -9,6 +9,9 @@
   import { proxyEvent, INBOX, ADMIN, SUPERUSER, TABS, log } from '$lib/utils';
   import { _ } from 'svelte-i18n';
 
+  /** @type {import('./$types').PageData} */
+  export let data;
+
   /**  * @type {string} */
   let selectedMode = 'edit';
 

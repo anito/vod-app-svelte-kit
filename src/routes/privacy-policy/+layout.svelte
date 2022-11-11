@@ -1,12 +1,13 @@
 <script>
-  import { page } from '$app/stores';
-  import { getSegment } from '$lib/utils';
+  import { getContext } from 'svelte';
   import Layout from './layout.svelte';
 
-  $: segment = getSegment($page);
+  const { getSegment } = getContext('segment');
+  /** @type {SvelteStore<string>} */
+  const segment = getSegment();
 </script>
 
-<Layout {segment}>
+<Layout segment={$segment}>
   <slot />
   <div slot="ad" />
   <div slot="footer" class="flex justify-between">

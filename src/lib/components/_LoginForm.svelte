@@ -3,8 +3,6 @@
 </script>
 
 <script>
-  // @ts-nocheck
-
   import { browser, dev } from '$app/environment';
   import { onMount, getContext } from 'svelte';
   import { post, proxyEvent } from '$lib/utils';
@@ -26,7 +24,6 @@
   const { getSnackbar } = getContext('snackbar');
   const toplevel = dev ? 'dev' : 'de';
 
-  // Fixtures
   const ADMIN_EMAIL = `sampleadmin@webpremiere.${toplevel}`;
   const ADMIN_PASS = 'Test@005';
   const USER_EMAIL = `sampleuser@webpremiere.${toplevel}`;
@@ -43,35 +40,43 @@
   ]);
   const tabs = {
     names: () => {
+      /** @type {string[]}*/
       const names = [];
       tabMap.forEach((val, key) => {
         names.push(key);
       });
       return names;
     },
-    rows: (key) => tabMap.get(key).rows,
-    text: (key) => tabMap.get(key).text,
-    icon: (key) => tabMap.get(key).icon
+    /** @param {string} key */
+    rows: (key) => tabMap.get(key)?.rows,
+    /** @param {string} key */
+    text: (key) => tabMap.get(key)?.text,
+    /** @param {string} key */
+    icon: (key) => tabMap.get(key)?.icon
   };
   const tabNames = tabs.names();
 
+  /** @type {Element}*/
   let root;
   let password = '';
   let email = '';
   /** @type {import("@smui/snackbar").SnackbarComponentDev} */
   let snackbar;
+  /** @type {import("@smui/dialog").DialogComponentDev} */
   let invalidTokenUserDialog;
-  let foundActive;
-  let active;
+  /** @type {string} */
+  let activeSignIn;
+  /** @type {string} */
+  let activeTab;
 
-  $: rows = active && tabs.rows(active);
-  $: active && browser && localStorage.setItem('activeSignIn', active);
+  $: rows = activeTab && tabs.rows(activeTab);
+  $: activeTab && browser && localStorage.setItem('activeSignIn', activeTab);
 
   onMount(() => {
     root = document.documentElement;
     unblock();
-    foundActive = localStorage.getItem('activeSignIn');
-    active = (tabMap.has(foundActive) && foundActive) || defaultTab;
+    activeSignIn = localStorage.getItem('activeSignIn') || '';
+    activeTab = (tabMap.has(activeSignIn) && activeSignIn) || defaultTab;
     snackbar = getSnackbar();
 
     return () => {
@@ -82,7 +87,10 @@
   const loginHandler = () => {
     flash.update({ message: $_('text.authenticating'), permanent: true });
     block();
-    return ({ result, update }) => {
+    return /** @param {{result: import('@sveltejs/kit').ActionResult | any}} param */ ({
+      result
+    }) => {
+      /** @type {{success: boolean, data: any}}*/
       const { success, data } = { ...result.data };
       if (success) {
         proxyEvent('ticker:success', { ...data });
@@ -112,7 +120,7 @@
     root.classList.remove('signing-in');
   }
 
-  function invalidTokenDialogCloseHandler(e) {
+  function invalidTokenDialogCloseHandler() {
     loginAttempts = 0;
   }
 </script>
@@ -124,7 +132,7 @@
 </div>
 <div class="flex flex-col form-wrapper">
   <div class="mb-5">
-    <TabBar tabs={tabNames} let:tab bind:active>
+    <TabBar tabs={tabNames} let:tab bind:active={activeTab}>
       <Tab {tab}>
         <LabelIcon class="material-icons">{tabs.icon(tab)}</LabelIcon>
         <Label>{tabs.text(tab)}</Label>
@@ -138,7 +146,7 @@
     action="/auth?/login"
   >
     <div class="login-grid {rows}">
-      {#if active === tabNames[0]}
+      {#if activeTab === tabNames[0]}
         <span class="one flex flex-col">
           <Textfield
             variant="outlined"
@@ -178,12 +186,12 @@
           </Button>
         </div>
       {/if}
-      {#if active === tabNames[1]}
+      {#if activeTab === tabNames[1]}
         <span class="one flex flex-col">
           <form use:enhance={loginHandler} action="/auth?/login">
             <div class="one flex justify-center">
               <Button
-                color=""
+                color={undefined}
                 class="login-button"
                 type="submit"
                 variant="raised"
@@ -201,7 +209,7 @@
           <form use:enhance={loginHandler} action="/auth?/login">
             <div class="two flex justify-center">
               <Button
-                color=""
+                color={undefined}
                 class="login-button flex-1"
                 type="submit"
                 variant="raised"
@@ -216,7 +224,7 @@
           </form>
         </span>
       {/if}
-      {#if active === tabNames[2]}
+      {#if activeTab === tabNames[2]}
         <div class="one flex relative justify-center">
           <FacebookLoginButton {appId} />
         </div>

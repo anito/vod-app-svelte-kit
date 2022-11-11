@@ -4,13 +4,17 @@
   import { page } from '$app/stores';
   import { session } from '$lib/stores';
   import { goto } from '$app/navigation';
-  import { getSegment, ADMIN, SUPERUSER } from '$lib/utils';
+  import { ADMIN, SUPERUSER } from '$lib/utils';
+  import { getContext } from 'svelte';
 
-  $: segment = getSegment($page);
+  const { getSegment } = getContext('segment');
+  /** @type {SvelteStore<string>} */
+  const segment = getSegment();
+
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
 </script>
 
-<Layout {segment}>
+<Layout segment={$segment}>
   {#if hasPrivileges}
     <slot />
   {:else}

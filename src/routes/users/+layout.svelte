@@ -17,7 +17,7 @@
     VideoEditorList,
     UserGraphic
   } from '$lib/components';
-  import { getSegment, proxyEvent } from '$lib/utils';
+  import { proxyEvent } from '$lib/utils';
   import Button, { Icon as Icon_ } from '@smui/button';
   import Fab, { Label } from '@smui/fab';
   import Textfield from '@smui/textfield';
@@ -29,15 +29,9 @@
   const editor = getContext('editor-modal');
   const uploader = getContext('default-modal');
   const { getSnackbar, configSnackbar } = getContext('snackbar');
-
-  /** @type {import('./$types').LayoutData} */
-  export let data;
-
-  $: users.update(data.users);
-  $: videos.update(data.videos);
-  $: videosAll.update(data.videosAll);
-  $: images.update(data.images);
-  $: segment = getSegment($page);
+  const { getSegment } = getContext('segment');
+  /** @type {SvelteStore<string>} */
+  const segment = getSegment();
 
   /** @type {import('$lib/types').User} */
   let currentUser;
@@ -412,7 +406,7 @@
   }
 </script>
 
-<Layout sidebar {segment}>
+<Layout sidebar segment={$segment}>
   <div class="flex flex-1" slot="pagebar">
     <PageBar />
   </div>

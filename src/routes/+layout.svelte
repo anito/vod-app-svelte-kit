@@ -1,12 +1,10 @@
 <script>
-  // @ts-nocheck
-
   import '../app.css';
   import '$lib/components/_button.scss';
   import '$lib/components/_notched_outline.scss';
   import '$lib/components/_colored_snackbar.scss';
   import * as api from '$lib/api';
-  import { writable } from 'svelte/store';
+  import { derived, writable } from 'svelte/store';
   import { goto, invalidate, invalidateAll } from '$app/navigation';
   import { page } from '$app/stores';
   import { getContext, onMount, setContext, tick } from 'svelte';
@@ -24,7 +22,6 @@
     svg,
     ADMIN,
     SUPERUSER,
-    getSegment,
     randomItem
   } from '$lib/utils';
   import {
@@ -126,6 +123,21 @@
     configSnackbar
   });
 
+  setContext('segment', {
+    /**
+     * @returns {SvelteStore<string>}
+     */
+    getSegment: () =>
+      derived(page, ($page, set) => {
+        const matches = $page.url.pathname.match(/\/([a-z_-]*)/) || [];
+        if (matches.length >= 2) {
+          set(matches[1]);
+        } else {
+          set('');
+        }
+      })
+  });
+
   const { getSnackbar } = getContext('snackbar');
 
   const mounted = writable(isMounted);
@@ -155,17 +167,21 @@
     mounted
   });
 
+  const { getSegment } = getContext('segment');
+  /** @type {SvelteStore<string>} */
+  const segment = getSegment();
+
   $: settings.update(data.config);
-  $: segment = getSegment($page);
   $: token = $session.user?.jwt;
   $: person = svg(svg_manifest.person, $theme.primary);
   $: logo = svg(svg_manifest.logo_vod, $theme.primary);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: root && ((user) => root.classList.toggle('loggedin', user))(!!$session.user);
   $: root && ((isPrivileged) => root.classList.toggle('admin', isPrivileged))(hasPrivileges);
-  $: ((seg) => {
-    root && ((seg && root.classList.remove('home')) || (!seg && root.classList.add('home')));
-  })(segment);
+  $: ((segment) => {
+    root &&
+      ((segment && root.classList.remove('home')) || (!segment && root.classList.add('home')));
+  })($segment);
   $: snackbarLifetime = action ? 6000 : snackbarLifetimeDefault;
   $: salutation.update(randomItem(data.config.Site.salutations));
   $: if ($session.user) {
@@ -437,7 +453,9 @@
         <form
           use:enhance={() => {
             loggedInButtonTextSecondLine = $_('text.one-moment');
-            return ({ result }) => {
+            return /** @param {{result: import('@sveltejs/kit').ActionResult | any}} param */ ({
+              result
+            }) => {
               if ((result.type = 'success')) {
                 proxyEvent('ticker:stop', { ...result.data, redirect: '/login' });
               }
@@ -446,7 +464,7 @@
           class="main-menu login-form"
           action="/auth?/logout"
         >
-          <Nav {segment} {page} {logo}>
+          <Nav segment={$segment} {page} {logo}>
             {#if $session.user}
               <NavItem href="/videos" title="Videothek" segment="videos">
                 <Icon class="material-icons" style="vertical-align: middle;">video_library</Icon>

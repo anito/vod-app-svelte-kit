@@ -7,8 +7,8 @@ const fallbackLocale = 'de-DE';
 
 /** @type {import('./$types').LayoutLoad} */
 export async function load({ data, fetch, depends }) {
-  const config = data.config;
-  const session = await fetch('/session')
+  const session = data.session;
+  const config = await fetch('/config')
     .then(async (res) => await res.json())
     .catch((reason) => console.error(reason));
 
@@ -17,7 +17,7 @@ export async function load({ data, fetch, depends }) {
     initialLocale: session.locale || getLocaleFromNavigator()
   });
 
-  depends('app:session');
+  depends('app:config');
 
   await waitLocale();
   return { session, config };

@@ -32,7 +32,7 @@ import {
   toLocalDate,
   toLocalTime
 } from './time-functions';
-import { getFragment, getSegment } from './navigation';
+import { getFragment } from './navigation';
 import { getMedia, getExt, getMediaAvatar, getMediaImage, getMediaVideo } from './media';
 import { localeFormat } from './locale-format';
 import { get, post, put, del } from './http';
@@ -55,7 +55,6 @@ export {
   getMediaAvatar,
   getMediaImage,
   getMediaVideo,
-  getSegment,
   hasStarted,
   isExpired,
   isToday,

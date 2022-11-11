@@ -12,13 +12,15 @@
   import { _ } from 'svelte-i18n';
 
   /** @type {import('./$types').LayoutData} */
-  export let data;
+  // export let data;
+
+  // videos.update(data.videos);
+  // images.update(data.images);
+
   /** @type {number} */
   let selectedIndex;
   let search = '';
 
-  $: videos.update(data.videos);
-  $: images.update(data.images);
   $: sidebar = !!$page.params.slug;
   $: selectionVideoId = $page.params.slug;
   $: filteredVideos = $videos
