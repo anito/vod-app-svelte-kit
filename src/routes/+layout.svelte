@@ -1,4 +1,6 @@
 <script>
+  // @ts-nocheck
+
   import '../app.css';
   import '$lib/components/_button.scss';
   import '$lib/components/_notched_outline.scss';
@@ -49,6 +51,7 @@
   } from '$lib/components';
   import { svg_manifest } from '$lib/svg_manifest';
   import { _, locale } from 'svelte-i18n';
+  import { enhance } from '$app/forms';
 
   /** @type {import('./$types').LayoutData} */
   export let data;
@@ -299,26 +302,6 @@
   }
 
   /**
-   * @this {{ "on:submit": () => Promise<void>; class: string; method: string; action: string; }}
-   */
-  async function submitHandler() {
-    loggedInButtonTextSecondLine = $_('text.one-moment');
-    const form = this;
-    await post(form.action, {})
-      .then((res) => {
-        /**
-         * @type {{success: boolean, data: any}}
-         */
-        const { success, data } = { ...res };
-
-        if (success) {
-          proxyEvent('ticker:stop', { ...data });
-        }
-      })
-      .catch((reason) => console.error(reason));
-  }
-
-  /**
    *
    * @param {string} msg
    * @param {string | void} link
@@ -409,9 +392,9 @@
     await killSession();
     const path = event.detail.redirect ?? '/';
     const search = createRedirectSlug($page.url);
-    await goto(`${path}${search}`);
 
     invalidate('app:session');
+    setTimeout(async () => await goto(`${path}${search}`), 500);
   }
 
   async function killSession() {
@@ -452,10 +435,16 @@
     <Modal header={{ name: 'text.edit-uploaded-content' }} key="editor-modal">
       <div bind:this={base} class="transition opacity-0">
         <form
-          on:submit|preventDefault={submitHandler}
+          use:enhance={() => {
+            loggedInButtonTextSecondLine = $_('text.one-moment');
+            return ({ result }) => {
+              if ((result.type = 'success')) {
+                proxyEvent('ticker:stop', { ...result.data, redirect: '/login' });
+              }
+            };
+          }}
           class="main-menu login-form"
-          method="POST"
-          action="/auth/logout"
+          action="/auth?/logout"
         >
           <Nav {segment} {page} {logo}>
             {#if $session.user}

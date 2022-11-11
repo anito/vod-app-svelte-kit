@@ -11,7 +11,6 @@ export async function load({ parent }) {
     const $settings = get(settings);
     const search = createTabSearch($settings.Site.defaultUserTab);
     throw redirect(301, `/users/${session.user.id}${search}`);
-  } else {
-    throw redirect(301, `/`);
   }
+  return {};
 }

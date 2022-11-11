@@ -12,15 +12,9 @@ export async function load({ fetch, url, parent }) {
       const response = await res.json();
       return {
         ...response,
-        fromToken: true,
-        file: 'PageLoad /login/+page.js'
+        fromToken: true
       };
     });
   }
-  return {
-    session: {
-      ...parentData.session,
-      file: 'PageLoad /login/+page.js'
-    }
-  };
+  return {};
 }
