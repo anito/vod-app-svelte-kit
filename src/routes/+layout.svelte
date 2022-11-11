@@ -177,9 +177,9 @@
 
     snackbar = getSnackbar();
 
-    checkSession();
     reveal();
     initListener();
+    checkSession();
     initClasses();
     initStyles();
     startPolling();
@@ -381,12 +381,11 @@
   async function tickerExtendHandler(event) {
     const time = new Date(Date.now() + parseInt($settings.Session.lifetime)).toISOString();
     await post('/session/extend', time);
-    await invalidate('app:session').then(async () => {
-      if (event.detail.start) {
-        if ($page.route.id?.startsWith('/users')) await invalidate('app:users');
-        if ($page.route.id?.startsWith('/videos')) await invalidate('app:videos');
-      }
-    });
+    await invalidate('app:session');
+    if (event.detail.start) {
+      if ($page.route.id?.startsWith('/users')) await invalidate('app:users');
+      if ($page.route.id?.startsWith('/videos')) await invalidate('app:videos');
+    }
   }
 
   /**
