@@ -24,7 +24,7 @@ async function uri(id, user, type, { ...options }) {
   for (var key in options) {
     query.push(`${key}=${options[key]}`);
   }
-  let url = `u/${base}/${id}/${query.length && '?' + query.join('&')}`;
+  const url = `u/${base}/${id}/${query.length && '?' + query.join('&')}`;
 
   return await api.get(`${url}`, { token: user?.jwt, fetch }).then((res) => {
     if (res?.success) {

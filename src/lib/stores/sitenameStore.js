@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { derived } from 'svelte/store';
 import { default as settings } from './settingStore';
 

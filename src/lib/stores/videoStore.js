@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { writable } from 'svelte/store';
 
 function createStore() {
@@ -6,7 +7,7 @@ function createStore() {
   /**
    *
    * @param {string} id
-   * @param {import('../types').Video[]} items
+   * @param {import('svelte/store').Updater<never>[]} items
    * @returns {number}
    */
   let findIndexById = (id, items) => {
@@ -16,17 +17,24 @@ function createStore() {
   return {
     subscribe,
     /**
+     *
      * @param {import('../types').Video} val
+     * @returns
      */
-    add: (val) => update((items) => [...items, ...val]),
+    add: (val) =>
+      update(
+        /** @param {import('svelte/store').Updater<never[]>} items */ (items) => [...items, ...val]
+      ),
     /**
      * @param {import('../types').Video} val
      */
     put: (val) =>
-      update((items) => {
-        const index = findIndexById(val.id, items);
-        return [...items.slice(0, index), { ...items[index], ...val }, ...items.slice(index + 1)];
-      }),
+      update(
+        /** @param {import('svelte/store').Updater<never>[]} items */ (items) => {
+          const index = findIndexById(val.id, items);
+          return [...items.slice(0, index), { ...items[index], ...val }, ...items.slice(index + 1)];
+        }
+      ),
     /**
      * @param {string} id
      */
@@ -34,11 +42,7 @@ function createStore() {
       update((items) =>
         items.filter(/** @param {import('../types').Video} itm */ (itm) => itm.id !== id)
       ),
-    /**
-     * @param {import('../types').Video[]} val
-     * @return {import('svelte/store').Updater}
-     */
-    update: (val) => update((items) => val),
+    update: (/** @type {never[]} */ val) => update((items) => val),
     set
   };
 }
