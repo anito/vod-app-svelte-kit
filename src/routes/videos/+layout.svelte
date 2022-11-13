@@ -8,14 +8,8 @@
   import Icon from '@smui/textfield/icon';
   import { Legal, PageBar, SimpleVideoCard, Component } from '$lib/components';
   import { sortByTitle } from '$lib/utils';
-  import { videos, images } from '$lib/stores';
+  import { videos } from '$lib/stores';
   import { _ } from 'svelte-i18n';
-
-  /** @type {import('./$types').LayoutData} */
-  // export let data;
-
-  // videos.update(data.videos);
-  // images.update(data.images);
 
   /** @type {number} */
   let selectedIndex;
