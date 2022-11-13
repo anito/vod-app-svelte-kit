@@ -438,6 +438,7 @@
                             await goto(`/users/${user.id}?tab=profile&mode=edit`);
                           }, 200);
                         }
+                        mode = EDIT;
                         break;
                       }
                       case 'edit': {
