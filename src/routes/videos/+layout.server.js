@@ -24,6 +24,7 @@ export async function load({ fetch, depends, locals }) {
     })
     .catch((reason) => console.error(reason));
   depends('app:videos');
+  depends('app:user');
 
   return { user, videos, images };
 }

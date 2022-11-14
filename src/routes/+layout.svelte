@@ -383,7 +383,10 @@
     await invalidate('app:session');
     if (event.detail.start) {
       if ($page.route.id?.startsWith('/users')) await invalidate('app:users');
-      if ($page.route.id?.startsWith('/videos')) await invalidate('app:videos');
+      if ($page.route.id?.startsWith('/videos')) {
+        await invalidate('app:videos');
+        await invalidate('app:user');
+      }
     }
   }
 
