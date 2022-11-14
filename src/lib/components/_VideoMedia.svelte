@@ -119,7 +119,7 @@
         method: 'put',
         data: { id: video.id, playhead }
       });
-    } else if (video) {
+    } else {
       if (Math.round(joinData.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
       let associated = currentUser.videos
         .filter(/** @param {import('$lib/types').Video} v */ (v) => v.id != video.id)

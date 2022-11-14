@@ -21,11 +21,8 @@
   /** @type {string | undefined} */
   let src;
 
-  /** @type {import('./$types').PageData} */
-  export let data;
-
   $: video = $videos.find((v) => v.id === $page.params.slug);
-  $: user = data.user;
+  $: user = $users.find((user) => user.id === $session.user?.id);
   $: hasPrivileges = user?.role === ADMIN || user?.role === SUPERUSER;
   $: joinData = user?.videos.find(
     /** @param {import('$lib/types').Video} v */ (v) => video?.id == v.id
