@@ -27,6 +27,7 @@
   let poster = emptyPoster;
 
   $: currentUser = $users.find((user) => user.id == $session.user?.id);
+  $: currentUser && (canPlay = false);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: token = currentUser?.jwt;
   $: joinData = currentUser?.videos.find(
