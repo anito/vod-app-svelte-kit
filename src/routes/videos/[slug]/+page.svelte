@@ -23,6 +23,7 @@
 
   $: video = $videos.find((v) => v.id === $page.params.slug);
   $: user = $users.find((user) => user.id === $session.user?.id);
+  $: user && (canPlay = false);
   $: hasPrivileges = user?.role === ADMIN || user?.role === SUPERUSER;
   $: joinData = user?.videos.find(
     /** @param {import('$lib/types').Video} v */ (v) => video?.id == v.id
