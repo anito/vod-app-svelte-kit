@@ -135,7 +135,7 @@
   <title>{$sitename} | {video?.title || $_('text.no-title')}</title>
 </svelte:head>
 
-{#if video}
+{#if video && user}
   <div in:fly={{ duration: 800, opacity: 0 }} class="media-player bg-black flex flex-1">
     <VideoPlayer
       class="video-player flex flex-1"

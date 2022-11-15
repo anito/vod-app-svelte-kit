@@ -176,20 +176,22 @@
       </div>
     {/if}
     <div class="media-player player-container flex flex-1 justify-center bg-black">
-      <VideoPlayer
-        class="video-player flex flex-1"
-        bind:paused
-        bind:playhead
-        on:player:canplay={handleCanPlay}
-        on:player:emptied={handleEmptied}
-        on:player:loadeddata={handleLoadedData}
-        on:player:loadstart={handleLoadStart}
-        on:player:aborted={handleAborted}
-        multiplayer
-        {poster}
-        {src}
-        {video}
-      />
+      {#if currentUser}
+        <VideoPlayer
+          class="video-player flex flex-1"
+          bind:paused
+          bind:playhead
+          on:player:canplay={handleCanPlay}
+          on:player:emptied={handleEmptied}
+          on:player:loadeddata={handleLoadedData}
+          on:player:loadstart={handleLoadStart}
+          on:player:aborted={handleAborted}
+          multiplayer
+          {poster}
+          {src}
+          {video}
+        />
+      {/if}
     </div>
   </MediaContent>
 </Media>
