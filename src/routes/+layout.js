@@ -3,9 +3,11 @@ import { register, waitLocale, init, getLocaleFromNavigator } from 'svelte-i18n'
 register('de-DE', () => import('../messages/de_DE.json'));
 register('en-US', () => import('../messages/en_US.json'));
 
+/**
+ * @type {any}
+ */
+let config;
 const fallbackLocale = 'de-DE';
-const c = {};
-let config = c;
 
 /** @type {import('./$types').LayoutLoad} */
 export async function load({ data, fetch, depends, url }) {
@@ -15,7 +17,7 @@ export async function load({ data, fetch, depends, url }) {
   }
 
   // prevent config from being unnecessarily fetched
-  const needsLoad = config === c || force;
+  const needsLoad = !config || force;
   if (needsLoad) {
     config = await fetch('/config')
       .then(async (res) => await res.json())

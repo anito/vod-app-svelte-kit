@@ -183,7 +183,7 @@
       ((segment && root.classList.remove('home')) || (!segment && root.classList.add('home')));
   })($segment);
   $: snackbarLifetime = action ? 6000 : snackbarLifetimeDefault;
-  $: salutation.update(randomItem(data.config.Site.salutations));
+  $: salutation.update(randomItem(data.config?.Site?.salutations));
   $: if ($session.user) {
     loggedInButtonTextSecondLine = `${$salutation}, ${$session.user.name}`;
   }

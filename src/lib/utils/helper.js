@@ -206,7 +206,7 @@ export const proxyEvent = function (eventType, detail = {}) {
 /**
  * @param {Array<string>} arr
  */
-export function randomItem(arr) {
+export function randomItem(arr = []) {
   const index = Math.floor(Math.random() * arr.length);
   return arr[index];
 }

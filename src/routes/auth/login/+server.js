@@ -12,7 +12,7 @@ export async function GET({ locals, url }) {
     return await api.get(`${type}?token=${token}`).then(async (res) => {
       const locale = locals.session.data.locale || get(i18n);
       let cookieData;
-      if (res.success) {
+      if (res?.success) {
         /** @type {import('$lib/types').User} */
         const { id, name, email, avatar, jwt, role, groups } = { ...res.data.user, ...res.data };
         const $settings = get(settings);
@@ -44,7 +44,7 @@ export async function POST({ locals, request, url }) {
   return await api.post(`${type}`, { token: data.token, data }).then(async (res) => {
     const locale = locals.session.data.locale || get(i18n);
     let sessionCookieData;
-    if (res.success) {
+    if (res?.success) {
       /** @type {import('$lib/types').User} */
       const { id, name, email, avatar, jwt, role, groups } = { ...res.data.user, ...res.data };
       const $settings = get(settings);
