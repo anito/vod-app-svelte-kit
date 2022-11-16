@@ -183,7 +183,7 @@
       ((segment && root.classList.remove('home')) || (!segment && root.classList.add('home')));
   })($segment);
   $: snackbarLifetime = action ? 6000 : snackbarLifetimeDefault;
-  $: salutation.update(randomItem(data.config?.Site?.salutations));
+  $: salutation.update(randomItem(data.config?.Site?.salutations) || 'Hi');
   $: if ($session.user) {
     loggedInButtonTextSecondLine = `${$salutation}, ${$session.user.name}`;
   }
@@ -304,7 +304,7 @@
    */
   async function del({ data, show }) {
     await api.del(`videos/${data.id}`, { token }).then((res) => {
-      if (res.success) {
+      if (res?.success) {
         urls.del(data.id);
         videos.del(data.id);
       }

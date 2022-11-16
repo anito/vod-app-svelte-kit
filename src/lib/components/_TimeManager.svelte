@@ -258,7 +258,7 @@
     const data = { videos: { _ids: [...ids] } };
     const res = await saveUser(data);
 
-    if (res.success) {
+    if (res?.success) {
       selectionVideoId === schedulingVideoId && (selectionVideoId = null);
       handleSuccess(res, $_('text.video-removed'));
     } else {

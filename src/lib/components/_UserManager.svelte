@@ -259,7 +259,7 @@
         message = res.message || res.data.message || res.statusText;
         code = (res.data && res.data.code) || res.status;
 
-        if (res.success) {
+        if (res?.success) {
           users.put({ ...currentUser, active });
         } else if (200 < code && code < 500) {
           // Sample Users are protected
@@ -284,7 +284,7 @@
           message = res.message || res.data.message || res.statusText;
           code = (res.data && res.data.code) || res.status;
 
-          if (res.success) {
+          if (res?.success) {
             users.put({ ...currentUser, protected: __protected });
           } else if (200 < code && code < 500) {
             // Sample Users are protected

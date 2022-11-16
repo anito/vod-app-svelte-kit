@@ -185,7 +185,7 @@
     await api.put(`users/${selectionUserId}`, { data, token: $session.user?.jwt }).then((res) => {
       message = res.message || res.data.message || res.statusText;
 
-      if (res.success) {
+      if (res?.success) {
         users.put({ ...currentUser, ...data });
       } else {
         active = !active;

@@ -37,7 +37,7 @@ export class Repo {
     return await api
       .get(endpoint, { fetch, token: token || this.token })
       .then((res) => {
-        if (res.success) {
+        if (res?.success) {
           return res.data;
         }
         return [];

@@ -72,7 +72,7 @@
     const id = image.id;
     await api.del(`images/${image.id}`, { token: $session.user?.jwt }).then((res) => {
       let message = res.message || res.data.message || res.statusText;
-      if (res.success) {
+      if (res?.success) {
         urls.del(id);
         images.del(id);
       }

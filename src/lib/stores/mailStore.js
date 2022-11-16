@@ -45,7 +45,7 @@ function createStore(endpoint, args) {
    */
   async function get(data, set, { id, token }) {
     await api.get(`${endpoint}/get/${id}`, { token }).then((res) => {
-      if (res.success) {
+      if (res?.success) {
         const d = res.data;
         d.forEach((item) => {
           data.mails.set(item.id, item);

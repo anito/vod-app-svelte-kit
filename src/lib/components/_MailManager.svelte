@@ -169,7 +169,7 @@
     currentSlug &&
     getSIUX()
       .then((/** @type {{ success: any; data: any; }} */ res) => {
-        if (res.success) {
+        if (res?.success) {
           slim.update(res.data);
           $slim; // doesn't work w/o subscribing
         }
@@ -220,7 +220,7 @@
     return await api
       .get(`${ep}/get/${id}`, { token: $session.user?.jwt, fetch })
       .then((res) => {
-        if (res.success) {
+        if (res?.success) {
           let store = getStoreByEndpoint(ep);
           if (store) store.update(res.data);
           return res.data;
@@ -245,7 +245,7 @@
         token: $session.user?.jwt
       })
       .then((res) => {
-        if (res.success) {
+        if (res?.success) {
           configSnackbar($_('text.message-sent-success'));
           refreshMailData();
         } else {
@@ -316,7 +316,7 @@
         fetch
       })
       .then((res) => {
-        if (res.success) {
+        if (res?.success) {
           updateStoreFromOtherItem(inboxes, { ...selected, _read }, '_read');
         }
       });
@@ -348,7 +348,7 @@
     const id = e.detail.selection?.id;
     if (!id) return;
     await api.del(`${activeListItem}/${id}`, { token: $session.user?.jwt, fetch }).then((res) => {
-      if (res.success) {
+      if (res?.success) {
         currentStore?.del(id);
       }
     });
@@ -364,7 +364,7 @@
 
   async function getTemplates() {
     await api.get('templates', { token: $session.user?.jwt, fetch }).then((res) => {
-      if (res.success) {
+      if (res?.success) {
         templates.update(res.data);
       }
     });
@@ -395,7 +395,7 @@
       token: $session.user?.jwt
     });
     configSnackbar(res.message);
-    if (res.success) {
+    if (res?.success) {
       templates.add({ ...newTemplate, id: res.data.id, items: res.data.items });
       gotoActiveBox(templateStringFromSlug(slug));
     }
@@ -420,7 +420,7 @@
       token: $session.user?.jwt
     });
     configSnackbar(res.message);
-    if (res.success) {
+    if (res?.success) {
       templates.put({ ...currentTemplate });
       mailTemplate.createWorkingCopy();
     }
@@ -450,7 +450,7 @@
       token: $session.user?.jwt
     });
     configSnackbar(res.message);
-    if (res.success) {
+    if (res?.success) {
       templates.add({ ...newTemplate, id: res.data.id, items: res.data.items });
       gotoActiveBox(templateStringFromSlug(slug));
     }
@@ -460,7 +460,7 @@
   async function removeTemplate() {
     const res = await api.del(`templates/${currentTemplate.id}`, { token: $session.user?.jwt });
     configSnackbar(res.message);
-    if (res.success) {
+    if (res?.success) {
       templates.del(currentTemplate.id);
     }
     snackbar.open();
@@ -615,7 +615,7 @@
     if (!template) return;
 
     const res = await api.put(`templates/${id}`, { data: { name }, token: $session.user?.jwt });
-    if (res.success) {
+    if (res?.success) {
       templates.put({ ...template, name });
       configSnackbar($_('text.template-renamed'));
     } else {
