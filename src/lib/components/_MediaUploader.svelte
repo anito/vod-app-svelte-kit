@@ -33,7 +33,6 @@
   $: acceptedFiles = `${fileType}/*`;
   $: path = `${type.toLowerCase()}s`;
   $: options = { acceptedFiles, ...options, path };
-  $: console.log(options);
 
   onMount(() => {
     snackbar = getSnackbar();
