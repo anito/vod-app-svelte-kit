@@ -7,6 +7,7 @@
   export let type = '';
   export let uid = '';
   export let options = {
+    path: '',
     uploadMultiple: false,
     parallelUploads: 1,
     maxFiles: 1,
@@ -28,10 +29,11 @@
    * */
   let snackbar;
 
-  $: path = `${type.toLowerCase()}s`;
   $: fileType = (type === 'avatar' && 'image') || type;
   $: acceptedFiles = `${fileType}/*`;
+  $: path = `${type.toLowerCase()}s`;
   $: options = { acceptedFiles, ...options, path };
+  $: console.log(options);
 
   onMount(() => {
     snackbar = getSnackbar();

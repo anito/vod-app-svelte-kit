@@ -29,7 +29,7 @@
     open(
       MediaUploader,
       {
-        layoutProps: { fileType: $_('text.images') },
+        layoutProps: { type: $currentVideo ? $_('text.video-poster') : $_('text.video-posters') },
         type: 'image',
         options: {
           parallelUploads: 12,

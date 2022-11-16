@@ -180,9 +180,10 @@
       MediaUploader,
       {
         layoutProps: { type: $_('text.avatar') },
-        type: 'image',
+        type: 'avatar',
         uid: currentUser.id,
         options: {
+          uploadMultiple: false,
           parallelUploads: 1,
           maxFiles: 1
         },

@@ -230,7 +230,8 @@
     "empty-edit-mode": "Kein Bearbeitungsmodus ausgewählt",
     "video-poster": "Video-Poster",
     "image": "Poster",
-    "avatar": "Avatar"
+    "avatar": "Avatar",
+    "video-posters": "Video-Posters"
   },
   "summary": {
     "copy-link": {
