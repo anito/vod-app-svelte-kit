@@ -26,8 +26,8 @@
   import Dialog, { Title as DialogTitle, Content, Actions, InitialFocus } from '@smui/dialog';
   import { _, locale } from 'svelte-i18n';
 
-  const editor = getContext('editor-modal');
-  const uploader = getContext('default-modal');
+  const { open: open$editor, close: close$editor } = getContext('editor-modal');
+  const { open: open$default, close: close$default } = getContext('default-modal');
   const { getSnackbar, configSnackbar } = getContext('snackbar');
   const { getSegment } = getContext('segment');
   /** @type {SvelteStore<string>} */
@@ -80,6 +80,7 @@
   $: selectionUserId = $page.params.slug || $session.user?.id;
   $: selectionUserId && listItems && scrollIntoView();
   $: currentUser = ((id) => $users.find((usr) => usr.id === id))(selectionUserId);
+  $: user = $users.find((user) => $session.user?.id === user.id);
   $: ((usr) => {
     username = usr?.name;
     active = usr?.active || false;
@@ -307,10 +308,11 @@
    * @param {any} type
    */
   let openUploader = (type) => {
-    uploader.open(
+    open$default(
       MediaUploader,
       {
-        commonProps: { type },
+        layoutProps: { type: $_('text.videos') },
+        type: 'video',
         options: {
           // acceptedFiles: '.mov .mp4 .m4a .m4v .3gp .3g2 .webm',
           uploadMultiple: true,
@@ -319,9 +321,10 @@
           timeout: 3600 * 1000, // 60min
           maxFilesize: 1024 // Megabyte
         },
-        events: { 'upload:done': uploadDoneHandler }
+        events: { 'upload:successmultiple': uploadSuccessHandler }
       },
       {
+        closeOnOuterClick: false,
         transitionWindow: fly,
         transitionWindowProps: {
           y: -200,
@@ -334,32 +337,35 @@
 
   /**
    *
-   * @param {CustomEvent} event
+   * @param {CustomEvent} param0
    */
-  function uploadDoneHandler(event) {
-    /**
-     * @type {{data: any, message: string, success: boolean}}
-     */
-    const { data, message, success } = { ...event.detail };
+  function uploadSuccessHandler({ detail }) {
+    /** @type {any} */
+    const { data, message, success } = { ...detail.responseText };
 
-    if (message) {
-      configSnackbar(message);
-      snackbar.open();
-    }
+    configSnackbar(message);
+    snackbar.open();
 
     if (success) {
       uploadedData = data;
       videos.add(data);
-      uploader.close();
+      close$default();
     }
   }
 
   function openEditor() {
     if (!uploadedData) return;
 
-    editor.open(VideoEditorList, {
-      data: uploadedData
-    });
+    open$editor(
+      VideoEditorList,
+      {
+        data: uploadedData,
+        user
+      },
+      {
+        closeOnOuterClick: false
+      }
+    );
     uploadedData = null;
   }
 

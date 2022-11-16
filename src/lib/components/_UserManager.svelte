@@ -179,15 +179,17 @@
     open(
       MediaUploader,
       {
-        commonProps: { type: 'avatar' },
+        layoutProps: { type: $_('text.avatar') },
+        type: 'image',
         uid: currentUser.id,
         options: {
           parallelUploads: 1,
           maxFiles: 1
         },
-        events: { 'upload:done': uploadDoneHandler }
+        events: { 'upload:success': uploadSuccessHandler }
       },
       {
+        closeOnOuterClick: false,
         transitionWindow: fly,
         transitionWindowProps: {
           y: -200,
@@ -206,10 +208,10 @@
     }
   }
 
-  /** @param {CustomEvent} ev */
-  async function uploadDoneHandler(ev) {
+  /** @param {CustomEvent} param0 */
+  async function uploadSuccessHandler({ detail }) {
     /** @type {any} */
-    const { success, message, data } = { ...ev.detail };
+    const { success, message, data } = { ...detail.responseText };
 
     if (success) {
       // reflect the change in the session cookie

@@ -19,10 +19,12 @@
 
   /** @type {import('$lib/types').Video} */
   export let video;
+  /** @type {import('$lib/types').User} */
+  export let user;
   export { className as class };
   export let key = 'default-modal';
 
-  const uploader = getContext(key);
+  const { open, close } = getContext(key);
 
   let className = '';
   /** @type {import('@smui/menu').MenuComponentDev} */
@@ -46,7 +48,6 @@
   };
   let isImageListOpen = false;
 
-  $: user = $session.user;
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: leftButton = isEditMode
     ? { label: $_('text.save'), icon: 'save' }
@@ -94,19 +95,20 @@
    * @param {any} type
    */
   function createPoster(type) {
-    uploader.open(
+    open(
       MediaUploader,
       {
-        commonProps: { type },
+        layoutProps: { type: $_('text.image') },
+        type: 'image',
         options: {
-          uploadMultiple: false,
           parallelUploads: 1,
           maxFiles: 1,
           maxFilesize: 1024
         },
-        events: { 'upload:done': uploadDoneHandler }
+        events: { 'upload:success': uploadSuccessHandler }
       },
       {
+        closeOnOuterClick: false,
         transitionWindow: fly,
         transitionWindowProps: {
           y: -200,
@@ -118,7 +120,7 @@
 
   /** @param {string} id */
   function getCachedImage(id) {
-    let res = getMedia('IMAGE', id, user, {
+    let res = getMedia('IMAGE', id, $session.user?.jwt, {
       width: 100,
       height: 100,
       square: 1
@@ -126,10 +128,10 @@
     return res;
   }
 
-  /** @param {CustomEvent} ev */
-  function uploadDoneHandler(ev) {
-    dispatch('Video:posterCreated', ev.detail);
-    uploader.close();
+  /** @param {CustomEvent} param0 */
+  function uploadSuccessHandler({ detail }) {
+    dispatch('Video:posterCreated', detail);
+    close();
   }
 
   function imageListOpenedHandler() {
@@ -147,7 +149,7 @@
 
 <Card class="card {className}">
   <PrimaryAction onclick={() => $currentVideo.set(video)}>
-    <VideoMedia {video} bind:title bind:description {isEditMode} />
+    <VideoMedia {user} {video} bind:title bind:description {isEditMode} />
     <Content class="mdc-typography--body2">
       <div class="wrapper flex flex-row justify-between">
         <div class="flex flex-col" style="flex-basis: 50%; max-width: 50%">
@@ -262,9 +264,7 @@
           <ImageList class="menu-surface-image-list">
             {#if isImageListOpen}
               {#each $images as image, i (image.id)}
-                {#await getCachedImage(image.id)}
-                  <div />
-                {:then src}
+                {#await getCachedImage(image.id) then src}
                   <ImageListItem>
                     <ImageAspectContainer>
                       <Image

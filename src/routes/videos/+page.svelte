@@ -9,8 +9,12 @@
   import { Header } from '$lib/components';
   import { _ } from 'svelte-i18n';
 
+  /** @type {import('./$types').PageData} */
+  export let data;
+
   const TABS = ['videos', 'images'];
 
+  $: user = data.user;
   $: tab = ((tab) => TABS.find((itm) => itm === tab))($page.url.searchParams.get('tab')) || TABS[0];
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
 
@@ -55,7 +59,7 @@
 
     <div class="grid-item two pt-3 pb-8 ">
       {#if tab === TABS[0]}
-        <VideoManager />
+        <VideoManager {user} />
       {/if}
       {#if tab === TABS[1]}
         <ImageManager />
@@ -77,7 +81,7 @@
       </div>
     </div>
     <div class="p-8" style="height: auto">
-      <VideoManager />
+      <VideoManager {user} />
     </div>
   </Component>
 {/if}

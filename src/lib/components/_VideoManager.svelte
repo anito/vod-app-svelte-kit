@@ -14,8 +14,11 @@
   } from '$lib/utils';
   import { _ } from 'svelte-i18n';
 
-  const editor = getContext('editor-modal');
-  const uploader = getContext('default-modal');
+  /** @type {import('$lib/types').User} */
+  export let user;
+
+  const { open: open$editor, close: close$editor } = getContext('editor-modal');
+  const { open: open$uploader, close: close$uploader } = getContext('default-modal');
   const { getSnackbar, configSnackbar } = getContext('snackbar');
   const { setFab } = getContext('fab');
   const transitionParams = {
@@ -60,10 +63,11 @@
      * @param {any} type
      */
     (type) => {
-      uploader.open(
+      open$uploader(
         MediaUploader,
         {
-          commonProps: { type },
+          layoutProps: { type: $_('text.videos') },
+          type: 'video',
           options: {
             // acceptedFiles: '.mov .mp4 .m4a .m4v .3gp .3g2 .webm',
             uploadMultiple: true,
@@ -72,9 +76,10 @@
             timeout: 3600 * 1000, // 60min
             maxFilesize: 1024 // Megabyte
           },
-          events: { 'upload:done': uploadDoneHandler }
+          events: { 'upload:successmultiple': uploadSuccessHandler }
         },
         {
+          closeOnOuterClick: false,
           transitionWindow: fly,
           transitionWindowProps: {
             y: -200,
@@ -82,36 +87,41 @@
           }
         },
         {
-          onOpen: () => document.documentElement.classList.add('modal-open'),
-          onClose: () => document.documentElement.classList.remove('modal-open'),
           onClosed: openEditor
         }
       );
     };
 
-  /** @param {CustomEvent} ev */
-  function uploadDoneHandler(ev) {
-    /** @type {{data: any, message: string, success: boolean}} */
-    const { data, message, success } = { ...ev.detail };
+  /**
+   *
+   * @param {CustomEvent} param0
+   */
+  function uploadSuccessHandler({ detail }) {
+    /** @type {any} */
+    const { data, message, success } = { ...detail.responseText };
 
-    if (message) {
-      configSnackbar(message);
-      snackbar.open();
-    }
+    configSnackbar(message);
+    snackbar.open();
 
     if (success) {
       uploadedData = data;
       videos.add(data);
-      uploader.close();
+      close$uploader();
     }
   }
 
   function openEditor() {
     if (!uploadedData) return;
 
-    editor.open(VideoEditorList, {
-      data: uploadedData
-    });
+    open$editor(
+      VideoEditorList,
+      {
+        data: uploadedData,
+        user
+      },
+      {},
+      {}
+    );
     uploadedData = null;
   }
 </script>
@@ -122,9 +132,10 @@
       {#each $videos.sort(sortAZ) as video (video.id)}
         <VideoCard
           on:Video:posterCreated={(event) => posterCreatedHandler(event, video.id)}
-          on:Video:selectedPoster={(event) => posterSelectedHandler(event, video.id)}
+          on:Video:selectedPoster={(event) => posterSelectedHandler(event.detail, video.id)}
           on:Video:removePoster={() => posterRemoveHandler(video.id)}
           {video}
+          {user}
         />
       {/each}
     </div>

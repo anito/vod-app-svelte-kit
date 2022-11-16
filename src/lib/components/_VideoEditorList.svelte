@@ -10,6 +10,8 @@
 
   /** @type {import('$lib/types').Video[]} */
   export let data = [];
+  /** @type {import('$lib/types').User} */
+  export let user;
 
   $: storeData = $videos.filter(
     (video) => video.id === data.find((item) => item.id === video.id)?.id
@@ -25,9 +27,11 @@
       <VideoCard
         class="mb-3"
         on:Video:posterCreated={(event) => posterCreatedHandler(event, $derivedCurrentVideo.id)}
-        on:Video:selectedPoster={(event) => posterSelectedHandler(event, $derivedCurrentVideo.id)}
+        on:Video:selectedPoster={(event) =>
+          posterSelectedHandler(event.detail, $derivedCurrentVideo.id)}
         on:Video:removePoster={() => posterRemoveHandler($derivedCurrentVideo.id)}
         {video}
+        {user}
         {key}
       />
     {/each}

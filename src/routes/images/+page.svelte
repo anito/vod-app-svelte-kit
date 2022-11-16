@@ -29,13 +29,15 @@
     open(
       MediaUploader,
       {
-        commonProps: { type },
+        layoutProps: { fileType: $_('text.images') },
+        type: 'image',
         options: {
           parallelUploads: 12,
           maxFiles: $currentVideo ? 1 : 12
         }
       },
       {
+        closeOnOuterClick: false,
         transitionWindow: fly,
         transitionWindowProps: {
           y: -200,

@@ -37,7 +37,7 @@
 
   let _Component = null;
   let props = null;
-  let commonProps = null;
+  let layoutProps = null;
 
   let background;
   let wrap;
@@ -62,8 +62,8 @@
 
   const open = (NewComponent, newProps = {}, options = {}, callback = {}) => {
     _Component = NewComponent;
-    commonProps = newProps.commonProps || {};
-    props = { ...newProps, ...commonProps };
+    layoutProps = { ...newProps.layoutProps } || {};
+    props = { ...newProps };
     state = { ...defaultState, ...options };
     onOpen = callback.onOpen || toVoid;
     onClose = callback.onClose || toVoid;
@@ -93,17 +93,17 @@
   };
 
   function translateHeader() {
-    return $_(header.name, { values: { ...commonProps } });
+    return $_(header.name, { values: { ...layoutProps } });
   }
 
   function _onOpened() {
     document.documentElement.classList.add('modal-open', `modal-open-${key}`);
-    onOpen();
+    onOpened();
   }
 
   function _onClosed() {
     document.documentElement.classList.remove('modal-open', `modal-open-${key}`);
-    onClose();
+    onClosed();
   }
 
   onMount(() => {});

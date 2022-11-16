@@ -1,7 +1,4 @@
 <script>
-  // @ts-nocheck
-
-  import { page } from '$app/stores';
   import { onMount, createEventDispatcher, getContext } from 'svelte';
   import { session } from '$lib/stores';
   import PreviewTemplate from './_PreviewTemplate.svelte';
@@ -12,8 +9,8 @@
   import { _ } from 'svelte-i18n';
 
   export { className as class };
-  export let path;
-  export let acceptedFiles;
+  export let path = '';
+  export let acceptedFiles = '';
   export let uploadMultiple = false;
   export let parallelUploads = 2;
   export let maxFiles = 2;
@@ -23,10 +20,17 @@
 
   const dispatch = createEventDispatcher();
 
+  /**
+   * @type {Dropzone}
+   */
   let dropzone;
   let className = '';
   let progress = 0;
+  /**
+   * @type {any}
+   */
   let previewTemplate;
+  /** @type {any} */
   let options;
   let count = 0;
 
@@ -34,46 +38,91 @@
   $: closed = !hasFiles;
   $: if (!hasFiles) progress = 0; // reset progress when removing last file
 
-  let template = (el) => {
-    let child = el.childNodes[0];
-    previewTemplate = el.removeChild(child).outerHTML;
+  /**
+   *
+   * @param {Element} el
+   */
+  const template = (el) => {
+    if (el.childNodes.length) {
+      /** @type {Element | null} */
+      // @ts-ignore
+      const firstChild = el.firstChild;
+      previewTemplate = firstChild?.outerHTML;
+      el.remove();
+    }
   };
 
-  let submit = function (e) {
+  let submit = function () {
     dropzone.processQueue();
   };
-  let init = function () {
-    dropzone = this;
+  let init =
+    /**
+     * @this {Dropzone}
+     */
+    function () {
+      dropzone = this;
 
-    // Events
-    this.on('successmultiple', (e, res) => {
-      dispatch('Uploader:successmultiple', res);
-    });
-    this.on('success', (e, res) => {
-      dispatch('Uploader:success', res);
-    });
-    this.on('error', (e, res) => {
-      dispatch('Uploader:error', res);
-    });
-    this.on('addedfile', (file) => {
-      ++count;
-      dispatch('Uploader:addedfile', file);
-    });
-    this.on('removedfile', (file) => {
-      --count;
-      dispatch('Uploader:removedfile', file);
-    });
-    this.on('totaluploadprogress', (val) => {
-      dispatch('Uploader:totaluploadprogress', val);
-      progress = val / 100;
-    });
-    this.on('complete', (file) => {
-      dropzone.removeFile(file);
-    });
-    this.on('maxfilesreached', (files) => {
-      // TODO
-    });
-  };
+      // Events
+      this.on(
+        'successmultiple',
+        (
+          /** @type {Blob[]} */ files,
+          /** @type {any} */ responseText,
+          /** @type {Event} */ event
+        ) => {
+          dispatch('Uploader:successmultiple', { files, responseText, event });
+        }
+      );
+      this.on(
+        'success',
+        (
+          /** @type {Blob[]} */ files,
+          /** @type {any} */ responseText,
+          /** @type {Event} */ event
+        ) => {
+          dispatch('Uploader:success', { files, responseText, event });
+        }
+      );
+      this.on(
+        'error',
+        (
+          /** @type {Blob} */ file,
+          /** @type {string} */ message,
+          /** @type {XMLHttpRequestResponseType} */ xhr
+        ) => {
+          dispatch('Uploader:error', { file, message, xhr });
+        }
+      );
+      this.on('addedfile', (/** @type {Blob} */ file) => {
+        ++count;
+        dispatch('Uploader:addedfile', { file });
+      });
+      this.on('removedfile', (/** @type {Blob} */ file) => {
+        --count;
+        dispatch('Uploader:removedfile', { file });
+      });
+      this.on(
+        'totaluploadprogress',
+        (
+          /** @type {number} */ totalUploadProgress,
+          /** @type {any} */ totalBytes,
+          /** @type {any} */ totalBytesSent
+        ) => {
+          dispatch('Uploader:totaluploadprogress', {
+            totalUploadProgress,
+            totalBytes,
+            totalBytesSent
+          });
+          progress = totalUploadProgress / 100;
+        }
+      );
+      this.on('complete', (/** @type {Blob} */ file) => {
+        dropzone.removeFile(file);
+      });
+      this.on('maxfilesreached', (/** @type {any} */ files) => {
+        // TODO
+      });
+    };
 
   onMount(async () => {
     options = {

@@ -36,6 +36,9 @@
   import Radio from '@smui/radio';
   import { _, locale } from 'svelte-i18n';
 
+  /** @type {import('$lib/types').User} */
+  export let user;
+  /** @type {string} */
   export let selectionUserId;
 
   const isUnmanagableNoneUserList = false;
@@ -52,7 +55,9 @@
   const USERVIDEOSLIST = 'user-video-list';
   const NONUSERVIDEOSLIST = 'non-user-videos-list';
 
+  /** @type {Element} */
   let root;
+  /** @type {string} */
   let schedulingVideoId;
   let scheduleDialog;
   let removeDialog;
@@ -62,9 +67,13 @@
   /** @type {import("@smui/snackbar").SnackbarComponentDev} */
   let snackbar;
   let message;
+  /** @type {string} */
   let selectedIndex;
+  /** @type {string} */
   let selectedNoneUserIndex;
+  /** @type {string} */
   let selectionVideoId;
+  /** @type {import('$lib/types').Video} */
   let selectedVideo;
   let readout;
   let schedulingVideo = '';
@@ -303,9 +312,16 @@
   }
 
   function editVideo(video) {
-    open(VideoEditorList, {
-      data: [video]
-    });
+    open(
+      VideoEditorList,
+      {
+        data: [video],
+        user
+      },
+      {
+        closeOnOuterClick: false
+      }
+    );
   }
 
   function scrollIntoView() {

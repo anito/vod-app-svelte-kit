@@ -10,6 +10,8 @@
 
   /** @type {import('$lib/types').Video} */
   export let video;
+  /** @type {import('$lib/types').User} */
+  export let user;
   /** @type {string | undefined} */
   export let emptyPoster = '/empty-poster.jpg';
   export let title = '';
@@ -26,17 +28,16 @@
   let paused = true;
   let poster = emptyPoster;
 
-  $: currentUser = $users.find((user) => user.id == $session.user?.id);
-  $: currentUser && (canPlay = false);
+  $: user && (canPlay = false);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
-  $: token = currentUser?.jwt;
-  $: joinData = currentUser?.videos.find(
+  $: token = user?.jwt;
+  $: joinData = user?.videos.find(
     /** @param {import('$lib/types').Video} v */ (v) => v.id == video.id
   )?._joinData;
   $: (video.image_id &&
-    getMediaImage(video.image_id, $session.user).then((res) => (poster = res))) ||
+    getMediaImage(video.image_id, $session.user?.jwt).then((res) => (poster = res))) ||
     (poster = emptyPoster);
-  $: video.id && getMediaVideo(video.id, $session.user).then((res) => (src = res));
+  $: video.id && getMediaVideo(video.id, $session.user?.jwt).then((res) => (src = res));
   $: ((time) => {
     if (!paused || !canPlay) return;
     let pauseTime = time;
@@ -105,9 +106,6 @@
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
       ev.detail.title
     );
-    // in Chrome we have to limit streams due to Chromes limitation
-    // this is done by emptying src attribute on the video which forgets the playheads position
-    // to set the videos canPlay flag to false will re-adjust playhead to last saved position when video canPlay again
     paused = true;
     canPlay = false;
   }
@@ -122,7 +120,7 @@
       });
     } else {
       if (Math.round(joinData.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
-      let associated = currentUser.videos
+      let associated = user.videos
         .filter(/** @param {import('$lib/types').Video} v */ (v) => v.id != video.id)
         .map(/** @param {import('$lib/types').Video} v */ (v) => ({ id: v.id }));
       let data = {
@@ -143,7 +141,7 @@
    * @param {any} data
    */
   async function saveUser(data) {
-    await api.put(`users/${currentUser.id}`, { data, token }).then((res) => {
+    await api.put(`users/${user.id}`, { data, token }).then((res) => {
       res.success && users.put(res.data);
     });
   }
@@ -176,7 +174,7 @@
       </div>
     {/if}
     <div class="media-player player-container flex flex-1 justify-center bg-black">
-      {#if currentUser}
+      {#if user}
         <VideoPlayer
           class="video-player flex flex-1"
           bind:paused

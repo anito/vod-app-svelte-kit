@@ -1,6 +1,4 @@
 <script>
-  // @ts-nocheck
-
   import './_chip.scss';
   import { onMount } from 'svelte';
   import Chip, { Set, LeadingIcon, Text } from '@smui/chips';

@@ -94,7 +94,7 @@
   async function getPosterUrl(id) {
     if (id) {
       // options.square: 0 => intelligent resize (keep ratio) | 1 => force resize | 2 => no resize (original)
-      const res = await getMedia('IMAGE', id, user, {
+      const res = await getMedia('IMAGE', id, user.jwt, {
         width: 40,
         height: 40,
         square: 1

@@ -1,33 +1,48 @@
 <script>
-  // @ts-nocheck
-
   import { log } from '$lib/utils';
   import { tick, createEventDispatcher, onMount } from 'svelte';
   import { _ } from 'svelte-i18n';
   import Ui from './Ui.svelte';
 
   const dispatch = createEventDispatcher();
-  const scrubStart = {};
+  const scrubStart = { x: 0, y: 0, playhead: 0 };
 
+  /** @type {number} */
   let duration;
+  /** @type {ReturnType<typeof setTimeout>} */
   let controlsTimeout;
   let className = '';
   let hydrated = false;
   let hydrating = false;
+  /** @type {string | undefined} */
   let currentPoster;
   let buffered;
+  /** @type {boolean} */
   let scrubbing;
+  /** @type {Element} */
   let target;
-  let mouseAction;
+  /** @type {boolean} */
+  let isMouseAction;
+  /** @type {boolean} */
   let customControls;
+  /** @type {string | null} */
   let _src;
+  /** @type {Promise<any>}  */
+  let playingPromise;
 
   export let allowScrubbing = false;
-  export let videoElement = null;
+
+  /** @type {HTMLVideoElement} */
+  export let videoElement;
+  /** @type {string | undefined} */
   export let src;
+  /** @type {import('$lib/types').Video} */
   export let video;
+  /** @type {boolean} */
   export let autoplay;
+  /** @type {string | undefined} */
   export let poster;
+  /** @type {string | undefined} */
   export let type;
   export let muted = true;
   export let controls = false; // use native controls if true
@@ -37,9 +52,9 @@
   export { className as class };
 
   $: customControls = !controls;
-  $: showControls = paused || mouseAction;
-  $: mouseAction && clearTimeout(controlsTimeout);
-  $: !mouseAction && delayHideControls();
+  $: showControls = paused || isMouseAction;
+  $: isMouseAction && clearTimeout(controlsTimeout);
+  $: !isMouseAction && delayHideControls();
   $: paused && delayHideControls();
   $: ((p) => {
     if (currentPoster !== p) {
@@ -60,11 +75,11 @@
   }
 
   function handleMouseenter() {
-    mouseAction = true;
+    isMouseAction = true;
   }
 
   function handleMouseleave() {
-    mouseAction = false;
+    isMouseAction = false;
   }
 
   function delayHideControls() {
@@ -74,14 +89,21 @@
     showControls = true;
   }
 
-  function handleMousemove(e) {
-    e = e.detail;
+  /**
+   *
+   * @param {CustomEvent} event
+   */
+  function handleMousemove({ detail }) {
     delayHideControls();
-    allowScrubbing && handleScrubbing(e);
+    allowScrubbing && handleScrubbing(detail);
   }
 
-  function handleScrubbing(e) {
-    if (!(e.buttons & 1)) return; // mouse not down
+  /**
+   *
+   * @param {MouseEvent} event
+   */
+  function handleScrubbing(event) {
+    if (!(event.buttons & 1)) return; // mouse not down
     if (!duration) return; // videoElement not loaded yet
 
     const { left, right } = videoElement && videoElement.getBoundingClientRect();
@@ -91,7 +113,7 @@
     let ph = scrubStart.playhead;
     let width = right - left;
     let ratio = duration / width;
-    let dist = left - x - (left - e.clientX);
+    let dist = left - x - (left - event.clientX);
     let delta = ph + dist * ratio;
 
     // playhead = (duration * (e.clientX - left)) / (right - left); // entry point relative to videos bounding rect - causes playhed to jump in most cases
@@ -99,16 +121,16 @@
     scrubbing = true;
   }
 
-  function handlePlayPause(e) {
+  function handlePlayPause() {
     // if we have switched off preload, load first
     if (!duration || !videoElement.getAttribute('src')) {
       setSourceAndLoad();
     }
     if (paused) {
       playhead && (videoElement.currentTime = playhead);
-      videoElement.promise = videoElement.play();
+      playingPromise = videoElement.play();
     } else {
-      videoElement.promise
+      playingPromise
         .then(() => {
           // playback started so we can safely pause
           videoElement.pause();
@@ -119,38 +141,52 @@
     }
   }
 
-  function handlePause(e) {
+  function handlePause() {
     dispatch('player:paused');
   }
 
-  function handleRewind(e) {
-    let step = e.detail || 15;
+  /**
+   *
+   * @param {CustomEvent} event
+   */
+  function handleRewind({ detail }) {
+    let step = detail || 15;
     let s;
     playhead -= (s = playhead - step) < 0 ? step + s : step;
     dispatch('player:rwd');
   }
 
-  function handleForeward(e) {
-    let step = e.detail || 15;
+  /**
+   *
+   * @param {CustomEvent} event
+   */
+  function handleForeward(event) {
+    let step = event.detail || 15;
     playhead += playhead + step > duration ? duration - playhead : step;
     dispatch('player:fwd');
   }
 
-  function handleWheel(e) {
-    e = e.detail;
-    playhead += e.deltaY * 0.2;
+  /**
+   *
+   * @param {CustomEvent} event
+   */
+  function handleWheel({ detail }) {
+    playhead += detail.deltaY * 0.2;
   }
 
-  function handleMousedown(e) {
-    e = e.detail;
-    mouseAction = true;
-    const isMediaControl = e.target.classList.contains('play-pause-controllable');
+  /**
+   *
+   * @param {CustomEvent} event
+   */
+  function handleMousedown({ detail }) {
+    isMouseAction = true;
+    const isMediaControl = detail.target.classList.contains('play-pause-controllable');
 
-    scrubStart.x = e.clientX;
-    scrubStart.y = e.clientY;
+    scrubStart.x = detail.clientX;
+    scrubStart.y = detail.clientY;
     scrubStart.playhead = playhead;
 
-    target = e.currentTarget;
+    target = detail.currentTarget;
 
     // we can't rely on the built-in click event, because it fires
     // after a drag — we have to listen for clicks ourselves
@@ -181,47 +217,45 @@
     setTimeout(cancel, 100); // prevent start/stop after scrubbing
   }
 
-  function handleCanPlay(e) {
+  function handleCanPlay() {
     dispatch('player:canplay', { ...video });
   }
 
-  function handleLoadstart(e) {
+  function handleLoadstart() {
     !_src && (_src = videoElement.getAttribute('src'));
     hydrating = true;
     hydrated = false;
     dispatch('player:loadstart', { ...video });
   }
 
-  function handleLoadedData(e) {
+  function handleLoadedData() {
     hydrating = false;
     hydrated = true;
     dispatch('player:loadeddata', { ...video });
   }
 
-  function handleEmptied(e) {
+  function handleEmptied() {
     hydrated = false;
     dispatch('player:emptied', { ...video });
   }
 
-  function handleAborted(e) {
+  function handleAborted() {
     hydrated = false;
     dispatch('player:aborted', { ...video });
   }
 
-  function handlePictureInPicture(e) {
+  function handlePictureInPicture() {
     if (document.pictureInPictureElement) document.exitPictureInPicture().catch((e) => {});
     else videoElement && videoElement.requestPictureInPicture().catch((e) => {});
   }
 
-  function handleMute(e) {
+  function handleMute() {
     muted = !muted;
   }
 
-  function handleFullscreen(e) {
+  function handleFullscreen() {
     if (document.fullscreenElement) document.exitFullscreen().catch((e) => {});
-    else if (videoElement && videoElement.requestFullscreen) videoElement.requestFullscreen();
-    else if (videoElement && videoElement.webkitRequestFullScreen)
-      videoElement.webkitRequestFullScreen();
+    else if (videoElement?.requestFullscreen) videoElement.requestFullscreen();
   }
 
   async function reload() {
@@ -254,7 +288,6 @@
     on:emptied={handleEmptied}
     on:abort={handleAborted}
     on:pause={handlePause}
-    x-webkit-airplay="allow"
   >
     <source type="video/{type}" />
     <track kind="captions" />
@@ -282,7 +315,6 @@
       {showControls}
       {paused}
       {buffered}
-      {scrubbing}
     />
   {/if}
 </div>

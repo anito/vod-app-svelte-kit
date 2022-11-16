@@ -1,6 +1,4 @@
 <script>
-  // @ts-nocheck
-
   import { onMount, getContext } from 'svelte';
   import Uploader from './_Uploader.svelte';
   import { _ } from 'svelte-i18n';
@@ -8,22 +6,32 @@
   export { className as class };
   export let type = '';
   export let uid = '';
-  export let acceptedFiles = '';
-  export let options = {};
+  export let options = {
+    uploadMultiple: false,
+    parallelUploads: 1,
+    maxFiles: 1,
+    timeout: 3600 * 1000, // 60min
+    maxFilesize: 2 // Megabyte
+  };
   export let events = {};
 
   const { getSnackbar, configSnackbar } = getContext('snackbar');
 
   let className = '';
   let count = 0;
+  /**
+   * @type {HTMLDivElement}
+   */
   let uploader;
-  /** @type {import("@smui/snackbar").SnackbarComponentDev} */
+  /**
+   * @type {import("@smui/snackbar").SnackbarComponentDev}
+   * */
   let snackbar;
 
   $: path = `${type.toLowerCase()}s`;
-  $: fileTypes = (type === 'avatar' && 'image') || type;
-  $: acceptedFiles = !acceptedFiles && `${fileTypes}/*`;
-  $: options = { ...options, acceptedFiles, path };
+  $: fileType = (type === 'avatar' && 'image') || type;
+  $: acceptedFiles = `${fileType}/*`;
+  $: options = { acceptedFiles, ...options, path };
 
   onMount(() => {
     snackbar = getSnackbar();
@@ -38,30 +46,49 @@
       });
   });
 
-  function onAddedfile(file) {
+  /**
+   *
+   * @param {CustomEvent} param0
+   */
+  function onAddedfile({ detail }) {
     ++count;
   }
 
-  function onRemovedfile(file) {
+  /**
+   *
+   * @param {CustomEvent} param0
+   */
+  function onRemovedfile({ detail }) {
     --count;
   }
 
-  function onSuccess(e) {
-    if (options['uploadMultiple']) return;
-    handleUpload(e.detail);
+  /**
+   *
+   * @param {CustomEvent} event
+   */
+  function onSuccess(event) {
+    if (options.uploadMultiple) return;
+    uploader.dispatchEvent(new CustomEvent('upload:success', event));
   }
 
-  function onError(e) {
-    configSnackbar(e.detail);
+  /**
+   *
+   * @param {CustomEvent} event
+   */
+  function onSuccessmultiple(event) {
+    if (!options.uploadMultiple) return;
+    uploader.dispatchEvent(new CustomEvent('upload:successmultiple', event));
+  }
+
+  /**
+   *
+   * @param {CustomEvent} event
+   */
+  function onError({ detail }) {
+    /** @type {any} */
+    const { message } = { ...detail };
+    configSnackbar(message);
     snackbar.open();
-  }
-
-  function onSuccessmultiple(e) {
-    handleUpload(e.detail);
-  }
-
-  function handleUpload(detail) {
-    uploader.dispatchEvent(new CustomEvent('upload:done', { detail }));
   }
 </script>
 

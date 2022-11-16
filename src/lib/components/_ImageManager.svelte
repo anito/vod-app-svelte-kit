@@ -1,6 +1,4 @@
 <script>
-  // @ts-nocheck
-
   import * as api from '$lib/api';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
@@ -12,25 +10,27 @@
   import { fabs, urls, sitename, images, session } from '$lib/stores';
   import { _ } from 'svelte-i18n';
 
-  const { open } = getContext('default-modal');
+  const { open: open$uploader, close: close$uploader } = getContext('default-modal');
   const { getSnackbar, configSnackbar } = getContext('snackbar');
   const { setFab } = getContext('fab');
 
   /** @type {import("@smui/snackbar").SnackbarComponentDev} */
   let snackbar;
   let openUploader = () => {
-    open(
+    open$uploader(
       MediaUploader,
       {
-        commonProps: { type: 'image' },
+        layoutProps: { type: $_('text.video-poster') },
+        type: 'image',
         options: {
           uploadMultiple: true,
           parallelUploads: 12,
           maxFiles: 12
         },
-        events: { 'upload:done': uploadDoneHandler }
+        events: { 'upload:successmultiple': uploadSuccessHandler }
       },
       {
+        closeOnOuterClick: false,
         transitionWindow: fly,
         transitionWindowProps: {
           y: -200,
@@ -45,19 +45,31 @@
     setFab('add-image');
   });
 
-  function uploadDoneHandler(e) {
-    const { data, message, success } = { ...e.detail };
+  /**
+   *
+   * @param {CustomEvent} param0
+   */
+  function uploadSuccessHandler({ detail }) {
+    /** @type {any} */
+    const { data, message, success } = { ...detail.responseText };
+
+    configSnackbar(message);
+    snackbar.open();
+
     if (success) {
       images.add(data);
     }
-    if (message) {
-      configSnackbar(message);
-      snackbar.open();
-    }
+
+    close$uploader();
   }
 
-  async function deletePoster(e) {
-    const { image } = { ...e.detail };
+  /**
+   *
+   * @param {CustomEvent} event
+   */
+  async function deletePoster(event) {
+    /** @type {any} */
+    const { image } = { ...event.detail };
     const id = image.id;
     await api.del(`images/${image.id}`, { token: $session.user?.jwt }).then((res) => {
       let message = res.message || res.data.message || res.statusText;

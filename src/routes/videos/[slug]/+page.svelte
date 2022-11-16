@@ -8,6 +8,9 @@
   import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, info } from '$lib/utils';
   import { _ } from 'svelte-i18n';
 
+  /** @type {import('./$types').PageData} */
+  export let data;
+
   /** @type {boolean} */
   let paused;
   /** @type {boolean} */
@@ -22,7 +25,7 @@
   let src;
 
   $: video = $videos.find((v) => v.id === $page.params.slug);
-  $: user = $users.find((user) => user.id === $session.user?.id);
+  $: user = data.user;
   $: user && (canPlay = false);
   $: hasPrivileges = user?.role === ADMIN || user?.role === SUPERUSER;
   $: joinData = user?.videos.find(
@@ -35,8 +38,8 @@
     clearTimeout(timeoutId);
     timeoutId = setTimeout((saved) => saved === playhead && savePlayhead(), 500, pauseTime);
   })(playhead);
-  $: video?.image_id && getMediaImage(video.image_id, $session.user).then((v) => (poster = v));
-  $: video?.id && getMediaVideo(video.id, $session.user).then((v) => (src = v));
+  $: video?.image_id && getMediaImage(video.image_id, $session.user?.jwt).then((v) => (poster = v));
+  $: video?.id && getMediaVideo(video.id, $session.user?.jwt).then((v) => (src = v));
   $: $navigating && savePlayhead();
 
   onMount(() => {});

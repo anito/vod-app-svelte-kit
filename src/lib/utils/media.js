@@ -12,12 +12,12 @@ const MediaTypes = new Map([
 /**
  *
  * @param {string} id
- * @param {import('$lib/types').User} user
+ * @param {string} token
  * @param {string} type
  * @param {any} param3
  * @returns
  */
-async function uri(id, user, type, { ...options }) {
+async function uri(id, token, type, { ...options }) {
   /** @type {{base: string} | any} */
   const { base } = MediaTypes.get(type);
   let query = [];
@@ -26,7 +26,7 @@ async function uri(id, user, type, { ...options }) {
   }
   const url = `u/${base}/${id}/${query.length && '?' + query.join('&')}`;
 
-  return await api.get(`${url}`, { token: user?.jwt, fetch }).then((res) => {
+  return await api.get(`${url}`, { token }).then((res) => {
     if (res?.success) {
       return res.data;
     } else {
@@ -39,12 +39,12 @@ async function uri(id, user, type, { ...options }) {
  *
  * @param {string} type
  * @param {string} id
- * @param {import('$lib/types').User} user
+ * @param {string} token
  * @param {any} param3
  * @returns
  */
-export async function getMedia(type, id, user, { ...options }) {
-  if (user?.jwt) {
+export async function getMedia(type, id, token, { ...options }) {
+  if (token) {
     let defaults = {
       width: 300,
       height: 300,
@@ -58,59 +58,59 @@ export async function getMedia(type, id, user, { ...options }) {
     url = cached = ((_urls = get(urls)) && _urls.has(id) && _urls.get(id)[stringified]) || false;
 
     if (!cached) {
-      await uri(id, user, type, params)
+      await uri(id, token, type, params)
         .then((res) => (url = res['url']) && urls.add(res))
         .catch((err) => log(err));
     }
-    if (url) return `${url}/?token=${user.jwt}`;
+    if (url) return `${url}/?token=${token}`;
   }
 }
 
 /**
  *
  * @param {string} id
- * @param {import('$lib/types').User} user
+ * @param {string} jwt
  * @param {any} options
  * @returns
  */
-export function getMediaAvatar(id, user, options = {}) {
+export function getMediaAvatar(id, jwt, options = {}) {
   const defaults = {
     width: 100,
     height: 100,
     square: 1
   };
   let settings = { ...defaults, ...options };
-  return getMedia('AVATAR', id, user, settings);
+  return getMedia('AVATAR', id, jwt, settings);
 }
 
 /**
  *
  * @param {string} id
- * @param {import('$lib/types').User} user
+ * @param {string} jwt
  * @param {any} options
  * @returns
  */
-export function getMediaImage(id, user, options = {}) {
+export function getMediaImage(id, jwt, options = {}) {
   const defaults = {
     width: 512,
     height: 512,
     square: 0
   };
   let settings = { ...defaults, ...options };
-  return getMedia('IMAGE', id, user, settings);
+  return getMedia('IMAGE', id, jwt, settings);
 }
 
 /**
  *
  * @param {string} id
- * @param {import('$lib/types').User} user
+ * @param {string} jwt
  * @param {any} options
  * @returns
  */
-export async function getMediaVideo(id, user, options = {}) {
+export async function getMediaVideo(id, jwt, options = {}) {
   const defaults = { square: 2 };
   let settings = { ...defaults, ...options };
-  return getMedia('VIDEO', id, user, settings);
+  return getMedia('VIDEO', id, jwt, settings);
 }
 
 /**

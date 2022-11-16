@@ -450,7 +450,7 @@
 <Icons />
 
 {#if $locale}
-  <Modal header={{ name: 'text.upload-type' }}>
+  <Modal header={{ name: 'text.upload-type' }} key="default-modal">
     <Modal header={{ name: 'text.edit-uploaded-content' }} key="editor-modal">
       <div bind:this={base} class="transition opacity-0">
         <form

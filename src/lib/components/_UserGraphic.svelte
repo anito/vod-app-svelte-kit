@@ -72,7 +72,7 @@
     if (user?.avatar?.src?.startsWith('http')) {
       Promise.resolve(user.avatar.src).then((val) => (src = val));
     } else if (user?.avatar) {
-      await getMediaAvatar(user?.avatar?.id, $session.user, {
+      await getMediaAvatar(user?.avatar?.id, $session.user?.jwt, {
         width,
         height,
         square: 1,

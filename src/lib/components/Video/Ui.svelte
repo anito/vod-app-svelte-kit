@@ -1,6 +1,4 @@
 <script>
-  // @ts-nocheck
-
   import { onMount, createEventDispatcher } from 'svelte';
 
   export let muted = true;
@@ -8,6 +6,7 @@
   let dispatch = createEventDispatcher();
   let pipButton;
   let fullscreenButton;
+  /** @type {Element} */
   let mediaControls;
   let listeners = 0;
 
@@ -35,41 +34,70 @@
     'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iYmxhY2siIHdpZHRoPSIxOHB4IiBoZWlnaHQ9IjE4cHgiPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNNSAxNmgzdjNoMnYtNUg1djJ6bTMtOEg1djJoNVY1SDh2M3ptNiAxMWgydi0zaDN2LTJoLTV2NXptMi0xMVY1aC0ydjVoNVY4aC0zeiIvPjwvc3ZnPg==';
 
   export let time = 0;
-  export let duration = NaN;
+  /** @type {number} */
+  export let duration;
+  /** @type {boolean} */
   export let paused;
+  /** @type {boolean} */
   export let showControls;
-  export let buffered = [];
+  export let buffered;
 
   $: percentageTime = (time * 100) / duration;
-  $: percentageBuffer = buffered.length && (buffered[buffered.length - 1].end * 100) / duration;
+  $: percentageBuffer =
+    (buffered?.length && (buffered[buffered.length - 1].end * 100) / duration) || 0;
 
   onMount(() => {});
 
+  /**
+   *
+   * @param {number} seconds
+   * @param {string} prefix
+   */
   function format(seconds, prefix = '') {
     if (isNaN(seconds)) return '...';
 
-    let minutes = Math.floor(seconds / 60);
+    const minutes = Math.floor(seconds / 60);
     seconds = Math.floor(seconds % 60);
-    if (minutes < 10) minutes = '0' + minutes;
-    if (seconds < 10) seconds = '0' + seconds;
+    const printMinutes = minutes < 10 ? '0' + minutes : minutes;
+    const printSeconds = seconds < 10 ? '0' + seconds : seconds;
 
-    return `${prefix}${minutes}:${seconds}`;
+    return `${prefix}${printMinutes}:${printSeconds}`;
   }
 
-  function handleWheel(e) {
+  /**
+   *
+   * @param {WheelEvent} event
+   */
+  function handleWheel(event) {
     dispatch('wheel', {
-      deltaX: e.deltaX,
-      deltaY: e.deltaY,
-      direction: e.deltaY <= 0 ? 'up' : 'down'
+      deltaX: event.deltaX,
+      deltaY: event.deltaY,
+      direction: event.deltaY <= 0 ? 'up' : 'down'
     });
   }
 
-  function dispatchMousemove(e) {
-    dispatch('mousemove', e);
+  /**
+   *
+   * @param {Event} event
+   */
+  function dispatchMousemove(event) {
+    dispatch('mousemove', event);
   }
 
-  function dispatchMousedown(e) {
-    dispatch('mousedown', e);
+  /**
+   *
+   * @param {Event} event
+   */
+  function dispatchMousedown(event) {
+    dispatch('mousedown', event);
+  }
+
+  /**
+   *
+   * @param {Event} event
+   */
+  function dispatchPip(event) {
+    dispatch('pip', event);
   }
 
   function handleAddMousemove() {
@@ -77,25 +105,25 @@
     mediaControls.addEventListener('mousemove', dispatchMousemove);
   }
 
-  function handleRemMousemove(e) {
+  function handleRemMousemove() {
     listeners--;
     mediaControls.removeEventListener('mousemove', dispatchMousemove);
   }
 
+  /**
+   *
+   * @param {Element} node
+   */
   function maybeEnablePipButton(node) {
     if ('pictureInPictureEnabled' in document) {
       node.classList.remove('hidden');
-      node.disabled = false;
+      node.removeAttribute('disabled');
     }
   }
 </script>
 
 <div class="media-controls-container" style="z-index: 2;">
-  <div
-    pseudo="-webkit-media-text-track-container"
-    class="visible-controls-bar"
-    style="display: none; stroke-width: 0px;"
-  />
+  <div class="visible-controls-bar" style="display: none; stroke-width: 0px;" />
   <div
     class="media-controls play-pause-controllable inline"
     class:faded={!showControls}
@@ -137,7 +165,7 @@
           <button
             bind:this={pipButton}
             use:maybeEnablePipButton
-            on:click={(e) => dispatch('pip', e)}
+            on:click={dispatchPip}
             disabled
             class="pip bar hidden"
             aria-label="Bild-in-Bild starten"
@@ -186,7 +214,7 @@
             <picture style="-webkit-mask-image: url({data_fwd}); width: 13px; height: 17px;" />
           </button>
         </div>
-        <div class="time-control flex" style="flex: 8;" on:click|stopPropagation>
+        <div class="time-control flex" style="flex: 8;" on:keydown on:click|stopPropagation>
           <div
             class="time-label"
             aria-label="Verstrichen: {Math.floor(time)} Sekunden"

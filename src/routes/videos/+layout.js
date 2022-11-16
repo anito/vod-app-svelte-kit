@@ -4,5 +4,6 @@ import { images, users, videos } from '$lib/stores';
 export async function load({ data }) {
   videos.update(data.videos);
   images.update(data.images);
-  users.update([data.user]);
+
+  return { user: data.user };
 }

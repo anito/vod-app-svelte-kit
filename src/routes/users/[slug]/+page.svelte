@@ -9,9 +9,6 @@
   import { proxyEvent, INBOX, ADMIN, SUPERUSER, TABS, log } from '$lib/utils';
   import { _ } from 'svelte-i18n';
 
-  /** @type {import('./$types').PageData} */
-  export let data;
-
   /**  * @type {string} */
   let selectedMode = 'edit';
 
@@ -37,6 +34,7 @@
   $: currentUser = ((id) => $users.find((usr) => usr.id === id) || ($users.length && $users[0]))(
     selectionUserId
   );
+  $: user = $users.find((user) => $session.user?.id === user.id);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: isCurrentSuperUser = currentUser?.role === SUPERUSER;
   $: username = currentUser?.name || '';
@@ -152,7 +150,7 @@
     </div>
   </div>
   {#if tab === TABS[0]}
-    <TimeManager {selectionUserId} />
+    <TimeManager {selectionUserId} {user} />
   {/if}
   {#if tab === TABS[1]}
     <UserManager

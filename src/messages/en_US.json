@@ -227,7 +227,10 @@
     "one-moment": "One Moment...",
     "welcome": "Welcome",
     "change-account": "Change account",
-    "empty-edit-mode": "No mode selected"
+    "empty-edit-mode": "No mode selected",
+    "video-poster": "Poster",
+    "image": "Poster",
+    "avatar": "Avatar"
   },
   "summary": {
     "copy-link": {

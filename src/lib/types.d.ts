@@ -137,6 +137,26 @@ export interface Editor<EditorType = Record<string, any>> {
   editable: Element | any
 }
 
+export interface Dropzone<DropzoneType = Record<string, any>> {
+  processQueue?: any
+  removeFile?: any;
+  url?: string | undefined;
+  timeout?: number | undefined;
+  paramName?: string | undefined;
+  uploadMultiple?: boolean | undefined;
+  maxFiles?: number | undefined;
+  autoProcessQueue?: boolean | undefined;
+  parallelUploads?: number | undefined;
+  withCredentials?: boolean | undefined;
+  thumbnailWidth?: number | undefined;
+  thumbnailHeight?: number | undefined;
+  clickable?: boolean | undefined;
+  acceptedFiles?: any;
+  maxFilesize?: number | undefined;
+  previewTemplate?: any;
+  init?: () => void;
+}
+
 // export interface Session<SessionType = Record<string, any>> {
 //   data: SessionType;
 //   expires: Date | undefined;
