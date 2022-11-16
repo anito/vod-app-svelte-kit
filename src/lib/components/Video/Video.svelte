@@ -1,4 +1,6 @@
 <script>
+  // @ts-nocheck
+
   import { log } from '$lib/utils';
   import { tick, createEventDispatcher, onMount } from 'svelte';
   import { _ } from 'svelte-i18n';
@@ -27,8 +29,6 @@
   let customControls;
   /** @type {string | null} */
   let _src;
-  /** @type {Promise<any>}  */
-  let playingPromise;
 
   export let allowScrubbing = false;
 
@@ -128,9 +128,9 @@
     }
     if (paused) {
       playhead && (videoElement.currentTime = playhead);
-      playingPromise = videoElement.play();
+      videoElement.promise = videoElement.play();
     } else {
-      playingPromise
+      videoElement.promise
         .then(() => {
           // playback started so we can safely pause
           videoElement.pause();

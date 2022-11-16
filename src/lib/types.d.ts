@@ -89,11 +89,6 @@ export interface Session<SessionType = Record<string, any>> {
   _expires: Date | any
 }
 
-export interface VideoElement<VideoElementType = Record<string, any>> {
-  node: HTMLVideoElement
-  promise: any
-}
-
 export interface VideoEmitter<VideoEmitterType = Record<string, any>> {
   method: string
   data: Video | any

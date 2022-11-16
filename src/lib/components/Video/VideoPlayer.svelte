@@ -1,4 +1,6 @@
 <script context="module">
+  // @ts-nocheck
+
   import UAParser from 'ua-parser-js';
 
   const browserName = new UAParser().getBrowser().name;
