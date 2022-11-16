@@ -1,6 +1,5 @@
 <script>
   import * as api from '$lib/api';
-  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { onMount, getContext } from 'svelte';
   import { fly } from 'svelte/transition';

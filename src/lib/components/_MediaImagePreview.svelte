@@ -19,7 +19,7 @@
   let poster = (media && `${posterUrl}${getExt(media.src)}`) || posterUrl;
 
   $: media && (id = media.id);
-  $: id && ((id) => getMediaImage(id, $session.user, settings).then((v) => (poster = v)))(id);
+  $: id && ((id) => getMediaImage(id, $session.user?.jwt, settings).then((v) => (poster = v)))(id);
 </script>
 
 <Media aspectRatio="16x9" style="background-image:url({poster})" />

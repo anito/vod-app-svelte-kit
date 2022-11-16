@@ -25,10 +25,10 @@
 
   /**
    *
-   * @param {CustomEvent} ev
+   * @param {CustomEvent} event
    */
-  function itemSelectedHandler(ev) {
-    let { video } = ev.detail;
+  function itemSelectedHandler({ detail }) {
+    let { video } = detail;
 
     if (video.id != selectionVideoId) {
       goto(`/videos/${video.id}`);

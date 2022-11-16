@@ -1,7 +1,7 @@
 <script>
   import * as api from '$lib/api';
   import { page, navigating } from '$app/stores';
-  import { onMount, tick } from 'svelte';
+  import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
   import { session, sitename, videos, users, videoEmitter } from '$lib/stores';
   import { VideoPlayer } from '$lib/components/Video';
