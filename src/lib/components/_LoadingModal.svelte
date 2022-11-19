@@ -8,8 +8,8 @@
   export let backgroundColor = '#222222';
   export let opacity = 0.5;
 
-  const SUPRESS_SEARCHES_KEY = 'searches';
-  const SUPPRESS_PATH_KEY = 'paths';
+  const SEARCHES_KEY = 'searches';
+  const PATHS_KEY = 'paths';
 
   /**
    * Configure where to supress the LoadinSpinner
@@ -26,9 +26,10 @@
   /** @type {ReturnType<typeof setTimeout>} */
   let timeoutId;
   let disabled = false;
-  let omitt = new Map([
+
+  const omitt = new Map([
     [
-      SUPRESS_SEARCHES_KEY,
+      SEARCHES_KEY,
       /**
        * @param {import('@sveltejs/kit').NavigationTarget} to
        */
@@ -42,7 +43,7 @@
       }
     ],
     [
-      SUPPRESS_PATH_KEY,
+      PATHS_KEY,
       (to) => {
         pathnames.forEach((slug) => {
           if (to.url.pathname.indexOf(slug) != -1) {
@@ -58,8 +59,8 @@
     root?.classList.remove('navigating');
     disabled = false;
     omitt.forEach((fn, key) => {
-      key === SUPRESS_SEARCHES_KEY && to && fn(to);
-      key === SUPPRESS_PATH_KEY && to && fn(to);
+      key === SEARCHES_KEY && to && fn(to);
+      key === PATHS_KEY && to && fn(to);
     });
   });
 

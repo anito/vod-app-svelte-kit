@@ -5,7 +5,7 @@
   import '$lib/components/_colored_snackbar.scss';
   import * as api from '$lib/api';
   import { derived, writable } from 'svelte/store';
-  import { goto, invalidate, invalidateAll } from '$app/navigation';
+  import { afterNavigate, goto, invalidate } from '$app/navigation';
   import { navigating, page } from '$app/stores';
   import { getContext, onMount, setContext, tick } from 'svelte';
   import isMobile from 'ismobilejs';
@@ -23,7 +23,8 @@
     svg,
     ADMIN,
     SUPERUSER,
-    randomItem
+    randomItem,
+    afterNavigation
   } from '$lib/utils';
   import {
     fabs,
@@ -202,41 +203,6 @@
     return `?${configSearchParams.toString()}`;
   };
   $: $page.url.searchParams.has('config') && configLoadReset();
-  $: $navigating?.to && extendSession($navigating.to);
-
-  /**
-   * User interaction causing URL changes should automatically extend the session
-   * @param {import("@sveltejs/kit").NavigationTarget} to
-   */
-  function extendSession(to) {
-    if (canExtend(to)) {
-      clearTimeout(navTimeoutId);
-      navTimeoutId = setTimeout(() => {
-        proxyEvent('session:extend');
-      }, 1500);
-    }
-  }
-
-  /**
-   * Test here for some urls the session should not be extended while navigating
-   * @param {import('@sveltejs/kit').NavigationTarget} to
-   */
-  function canExtend(to) {
-    const exclude = new Map([
-      ['config', ['load']],
-      ['tab', ['time', 'test']]
-    ]);
-    const toParams = to?.url.searchParams;
-
-    /** @type {any} */
-    let prevent = false;
-    toParams?.forEach((val$1, key$1) => {
-      exclude.forEach((val$2, key$2) => {
-        prevent = key$1 === key$2 && val$2.find((val) => val === val$1);
-      });
-    });
-    return !prevent;
-  }
 
   onMount(async () => {
     $mounted = true;
@@ -492,6 +458,25 @@
     $page.url.searchParams.delete('config');
     setTimeout(async () => await goto($page.url.href), 500);
   }
+
+  /**
+   *
+   * @param {string | any[]} prevented
+   */
+  const afterNavigationCallback = (prevented) => {
+    if (!prevented) {
+      clearTimeout(navTimeoutId);
+      navTimeoutId = setTimeout(() => {
+        proxyEvent('session:extend');
+      }, 1500);
+    }
+  };
+
+  afterNavigation(afterNavigate, afterNavigationCallback, {
+    searches: [['config', 'load']],
+    from_pathnames: ['login'],
+    to_pathnames: []
+  });
 
   /**
    *
