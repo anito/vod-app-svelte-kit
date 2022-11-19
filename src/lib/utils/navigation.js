@@ -25,12 +25,12 @@ export const afterNavigation = (
       /** @type {string} */
       SEARCHES_KEY,
       /**
-       * @param {import('@sveltejs/kit').NavigationTarget} target
+       * @param {import('@sveltejs/kit').NavigationTarget} fromOrTo
        */
-      (target) => {
-        return searches.filter((needle, i) => {
-          if (target.url.searchParams.has(needle[0])) {
-            if (target.url.searchParams.get(needle[0]) === needle[1]) {
+      (fromOrTo) => {
+        return searches.filter((needle) => {
+          if (fromOrTo.url.searchParams.has(needle[0])) {
+            if (fromOrTo.url.searchParams.get(needle[0]) === needle[1]) {
               return needle;
             }
           }
@@ -42,7 +42,6 @@ export const afterNavigation = (
       (from) => {
         return from_pathnames.filter((slug) => {
           if (from.url.pathname.indexOf(slug) !== -1) {
-            console.log('FROM_PATHS', slug);
             return slug;
           }
         });
@@ -53,7 +52,6 @@ export const afterNavigation = (
       (to) => {
         return to_pathnames.filter((slug) => {
           if (to.url.pathname.indexOf(slug) !== -1) {
-            console.log('TO_PATHS', slug);
             return slug;
           }
         });

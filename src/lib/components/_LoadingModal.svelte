@@ -25,8 +25,8 @@
   let root;
   /** @type {ReturnType<typeof setTimeout>} */
   let timeoutId;
-  let disabled = false;
 
+  let disabled = false;
   const omitt = new Map([
     [
       SEARCHES_KEY,
@@ -37,7 +37,6 @@
         searches.forEach((slug) => {
           if (to.url.searchParams.has(slug)) {
             disabled = true;
-            return;
           }
         });
       }
@@ -48,7 +47,6 @@
         pathnames.forEach((slug) => {
           if (to.url.pathname.indexOf(slug) != -1) {
             disabled = true;
-            return;
           }
         });
       }
