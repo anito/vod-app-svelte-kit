@@ -64,7 +64,7 @@ function createStore(endpoint, args) {
     update(async (data) => {
       const token = getToken();
       data.mails.set(val.id, val);
-      return await api.add(endpoint, { data: val, token }).then(() => data);
+      return await api.post(endpoint, { data: val, token }).then(() => data);
     });
 
   /**

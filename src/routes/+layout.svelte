@@ -185,9 +185,12 @@
   $: root && ((user) => root.classList.toggle('loggedin', user))(!!$session.user);
   $: root && ((isPrivileged) => root.classList.toggle('admin', isPrivileged))(hasPrivileges);
   $: ((segment) => {
-    root &&
-      ((segment && root.classList.remove('home')) || (!segment && root.classList.add('home')));
+    console.log(segment);
+    // root &&
+    //   ((segment && root.classList.toggle('home'), segment === 'home') || (!segment && root.classList.add('home')));
   })($segment);
+  $: (root && root.classList.toggle('home'), segment === 'home') ||
+    (!segment && root.classList.add('home'));
   $: salutation.update(randomItem(data.config?.Site?.salutations) || 'Hi');
   $: if ($session.user) {
     loggedInButtonTextSecondLine = `${$salutation}, ${$session.user.name}`;

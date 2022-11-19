@@ -178,7 +178,7 @@
   }
 
   .primary > :global(li.nav-item a),
-  .primary > :global(li.nav-item span) {
+  .primary > :global(li.nav-item span):not(button span) {
     font-size: 1.1rem;
     font-weight: 600;
     border: none;
