@@ -2,7 +2,7 @@
   // @ts-nocheck
   import { onMount } from 'svelte';
   import { flash, googleUser } from '$lib/stores';
-  import { createRedirectSlug, get, proxyEvent } from '$lib/utils';
+  import { get, proxyEvent } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
@@ -46,9 +46,9 @@
       const { success, data } = { ...res };
       if (success) {
         googleUser.set(data.user);
-        proxyEvent('ticker:success', { ...data });
+        proxyEvent('session:success', { ...data });
       } else {
-        proxyEvent('ticker:error', { ...data, redirect: '/login' });
+        proxyEvent('session:error', { ...data, redirect: '/login' });
       }
       google.accounts.id.prompt(); // display the One Tap dialog
     });

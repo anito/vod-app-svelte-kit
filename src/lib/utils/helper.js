@@ -105,7 +105,7 @@ export function createRedirectSlug(url, searchMap = new Map([])) {
     let regex = new RegExp(`\\b${ignore}`, 'g');
     path = path.replace(regex, '');
   }
-  return `?redirect=${path}${encodeURIComponent(parseSearchParams(searchParams))}`;
+  return `redirect=${path}${encodeURIComponent(parseSearchParams(searchParams))}`;
 }
 
 /**
@@ -339,6 +339,3 @@ String.prototype.add = function (val) {
   // @ts-ignore
   return arr.concat(val).unique().join(' ').trim();
 };
-
-export const __key__ = {};
-export const __session__ = {};

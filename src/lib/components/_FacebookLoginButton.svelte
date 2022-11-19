@@ -62,9 +62,9 @@
           }).then(async (res) => {
             const { success, data } = { ...res };
             if (success) {
-              proxyEvent('ticker:success', { ...data });
+              proxyEvent('session:success', { ...data });
             } else {
-              proxyEvent('ticker:error', { ...data, redirect: '/login' });
+              proxyEvent('session:error', { ...data, redirect: '/login' });
             }
           });
         }

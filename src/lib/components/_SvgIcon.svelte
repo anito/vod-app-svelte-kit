@@ -11,12 +11,13 @@
   export let name;
   export let fillColor = 'none';
   export let size = 20;
+  export let style = '';
   export { className as class };
 
   let className = '';
 </script>
 
-<svg class={className} width={size} height={size} style="fill: {fillColor}">
+<svg class={className} width={size} height={size} style={`fill: ${fillColor}; ${style}`}>
   <use xlink:href="#{name}" />
 </svg>
 

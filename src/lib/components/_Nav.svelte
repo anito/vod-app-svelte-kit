@@ -77,7 +77,7 @@
       on:mouseenter={() => (open = true)}
       on:mouseleave={() => (open = false)}
     >
-      <li class:hide-if-desktop={!showHome} class:active={!segment} class="nav-item">
+      <li class:hide-if-desktop={!showHome} class:active={segment === 'home'} class="nav-item">
         <a data-sveltekit-prefetch href="/">{home}</a>
       </li>
       <slot />
@@ -158,7 +158,7 @@
     top: 0;
   }
 
-  .primary.open {
+  /* .primary.open {
     padding: 0 0 1em 0;
     background: white;
     border-left: 1px solid #eee;
@@ -171,30 +171,25 @@
   .primary.open > :global(li.nav-item) {
     display: block;
     text-align: right;
-  }
+  } */
 
   .primary.open::after {
     display: none;
   }
 
   .primary > :global(li.nav-item a),
-  .primary > :global(li.nav-item > span) {
-    font-size: var(--h4);
+  .primary > :global(li.nav-item span) {
+    font-size: 1.1rem;
     font-weight: 600;
-    padding: 0 0.7rem;
     border: none;
     color: inherit;
-    display: inline-block !important;
+    display: inline-block;
+  }
+
+  .primary > :global(li.nav-item > a),
+  .primary > :global(li.nav-item > span) {
+    padding: 0 0.7rem;
     min-width: 40px;
-  }
-
-  .primary.open > :global(li.nav-item a) {
-    padding: 0.9375rem 2.3125rem 0.9375rem 2.5rem;
-    display: block;
-  }
-
-  .primary.open > :global(li.nav-item):first-child :global(a) {
-    padding-top: 1.4375rem;
   }
 
   .primary :global(svg) {
@@ -238,6 +233,36 @@
     color: var(--flash);
   }
 
+  @media (max-width: 990px) {
+    .primary.open {
+      padding: 0 0 1em 0;
+      background: white;
+      border-left: 1px solid #eee;
+      border-right: 1px solid #eee;
+      border-bottom: 1px solid #eee;
+      border-radius: 0 0 var(--border-r) var(--border-r);
+      align-self: start;
+    }
+
+    .primary.open > :global(li.nav-item) {
+      display: block;
+      text-align: right;
+    }
+
+    .primary.open > :global(li.nav-item a) {
+      padding: 0.9375rem 2.3125rem 0.9375rem 2.5rem;
+      display: block;
+    }
+
+    .primary.open > :global(li.nav-item):first-child :global(a) {
+      padding-top: 1.4375rem;
+    }
+
+    :global(.hide-if-mobile) {
+      display: none !important;
+    }
+  }
+
   @media (min-width: 991px) {
     .primary {
       display: flex;
@@ -246,7 +271,7 @@
       background: none;
     }
 
-    .primary.open {
+    /* .primary.open {
       padding: 0;
       background: transparent;
       border: none;
@@ -265,18 +290,18 @@
 
     .primary.open > :global(li.nav-item):first-child :global(a) {
       padding-top: 0;
-    }
+    } */
 
     .primary::after {
       display: none;
     }
 
     .primary :global(li.nav-item) {
-      display: inline !important;
+      display: inline;
       padding-left: 5px;
     }
 
-    .hide-if-desktop {
+    :global(.hide-if-desktop) {
       display: none !important;
     }
   }

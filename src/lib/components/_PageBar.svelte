@@ -15,7 +15,7 @@
       class="light"
       warningOnly
       forceOnExtend="2"
-      on:MDCChip:interaction={() => proxyEvent('ticker:extend')}
+      on:MDCChip:interaction={() => proxyEvent('session:extend')}
     />
   </div>
 </div>

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { writable } from 'svelte/store';
 
 function createStore() {
@@ -7,7 +6,7 @@ function createStore() {
   /**
    *
    * @param {string} id
-   * @param {import('svelte/store').Updater<never>[]} items
+   * @param {any[]} items
    * @returns {number}
    */
   let findIndexById = (id, items) => {
@@ -17,21 +16,23 @@ function createStore() {
   return {
     subscribe,
     update: (/** @type {never[]} */ val) => update((_) => val),
-    add: (/** @type {{ id: string; }} */ val) =>
-      update((items) => {
-        return (findIndexById(val.id, items) == -1 && [...items, val]) || items;
-      }),
-    /**
-     *
-     * @param {*} val
-     * @returns
-     */
-    put: (val) =>
-      update((items) => {
-        const index = findIndexById(val.id, items);
-        return [...items.slice(0, index), { ...items[index], ...val }, ...items.slice(index + 1)];
-      }),
-    del: (/** @type {any} */ id) => update((items) => items.filter((item) => item.id !== id)),
+    add: (/** @type {{ id: string; items: any[] }} */ val) =>
+      update(
+        /** @param {any | never[]} items */ (items) =>
+          (findIndexById(val.id, items) == -1 && [...items, val]) || items
+      ),
+    put: (/** @type {{ id: string; items: any[] }} */ val) =>
+      update(
+        /** @param {any | never[]} items */ (items) => {
+          const index = findIndexById(val.id, items);
+          return [...items.slice(0, index), { ...items[index], ...val }, ...items.slice(index + 1)];
+        }
+      ),
+    del: (/** @type {string} */ id) =>
+      update(
+        /** @param {any | never[]} items */ (items) =>
+          items.filter((/** @type {{ id: string; }} */ item) => item.id !== id)
+      ),
     set
   };
 }

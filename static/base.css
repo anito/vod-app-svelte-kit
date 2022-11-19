@@ -564,27 +564,29 @@ i.button {
 /**
  * Emphasize swopes two elements and emphasizes the primary element
 */
-.v-emph [class*="v-emph-"],
-.v-emph.v-emph-active [class*="v-emph-"] {
+button.v-emph [class*="v-emph-"],
+button.v-emph.v-emph-active [class*="v-emph-"] {
   transition: all 0.4s ease-in;
 }
-.v-emph.v-emph-active .v-emph-primary,
-.v-emph .v-emph-secondary {
-  font-size: 0.7rem;
+button.v-emph.v-emph-active .v-emph-primary,
+button.v-emph .v-emph-secondary {
+  font-size: 0.7rem !important;
+  font-weight: 400 !important;
 }
-.v-emph.v-emph-active .v-emph-secondary,
-.v-emph .v-emph-primary {
-  font-size: 0.44rem;
+button.v-emph.v-emph-active .v-emph-secondary,
+button.v-emph .v-emph-primary {
+  font-size: 0.44rem !important;
+  font-weight: 300 !important;
 }
-.v-emph.v-emph-active .v-emph-down,
-.v-emph .v-emph-up {
+button.v-emph.v-emph-active .v-emph-down,
+button.v-emph .v-emph-up {
   transform: translateY(13px);
 }
-.v-emph.v-emph-active .v-emph-up,
-.v-emph .v-emph-down {
+button.v-emph.v-emph-active .v-emph-up,
+button.v-emph .v-emph-down {
   transform: translateY(-13px);
 }
-.v-emph.v-emph-bounce [class*="v-emph-"],
-.v-emph.v-emph-bounce.v-emph-active [class*="v-emph-"] {
+button.v-emph.v-emph-bounce [class*="v-emph-"],
+button.v-emph.v-emph-bounce.v-emph-active [class*="v-emph-"] {
   transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }

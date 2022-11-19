@@ -18,9 +18,7 @@ import {
   sortByName,
   sortByTitle,
   svg,
-  windowSize,
-  __key__,
-  __session__
+  windowSize
 } from './helper';
 import { INBOX, SENT, ADMIN, SUPERUSER, USER, TABS, DEFAULT_TAB } from './const';
 import {
@@ -82,8 +80,6 @@ export {
   toLocalDate,
   toLocalTime,
   windowSize,
-  __key__,
-  __session__,
   INBOX,
   SENT,
   ADMIN,

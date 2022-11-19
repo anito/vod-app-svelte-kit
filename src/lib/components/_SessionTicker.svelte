@@ -6,7 +6,6 @@
   import { session, ticker } from '$lib/stores';
   import { _ } from 'svelte-i18n';
 
-  export let prefix = '';
   export { className as class };
   export let warning = 60;
   export let warningOnly = false;
@@ -14,14 +13,14 @@
 
   const FAILS = 2;
 
-  let className = '',
-    last,
-    timeout,
-    fails = FAILS,
-    forced = false,
-    forceTime = forceOnExtend * 1000 || 6000;
-
-  prefix === true && (prefix = '');
+  let className = '';
+  /** @type {string} */
+  let last;
+  /** @type {ReturnType<typeof setTimeout>} */
+  let timeoutId;
+  let fails = FAILS;
+  let forced = false;
+  let forceTime = forceOnExtend * 1000 || 6000;
 
   $: clName = !isNaN(warning) && $ticker / 1000 <= warning ? 'warning' : className;
   $: isWarning = clName === 'warning';
@@ -31,23 +30,21 @@
 
   onMount(() => {
     if (forceOnExtend) {
-      window.addEventListener('ticker:extend', forceVisible);
+      window.addEventListener('session:extend', forceVisible);
       forceVisible();
     }
 
     return () => {
-      clearTimeout(timeout);
-      window.removeEventListener('ticker:extend', forceVisible);
+      clearTimeout(timeoutId);
+      window.removeEventListener('session:extend', forceVisible);
     };
   });
 
-  Number.prototype.minDigits = function (minimumIntegerDigits, locale = 'de-DE', options) {
-    return this.toLocaleString(locale, {
-      minimumIntegerDigits,
-      ...options
-    });
-  };
-
+  /**
+   *
+   * @param {number} ms
+   * @returns {string}
+   */
   function parse(ms) {
     let tt, sec, min, hrs;
     if (isNaN(ms)) {
@@ -55,16 +52,19 @@
     }
     fails = FAILS;
     tt = ms / 1000;
+    // @ts-ignore
     sec = Math.floor(tt % 60).minDigits(2);
+    // @ts-ignore
     min = Math.floor((tt / 60) % 60).minDigits(2);
+    // @ts-ignore
     hrs = Math.floor(tt / 3600).minDigits(2);
     return (last = `${hrs}:${min}:${sec}`);
   }
 
   function forceVisible() {
     forced = true;
-    clearTimeout(timeout);
-    timeout = setTimeout(() => (forced = false), forceTime);
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => (forced = false), forceTime);
   }
 </script>
 
@@ -74,7 +74,6 @@
       <Chip class={clName} on:MDCChip:interaction {chip}>
         <LeadingIcon class="material-icons" leading>av_timer</LeadingIcon>
         <Text>
-          <span>{prefix && $_(prefix)}</span>
           <span class="mr-1">
             {parse($ticker)}
           </span>

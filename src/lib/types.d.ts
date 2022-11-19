@@ -1,9 +1,9 @@
 declare global {
   interface WindowEventMap {
-    'ticker:success': CustomEvent;
-    'ticker:error': CustomEvent;
-    'ticker:stop': CustomEvent;
-    'ticker:extend': CustomEvent;
+    'session:success': CustomEvent;
+    'session:error': CustomEvent;
+    'session:stop': CustomEvent;
+    'session:extend': CustomEvent;
     'player:loadstart': CustomEvent;
     'player:emptied': CustomEvent;
     'player:canplay': CustomEvent;
@@ -66,6 +66,12 @@ export interface Video<VideoType = Record<string, any>> {
   created: Date
 }
 
+export interface MailTemplate<TemplateType = Record<string, any>> {
+  id: string | any
+  name: string
+  items: any
+}
+
 export interface Image<ImageType = Record<string, any>> {
   id: string | any
   src: string
@@ -77,6 +83,16 @@ export interface Avatar<AvatarType = Record<string, any>> {
   src: string | any
 }
 
+export interface Framework<FrameworkType = Record<string, any>> {
+  name: string;
+  icon: string;
+  icontype: string;
+  host: string;
+  href: string;
+  target: string;
+  disabled?: boolean;
+}
+
 export interface Session<SessionType = Record<string, any>> {
   data: Object
   fromToken: boolean
@@ -86,7 +102,14 @@ export interface Session<SessionType = Record<string, any>> {
   success: boolean
   renewed: boolean
   code: number
+  locale?: string
   _expires: Date | any
+}
+
+export interface Config<ConfigType = Record<string, any>> {
+  Site: Site
+  Console: any
+  Session: any
 }
 
 export interface VideoEmitter<VideoEmitterType = Record<string, any>> {

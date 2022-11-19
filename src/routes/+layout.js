@@ -4,21 +4,16 @@ register('de-DE', () => import('../messages/de_DE.json'));
 register('en-US', () => import('../messages/en_US.json'));
 
 /**
- * @type {any}
+ * @type {import('$lib/types').Config}
  */
 let config;
 const fallbackLocale = 'de-DE';
 
 /** @type {import('./$types').LayoutLoad} */
 export async function load({ data, fetch, depends, url }) {
-  let force = false;
-  if (url.searchParams.get('force') === 'config') {
-    force = true;
-  }
+  const needConfig = url.searchParams.get('config') === 'load' || !config;
 
-  // prevent config from being unnecessarily fetched
-  const needsLoad = !config || force;
-  if (needsLoad) {
+  if (needConfig) {
     config = await fetch('/config')
       .then(async (res) => await res.json())
       .catch((reason) => console.error(reason));

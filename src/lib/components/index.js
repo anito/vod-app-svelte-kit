@@ -29,6 +29,7 @@ export { default as MailViewer } from './_MailViewer.svelte';
 export { default as MediaUploader } from './_MediaUploader.svelte';
 export { default as MediaImagePreview } from './_MediaImagePreview.svelte';
 export { default as MenuList } from './_MenuList.svelte';
+export { default as MoreMenu } from './_MoreMenu.svelte';
 export { default as Nav } from './_Nav.svelte';
 export { default as NavItem } from './_NavItem.svelte';
 export { default as PageBar } from './_PageBar.svelte';

@@ -10,8 +10,8 @@
   import { getContext, onMount } from 'svelte';
   import Header from './_Header.svelte';
   import { fly } from 'svelte/transition';
-  import { flash, session, users } from '$lib/stores';
-  import { createRedirectSlug, proxyEvent, ADMIN, SUPERUSER, post, log } from '$lib/utils';
+  import { session, users } from '$lib/stores';
+  import { proxyEvent, ADMIN, SUPERUSER, post, log } from '$lib/utils';
   import Textfield from '@smui/textfield';
   import TextfieldIcon from '@smui/textfield/icon';
   import HelperText from '@smui/textfield/helper-text';

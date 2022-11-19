@@ -12,6 +12,7 @@
   import { Icons } from '$lib/components';
   import Button, { Icon } from '@smui/button';
   import IconButton from '@smui/icon-button';
+  import { Item, Separator, Text } from '@smui/list';
   import Snackbar, { Actions } from '@smui/snackbar';
   import { Label } from '@smui/common';
   import {
@@ -27,6 +28,7 @@
   import {
     fabs,
     flash,
+    frameworks,
     salutation,
     settings,
     session,
@@ -36,12 +38,13 @@
     videos,
     videoEmitter
   } from '$lib/stores';
-  import { Modal } from '$lib/components';
+  import { Modal, SvgIcon } from '$lib/components';
   import { DoubleBounce } from 'svelte-loading-spinners';
   import {
     UserGraphic,
     LoadingModal,
     LocaleSwitcher,
+    MoreMenu,
     FrameworkSwitcher,
     Nav,
     NavItem
@@ -49,13 +52,18 @@
   import { svg_manifest } from '$lib/svg_manifest';
   import { _, locale } from 'svelte-i18n';
   import { enhance } from '$app/forms';
+  import { browser } from '$app/environment';
 
   /** @type {import('./$types').LayoutData} */
   export let data;
 
-  const snackbarLifetimeDefault = 4000;
+  const snackbarLifetime = 4000;
   const redirectDelay = 300;
 
+  /**
+   * @type {any}
+   */
+  let oldConfig;
   /**
    * @type {HTMLElement}
    */
@@ -67,15 +75,15 @@
   /**
    * @type {string}
    */
-  let message = '';
+  let snackbarMessage = '';
   /**
-   * @type {string}
+   * @type {string | any}
    */
-  let action = '';
+  let actionLink;
   /**
-   * @type {string}
+   * @type {string | any}
    */
-  let path = '';
+  let actionLabel;
   /**
    * @type {ReturnType<typeof setTimeout>}
    */
@@ -124,16 +132,15 @@
   });
 
   setContext('segment', {
-    /**
-     * @returns {SvelteStore<string>}
-     */
     getSegment: () =>
       derived(page, ($page, set) => {
         const matches = $page.url.pathname.match(/\/([a-z_-]*)/) || [];
         if (matches.length >= 2) {
-          set(matches[1]);
-        } else {
-          set('');
+          if (matches[1] !== '') {
+            set(matches[1]);
+          } else {
+            set('home');
+          }
         }
       })
   });
@@ -150,7 +157,7 @@
     //   `${(!isNaN(val) && parseInt(val / 1000) + 's') || '--'}`
     // );
     if (val === 0) {
-      proxyEvent('ticker:stop');
+      proxyEvent('session:stop');
     }
   });
 
@@ -168,7 +175,6 @@
   });
 
   const { getSegment } = getContext('segment');
-  /** @type {SvelteStore<string>} */
   const segment = getSegment();
 
   $: settings.update(data.config);
@@ -182,13 +188,18 @@
     root &&
       ((segment && root.classList.remove('home')) || (!segment && root.classList.add('home')));
   })($segment);
-  $: snackbarLifetime = action ? 6000 : snackbarLifetimeDefault;
   $: salutation.update(randomItem(data.config?.Site?.salutations) || 'Hi');
   $: if ($session.user) {
     loggedInButtonTextSecondLine = `${$salutation}, ${$session.user.name}`;
   }
-  $: searchParams = $page.url.searchParams.toString();
-  $: search = searchParams && `?${searchParams}`;
+  $: searchParamsString = $page.url.searchParams.toString();
+  $: search = searchParamsString && `?${searchParamsString}`;
+  $: withConfig = () => {
+    const configSearchParams = new URLSearchParams($page.url.searchParams);
+    configSearchParams.set('config', 'load');
+    return `?${configSearchParams.toString()}`;
+  };
+  $: $page.url.searchParams.has('config') && configLoadReset();
 
   onMount(async () => {
     $mounted = true;
@@ -217,9 +228,9 @@
 
     const valid = new Date() < new Date(_expires);
     if (valid) {
-      proxyEvent('ticker:success', $session);
+      proxyEvent('session:success', $session);
     } else {
-      proxyEvent('ticker:stop', {
+      proxyEvent('session:stop', {
         redirect: `/login`
       });
     }
@@ -234,10 +245,10 @@
   }
 
   function initListener() {
-    window.addEventListener('ticker:success', tickerSuccessHandler);
-    window.addEventListener('ticker:error', tickerErrorHandler);
-    window.addEventListener('ticker:stop', tickerStopHandler);
-    window.addEventListener('ticker:extend', tickerExtendHandler);
+    window.addEventListener('session:success', sessionSuccessHandler);
+    window.addEventListener('session:error', sessionErrorHandler);
+    window.addEventListener('session:stop', sessionStopHandler);
+    window.addEventListener('session:extend', sessionExtendHandler);
   }
 
   function initClasses() {
@@ -268,10 +279,10 @@
   }
 
   function removeListener() {
-    window.removeEventListener('ticker:success', tickerSuccessHandler);
-    window.removeEventListener('ticker:error', tickerErrorHandler);
-    window.removeEventListener('ticker:stop', tickerStopHandler);
-    window.removeEventListener('ticker:extend', tickerExtendHandler);
+    window.removeEventListener('session:success', sessionSuccessHandler);
+    window.removeEventListener('session:error', sessionErrorHandler);
+    window.removeEventListener('session:stop', sessionStopHandler);
+    window.removeEventListener('session:extend', sessionExtendHandler);
   }
 
   function removeSubscribers() {
@@ -288,7 +299,7 @@
    */
   async function put({ data, show }) {
     await api.put(`videos/${data.id}`, { data, token: $session.user?.jwt }).then((res) => {
-      res.success && videos.put(data);
+      res?.success && videos.put(data);
 
       if (show) {
         let message = res.message || res.data.message;
@@ -320,7 +331,7 @@
   /**
    *
    * @param {string} msg
-   * @param {string | void} link
+   * @param {any=} link
    */
   function configSnackbar(msg, link) {
     try {
@@ -332,22 +343,25 @@
   /**
    *
    * @param {string} msg
-   * @param {any} link
+   * @param {({actionLink: string, actionLabel: string} | string)} link
    */
   function configureAction(msg = '', link) {
-    message = msg;
-    action = path = '';
+    actionLabel = void 0;
+    actionLink = void 0;
+    snackbarMessage = msg;
     if (typeof link === 'object') {
-      path = link.path;
-      action = link.action;
+      actionLabel = link.actionLabel;
+      actionLink = link.actionLink;
     } else {
-      path = link;
+      actionLink = link;
     }
   }
 
   function handleSnackbarOpened() {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => !action && path && goto(path), redirectDelay);
+    if (!actionLabel && actionLink) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => goto(actionLink), redirectDelay);
+    }
   }
 
   function handleSnackbarClosed() {}
@@ -356,12 +370,12 @@
    *
    * @param {CustomEvent} event
    */
-  async function tickerSuccessHandler(event) {
+  async function sessionSuccessHandler(event) {
     /**
      * @type {{user: import('$lib/types').User, renewed: string, message: string}}
      */
     const { user, renewed, message } = { ...event.detail };
-    proxyEvent('ticker:extend', { start: true });
+    proxyEvent('session:extend', { start: true });
     flash.update({ message, type: 'success', timeout: 2000 });
 
     renewed && localStorage.setItem('renewed', renewed);
@@ -377,10 +391,11 @@
    *
    * @param {CustomEvent} event
    */
-  async function tickerExtendHandler(event) {
+  async function sessionExtendHandler(event) {
     const time = new Date(Date.now() + parseInt($settings.Session.lifetime)).toISOString();
     await post('/session/extend', time);
     await invalidate('app:session');
+    await invalidate('app:config');
     if (event.detail.start) {
       if ($page.route.id?.startsWith('/users')) await invalidate('app:users');
       if ($page.route.id?.startsWith('/videos')) {
@@ -394,7 +409,7 @@
    *
    * @param {CustomEvent} event
    */
-  function tickerErrorHandler(event) {
+  function sessionErrorHandler(event) {
     const data = { ...event.detail };
     invalidate('app:session');
     flash.update({ ...data, type: 'error', timeout: 3500 });
@@ -407,24 +422,34 @@
    *
    * @param {CustomEvent} event
    */
-  async function tickerStopHandler(event) {
+  async function sessionStopHandler(event) {
     await killSession();
     const path = event.detail.redirect ?? '/';
     const search = createRedirectSlug($page.url);
 
     invalidate('app:session');
-    setTimeout(async () => await goto(`${path}${search}`), 500);
+    setTimeout(async () => await goto(`${path}?${search}`), 500);
   }
 
   async function killSession() {
     return await post('/auth/logout').then((res) => {
-      message = res.message || res.data?.message;
+      snackbarMessage = res.message || res.data?.message;
 
-      configSnackbar(message);
+      configSnackbar(snackbarMessage);
       snackbar = getSnackbar();
       snackbar?.open();
       return res;
     });
+  }
+
+  async function configLoadReset() {
+    if (!browser) return;
+
+    configSnackbar($_('text.config-reloaded'));
+    snackbar?.open();
+
+    $page.url.searchParams.delete('config');
+    setTimeout(async () => await goto($page.url.href), 500);
   }
 
   /**
@@ -460,7 +485,7 @@
               result
             }) => {
               if ((result.type = 'success')) {
-                proxyEvent('ticker:stop', { ...result.data, redirect: '/login' });
+                proxyEvent('session:stop', { ...result.data, redirect: '/login' });
               }
             };
           }}
@@ -489,7 +514,7 @@
             {/if}
 
             {#if $session.user}
-              <NavItem segment="login">
+              <NavItem segment="login" class="hide-if-mobile">
                 <Button
                   variant="raised"
                   class="sign-in-out button-logout v-emph v-emph-bounce {emphasize}"
@@ -510,8 +535,12 @@
                 </Button>
               </NavItem>
             {:else}
-              <NavItem href="/login{search}" class="sign-in-out-item">
-                <Button variant="raised" class="sign-in-out">
+              <NavItem
+                href="/login{search}"
+                class="sign-in-out-item hide-if-mobile"
+                segment="login"
+              >
+                <Button variant="raised" class="sign-in-out" style="font">
                   <Label>{$_('nav.login')}</Label>
                   <Icon class="material-icons" style="vertical-align: middle;">login</Icon>
                 </Button>
@@ -535,7 +564,7 @@
                 />
               </NavItem>
             {:else}
-              <NavItem title="Avatar">
+              <NavItem title="Avatar" class="hide-if-mobile">
                 <UserGraphic
                   borderSize="3"
                   borderColor="--primary"
@@ -550,8 +579,54 @@
               <LocaleSwitcher />
             </NavItem>
 
-            <NavItem title={$_('text.choose-framework')} style="vertical-align: middle;">
-              <FrameworkSwitcher />
+            {#if $session.user}
+              <NavItem title="Logout" class="hide-if-desktop" segment="login">
+                <Button>
+                  <Label style="text-transform: none; letter-spacing: initial;"
+                    >Logout
+                    <Icon class="material-icons">logout</Icon></Label
+                  >
+                </Button>
+              </NavItem>
+            {:else}
+              <NavItem
+                href="/login{search}"
+                title="Logout"
+                class="hide-if-desktop"
+                segment="logout"
+              >
+                <Icon class="material-icons" style="vertical-align: middle;">login</Icon>
+                <Label>Login</Label>
+              </NavItem>
+            {/if}
+
+            <NavItem title={$_('text.more')} style="vertical-align: middle;" class="hide-if-mobile">
+              <MoreMenu>
+                <FrameworkSwitcher />
+                <Separator />
+                <Item class="justify-start">
+                  <a
+                    class="github"
+                    href={$frameworks.href}
+                    target={$frameworks.target}
+                    title={$_('text.goto-github')}
+                  >
+                    <span style="display: flex; align-items: center;">
+                      <SvgIcon name="github" class="mr-2" style="max-width: 20%;" />
+                      <Text style="max-width: 80%;">GitHub</Text>
+                    </span>
+                  </a>
+                </Item>
+                <Separator />
+                <Item class="justify-start">
+                  <a href={`${$page.url.pathname}${withConfig()}`} title={$_('text.reload-config')}>
+                    <span style="display: flex; align-items: center;">
+                      <SvgIcon name="sync" class="mr-2" fillColor="#000" style="max-width: 20%;" />
+                      <Text style="max-width: 80%;">Rel.Config</Text>
+                    </span>
+                  </a>
+                </Item>
+              </MoreMenu>
             </NavItem>
           </Nav>
         </form>
@@ -568,14 +643,14 @@
   style="z-index: 1001;"
   bind:this={snackbar}
   snackbarLifetimeMs={snackbarLifetime}
-  labelText={message}
-  on:MDCSnackbar:closed={handleSnackbarClosed}
+  labelText={snackbarMessage}
   on:MDCSnackbar:opened={handleSnackbarOpened}
+  on:MDCSnackbar:closed={handleSnackbarClosed}
 >
   <Label />
   <Actions>
-    {#if action}
-      <Button on:click={() => goto(path)}>{action}</Button>
+    {#if actionLabel}
+      <a href={actionLink}>{actionLabel}</a>
     {/if}
     <IconButton class="material-icons" title="Dismiss">close</IconButton>
   </Actions>

@@ -14,12 +14,12 @@
   const current = getContext('nav');
   let className = '';
 
-  $: active = $current === segment;
+  $: active = segment && $current === segment;
 </script>
 
 {#if external}
-  <li class="nav-item" class:className>
-    <a target="_blank" href={external} {title} {style}><slot /></a>
+  <li class:active class="nav-item" class:className>
+    <a target="_blank" rel="noreferrer" href={external} {title} {style}><slot /></a>
   </li>
 {:else}
   <li class:active class="nav-item {className}">

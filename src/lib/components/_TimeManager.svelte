@@ -279,23 +279,22 @@
 
     message = msg || res.message || res.data.message;
     configSnackbar(message);
-    snackbar.open();
+    snackbar?.open();
   }
 
   function handleError(res) {
-    let path, code;
     snackbar.isOpen() && snackbar.close();
 
     message = res?.message || res?.data?.message || res?.statusText;
-    code = res.data?.code || res.status;
+    const code = res.data?.code || res.status;
 
     if (400 <= code && code < 500) {
       configSnackbar(message);
       snackbar.open();
     } else {
       flash.update({ type: 'error', message });
-      path = `login${createRedirectSlug($page.url)}`;
-      configSnackbar(message, path);
+      const url = `login?${createRedirectSlug($page.url)}`;
+      configSnackbar(message, url);
       snackbar.open();
     }
   }

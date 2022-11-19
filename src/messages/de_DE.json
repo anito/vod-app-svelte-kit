@@ -231,7 +231,10 @@
     "video-poster": "Video-Poster",
     "image": "Poster",
     "avatar": "Avatar",
-    "video-posters": "Video-Posters"
+    "video-posters": "Video-Posters",
+    "more": "Mehr...",
+    "config-reloaded": "Konfiguration geladen",
+    "reload-config": "Konfiguration neu laden"
   },
   "summary": {
     "copy-link": {

@@ -57,9 +57,9 @@
 
   async function loginFromToken() {
     if (data.success) {
-      proxyEvent('ticker:success', { ...data.data });
+      proxyEvent('session:success', { ...data.data });
     } else {
-      proxyEvent('ticker:error', { ...data.data, redirect: '/login' });
+      proxyEvent('session:error', { ...data.data, redirect: '/login' });
     }
   }
 </script>

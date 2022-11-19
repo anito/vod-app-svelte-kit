@@ -18,11 +18,15 @@ export async function load({ fetch, depends, locals }) {
     })
     .catch((reason) => console.error(reason));
 
+  /**
+   * @type {import('$lib/types').User}
+   */
   const user = await fetch(`/repos/users?id=${locals.session.data.user?.id}`)
     .then(async (res) => {
       if (res.ok) return await res.json();
     })
     .catch((reason) => console.error(reason));
+
   depends('app:videos');
   depends('app:user');
 

@@ -93,9 +93,9 @@
       /** @type {{success: boolean, data: any}}*/
       const { success, data } = { ...result.data };
       if (success) {
-        proxyEvent('ticker:success', { ...data });
+        proxyEvent('session:success', { ...data });
       } else {
-        proxyEvent('ticker:error', { ...data });
+        proxyEvent('session:error', { ...data });
 
         /**
          * Show dialog after 3 fails

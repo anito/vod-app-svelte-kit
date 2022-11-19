@@ -32,8 +32,10 @@
    * @param {string} value
    */
   async function setLocale(value) {
-    $locale = value;
-    await post('/locale', value);
+    localeMenu.setOpen(false);
+    if (value === currentLocale) return;
+
+    await post('/locale', ($locale = value));
     configSnackbar(
       $_('text.language_is_now', { values: { locale: localeLookup.get(value.slice(0, 2)) } })
     );
@@ -50,7 +52,7 @@
   <Menu
     bind:this={localeMenu}
     bind:anchorElement={localeMenuAnchor}
-    anchor={false}
+    anchor={true}
     anchorCorner="BOTTOM_LEFT"
   >
     <List>
@@ -60,9 +62,11 @@
             <Text class={_locale === currentLocale && 'font-bold'}
               >{_locale.toUpperCase().slice(0, 2)}</Text
             >
-            <SelectionGroupIcon>
-              <i class="material-icons">check</i>
-            </SelectionGroupIcon>
+            {#if _locale === currentLocale}
+              <SelectionGroupIcon>
+                <i class="material-icons">check</i>
+              </SelectionGroupIcon>
+            {/if}
           </Item>
         {/each}
       </SelectionGroup>
