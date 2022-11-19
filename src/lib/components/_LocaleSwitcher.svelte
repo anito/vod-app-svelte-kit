@@ -1,20 +1,16 @@
 <script>
-  import { getContext, onMount } from 'svelte';
+  import { createEventDispatcher } from 'svelte';
   import Menu, { SelectionGroup, SelectionGroupIcon } from '@smui/menu';
   import { Anchor } from '@smui/menu-surface';
   import List, { Item, Text } from '@smui/list';
   import { post } from '$lib/utils';
   import { _, locale, locales } from 'svelte-i18n';
 
-  const { getSnackbar, configSnackbar } = getContext('snackbar');
-
   const localeLookup = new Map([
     ['de', 'Deutsch'],
     ['en', 'English']
   ]);
 
-  /** @type {import("@smui/snackbar").SnackbarComponentDev} */
-  let snackbar;
   /** @type {import("@smui/menu").MenuComponentDev} */
   let localeMenu;
   let localeMenuAnchor;
@@ -23,9 +19,7 @@
 
   $: currentLocale = $locale;
 
-  onMount(() => {
-    snackbar = getSnackbar();
-  });
+  const dispatch = createEventDispatcher();
 
   /**
    *
@@ -35,11 +29,9 @@
     localeMenu.setOpen(false);
     if (value === currentLocale) return;
 
-    await post('/locale', ($locale = value));
-    configSnackbar(
-      $_('text.language_is_now', { values: { locale: localeLookup.get(value.slice(0, 2)) } })
-    );
-    snackbar.open();
+    await post('/locale', ($locale = value)).then(() => {
+      dispatch('changed:locale', { locale: localeLookup.get(value.slice(0, 2)) });
+    });
   }
 </script>
 

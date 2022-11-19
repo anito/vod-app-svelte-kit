@@ -6,7 +6,7 @@
   import * as api from '$lib/api';
   import { derived, writable } from 'svelte/store';
   import { goto, invalidate, invalidateAll } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { navigating, page } from '$app/stores';
   import { getContext, onMount, setContext, tick } from 'svelte';
   import isMobile from 'ismobilejs';
   import { Icons } from '$lib/components';
@@ -88,6 +88,10 @@
    * @type {ReturnType<typeof setTimeout>}
    */
   let timeoutId;
+  /**
+   * @type {ReturnType<typeof setTimeout>}
+   */
+  let navTimeoutId;
   /**
    * @type {ReturnType<typeof setInterval>}
    */
@@ -177,6 +181,8 @@
   const { getSegment } = getContext('segment');
   const segment = getSegment();
 
+  salutation.update(randomItem(data.config?.Site?.salutations) || 'Hi');
+
   $: settings.update(data.config);
   $: token = $session.user?.jwt;
   $: person = svg(svg_manifest.person, $theme.primary);
@@ -185,7 +191,6 @@
   $: root && ((user) => root.classList.toggle('loggedin', user))(!!$session.user);
   $: root && ((isPrivileged) => root.classList.toggle('admin', isPrivileged))(hasPrivileges);
   $: root && root.classList.toggle('home', $segment === 'home');
-  $: salutation.update(randomItem(data.config?.Site?.salutations) || 'Hi');
   $: if ($session.user) {
     loggedInButtonTextSecondLine = `${$salutation}, ${$session.user.name}`;
   }
@@ -197,6 +202,41 @@
     return `?${configSearchParams.toString()}`;
   };
   $: $page.url.searchParams.has('config') && configLoadReset();
+  $: $navigating?.to && extendSession($navigating.to);
+
+  /**
+   * User interaction causing URL changes should automatically extend the session
+   * @param {import("@sveltejs/kit").NavigationTarget} to
+   */
+  function extendSession(to) {
+    if (canExtend(to)) {
+      clearTimeout(navTimeoutId);
+      navTimeoutId = setTimeout(() => {
+        proxyEvent('session:extend');
+      }, 1500);
+    }
+  }
+
+  /**
+   * Test here for some urls the session should not be extended while navigating
+   * @param {import('@sveltejs/kit').NavigationTarget} to
+   */
+  function canExtend(to) {
+    const exclude = new Map([
+      ['config', ['load']],
+      ['tab', ['time', 'test']]
+    ]);
+    const toParams = to?.url.searchParams;
+
+    /** @type {any} */
+    let prevent = false;
+    toParams?.forEach((val$1, key$1) => {
+      exclude.forEach((val$2, key$2) => {
+        prevent = key$1 === key$2 && val$2.find((val) => val === val$1);
+      });
+    });
+    return !prevent;
+  }
 
   onMount(async () => {
     $mounted = true;
@@ -392,7 +432,10 @@
     const time = new Date(Date.now() + parseInt($settings.Session.lifetime)).toISOString();
     await post('/session/extend', time);
     await invalidate('app:session');
-    await invalidate('app:config');
+    /**
+     * With Googles One Tap Dialog (plus multiple Google Accounts) we are able to hot-swap a new user
+     * Skipping the login screen however requires data invalidation to reflect the new users state depending on where he is
+     */
     if (event.detail.start) {
       if ($page.route.id?.startsWith('/users')) await invalidate('app:users');
       if ($page.route.id?.startsWith('/videos')) {
@@ -440,6 +483,7 @@
   }
 
   async function configLoadReset() {
+    console.log('configLoadReset');
     if (!browser) return;
 
     configSnackbar($_('text.config-reloaded'));
@@ -447,6 +491,19 @@
 
     $page.url.searchParams.delete('config');
     setTimeout(async () => await goto($page.url.href), 500);
+  }
+
+  /**
+   *
+   * @param {CustomEvent} param0
+   */
+  function changedLocaleHandler({ detail }) {
+    proxyEvent('session:extend');
+
+    /** @type {any} */
+    const { locale } = { ...detail };
+    configSnackbar($_('text.language_is_now', { values: { locale } }));
+    snackbar.open();
   }
 
   /**
@@ -573,7 +630,7 @@
             {/if}
 
             <NavItem title={$_('text.choose-locale')}>
-              <LocaleSwitcher />
+              <LocaleSwitcher on:changed:locale={changedLocaleHandler} />
             </NavItem>
 
             {#if $session.user}

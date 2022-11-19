@@ -11,9 +11,10 @@ const fallbackLocale = 'de-DE';
 
 /** @type {import('./$types').LayoutLoad} */
 export async function load({ data, fetch, depends, url }) {
-  const needConfig = url.searchParams.get('config') === 'load' || !config;
+  const forceLoad = url.searchParams.get('config') === 'load' || !config;
+  const initialLoad = !config;
 
-  if (needConfig) {
+  if (initialLoad || forceLoad) {
     config = await fetch('/config')
       .then(async (res) => await res.json())
       .catch((reason) => console.error(reason));
