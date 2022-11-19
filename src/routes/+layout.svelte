@@ -184,13 +184,7 @@
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: root && ((user) => root.classList.toggle('loggedin', user))(!!$session.user);
   $: root && ((isPrivileged) => root.classList.toggle('admin', isPrivileged))(hasPrivileges);
-  $: ((segment) => {
-    console.log(segment);
-    // root &&
-    //   ((segment && root.classList.toggle('home'), segment === 'home') || (!segment && root.classList.add('home')));
-  })($segment);
-  $: (root && root.classList.toggle('home'), segment === 'home') ||
-    (!segment && root.classList.add('home'));
+  $: root && root.classList.toggle('home', $segment === 'home');
   $: salutation.update(randomItem(data.config?.Site?.salutations) || 'Hi');
   $: if ($session.user) {
     loggedInButtonTextSecondLine = `${$salutation}, ${$session.user.name}`;
