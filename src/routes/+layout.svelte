@@ -395,6 +395,8 @@
    * @param {CustomEvent} event
    */
   async function sessionExtendHandler(event) {
+    if (!$session.user) return;
+
     const time = new Date(Date.now() + parseInt($settings.Session.lifetime)).toISOString();
     await post('/session/extend', time);
     await invalidate('app:session');
