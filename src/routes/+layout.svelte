@@ -373,11 +373,11 @@
    *
    * @param {CustomEvent} event
    */
-  async function sessionSuccessHandler(event) {
+  async function sessionSuccessHandler({ detail }) {
     /**
      * @type {{user: import('$lib/types').User, renewed: string, message: string}}
      */
-    const { user, renewed, message } = { ...event.detail };
+    const { user, renewed, message } = { ...detail };
     proxyEvent('session:extend', { start: true });
     flash.update({ message, type: 'success', timeout: 2000 });
 
