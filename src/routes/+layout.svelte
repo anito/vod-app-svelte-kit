@@ -394,8 +394,8 @@
    *
    * @param {CustomEvent} event
    */
-  async function sessionExtendHandler(event) {
-    if (!$session.user) return;
+  async function sessionExtendHandler({ detail }) {
+    if (!$session.user && !detail.start) return;
 
     const time = new Date(Date.now() + parseInt($settings.Session.lifetime)).toISOString();
     await post('/session/extend', time);
@@ -404,7 +404,7 @@
      * With Googles One Tap Dialog (plus multiple Google Accounts) we are able to hot-swap a new user
      * Skipping the login screen however requires data invalidation to reflect the new users state depending on where he is
      */
-    if (event.detail.start) {
+    if (detail.start) {
       if ($page.route.id?.startsWith('/users')) await invalidate('app:users');
       if ($page.route.id?.startsWith('/videos')) {
         await invalidate('app:videos');
