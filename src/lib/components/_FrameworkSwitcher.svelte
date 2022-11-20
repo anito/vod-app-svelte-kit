@@ -54,7 +54,6 @@
   async function update(value) {
     frameworks.update(value);
     await tick();
-    console.log(url());
     await goto(url());
   }
 </script>

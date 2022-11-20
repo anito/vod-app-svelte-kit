@@ -449,7 +449,6 @@
   }
 
   async function configLoadReset() {
-    console.log('configLoadReset');
     if (!browser) return;
 
     configSnackbar($_('text.config-reloaded'));
@@ -475,7 +474,7 @@
   afterNavigation(afterNavigate, afterNavigationCallback, {
     searches: [['config', 'load']],
     from_pathnames: ['login'],
-    to_pathnames: []
+    to_pathnames: ['logout']
   });
 
   /**
