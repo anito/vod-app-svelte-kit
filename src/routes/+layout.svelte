@@ -474,7 +474,7 @@
   afterNavigation(afterNavigate, afterNavigationCallback, {
     searches: [['config', 'load']],
     from_pathnames: ['login'],
-    to_pathnames: ['logout']
+    to_pathnames: ['auth?/logout', 'auth?/login', 'login', 'logout', 'config']
   });
 
   /**
