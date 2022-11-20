@@ -417,8 +417,8 @@
    *
    * @param {CustomEvent} event
    */
-  function sessionErrorHandler(event) {
-    const data = { ...event.detail };
+  function sessionErrorHandler({ detail }) {
+    const data = { ...detail };
     invalidate('app:session');
     flash.update({ ...data, type: 'error', timeout: 3500 });
     if (data.redirect) {
@@ -430,9 +430,9 @@
    *
    * @param {CustomEvent} event
    */
-  async function sessionStopHandler(event) {
+  async function sessionStopHandler({ detail }) {
     await killSession();
-    const path = event.detail.redirect ?? '/';
+    const path = detail.redirect ?? '/';
     const search = createRedirectSlug($page.url);
 
     invalidate('app:session');
