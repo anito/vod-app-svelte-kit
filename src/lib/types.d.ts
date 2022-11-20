@@ -60,6 +60,7 @@ export interface Video<VideoType = Record<string, any>> {
   description: string | never
   image: Image | any
   image_id: string | any
+  src: string | any
   playhead: number | any
   _joinData: any[] | any
   _matchingData: any[] | any
