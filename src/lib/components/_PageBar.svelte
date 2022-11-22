@@ -1,6 +1,4 @@
 <script>
-  // @ts-nocheck
-
   import Breadcrumb from './_Breadcrumb.svelte';
   import SessionTicker from './_SessionTicker.svelte';
   import { proxyEvent } from '$lib/utils';
@@ -12,9 +10,10 @@
   </div>
   <div class="ticker-container m-auto mr-0">
     <SessionTicker
-      class="light"
-      warningOnly
-      forceOnExtend="2"
+      signalOnly
+      fadeoutTime={2}
+      leadTime={3}
+      signalType="primary"
       on:MDCChip:interaction={() => proxyEvent('session:extend')}
     />
   </div>

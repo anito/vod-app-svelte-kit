@@ -7,29 +7,34 @@
   import { _ } from 'svelte-i18n';
 
   export { className as class };
-  export let warning = 60;
-  export let warningOnly = false;
-  export let forceOnExtend = 5;
+  export let signalType = 'primary';
+  export let leadTime = 60; // lead time (before zero) when signaling takes effect
+  export let signalOnly = false;
+  export let fadeoutTime = 5;
 
   const FAILS = 2;
 
+  /** @type {string} */
   let className = '';
   /** @type {string} */
   let last;
   /** @type {ReturnType<typeof setTimeout>} */
   let timeoutId;
+  /** @type {number} */
   let fails = FAILS;
+  /** @type {boolean} */
   let forced = false;
-  let forceTime = forceOnExtend * 1000 || 6000;
+  /** @type {number} */
+  let forceTime = fadeoutTime * 1000 || 6000;
 
-  $: clName = !isNaN(warning) && $ticker / 1000 <= warning ? 'warning' : className;
-  $: isWarning = clName === 'warning';
-  $: isVisible = !warningOnly || isWarning;
+  $: chipClassName = $ticker / 60000 <= leadTime ? signalType : '';
+  $: signal = chipClassName === signalType;
+  $: isVisible = !signalOnly || signal;
   $: indefinite = fails < FAILS;
   $: show = isVisible || forced;
 
   onMount(() => {
-    if (forceOnExtend) {
+    if (fadeoutTime) {
       window.addEventListener('session:extend', forceVisible);
       forceVisible();
     }
@@ -69,9 +74,9 @@
 </script>
 
 {#if $session.user}
-  <div class="container" class:show class:isWarning>
-    <Set chips={[{ id: 0 }]} let:chip>
-      <Chip class={clName} on:MDCChip:interaction {chip}>
+  <div class="container {className}" class:show class:signal>
+    <Set chips={[{ id: 0 }]} let:chip class="info">
+      <Chip class={chipClassName} on:MDCChip:interaction {chip}>
         <LeadingIcon class="material-icons" leading>av_timer</LeadingIcon>
         <Text>
           <span class="mr-1">
@@ -102,7 +107,7 @@
     opacity: 0.7;
     transition: opacity 0.4s ease-in;
   }
-  .container.show.isWarning {
+  .container.show.signal {
     transition: opacity 0.4s ease-in;
     opacity: 1;
   }

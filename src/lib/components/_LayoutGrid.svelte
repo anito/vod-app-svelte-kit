@@ -83,9 +83,6 @@
     grid-area: side;
     overflow: auto;
   }
-  .layout-grid :global(.side .sidebar ul) {
-    max-width: var(--sidebar-w);
-  }
   .layout-grid :global(.footer) {
     grid-area: footer;
   }
@@ -96,7 +93,7 @@
     background-color: var(--background);
   }
 
-  @media (min-width: 900px) {
+  @media (min-width: 991px) {
     .layout-grid {
       grid-template-rows: var(--pagebar-h) auto var(--footer-h);
       grid-template-columns: minmax(auto, var(--ad-w)) auto;
@@ -120,6 +117,9 @@
         'pagebar pagebar'
         'side content'
         'ad footer';
+    }
+    .layout-grid :global(.side .sidebar ul) {
+      max-width: var(--sidebar-w);
     }
   }
 </style>

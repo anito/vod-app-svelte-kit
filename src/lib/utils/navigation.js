@@ -1,36 +1,42 @@
 export const getFragment = () => window.location.hash.slice(1);
 
 /**
+ * Configure url attributes for (from/to) search attributes and/or (from/to) pathnames.
+ * Choose one from the two navigation lifecycle functions: afterNavigate or beforeNavigate.
+ * The callback will receive the attribute hit during navigation
  *
- * @param {any} lifecyleFn - afterNavigate (or beforeNavigate) method must be passed here
- * @param {any} callback
- * @param {{searches: Array<[string, string]>, from_pathnames: Array<string>, to_pathnames: Array<string>}} param0
+ * @param {any} afterOrBeforeNavigate - Choose one from the two navigation lifecycle functions: afterNavigate or beforeNavigate
+ * @param {{from_searches?: Array<[string, string]>, to_searches?: Array<[string, string]>, from_pathnames?: Array<string>, to_pathnames?: Array<string>}} config - Search and/or path attributes that should be detected
+ * @param {any} callback - will receive the attribute if it was hit during navigation
  */
-export const afterNavigation = (
-  lifecyleFn,
-  callback,
-  { searches, from_pathnames, to_pathnames } = {
-    searches: [],
+export const afterOrBeforeNavigation = (
+  afterOrBeforeNavigate,
+  { from_searches, to_searches, from_pathnames, to_pathnames } = {
+    from_searches: [],
+    to_searches: [],
     from_pathnames: [],
     to_pathnames: []
-  }
+  },
+  callback
 ) => {
-  const SEARCHES_KEY = 'searches';
-  const FROM_PATHS_KEY = 'from_paths';
-  const TO_PATHS_KEY = 'to_paths';
+  const FROM_SEARCH_KEY = 'from_searches';
+  const TO_SEARCH_KEY = 'to_searches';
+  const FROM_PATH_KEY = 'from_paths';
+  const TO_PATH_KEY = 'to_paths';
+  const BreakExecption = {};
 
   // @ts-ignore
   const omitter = new Map([
     [
       /** @type {string} */
-      SEARCHES_KEY,
+      FROM_SEARCH_KEY,
       /**
-       * @param {import('@sveltejs/kit').NavigationTarget} fromOrTo
+       * @param {import('@sveltejs/kit').NavigationTarget} from
        */
-      (fromOrTo) => {
-        return searches.filter((needle) => {
-          if (fromOrTo.url.searchParams.has(needle[0])) {
-            if (fromOrTo.url.searchParams.get(needle[0]) === needle[1]) {
+      (from) => {
+        return from_searches?.find((needle) => {
+          if (from.url.searchParams.has(needle[0])) {
+            if (from.url.searchParams.get(needle[0]) === needle[1]) {
               return needle;
             }
           }
@@ -38,9 +44,24 @@ export const afterNavigation = (
       }
     ],
     [
-      FROM_PATHS_KEY,
+      TO_SEARCH_KEY,
+      /**
+       * @param {import('@sveltejs/kit').NavigationTarget} to
+       */
+      (to) => {
+        return to_searches?.find((needle) => {
+          if (to.url.searchParams.has(needle[0])) {
+            if (to.url.searchParams.get(needle[0]) === needle[1]) {
+              return needle;
+            }
+          }
+        });
+      }
+    ],
+    [
+      FROM_PATH_KEY,
       (from) => {
-        return from_pathnames.filter((slug) => {
+        return from_pathnames?.find((slug) => {
           if (from.url.pathname.indexOf(slug) !== -1) {
             return slug;
           }
@@ -48,9 +69,9 @@ export const afterNavigation = (
       }
     ],
     [
-      TO_PATHS_KEY,
+      TO_PATH_KEY,
       (to) => {
-        return to_pathnames.filter((slug) => {
+        return to_pathnames?.find((slug) => {
           if (to.url.pathname.indexOf(slug) !== -1) {
             return slug;
           }
@@ -59,9 +80,9 @@ export const afterNavigation = (
     ]
   ]);
 
-  lifecyleFn(
+  afterOrBeforeNavigate(
     /**
-     * @param {{from: import('@sveltejs/kit').NavigationTarget, to: import('@sveltejs/kit').NavigationTarget}} param0
+     * @param {import('@sveltejs/kit').AfterNavigate} param0
      */
     ({ from, to }) => {
       /**
@@ -70,21 +91,32 @@ export const afterNavigation = (
        */
       let check = () => {
         /**
-         * @type {string | any[] | unknown}
+         * @type {string | any | unknown}
          */
-        let ret = false;
+        let ret;
         omitter.forEach((fn, key) => {
           /**
-           * @type {string | any[]}
+           * @type {string | any}
            */
-          let f;
+          let found;
           try {
-            if (key === SEARCHES_KEY && to && (f = fn(to)) && f.length) throw f[0];
-            if (key === TO_PATHS_KEY && to && (f = fn(to)) && f.length) throw f[0];
-            if (key === FROM_PATHS_KEY && from && (f = fn(from)) && f.length) throw f[0];
-          } catch (err) {
-            ret = err;
-          }
+            if (key === FROM_SEARCH_KEY && from && (found = fn(from))) {
+              ret = found;
+              throw BreakExecption;
+            }
+            if (key === TO_SEARCH_KEY && to && (found = fn(to))) {
+              ret = found;
+              throw BreakExecption;
+            }
+            if (key === FROM_PATH_KEY && from && (found = fn(from))) {
+              ret = found;
+              throw BreakExecption;
+            }
+            if (key === TO_PATH_KEY && to && (found = fn(to))) {
+              ret = found;
+              throw BreakExecption;
+            }
+          } catch (error) {}
         });
         return ret;
       };

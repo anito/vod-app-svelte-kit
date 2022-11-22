@@ -5,15 +5,15 @@
 // Svelte Colors!
 @use '@material/theme/index' as theme with (
 	$primary: color-palette.$pink-800,
-	$secondary: color-palette.$light-blue-400,
-	$background: color-palette.$grey-300,
-	$surface: #ffffff,
-	$error: color-palette.$deep-orange-a700,
 	$on-primary: color-palette.$pink-50,
+	$secondary: color-palette.$light-blue-400,
 	$on-secondary: color-palette.$light-blue-50,
+	$surface: #ffffff,
 	$on-surface: color-palette.$grey-900,
-	// $on-background: #181818,
-	$on-error: color-palette.$deep-orange-50
+	$error: color-palette.$deep-orange-a700,
+	$on-error: color-palette.$deep-orange-50,
+	$background: color-palette.$grey-300,
+	// $on-background: color-palette.$grey-900 // not supported
 );
 
 @import '@material/typography/mdc-typography';
@@ -33,4 +33,5 @@ $mdc-typography-font-family: var(--font, 'sans-serif');
 	--on-surface: #{theme.$on-surface};
 	--error: #{theme.$error};
 	--background: #{theme.$background};
+	// --on-background: #{theme.$on-background}; // not supported
 }

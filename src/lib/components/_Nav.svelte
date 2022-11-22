@@ -115,7 +115,7 @@
     left: 0;
     width: 100vw;
     height: var(--nav-h);
-    padding: 0 var(--side-nav) 0 var(--side-nav);
+    padding: 0 var(--side-nav);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -157,21 +157,6 @@
     left: 0;
     top: 0;
   }
-
-  /* .primary.open {
-    padding: 0 0 1em 0;
-    background: white;
-    border-left: 1px solid #eee;
-    border-right: 1px solid #eee;
-    border-bottom: 1px solid #eee;
-    border-radius: 0 0 var(--border-r) var(--border-r);
-    align-self: start;
-  }
-
-  .primary.open > :global(li.nav-item) {
-    display: block;
-    text-align: right;
-  } */
 
   .primary.open::after {
     display: none;

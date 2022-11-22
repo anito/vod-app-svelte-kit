@@ -692,4 +692,13 @@
     font-weight: 600;
     color: #d8d8d8;
   }
+
+  @media (max-width: 990px) {
+    .main-grid {
+      grid-template-areas:
+        'one'
+        'two';
+      grid-template-columns: 1fr;
+    }
+  }
 </style>

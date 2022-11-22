@@ -6,8 +6,8 @@
   import * as api from '$lib/api';
   import { derived, writable } from 'svelte/store';
   import { afterNavigate, goto, invalidate } from '$app/navigation';
-  import { navigating, page } from '$app/stores';
-  import { getContext, onMount, setContext, tick } from 'svelte';
+  import { page } from '$app/stores';
+  import { getContext, onMount, setContext } from 'svelte';
   import isMobile from 'ismobilejs';
   import { Icons } from '$lib/components';
   import Button, { Icon } from '@smui/button';
@@ -24,7 +24,7 @@
     ADMIN,
     SUPERUSER,
     randomItem,
-    afterNavigation
+    afterOrBeforeNavigation
   } from '$lib/utils';
   import {
     fabs,
@@ -462,10 +462,10 @@
 
   /**
    *
-   * @param {string | any[]} prevented
+   * @param {string | any} hit
    */
-  const afterNavigationCallback = (prevented) => {
-    if (!prevented) {
+  const navigationCallback = (hit) => {
+    if (!hit) {
       clearTimeout(navTimeoutId);
       navTimeoutId = setTimeout(() => {
         proxyEvent('session:extend');
@@ -473,11 +473,15 @@
     }
   };
 
-  afterNavigation(afterNavigate, afterNavigationCallback, {
-    searches: [['config', 'load']],
-    from_pathnames: ['login'],
-    to_pathnames: ['auth?/logout', 'auth?/login', 'login', 'logout', 'config']
-  });
+  afterOrBeforeNavigation(
+    afterNavigate,
+    {
+      to_searches: [['config', 'load']],
+      from_pathnames: ['login'],
+      to_pathnames: ['auth?/logout', 'auth?/login', 'login', 'logout', 'config']
+    },
+    navigationCallback
+  );
 
   /**
    *

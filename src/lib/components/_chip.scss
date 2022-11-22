@@ -59,7 +59,7 @@
         @include icon-color(on-surface);
         @include ink-color(on-surface); // deprecated
         @include text-label-color(on-surface);
-        @include container-color(var(--info));
+        @include container-color(surface);
       }
       &.transparent {
         @include text-label-color(rgb(190, 190, 190));

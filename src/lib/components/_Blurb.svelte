@@ -120,7 +120,7 @@
     margin: 0;
   }
 
-  @media (min-width: 900px) {
+  @media (min-width: 991px) {
     .blurb {
       grid-column-gap: 1em;
       grid-row-gap: 1em;

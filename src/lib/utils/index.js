@@ -30,7 +30,7 @@ import {
   toLocalDate,
   toLocalTime
 } from './time-functions';
-import { getFragment, afterNavigation } from './navigation';
+import { getFragment, afterOrBeforeNavigation } from './navigation';
 import { getMedia, getExt, getMediaAvatar, getMediaImage, getMediaVideo } from './media';
 import { localeFormat } from './locale-format';
 import { get, post, put, del } from './http';
@@ -38,7 +38,7 @@ import { getAuxSession } from './auxSession';
 import { posterCreatedHandler, posterSelectedHandler, posterRemoveHandler } from './video';
 
 export {
-  afterNavigation,
+  afterOrBeforeNavigation,
   convert,
   createRedirectSlug,
   createTabSearch,

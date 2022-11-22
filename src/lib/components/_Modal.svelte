@@ -181,7 +181,7 @@
     position: relative;
     padding: 1rem;
     max-height: calc(100vh - 4rem);
-    overflow: auto;
+    /* overflow: auto; */
   }
   .close {
     display: block;
