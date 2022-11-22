@@ -10,9 +10,8 @@
   export let signalType = 'primary';
   export let leadTime = 60; // lead time (before zero) when signaling takes effect
   export let signalOnly = false;
-  export let fadeoutTime = 5;
 
-  const FAILS = 2;
+  const Fails = 2;
 
   /** @type {string} */
   let className = '';
@@ -21,20 +20,20 @@
   /** @type {ReturnType<typeof setTimeout>} */
   let timeoutId;
   /** @type {number} */
-  let fails = FAILS;
+  let fails = Fails;
   /** @type {boolean} */
   let forced = false;
   /** @type {number} */
-  let forceTime = fadeoutTime * 1000 || 6000;
+  let fadeoutTimeMs = 2000;
 
   $: chipClassName = $ticker / 60000 <= leadTime ? signalType : '';
   $: signal = chipClassName === signalType;
   $: isVisible = !signalOnly || signal;
-  $: indefinite = fails < FAILS;
+  $: indefinite = fails < Fails;
   $: show = isVisible || forced;
 
   onMount(() => {
-    if (fadeoutTime) {
+    if (fadeoutTimeMs) {
       window.addEventListener('session:extend', forceVisible);
       forceVisible();
     }
@@ -55,13 +54,10 @@
     if (isNaN(ms)) {
       return (--fails && last) || '--:--:--';
     }
-    fails = FAILS;
+    fails = Fails;
     tt = ms / 1000;
-    // @ts-ignore
     sec = Math.floor(tt % 60).minDigits(2);
-    // @ts-ignore
     min = Math.floor((tt / 60) % 60).minDigits(2);
-    // @ts-ignore
     hrs = Math.floor(tt / 3600).minDigits(2);
     return (last = `${hrs}:${min}:${sec}`);
   }
@@ -69,7 +65,7 @@
   function forceVisible() {
     forced = true;
     clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => (forced = false), forceTime);
+    timeoutId = setTimeout(() => (forced = false), fadeoutTimeMs);
   }
 </script>
 

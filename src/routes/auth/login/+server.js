@@ -3,6 +3,7 @@ import { error, json } from '@sveltejs/kit';
 import { get } from 'svelte/store';
 import { locale as i18n } from 'svelte-i18n';
 import { settings } from '$lib/stores';
+import { parseLifetime } from '$lib/utils';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ locals, url }) {
@@ -15,9 +16,10 @@ export async function GET({ locals, url }) {
       if (res?.success) {
         /** @type {import('$lib/types').User} */
         const { id, name, email, avatar, jwt, role, groups } = { ...res.data.user, ...res.data };
-        const $settings = get(settings);
-        const lifetime = url.searchParams.get('lifetime') || $settings.Session.lifetime;
-        const _expires = new Date(Date.now() + parseInt(lifetime)).toISOString();
+        const lifetime = parseLifetime(
+          url.searchParams.get('lifetime') || get(settings).Session.lifetime
+        );
+        const _expires = new Date(Date.now() + lifetime).toISOString();
         cookieData = {
           _expires,
           user: { id, name, jwt, avatar, email },
@@ -47,9 +49,10 @@ export async function POST({ locals, request, url }) {
     if (res?.success) {
       /** @type {import('$lib/types').User} */
       const { id, name, email, avatar, jwt, role, groups } = { ...res.data.user, ...res.data };
-      const $settings = get(settings);
-      const lifetime = url.searchParams.get('lifetime') || $settings.Session.lifetime;
-      const _expires = new Date(Date.now() + parseInt(lifetime)).toISOString();
+      const lifetime = parseLifetime(
+        url.searchParams.get('lifetime') || get(settings).Session.lifetime
+      );
+      const _expires = new Date(Date.now() + lifetime).toISOString();
       sessionCookieData = {
         _expires,
         user: { id, name, email, jwt, avatar },

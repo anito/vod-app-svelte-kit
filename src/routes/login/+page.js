@@ -2,12 +2,10 @@ import { get } from 'svelte/store';
 import { settings } from '$lib/stores';
 
 /** @type {import('./$types').PageLoad} */
-export async function load({ fetch, url, parent }) {
-  const parentData = await parent();
+export async function load({ fetch, url }) {
   const token = url.searchParams.get('token');
   if (token) {
-    const $settings = get(settings);
-    const { lifetime } = $settings.Session;
+    const { lifetime } = get(settings).Session;
     return await fetch(`/auth/login?token=${token}&lifetime=${lifetime}`).then(async (res) => {
       const response = await res.json();
       return {

@@ -284,6 +284,15 @@ export function createTabSearch(tab) {
 }
 
 /**
+ * @param {string | boolean} lifetime
+ * @returns {number}
+ */
+export function parseLifetime(lifetime) {
+  const minToMs = 60 * 1000;
+  return parseInt(typeof lifetime === 'boolean' ? (true ? '1' : '0') : lifetime) * minToMs;
+}
+
+/**
  * @param {URL} url
  */
 export function searchParams(url) {
@@ -307,35 +316,38 @@ export function info() {
   if (info) console.log(...arguments);
 }
 
-// @ts-ignore
 Array.prototype.unique = function () {
   return this.filter((val, index, self) => self.indexOf(index) != val);
 };
 
-// @ts-ignore
-Number.prototype.minDigits = function (minimumIntegerDigits, locale = 'de-DE', options) {
-  return this.toLocaleString(locale, {
-    minimumIntegerDigits,
-    ...options
+/**
+ * @param {number} minimumIntegerDigits
+ * @returns {string}
+ */
+Number.prototype.minDigits = function (minimumIntegerDigits = 2) {
+  return this.toLocaleString('en-US', {
+    minimumIntegerDigits
   });
 };
 
-// @ts-ignore
+/**
+ * @param {string} val
+ * @returns {string}
+ */
 String.prototype.remove = function (val) {
   const arr = this.split(/\s+/);
-  return (
-    arr
-      .filter((item) => item != val)
-      // @ts-ignore
-      .unique()
-      .join(' ')
-      .trim()
-  );
+  return arr
+    .filter((item) => item != val)
+    .unique()
+    .join(' ')
+    .trim();
 };
 
-// @ts-ignore
+/**
+ * @param {string} val
+ * @returns {string}
+ */
 String.prototype.add = function (val) {
   let arr = this.split(' ');
-  // @ts-ignore
   return arr.concat(val).unique().join(' ').trim();
 };

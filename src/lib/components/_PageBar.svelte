@@ -11,8 +11,7 @@
   <div class="ticker-container m-auto mr-0">
     <SessionTicker
       signalOnly
-      fadeoutTime={2}
-      leadTime={3}
+      leadTime={1}
       signalType="primary"
       on:MDCChip:interaction={() => proxyEvent('session:extend')}
     />

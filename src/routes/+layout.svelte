@@ -24,7 +24,8 @@
     ADMIN,
     SUPERUSER,
     randomItem,
-    afterOrBeforeNavigation
+    afterOrBeforeNavigation,
+    parseLifetime
   } from '$lib/utils';
   import {
     fabs,
@@ -397,7 +398,8 @@
   async function sessionExtendHandler({ detail }) {
     if (!$session.user && !detail.start) return;
 
-    const time = new Date(Date.now() + parseInt($settings.Session.lifetime)).toISOString();
+    const { lifetime } = $settings.Session;
+    const time = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
     await post('/session/extend', time);
     await invalidate('app:session');
     /**

@@ -14,6 +14,36 @@ declare global {
     'ui:touchstart': CustomEvent;
     'ui:pip': CustomEvent;
   }
+
+  interface Number {
+    /**
+     * Converts a number to formatted string with a length of minimumIntegerDigits.
+     * Utilizes ECMAScript Internationalization API Specification, see https://tc39.es/ecma402/#sec-intl.datetimeformat.prototype.format
+     * Default length is 2
+     * @param minimumIntegerDigits 
+     */
+    minDigits(minimumIntegerDigits?: number): string
+  }
+
+  interface Array {
+    /**
+     * Remove any multiple occurances from an array
+     */
+    unique()
+  }
+
+  interface String {
+    /**
+     * Remove all full-word occurances of the specifyed string from a string
+     * @param val The text to remove the given value from 
+     */
+    remove(val: string)
+    /**
+     * Add all full-word occurances of val from a text
+     * @param val The text to remove the given value from 
+     */
+    add(val: string)
+  }
 }
 export declare type EventType = keyof GlobalEventHandlersEventMap;
 // export declare type SpecificEventListener<K extends EventType> = (evt: GlobalEventHandlersEventMap[K]) => void;
@@ -27,7 +57,7 @@ export interface Repo<RepoType = Record<string, void>> {
   setToken: any
 }
 
-export interface User<UserType = Record<string, any>> {
+export interface User<UserRepoType = Record<string, any>> {
   name: string;
   email: string;
   id: string;
@@ -43,18 +73,18 @@ export interface User<UserType = Record<string, any>> {
   groups: Group[] | any;
 }
 
-export interface GoogleUser<GoogleUserType = Record<string, any>> {
-  id: string
-  name: string
-  email: string | undefined
+export interface Image<ImageRepoType = Record<string, any>> {
+  id: string | any
+  src: string
 }
 
-export interface Group<GroupType = Record<string, any>> {
-  id: string
-  name: string
+export interface Avatar<AvatarRepoType = Record<string, any>> {
+  id: string | any
+  user_id: string | any
+  src: string | any
 }
 
-export interface Video<VideoType = Record<string, any>> {
+export interface Video<VideoRepoType = Record<string, any>> {
   id: string | any
   title: string
   description: string | never
@@ -67,21 +97,37 @@ export interface Video<VideoType = Record<string, any>> {
   created: Date
 }
 
+export interface VideoAll<VideoAllRepoType = Record<string, any>> {
+  id: string | any
+  title: string
+  description: string | never
+  image: Image | any
+  image_id: string | any
+  src: string | any
+  created: Date
+}
+
+export interface Config<ConfigType = Record<string, any>> {
+  Site: Site
+  Console: any
+  Session: any
+}
+
+export interface GoogleUser<GoogleUserType = Record<string, any>> {
+  id: string
+  name: string
+  email: string | undefined
+}
+
+export interface Group<GroupType = Record<string, any>> {
+  id: string
+  name: string
+}
+
 export interface MailTemplate<TemplateType = Record<string, any>> {
   id: string | any
   name: string
   items: any
-}
-
-export interface Image<ImageType = Record<string, any>> {
-  id: string | any
-  src: string
-}
-
-export interface Avatar<AvatarType = Record<string, any>> {
-  id: string | any
-  user_id: string | any
-  src: string | any
 }
 
 export interface Framework<FrameworkType = Record<string, any>> {
@@ -105,12 +151,6 @@ export interface Session<SessionType = Record<string, any>> {
   code: number
   locale?: string
   _expires: Date | any
-}
-
-export interface Config<ConfigType = Record<string, any>> {
-  Site: Site
-  Console: any
-  Session: any
 }
 
 export interface VideoEmitter<VideoEmitterType = Record<string, any>> {

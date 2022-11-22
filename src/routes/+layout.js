@@ -1,3 +1,4 @@
+import { browser } from '$app/environment';
 import { register, waitLocale, init, getLocaleFromNavigator } from 'svelte-i18n';
 
 register('de-DE', () => import('../messages/de_DE.json'));

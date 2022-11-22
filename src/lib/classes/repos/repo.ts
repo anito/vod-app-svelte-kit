@@ -18,7 +18,7 @@ export class Repo {
     }
   ) => {
     let endpoint = `${this.endpoint}/${slug}`;
-    return await api.get(endpoint, { fetch, token: token || this.token }).then((res) => {
+    return await api.get(endpoint, { token: token || this.token }).then((res) => {
       return res.data;
     });
   };
