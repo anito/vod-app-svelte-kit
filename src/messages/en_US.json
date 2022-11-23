@@ -234,7 +234,8 @@
     "video-posters": "Posters",
     "more": "More...",
     "config-reloaded": "Configuration reloaded",
-    "reload-config": "Reload configuration"
+    "reload-config": "Reload configuration",
+    "share": "Share"
   },
   "summary": {
     "copy-link": {

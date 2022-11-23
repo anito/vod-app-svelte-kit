@@ -234,7 +234,8 @@
     "video-posters": "Video-Posters",
     "more": "Mehr...",
     "config-reloaded": "Konfiguration geladen",
-    "reload-config": "Konfiguration neu laden"
+    "reload-config": "Konfiguration neu laden",
+    "share": "Teilen"
   },
   "summary": {
     "copy-link": {

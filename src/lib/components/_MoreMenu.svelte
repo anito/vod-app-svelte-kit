@@ -34,9 +34,4 @@
 </span>
 
 <style>
-  :global(ul.primary ul.option-list > li:not(.nav-item)) a.github,
-  :global(ul.primary ul.option-list > li:not(.nav-item)) a.github:hover {
-    font-size: inherit;
-    font-weight: 400;
-  }
 </style>

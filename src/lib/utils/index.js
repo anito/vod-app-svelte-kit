@@ -21,7 +21,7 @@ import {
   svg,
   windowSize
 } from './helper';
-import { INBOX, SENT, ADMIN, SUPERUSER, USER, TABS, DEFAULT_TAB } from './const';
+import { INBOX, SENT, ADMIN, SUPERUSER, USER, TABS, DEFAULT_TAB, DESC, ASC } from './const';
 import {
   ellapsedFormatted,
   hasStarted,
@@ -89,5 +89,7 @@ export {
   SUPERUSER,
   USER,
   TABS,
-  DEFAULT_TAB
+  DEFAULT_TAB,
+  DESC,
+  ASC
 };

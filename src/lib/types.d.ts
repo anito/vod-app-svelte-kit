@@ -57,7 +57,7 @@ export interface Repo<RepoType = Record<string, void>> {
   setToken: any
 }
 
-export interface User<UserRepoType = Record<string, any>> {
+export interface User<UserRepoType = Record<any, any>> {
   name: string;
   email: string;
   id: string;
@@ -122,6 +122,16 @@ export interface GoogleUser<GoogleUserType = Record<string, any>> {
 export interface Group<GroupType = Record<string, any>> {
   id: string
   name: string
+}
+
+export interface Mail<MailType = Record<string, any>> {
+  id: string | any
+  message: string
+  subject: string
+  _from: string | any
+  _to: string | any
+  _read: boolean
+  created: Date
 }
 
 export interface MailTemplate<TemplateType = Record<string, any>> {

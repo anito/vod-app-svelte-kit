@@ -1,39 +1,48 @@
 <script>
-  // @ts-nocheck
-
   import './_meta.scss';
   import { localeFormat, isToday, INBOX, SENT } from '$lib/utils';
   import { onMount, onDestroy, createEventDispatcher } from 'svelte';
   import UserGraphic from './_UserGraphic.svelte';
   import { Item, Text, PrimaryText, SecondaryText } from '@smui/list';
   import { locale } from 'svelte-i18n';
+  import { page } from '$app/stores';
 
-  export let selection = null;
+  /** @type {import('$lib/types').Mail | null | undefined} */
+  export let selection;
+  /**
+   * @type {any | null | undefined}
+   */
   export let mail;
+  /** @type {string | null} */
   export let type;
   export { className as class };
 
   const dispatch = createEventDispatcher();
 
+  /** @type {any | never[]} */
   let userItems = [];
   let created = '';
   let className = '';
+  /** @type {HTMLAnchorElement} */
+  let anchorElement;
 
-  $: unread = !mail._read;
+  $: unread = !mail?._read;
+  $: mail_id = $page.url.searchParams.get('mail_id');
   $: dateFormat =
-    $locale.indexOf('de') != -1
-      ? isToday(mail.created)
+    /** @type {string | null | undefined} */
+    $locale?.indexOf('de') != -1
+      ? isToday(mail?.created)
         ? 'HH:mm'
         : 'dd.MM yy HH:mm'
-      : isToday(mail.created)
+      : isToday(mail?.created)
       ? 'hh:mm a'
       : 'yy-MM-dd hh:mm a';
 
-  $: created = localeFormat(new Date(mail.created), dateFormat);
-  $: mail?.id === selection?.id && (selection = mail);
+  $: created = localeFormat(new Date(mail?.created), dateFormat);
+  $: mail && mail?.id === mail_id && (selection = mail) && selection;
 
   onMount(() => {
-    userItems = type === INBOX ? mail._from : type === SENT ? mail._to : [];
+    userItems = type === INBOX ? mail?._from : type === SENT ? mail?._to : [];
     setTimeout(() => {}, 100);
   });
 
@@ -43,41 +52,54 @@
     dispatch('mail:destroyed');
   });
 
-  function focusHandler(e) {
+  function focusHandler() {
     selection = mail;
     if (type === INBOX) {
-      unread && dispatch('mail:toggleRead', { selection, _read: true });
+      unread && dispatch('mail:toggleRead', { selection });
     }
   }
 
-  function keydownHandler(e) {
-    const isBackspace = e.key === 'Backspace' || e.keyCode === 8;
+  /** @param {KeyboardEvent} event*/
+  function keydownHandler(event) {
+    const isBackspace = event.key === 'Backspace' || event.keyCode === 8;
     if (isBackspace) {
       dispatch('mail:delete', { selection });
     }
   }
+
+  function createHref() {
+    $page.url.searchParams.set('mail_id', mail?.id);
+    return $page.url.href;
+  }
 </script>
 
-<Item
-  on:focus={(e) => focusHandler(e)}
-  on:keydown={(e) => keydownHandler(e)}
-  class="{className} {mail._read ? 'read' : 'unread'}"
-  selected={selection?.id === mail.id}
-  ><div class="staggered">
-    {#each userItems as user, i}
-      <UserGraphic size="30" {user} style={`z-index: ${10 - i};`} />
-    {/each}
-  </div>
-  <Text style="flex: 1; align-self: auto;">
-    <PrimaryText style="display: flex;">
-      {#each userItems as user}
-        <span class="mr-3 mail-list" class:unread>{user.name || user.email}</span>
+<Item class="{className} {mail?._read ? 'read' : 'unread'}" selected={mail_id === mail?.id}
+  ><a
+    bind:this={anchorElement}
+    on:focus={() => focusHandler()}
+    on:keydown={(e) => keydownHandler(e)}
+    href={createHref()}
+    tabindex="0"
+    class="flex flex-1 item-inner"
+  >
+    <div class="staggered">
+      {#each userItems as user, i}
+        <UserGraphic size="30" {user} style={`z-index: ${10 - i};`} />
       {/each}
-    </PrimaryText>
-    <SecondaryText style="display: flex; align-items: baseline; justify-content: center;">
-      <span class="subject">{mail.subject || '--'}</span><span class="date-created">{created}</span>
-    </SecondaryText>
-  </Text>
+    </div>
+    <Text style="flex: 1; align-self: auto;">
+      <PrimaryText style="display: flex;">
+        {#each userItems as user}
+          <span class="mr-3 mail-list" class:unread>{user.name || user.email}</span>
+        {/each}
+      </PrimaryText>
+      <SecondaryText style="display: flex; align-items: baseline; justify-content: center;">
+        <span class="subject">{mail?.subject || '--'}</span><span class="date-created"
+          >{created}</span
+        >
+      </SecondaryText>
+    </Text>
+  </a>
 </Item>
 
 <style>
@@ -110,5 +132,13 @@
   }
   .staggered :global(.user-graphics-outer:not(:first-child)) {
     margin-left: -36px;
+  }
+  .item-inner {
+    border-bottom: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    height: 100%;
+    align-items: center;
   }
 </style>

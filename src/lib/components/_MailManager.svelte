@@ -2,7 +2,7 @@
   import './_drawer.scss';
   import './_list.scss';
   import * as api from '$lib/api';
-  import { onMount, tick, getContext } from 'svelte';
+  import { onMount, tick, getContext, setContext } from 'svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { fabs, sents, inboxes, session, templates, users, salutation, slim } from '$lib/stores';
@@ -36,9 +36,10 @@
     Actions,
     InitialFocus
   } from '@smui/dialog';
-  import { INBOX, SENT, ADMIN, SUPERUSER, log } from '$lib/utils';
-  import { get } from 'svelte/store';
+  import { INBOX, SENT, ADMIN, SUPERUSER, log, DESC, ASC } from '$lib/utils';
+  import { get, writable } from 'svelte/store';
   import { Editor } from '$lib/classes';
+  import { browser } from '$app/environment';
 
   const sortAZProtected = (
     /** @type {{ [x: string]: string; }} */ a,
@@ -77,8 +78,7 @@
   const { getSnackbar, configSnackbar } = getContext('snackbar');
   const defaultActive = INBOX;
   const mailboxes = [INBOX, SENT];
-  const getStoreByEndpoint = (/** @type {string | null} */ endpoint) =>
-    endpoint === INBOX ? inboxes : endpoint === SENT ? sents : null;
+  const currentStore = writable();
 
   let sort = 'DESC';
   let drawer;
@@ -91,7 +91,7 @@
 
   let drawerOpenOnMount = true;
 
-  /** @type {null | undefined} */
+  /** @type {import('$lib/types').Mail | null | undefined} */
   let selection;
 
   let unreadInboxes = 0;
@@ -141,6 +141,10 @@
   /** @type {string} */
   export let selectionUserId;
 
+  setContext('mail-store', {
+    getMailStore: () => currentStore
+  });
+
   $: currentUser = ((id) => $users.filter((usr) => usr.id === id))(selectionUserId)[0];
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: selectionUserId && (selectionIndex = -1);
@@ -163,7 +167,7 @@
     ...dynamicTemplateData,
     ...dynamicTemplateData.validate(currentTemplate)
   };
-  $: currentStore = getStoreByEndpoint(/** @type {string} */ activeItem);
+  $: currentStore.update(() => getStoreByEndpoint(activeItem));
   $: currentSlug = (currentSlug !== $page.params.slug && $page.params.slug) || currentSlug; // because $page.param.slug triggers even on no obvious change!
   $: waitForData =
     currentSlug &&
@@ -171,7 +175,7 @@
       .then((/** @type {{ success: any; data: any; }} */ res) => {
         if (res?.success) {
           slim.update(res.data);
-          $slim; // doesn't work w/o subscribing
+          $slim; // shall be subscribed
         }
         return getMail(mailboxes[0]);
       })
@@ -206,22 +210,32 @@
   });
 
   /**
-   * @param {string} endpoint
+   *
+   * @param {string | null} endpoint
    */
-  async function getMail(endpoint) {
-    const ep = validateMailboxName(endpoint);
-    if (!ep)
-      return new Promise((res, rej) => rej(`The mailbox "${ep}" doesn'nt exist`)).catch((reason) =>
-        log(reason)
+  function getStoreByEndpoint(endpoint) {
+    if (endpoint === INBOX) return inboxes;
+    if (endpoint === SENT) return sents;
+    return writable();
+  }
+
+  /**
+   * @param {string} name
+   */
+  async function getMail(name) {
+    const endpoint = validateMailboxName(name);
+    if (!endpoint)
+      return new Promise((res, rej) => rej(`The mailbox "${endpoint}" doesn'nt exist`)).catch(
+        (reason) => log(reason)
       );
     const id = validateUserId($page.params.slug);
     if (!id) return;
 
     return await api
-      .get(`${ep}/get/${id}`, { token: $session.user?.jwt, fetch })
+      .get(`${endpoint}/get/${id}`, { token: $session.user?.jwt })
       .then((res) => {
         if (res?.success) {
-          let store = getStoreByEndpoint(ep);
+          let store = getStoreByEndpoint(endpoint);
           if (store) store.update(res.data);
           return res.data;
         }
@@ -279,6 +293,7 @@
     // instead stringify URLSearchParams before manipulating
     let params = new URLSearchParams($page.url.searchParams.toString());
     params.set('active', slug);
+    params.delete('mail_id');
     return `${$page.url.pathname}?${params.toString()}`;
   }
 
@@ -304,20 +319,21 @@
   }
 
   /**
-   * @param {CustomEvent} e
+   * @param {CustomEvent} event
    */
-  async function toggleRead(e) {
-    let selected = e.detail.selection;
-    let _read = e.detail._read || !selected._read;
+  async function toggleRead({ detail }) {
+    /** @type {any} */
+    const { selection } = { ...detail };
+    const _read = !selection._read;
     await api
-      .put(`${INBOX}/${selected.id}`, {
+      .put(`${INBOX}/${selection.id}`, {
         data: { _read },
-        token: $session.user?.jwt,
-        fetch
+        token: $session.user?.jwt
       })
       .then((res) => {
         if (res?.success) {
-          updateStoreFromOtherItem(inboxes, { ...selected, _read }, '_read');
+          const inbox = $inboxes.find((item) => item.id === selection.id);
+          inboxes.put({ ...inbox, _read });
         }
       });
   }
@@ -342,14 +358,14 @@
   }
 
   /**
-   * @param {CustomEvent} e
+   * @param {CustomEvent} event
    */
-  async function deleteMail(e) {
-    const id = e.detail.selection?.id;
+  async function deleteMail({ detail }) {
+    const id = detail.selection?.id;
     if (!id) return;
-    await api.del(`${activeListItem}/${id}`, { token: $session.user?.jwt, fetch }).then((res) => {
+    await api.del(`${activeListItem}/${id}`, { token: $session.user?.jwt }).then((res) => {
       if (res?.success) {
-        currentStore?.del(id);
+        $currentStore?.del(id);
       }
     });
   }
@@ -359,11 +375,11 @@
   }
 
   function toggleSortByDate() {
-    sort = sort === 'DESC' ? 'ASC' : 'DESC';
+    sort = sort === DESC ? ASC : DESC;
   }
 
   async function getTemplates() {
-    await api.get('templates', { token: $session.user?.jwt, fetch }).then((res) => {
+    await api.get('templates', { token: $session.user?.jwt }).then((res) => {
       if (res?.success) {
         templates.update(res.data);
       }
@@ -832,13 +848,13 @@
                   />
                 {:else}
                   <MailToolbar
+                    on:mail:reload={refreshMailData}
+                    on:mail:toggleRead={toggleRead}
+                    on:mail:delete={deleteMail}
+                    on:mail:sort={toggleSortByDate}
                     bind:selection
                     type={activeListItem}
                     {sort}
-                    on:mail:reload={(e) => refreshMailData()}
-                    on:mail:toggleRead={(e) => toggleRead(e)}
-                    on:mail:delete={(e) => deleteMail(e)}
-                    on:mail:sort={(e) => toggleSortByDate()}
                   />
                 {/if}
               </div>
@@ -868,12 +884,11 @@
                     bind:selection
                     bind:selectionIndex
                     {waitForData}
-                    {currentStore}
                     {sort}
                   />
                 </div>
                 <div class="grid-item grid-mail-viewer">
-                  <MailViewer {selection} />
+                  <MailViewer bind:selection />
                 </div>
               {/if}
             </div>

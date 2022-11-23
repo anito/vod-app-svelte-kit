@@ -1,12 +1,13 @@
 <script>
-  // @ts-nocheck
-
   import { createEventDispatcher } from 'svelte';
   import { Group } from '@smui/button';
   import IconButton from '@smui/icon-button';
 
+  /** @type {import('$lib/types').Mail | null | undefined} */
   export let selection = null;
+  /** @type {string | null} */
   export let type;
+  /** @type {string} */
   export let sort;
 
   const dispatch = createEventDispatcher();
@@ -42,7 +43,7 @@
       >{type === 'sents'
         ? 'mail'
         : type === 'inboxes'
-        ? selection && selection._read
+        ? selection?._read
           ? 'mark_email_unread'
           : 'mark_email_read'
         : ''}

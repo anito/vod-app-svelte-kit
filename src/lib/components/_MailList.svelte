@@ -1,51 +1,71 @@
 <script>
-  // @ts-nocheck
-
   import { page } from '$app/stores';
-  import { onMount, tick } from 'svelte';
+  import { getContext, onMount, tick } from 'svelte';
   import { slim } from '$lib/stores';
-  import { INBOX, SENT } from '$lib/utils';
+  import { ASC, DESC, INBOX, SENT } from '$lib/utils';
   import List from '@smui/list';
   import { SimpleMailCard, SvgIcon } from '$lib/components';
   import { _ } from 'svelte-i18n';
+  import Item from '@smui/list/src/Item.svelte';
 
-  export let selection = null;
-  export let sort = 'DESC';
+  /** @type {import('$lib/types').Mail | null | undefined} */
+  export let selection;
+  /** @type {string} */
+  export let sort = DESC;
+  /** @type {number} */
   export let selectionIndex;
+  /** @type {Promise<any>} */
   export let waitForData;
-  export let currentStore;
 
-  const sortByDate = (a, b) => sortBit * (new Date(a.created) - new Date(b.created));
+  /**
+   *
+   * @param {import('$lib/types').Mail} a
+   * @param {import('$lib/types').Mail} b
+   */
+  const sortByDate = (a, b) =>
+    sortBit * (new Date(a.created).getTime() - new Date(b.created).getTime());
+  const { getMailStore } = getContext('mail-store');
 
+  const currentStore = getMailStore();
+
+  /** @type {import("@smui/list").ListComponentDev} */
   let list;
+  /** @type {Function} */
   let focusItemAtIndex;
+  /** @type {Array<any>} */
   let items;
 
+  $: mailStore = $currentStore;
   $: userId = $page.params.slug;
-  $: sortBit = sort === 'DESC' ? -1 : sort === 'ASC' ? 1 : 0;
+  $: sortBit = sort === DESC ? -1 : sort === ASC ? 1 : 0;
   $: activeItem = $page.url.searchParams.get('active');
 
   onMount(() => {});
 
   /**
    * Find the user for each email address in the email
-   * @param addressees
+   * @param {string[]} sender
    */
-  const parseUsernames = (addressees) => {
-    let item,
-      items = [];
-    addressees.forEach((email) => {
+  const parseUsernames = (sender) => {
+    let item;
+    /**
+     * @type {string[]}
+     */
+    let items = [];
+    sender.forEach((/** @type {string} */ email) => {
       item = $slim?.find((user) => user.email === email);
       items.push(item ? { ...item } : { email });
     });
     return items;
   };
 
+  /** @param {import('$lib/types').Mail} mail */
   function parseMail(mail) {
     if (activeItem === INBOX) return parseInbox(mail);
     if (activeItem === SENT) return parseSent(mail);
   }
 
+  /** @param {import('$lib/types').Mail} mail */
   function parseInbox(mail) {
     let message = JSON.parse(mail.message);
     return {
@@ -59,6 +79,7 @@
     };
   }
 
+  /** @param {import('$lib/types').Mail} mail */
   function parseSent(mail) {
     let message = JSON.parse(mail.message);
     let _to = mail._to.split(';');
@@ -73,11 +94,12 @@
     };
   }
 
-  async function afterMailDestroyedHandler(e) {
+  async function afterMailDestroyedHandler() {
     await tick();
     if (!list) return;
 
-    let index = list.getSelectedIndex();
+    let index = parseInt(list.getSelectedIndex().toString());
+
     if (items.length >= index + 1) {
       selectionIndex = index;
     } else {
@@ -86,17 +108,19 @@
     focusItemAtIndex(selectionIndex);
   }
 
-  function receiveListMethods(e) {
-    ({ focusItemAtIndex, items } = { ...e.detail });
+  /** @param {any} param0 */
+  function receiveListMethods({ detail }) {
+    // @ts-ignore
+    ({ focusItemAtIndex, items } = { ...detail });
   }
 </script>
 
-{#if currentStore}
+{#if $mailStore}
   {#await waitForData}
     <div class="loader flex justify-center">
-      <SvgIcon name="animated-loader-3" size="50" fillColor="var(--primary)" class="mr-2" />
+      <SvgIcon name="animated-loader-3" size={50} fillColor="var(--primary)" class="mr-2" />
     </div>
-  {:then mails}
+  {:then}
     <List
       bind:this={list}
       class="mails-list list-{activeItem}"
@@ -106,11 +130,11 @@
       avatarList
       singleSelection
     >
-      {#each sort && $currentStore.sort(sortByDate) as mail (mail.id)}
+      {#each sort && $mailStore.sort(sortByDate) as mail (mail.id)}
         <SimpleMailCard
           on:mail:delete
           on:mail:toggleRead
-          on:mail:destroyed={(e) => afterMailDestroyedHandler(e)}
+          on:mail:destroyed={afterMailDestroyedHandler}
           bind:selection
           mail={parseMail(mail)}
           type={activeItem}
