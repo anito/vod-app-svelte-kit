@@ -113,7 +113,7 @@
       selectionIndex = index - 1;
     }
 
-    const anchor = items[selectionIndex].element?.querySelector('a');
+    const anchor = items[selectionIndex]?.element.querySelector('a');
     const href = anchor?.href;
     if (href) {
       await goto(href);
