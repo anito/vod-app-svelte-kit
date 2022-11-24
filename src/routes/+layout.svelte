@@ -5,7 +5,7 @@
   import '$lib/components/_colored_snackbar.scss';
   import * as api from '$lib/api';
   import { derived, writable } from 'svelte/store';
-  import { afterNavigate, goto, invalidate } from '$app/navigation';
+  import { afterNavigate, goto, invalidate, invalidateAll } from '$app/navigation';
   import { page } from '$app/stores';
   import { getContext, onMount, setContext } from 'svelte';
   import isMobile from 'ismobilejs';
@@ -401,17 +401,10 @@
     const { lifetime } = $settings.Session;
     const time = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
     await post('/session/extend', time);
-    await invalidate('app:session');
-    /**
-     * With Googles One Tap Dialog (plus multiple Google Accounts) we are able to hot-swap a new user
-     * Skipping the login screen however requires data invalidation to reflect the new users state depending on where he is
-     */
     if (detail.start) {
-      if ($page.route.id?.startsWith('/users')) await invalidate('app:users');
-      if ($page.route.id?.startsWith('/videos')) {
-        await invalidate('app:videos');
-        await invalidate('app:user');
-      }
+      invalidateAll();
+    } else {
+      await invalidate('app:session');
     }
   }
 
