@@ -5,7 +5,16 @@
   import { onMount, tick, getContext, setContext } from 'svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { fabs, sents, inboxes, session, templates, users, salutation, slim } from '$lib/stores';
+  import {
+    fabs,
+    sents,
+    inboxes,
+    session,
+    templates,
+    users,
+    salutation,
+    usersFoundation
+  } from '$lib/stores';
   import {
     MailViewer,
     MailList,
@@ -174,8 +183,8 @@
     getSIUX()
       .then((/** @type {{ success: any; data: any; }} */ res) => {
         if (res?.success) {
-          slim.update(res.data);
-          $slim; // shall be subscribed
+          usersFoundation.update(res.data);
+          $usersFoundation; // shall be subscribed
         }
         return getMail(mailboxes[0]);
       })
@@ -336,25 +345,6 @@
           inboxes.put({ ...inbox, _read });
         }
       });
-  }
-
-  /**
-   * @param {import("svelte/store").Readable<any>} store
-   * @param {{ [x: string]: any; id: any; }} otherItem
-   * @param {string | any[]} keys
-   */
-  function updateStoreFromOtherItem(store, otherItem, keys) {
-    if (!keys) return;
-    if (typeof keys === 'string') keys = [keys];
-    /** @type {any} */
-    const newItem = {};
-    const storeItem = get(store).find(
-      (/** @type {{ id: any; }} */ item) => item.id === otherItem.id
-    );
-    keys.forEach((key) => {
-      newItem[key] = otherItem[key];
-    });
-    inboxes.put({ ...storeItem, ...newItem });
   }
 
   /**

@@ -1,18 +1,18 @@
 <script>
   import { page } from '$app/stores';
   import { getContext, onMount, tick } from 'svelte';
-  import { slim } from '$lib/stores';
+  import { usersFoundation } from '$lib/stores';
   import { ASC, DESC, INBOX, SENT } from '$lib/utils';
   import List from '@smui/list';
   import { SimpleMailCard, SvgIcon } from '$lib/components';
   import { _ } from 'svelte-i18n';
-  import Item from '@smui/list/src/Item.svelte';
+  import { goto } from '$app/navigation';
 
   /** @type {import('$lib/types').Mail | null | undefined} */
   export let selection;
   /** @type {string} */
   export let sort = DESC;
-  /** @type {number} */
+  /** @type {number | undefined} */
   export let selectionIndex;
   /** @type {Promise<any>} */
   export let waitForData;
@@ -30,7 +30,9 @@
 
   /** @type {import("@smui/list").ListComponentDev} */
   let list;
-  /** @type {Function} */
+  /**
+   * @type {(arg0: import("@material/list").MDCListIndex) => void}
+   */
   let focusItemAtIndex;
   /** @type {Array<any>} */
   let items;
@@ -40,7 +42,9 @@
   $: sortBit = sort === DESC ? -1 : sort === ASC ? 1 : 0;
   $: activeItem = $page.url.searchParams.get('active');
 
-  onMount(() => {});
+  onMount(() => {
+    // selection && focusAtItem();
+  });
 
   /**
    * Find the user for each email address in the email
@@ -53,7 +57,10 @@
      */
     let items = [];
     sender.forEach((/** @type {string} */ email) => {
-      item = $slim?.find((user) => user.email === email);
+      item = $usersFoundation?.find(
+        /** @param {import('$lib/types').UserFoundation} user */
+        (user) => user.email === email
+      );
       items.push(item ? { ...item } : { email });
     });
     return items;
@@ -94,10 +101,10 @@
     };
   }
 
-  async function afterMailDestroyedHandler() {
+  async function mailDestroyedHandler() {
     await tick();
-    if (!list) return;
 
+    if (!list || !items.length) return;
     let index = parseInt(list.getSelectedIndex().toString());
 
     if (items.length >= index + 1) {
@@ -105,7 +112,15 @@
     } else {
       selectionIndex = index - 1;
     }
-    focusItemAtIndex(selectionIndex);
+
+    const anchor = items[selectionIndex].element?.querySelector('a');
+    const href = anchor?.href;
+    if (href) {
+      await goto(href);
+      await tick();
+      items[selectionIndex].selected = true;
+      focusItemAtIndex(selectionIndex);
+    }
   }
 
   /** @param {any} param0 */
@@ -134,7 +149,7 @@
         <SimpleMailCard
           on:mail:delete
           on:mail:toggleRead
-          on:mail:destroyed={afterMailDestroyedHandler}
+          on:mail:destroyed={mailDestroyedHandler}
           bind:selection
           mail={parseMail(mail)}
           type={activeItem}

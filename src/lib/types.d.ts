@@ -73,6 +73,14 @@ export interface User<UserRepoType = Record<any, any>> {
   groups: Group[] | any;
 }
 
+export interface UserFoundation<UserFoundationType = Record<any, any>> {
+  id: string;
+  name: string;
+  email: string;
+  group_id: string
+  avatar: Avatar[] | any;
+}
+
 export interface Image<ImageRepoType = Record<string, any>> {
   id: string | any
   src: string

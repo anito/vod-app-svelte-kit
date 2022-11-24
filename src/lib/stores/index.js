@@ -13,7 +13,7 @@ export { default as sessionCookie } from './sessionCookieStore'; // derived
 export { default as session } from './sessionStore'; // derived
 export { default as settings } from './settingStore';
 export { default as salutation } from './salutationStore';
-export { default as slim } from './slimStore';
+export { default as usersFoundation } from './userFoundationStore';
 export { default as sitename } from './sitenameStore'; // derived
 export { default as templates } from './templateStore';
 export { default as theme } from './themeStore';

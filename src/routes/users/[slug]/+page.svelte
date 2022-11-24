@@ -5,7 +5,15 @@
   import { onMount, setContext } from 'svelte';
   import { UserManager, TimeManager, MailManager, UserGraphic } from '$lib/components';
   import Button, { Group, Label, Icon } from '@smui/button';
-  import { users, slim, sitename, session, videos, videosAll, images } from '$lib/stores';
+  import {
+    users,
+    usersFoundation,
+    sitename,
+    session,
+    videos,
+    videosAll,
+    images
+  } from '$lib/stores';
   import { proxyEvent, INBOX, ADMIN, SUPERUSER, TABS, log } from '$lib/utils';
   import { _ } from 'svelte-i18n';
 
@@ -83,9 +91,9 @@
   }
 
   async function getSimpleUserIndex() {
-    if ($slim) return Promise.resolve($slim);
+    if ($usersFoundation) return Promise.resolve($usersFoundation);
     return await api
-      .get('users/simpleindex', { token: $session.user?.jwt, fetch })
+      .get('users/simpleindex', { token: $session.user?.jwt })
       .then((res) => {
         return res;
       })

@@ -1,14 +1,24 @@
 <script>
+  import { tick } from 'svelte';
   import { _ } from 'svelte-i18n';
   import { fade } from 'svelte/transition';
 
   /** @type {import('$lib/types').Mail | null | undefined} */
   export let selection;
 
+  const fadeoutDuration = 100;
+
   /** @type {HTMLIFrameElement} */
   let iframe;
+  /** @type {string | undefined} */
+  let message;
 
-  $: message = selection?.message;
+  $: (async (sel) => {
+    message = undefined;
+    if (sel) {
+      setTimeout(() => (message = sel.message), fadeoutDuration);
+    }
+  })(selection);
   $: iframe && message && renderMail(message);
 
   /**
@@ -20,24 +30,16 @@
     iframe.contentDocument?.write(message);
     iframe.contentDocument?.close();
   }
-
-  /** @param{string} m */
-  const promise = (m) =>
-    new Promise((resolve) => {
-      setTimeout(() => resolve(m), 50);
-    });
 </script>
 
 {#if message}
-  {#await promise(message) then}
-    <iframe
-      in:fade={{ delay: 200, duration: 300 }}
-      out:fade={{ duration: 100 }}
-      title="Sent Mail"
-      style="width:100%; height: 100%;"
-      bind:this={iframe}
-    />
-  {/await}
+  <iframe
+    in:fade={{ duration: 300 }}
+    out:fade={{ duration: fadeoutDuration }}
+    title="Sent Mail"
+    style="width:100%; height: 100%;"
+    bind:this={iframe}
+  />
 {:else}
   <div class="empty-selection">
     <span style="text-align: center;">{$_('text.empty-email-selection')}</span>

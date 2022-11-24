@@ -53,7 +53,9 @@
   });
 
   function focusHandler() {
-    selection = mail;
+    if (selection?.id !== mail?.id) {
+      selection = mail;
+    }
     if (type === INBOX) {
       unread && dispatch('mail:toggleRead', { selection });
     }
@@ -67,19 +69,21 @@
     }
   }
 
-  function createHref() {
+  function href() {
     $page.url.searchParams.set('mail_id', mail?.id);
     return $page.url.href;
   }
 </script>
 
-<Item class="{className} {mail?._read ? 'read' : 'unread'}" selected={mail_id === mail?.id}
+<Item
+  on:focus={() => focusHandler()}
+  class="{className} {mail?._read ? 'read' : 'unread'}"
+  selected={mail_id === mail?.id}
   ><a
-    bind:this={anchorElement}
     on:focus={() => focusHandler()}
+    bind:this={anchorElement}
     on:keydown={(e) => keydownHandler(e)}
-    href={createHref()}
-    tabindex="0"
+    href={href()}
     class="flex flex-1 item-inner"
   >
     <div class="staggered">

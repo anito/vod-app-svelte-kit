@@ -4,7 +4,16 @@
   import { goto } from '$app/navigation';
   import { onMount, getContext, tick } from 'svelte';
   import { fly } from 'svelte/transition';
-  import { infos, fabs, session, users, videos, images, slim, videosAll } from '$lib/stores';
+  import {
+    infos,
+    fabs,
+    session,
+    users,
+    videos,
+    images,
+    usersFoundation,
+    videosAll
+  } from '$lib/stores';
   import Layout from './layout.svelte';
   import {
     InfoChips,
@@ -134,9 +143,8 @@
     };
   });
 
-  // subscribing to users just to reset the simpleuserindex (SIUX) in case of any changes
-  // which in turn triggers a fresh load from the server when siux data are needed
-  users.subscribe((items) => slim.set(null));
+  // changes in users should cause usersFoundation to reload next time it is needed
+  users.subscribe(() => usersFoundation.set(null));
 
   async function addUser() {
     proxyEvent('USER:add');
@@ -373,7 +381,7 @@
     /**
      * @type {any[]}
      */
-    const omit = [];
+    const omit = ['mail_id'];
     const searchParamsString = $page.url.searchParams.toString();
     const searchParams = new URLSearchParams(searchParamsString);
     omit.forEach((key) => {
@@ -407,7 +415,6 @@
         /** @param {import("@smui/list").ItemComponentDev} item */ (item) => item.selected
       );
       item?.element.scrollIntoView(options);
-      // item.selected && focusItemAtIndex(index);
     }, 100);
   }
 </script>
