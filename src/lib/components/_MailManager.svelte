@@ -237,11 +237,11 @@
       return new Promise((res, rej) => rej(`The mailbox "${endpoint}" doesn'nt exist`)).catch(
         (reason) => log(reason)
       );
-    const id = validateUserId($page.params.slug);
-    if (!id) return;
+
+    if (!validateUser()) return;
 
     return await api
-      .get(`${endpoint}/get/${id}`, { token: $session.user?.jwt })
+      .get(`${endpoint}/get/${currentUser?.id}`, { token: $session.user?.jwt })
       .then((res) => {
         if (res?.success) {
           let store = getStoreByEndpoint(endpoint);
@@ -281,8 +281,11 @@
   /**
    * @param {string} id
    */
-  function validateUserId(id) {
-    return $users.find((usr) => usr.id == id) ? id : false;
+  function validateUser() {
+    if (!currentUser) return false;
+
+    const user = $users.find((usr) => usr.id == $page.params.slug);
+    return currentUser.id === user?.id;
   }
 
   /**
