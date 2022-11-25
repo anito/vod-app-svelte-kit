@@ -15,9 +15,8 @@
 
   $: (async (sel) => {
     message = undefined;
-    if (sel) {
-      setTimeout(() => (message = sel.message), fadeoutDuration);
-    }
+    await tick();
+    message = sel?.message;
   })(selection);
   $: iframe && message && renderMail(message);
 
