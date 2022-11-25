@@ -35,7 +35,6 @@
 {#if message}
   <iframe
     in:fade={{ duration: 300 }}
-    out:fade={{ duration: fadeoutDuration }}
     title="Sent Mail"
     style="width:100%; height: 100%;"
     bind:this={iframe}
