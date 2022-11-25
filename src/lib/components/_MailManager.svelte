@@ -154,7 +154,7 @@
     getMailStore: () => currentStore
   });
 
-  $: currentUser = ((id) => $users.filter((usr) => usr.id === id))(selectionUserId)[0];
+  $: currentUser = ((id) => $users.find((usr) => usr.id === id))(selectionUserId);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: selectionUserId && (selectionIndex = -1);
   $: username = currentUser?.name || $_('text.empty-user-selection');
@@ -285,7 +285,7 @@
     if (!currentUser) return false;
 
     const user = $users.find((usr) => usr.id == $page.params.slug);
-    return currentUser.id === user?.id;
+    return user && currentUser.id === user.id;
   }
 
   /**
