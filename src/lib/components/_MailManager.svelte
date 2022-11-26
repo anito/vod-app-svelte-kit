@@ -233,12 +233,17 @@
    */
   async function getMail(name) {
     const endpoint = validateMailboxName(name);
+
     if (!endpoint)
-      return new Promise((res, rej) => rej(`The mailbox "${endpoint}" doesn'nt exist`)).catch(
+      return new Promise((res, rej) => rej(`The mailbox "${endpoint}" doesn't exist`)).catch(
         (reason) => log(reason)
       );
 
-    if (!validateUser()) return;
+    const validUser = validateUser();
+    if (!validUser)
+      return new Promise((res, rej) => rej(`This user doesn't exist`)).catch((reason) =>
+        log(reason)
+      );
 
     return await api
       .get(`${endpoint}/get/${currentUser?.id}`, { token: $session.user?.jwt })
