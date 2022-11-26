@@ -42,9 +42,7 @@
   $: sortBit = sort === DESC ? -1 : sort === ASC ? 1 : 0;
   $: activeItem = $page.url.searchParams.get('active');
 
-  onMount(() => {
-    // selection && focusAtItem();
-  });
+  onMount(() => {});
 
   /**
    * Find the user for each email address in the email

@@ -6,16 +6,20 @@
   /** @type {import('$lib/types').Mail | null | undefined} */
   export let selection;
 
-  /** @type {string} */
-  let message;
-
-  $: wait = showMessage(selection);
-
   /**
-   * @param {import("$lib/types").Mail<Record<string, any>> | null | undefined} sel
+   * @type {string}
    */
-  function showMessage(sel) {
-    return new Promise((resolve) => resolve(sel?.message)).then((res) => (message = res));
+  let message;
+  /**
+   * @type {Promise<any>}
+   */
+  let wait;
+
+  $: id = selection?.id; // don't rerender on read/unread
+  $: id && (wait = showMessage());
+
+  function showMessage() {
+    return new Promise((resolve) => resolve(selection?.message)).then((res) => (message = res));
   }
 
   /**

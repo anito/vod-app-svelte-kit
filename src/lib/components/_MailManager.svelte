@@ -142,9 +142,7 @@
   let selectionIndex;
   let totalInboxes = 0;
   let totalSents = 0;
-
-  /** @type {string} */
-  let currentSlug;
+  let currentSlug = $page.params.slug;
 
   /** @type {string} */
   export let selectionUserId;
@@ -176,7 +174,11 @@
     ...dynamicTemplateData.validate(currentTemplate)
   };
   $: currentStore.update(() => getStoreByEndpoint(activeItem));
-  $: currentSlug = (currentSlug !== $page.params.slug && $page.params.slug) || currentSlug; // $page.param triggers even for no obvious reason!
+  /**
+   * by changing this (to any arbitrary string different from $page.params.slug)
+   * we're able to control whether mails should be reloaded
+   */
+  $: currentSlug = (currentSlug !== $page.params.slug && $page.params.slug) || currentSlug;
   $: waitForData =
     currentSlug &&
     getSIUX()
