@@ -6,43 +6,43 @@
   /** @type {import('$lib/types').Mail | null | undefined} */
   export let selection;
 
-  const fadeoutDuration = 100;
-
-  /** @type {HTMLIFrameElement} */
-  let iframe;
-  /** @type {string | undefined} */
+  /** @type {string} */
   let message;
 
-  $: (async (sel) => {
-    message = undefined;
-    await tick();
-    message = sel?.message;
-  })(selection);
-  $: iframe && message && renderMail(message);
+  $: wait = showMessage(selection);
+
+  /**
+   * @param {import("$lib/types").Mail<Record<string, any>> | null | undefined} sel
+   */
+  function showMessage(sel) {
+    return new Promise((resolve) => resolve(sel?.message)).then((res) => (message = res));
+  }
 
   /**
    *
-   * @param {string} message
+   * @param {HTMLIFrameElement} iframe
    */
-  function renderMail(message) {
+  function renderMail(iframe) {
     iframe.contentDocument?.open();
     iframe.contentDocument?.write(message);
     iframe.contentDocument?.close();
   }
 </script>
 
-{#if message}
-  <iframe
-    in:fade={{ duration: 300 }}
-    title="Sent Mail"
-    style="width:100%; height: 100%;"
-    bind:this={iframe}
-  />
-{:else}
-  <div class="empty-selection">
-    <span style="text-align: center;">{$_('text.empty-email-selection')}</span>
-  </div>
-{/if}
+{#await wait then}
+  {#if message}
+    <iframe
+      in:fade={{ delay: 100, duration: 400 }}
+      title="Sent Mail"
+      style="width:100%; height: 100%;"
+      use:renderMail
+    />
+  {:else}
+    <div class="empty-selection">
+      <span style="text-align: center;">{$_('text.empty-email-selection')}</span>
+    </div>
+  {/if}
+{/await}
 
 <style>
   .empty-selection {

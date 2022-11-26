@@ -46,9 +46,8 @@
     InitialFocus
   } from '@smui/dialog';
   import { INBOX, SENT, ADMIN, SUPERUSER, log, DESC, ASC } from '$lib/utils';
-  import { get, writable } from 'svelte/store';
+  import { writable } from 'svelte/store';
   import { Editor } from '$lib/classes';
-  import { browser } from '$app/environment';
 
   const sortAZProtected = (
     /** @type {{ [x: string]: string; }} */ a,
@@ -177,25 +176,44 @@
     ...dynamicTemplateData.validate(currentTemplate)
   };
   $: currentStore.update(() => getStoreByEndpoint(activeItem));
-  $: currentSlug = (currentSlug !== $page.params.slug && $page.params.slug) || currentSlug; // because $page.param.slug triggers even on no obvious change!
+  $: currentSlug = (currentSlug !== $page.params.slug && $page.params.slug) || currentSlug; // $page.param triggers even for no obvious reason!
   $: waitForData =
     currentSlug &&
     getSIUX()
-      .then((/** @type {{ success: any; data: any; }} */ res) => {
-        if (res?.success) {
-          usersFoundation.update(res.data);
-          $usersFoundation; // shall be subscribed
+      .then(
+        /** @param {{ success: any; data: never[]; }} res */ (res) => {
+          if (res?.success) {
+            usersFoundation.update(res.data);
+            $usersFoundation; // subscribe to take effect
+          }
         }
-        return getMail(mailboxes[0]);
+      )
+      .then(async () => {
+        // fetching INBOXES
+        const mailbox = mailboxes[0];
+        const result = await getMail(mailbox);
+        const store = getStoreByEndpoint(mailbox);
+        if (result) {
+          store?.update(result);
+        } else {
+          store?.set([]);
+        }
+      })
+      .then(async () => {
+        // fetching SENTS
+        const mailbox = mailboxes[1];
+        const result = await getMail(mailbox);
+        const store = getStoreByEndpoint(mailbox);
+        if (result) {
+          store?.update(result);
+        } else {
+          store?.set([]);
+        }
       })
       .then(() => {
-        return getMail(mailboxes[1]);
-      })
-      .then((/** @type {any} */ sents) => {
+        // show loading spinner
         return new Promise((resolve, reject) => {
-          // Don't really need the data, at this point they are already in the store.
-          // Just resolve the Promise after showing a little loading animation
-          setTimeout(() => resolve(sents), 800);
+          setTimeout(() => resolve(1), 800);
         });
       });
 
@@ -233,7 +251,6 @@
    */
   async function getMail(name) {
     const endpoint = validateMailboxName(name);
-
     if (!endpoint)
       return new Promise((res, rej) => rej(`The mailbox "${endpoint}" doesn't exist`)).catch(
         (reason) => log(reason)
@@ -249,8 +266,6 @@
       .get(`${endpoint}/get/${currentUser?.id}`, { token: $session.user?.jwt })
       .then((res) => {
         if (res?.success) {
-          let store = getStoreByEndpoint(endpoint);
-          if (store) store.update(res.data);
           return res.data;
         }
       })
@@ -283,22 +298,18 @@
     snackbar.open();
   }
 
-  /**
-   * @param {string} id
-   */
   function validateUser() {
     if (!currentUser) return false;
 
-    const user = $users.find((usr) => usr.id == $page.params.slug);
-    return user && currentUser.id === user.id;
+    const user = $users.find((usr) => usr.id === $page.params.slug);
+    return !!user && currentUser.id === user.id;
   }
 
   /**
-   * @param {string} name
+   * @param {string | null} name
    */
-  function validateMailboxName(name) {
-    if (!name) return;
-    const stripped = name.replace('template:', '');
+  function validateMailboxName(name = '') {
+    const stripped = name?.replace('template:', '');
     return mailboxes.find((box) => box === stripped);
   }
 
