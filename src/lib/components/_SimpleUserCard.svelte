@@ -1,5 +1,6 @@
 <script>
   import './_meta.scss';
+  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { createEventDispatcher } from 'svelte';
   import { infos } from '$lib/stores';
@@ -30,33 +31,42 @@
     position: 'TOP_RIGHT',
     size: 'small'
   };
+  $: href = createUrl($page.url);
 
   /** @param {CustomEvent} e */
   function itemSelectHandler(e) {
     setTimeout(() => dispatch('itemSelected', { user, target: e.target }), 10);
     goto(`/users/${user.id}${query}`);
   }
+
+  function focusHandler() {}
+
+  /**
+   * @param {{ pathname: any; search: any; } | undefined} [url]
+   */
+  function createUrl(url) {
+    const pathname = url?.pathname;
+    const userPathname = pathname.replace(/\/[0-9a-zA-Z_-]+$/, `/${user?.id}`);
+    return `${userPathname}${url?.search}`;
+  }
 </script>
 
-<Item
-  {id}
-  class={className}
-  selected={selectionUserId == user.id}
-  on:SMUI:action={itemSelectHandler}
->
-  <UserGraphic size="40" {user} {badge} borderSize="1" borderColor="#c5c5c5" />
-  <Text>
-    <PrimaryText>{user.name}</PrimaryText>
-    <SecondaryText>{user.email}</SecondaryText>
-  </Text>
-  {#if user.protected}
-    <Meta class="material-icons locked">lock</Meta>
-  {/if}
-  <div class="infos">
-    {#each _infos as _info}
-      <Dot size={5} color={_info.flag} />
-    {/each}
-  </div>
+<Item {id} class={className} selected={selectionUserId == user.id}
+  ><a on:focus={() => focusHandler()} {href} class="flex flex-1 item-inner">
+    <UserGraphic size="40" {user} {badge} borderSize="1" borderColor="#c5c5c5" />
+    <Text>
+      <PrimaryText>{user.name}</PrimaryText>
+      <SecondaryText>{user.email}</SecondaryText>
+    </Text>
+    {#if user.protected}
+      <Meta class="material-icons locked">lock</Meta>
+    {/if}
+    <div class="infos">
+      {#each _infos as _info}
+        <Dot size={5} color={_info.flag} />
+      {/each}
+    </div>
+  </a>
 </Item>
 
 <style>
@@ -70,5 +80,13 @@
     right: 0;
     margin: 3px;
     font-size: 0.7em;
+  }
+  .item-inner {
+    border-bottom: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    height: 100%;
+    align-items: center;
   }
 </style>

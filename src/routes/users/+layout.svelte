@@ -399,15 +399,6 @@
     ({ focusItemAtIndex, items: listItems } = { ...detail });
   }
 
-  /**
-   *
-   * @param {any} param0
-   */
-  function itemSelectedHandler({ detail }) {
-    const { target } = detail;
-    // target.scrollIntoView({ behavior: 'smooth' });
-  }
-
   function scrollIntoView() {
     const options = { block: 'nearest', behavior: 'smooth' };
     setTimeout(() => {
@@ -454,14 +445,7 @@
           on:SMUIList:mount={receiveListMethods}
         >
           {#each filteredUsers as user (user.id)}
-            <SimpleUserCard
-              id={user.id}
-              class="flex"
-              on:itemSelected={itemSelectedHandler}
-              {selectionUserId}
-              {user}
-              {query}
-            />
+            <SimpleUserCard id={user.id} class="flex" {selectionUserId} {user} {query} />
           {/each}
         </List>
       {:else}
@@ -674,12 +658,12 @@
     {:else}
       <p>{@html $_('messages.you-will-be-logged-out', { values: { name: username } })}</p>
     {/if}
-    <div class="absolute" style="z-index: 1; top: -11px; right: -6px;">
+    <div class="absolute" style="z-index: 1; top: -11px; right: 3px;">
       <UserGraphic
         size="40"
         borderSize="2"
         borderColor="--primary"
-        extendedBorderSize="6"
+        extendedBorderSize="5"
         extendedBorderColor="--surface"
         dense
         user={currentUser}
@@ -691,7 +675,7 @@
         }}
       />
     </div>
-    <div class="absolute" style="z-index: 0; top: -7px; right: 23px;">
+    <div class="absolute" style="z-index: 0; top: -7px; right: 37px;">
       <UserGraphic
         size="35"
         borderSize="2"

@@ -98,7 +98,7 @@
         vertical-align: middle;
         width: {width}px;
         height: {height}px;
-        box-shadow: 0px 0px 0px {borderSize}px {borderColor} {extendedBorderSize
+        box-shadow: inset 0px 0px 0px {borderSize}px {borderColor} {extendedBorderSize
         ? `, 0px 0px 0px ${extendedBorderSize}px ${extendedBorderColor}`
         : ''};
         background-image: url('{src}');
