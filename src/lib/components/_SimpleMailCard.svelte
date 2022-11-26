@@ -63,7 +63,7 @@
 
   /** @param {KeyboardEvent} event*/
   function keydownHandler(event) {
-    const isBackspace = event.key === 'Backspace' || event.keyCode === 8;
+    const isBackspace = event.key === 'Backspace';
     if (isBackspace) {
       dispatch('mail:delete', { selection });
     }
