@@ -1,5 +1,4 @@
 <script>
-  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
   import Layout from './layout.svelte';
@@ -22,18 +21,6 @@
     .sort?.(sortByTitle);
 
   onMount(() => {});
-
-  /**
-   *
-   * @param {CustomEvent} event
-   */
-  function itemSelectedHandler({ detail }) {
-    let { video } = detail;
-
-    if (video.id != selectionVideoId) {
-      goto(`/videos/${video.id}`);
-    }
-  }
 </script>
 
 <Layout {sidebar}>
@@ -68,7 +55,6 @@
               class="video"
               selected={selectionVideoId === video.id}
               emptyPoster="/empty-poster.jpg"
-              on:itemSelected={itemSelectedHandler}
               {video}
             />
           {/each}

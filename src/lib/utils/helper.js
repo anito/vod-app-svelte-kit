@@ -306,6 +306,31 @@ export function searchParams(url) {
   return params;
 }
 
+/**
+ * @param {string} id
+ * @param {{ pathname: any; search: any; searchParams?: URLSearchParams } | undefined} [url]
+ */
+export function buildUserUrl(id, url) {
+  const pathname = url?.pathname;
+  const userPathname = pathname.replace(/\/[0-9a-zA-Z_-]+$/, `/${id}`);
+  const searchParams = buildSearchParams(url?.searchParams, { removableKeys: ['mail_id'] });
+  return `${userPathname}${searchParams}`;
+}
+
+/**
+ * @param {URLSearchParams | undefined} searchParams
+ * @param {{ removableKeys: Array<string>}} [options]
+ */
+function buildSearchParams(searchParams, options = { removableKeys: [] }) {
+  const { removableKeys } = { ...options };
+  searchParams = new URLSearchParams(searchParams);
+  removableKeys.forEach((key) => {
+    searchParams?.has(key) && searchParams.delete(key);
+  });
+  const search = searchParams?.toString();
+  return (search && `?${search}`) || '';
+}
+
 export function log() {
   const { log } = get(settings).Console;
   if (log) console.log(...arguments);

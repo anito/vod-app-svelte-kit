@@ -16,9 +16,12 @@
   let wait;
 
   $: id = selection?.id; // don't rerender on read/unread
-  $: id && (wait = showMessage());
+  $: wait = showMessage(id); // parameter id only used for reactivity
 
-  function showMessage() {
+  /**
+   * @param {any} id
+   */
+  function showMessage(id) {
     return new Promise((resolve) => resolve(selection?.message)).then((res) => (message = res));
   }
 

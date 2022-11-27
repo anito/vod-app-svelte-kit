@@ -4,16 +4,7 @@
   import { goto } from '$app/navigation';
   import { onMount, getContext, tick } from 'svelte';
   import { fly } from 'svelte/transition';
-  import {
-    infos,
-    fabs,
-    session,
-    users,
-    videos,
-    images,
-    usersFoundation,
-    videosAll
-  } from '$lib/stores';
+  import { infos, fabs, session, users, videos, usersFoundation } from '$lib/stores';
   import Layout from './layout.svelte';
   import {
     InfoChips,
@@ -109,8 +100,6 @@
      */
     (info) => info.type === 'issue'
   );
-  $: searchParams = $page && getSearchParams();
-  $: query = searchParams && `?${searchParams}`;
 
   onMount(() => {
     snackbar = getSnackbar();
@@ -377,19 +366,6 @@
     uploadedData = null;
   }
 
-  function getSearchParams() {
-    /**
-     * @type {any[]}
-     */
-    const omit = ['mail_id'];
-    const searchParamsString = $page.url.searchParams.toString();
-    const searchParams = new URLSearchParams(searchParamsString);
-    omit.forEach((key) => {
-      searchParams.has(key) && searchParams.delete(key);
-    });
-    return searchParams.toString();
-  }
-
   /**
    *
    * @param {any} param0
@@ -445,7 +421,7 @@
           on:SMUIList:mount={receiveListMethods}
         >
           {#each filteredUsers as user (user.id)}
-            <SimpleUserCard id={user.id} class="flex" {selectionUserId} {user} {query} />
+            <SimpleUserCard id={user.id} class="flex" {selectionUserId} {user} />
           {/each}
         </List>
       {:else}

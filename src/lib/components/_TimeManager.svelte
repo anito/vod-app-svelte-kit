@@ -381,11 +381,7 @@
                   {video}
                   {selectionUserId}
                 >
-                  <IconButton
-                    class="self-center mr-2"
-                    color="primary"
-                    on:click={async () => await goto(`/videos/${video.id}`)}
-                  >
+                  <IconButton class="self-center mr-2" color="primary" href={`/videos/${video.id}`}>
                     <Icon class="material-icons">smart_display</Icon>
                   </IconButton>
                   {#if hasPrivileges}
@@ -485,7 +481,7 @@
                     class="self-center mr-2"
                     color="primary"
                     style=""
-                    on:click={async () => await goto(`/videos/${video.id}`)}
+                    href={`/videos/${video.id}`}
                   >
                     <Icon class="material-icons">smart_display</Icon>
                   </IconButton>

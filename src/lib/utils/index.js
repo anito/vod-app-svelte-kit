@@ -1,4 +1,5 @@
 import {
+  buildUserUrl,
   convert,
   createRedirectSlug,
   createTabSearch,
@@ -40,6 +41,7 @@ import { posterCreatedHandler, posterSelectedHandler, posterRemoveHandler } from
 
 export {
   afterOrBeforeNavigation,
+  buildUserUrl,
   convert,
   createRedirectSlug,
   createTabSearch,

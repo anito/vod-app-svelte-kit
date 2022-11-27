@@ -2,17 +2,17 @@
   // @ts-nocheck
 
   import './_user-video.scss';
-  import { page } from '$app/stores';
   import { createEventDispatcher } from 'svelte';
   import { Icon } from '@smui/button';
   import { Item, Graphic, Text, PrimaryText, SecondaryText } from '@smui/list';
   import Chip, { Set, LeadingIcon } from '@smui/chips';
-  import { localeFormat, hasStarted, isExpired } from '$lib/utils';
+  import { localeFormat, hasStarted, isExpired, buildUserUrl } from '$lib/utils';
   import { getMedia } from '$lib/utils/media';
   import { parseISO } from 'date-fns';
   import { session, users } from '$lib/stores';
   import { differenceInHours } from 'date-fns';
   import { _, locale } from 'svelte-i18n';
+  import { page } from '$app/stores';
 
   export let video;
   export let disabled = false;
@@ -64,6 +64,7 @@
       $_('text.not-scheduled')),
     (readoutDuration = (startDate && _readoutDuration(startDate, endDate)) || '--')
   ))(joinData, $locale);
+  $: href = video && buildUserUrl(video.id, $page.url);
 
   function _timespan(date, endDate) {
     let start = hasStarted(date) ? new Date() : date;
@@ -83,7 +84,7 @@
 
   async function fetchBackgroundImage(video) {
     if (video.image_id) {
-      const res = await getPosterUrl(video.image_id)
+      await getPosterUrl(video.image_id)
         .then((res) => (src = res))
         .catch(() => (src = fromTitle()));
     } else {
@@ -116,67 +117,70 @@
     }
     return _src;
   }
+
+  function focusHandler() {}
 </script>
 
-<Item
-  class="item {className}"
-  disabled={unmanagable}
-  bind:this={item}
-  on:SMUI:action={(e) => {
-    const ulId = e.target.closest('ul')?.getAttribute('id');
-    setTimeout(() => dispatch('itemSelected', { video, ulId }), 10);
-  }}
-  {selected}
->
-  <Graphic
-    class="relative z-10"
-    style="background-image: url({src}); background-position: center center;
+<Item class="item {className}" disabled={unmanagable} bind:this={item} {selected}
+  ><a on:focus={() => focusHandler()} {href} class="flex flex-1 item-inner">
+    <Graphic
+      class="relative z-10"
+      style="background-image: url({src}); background-position: center center;
   background-size: cover;"
-  />
-  <Text>
-    <PrimaryText>
-      <span class="opacity-25" class:opacity-25={!video.title}>
-        {`${video.title || $_('text.no-title')}`}
-      </span>
-    </PrimaryText>
-    {#if isUserVideo}
-      <Set class="time-chip-set relative z-10" chips={[{ id: 0 }]} let:chip>
-        <Chip
-          {chip}
-          class={(className = pending
-            ? 'pending'
-            : custom
-            ? 'custom'
-            : expired
-            ? 'expired'
-            : 'active')}
-          on:click={() => dispatch('datapicker', { id: video.id })}
-        >
-          <LeadingIcon class="material-icons" leading>date_range</LeadingIcon>
-          <Text>{readoutPeriod}</Text>
-        </Chip>
-      </Set>
-    {:else}
-      <SecondaryText>
-        <span>{`${video.description || $_('text.no-description')}`}</span>
-      </SecondaryText>
-    {/if}
-    {#if threeLine}
-      <SecondaryText>
-        <span class="text-xs text-inherit">
-          <Icon class="material-icons">
-            {timerOff ? 'timer_off' : 'timer'}
-          </Icon>
-          <span>{readoutDuration}</span>
-          <span>{pending ? `(${$_('text.pending')})` : ''}</span>
+    />
+    <Text>
+      <PrimaryText>
+        <span class="opacity-25" class:opacity-25={!video.title}>
+          {`${video.title || $_('text.no-title')}`}
         </span>
-      </SecondaryText>
-    {/if}
-  </Text>
-  <span class="action-buttons flex flex-1 justify-end">
-    <slot {expired} published={!custom} {unmanagable} />
-  </span>
+      </PrimaryText>
+      {#if isUserVideo}
+        <Set class="time-chip-set relative z-10" chips={[{ id: 0 }]} let:chip>
+          <Chip
+            {chip}
+            class={(className = pending
+              ? 'pending'
+              : custom
+              ? 'custom'
+              : expired
+              ? 'expired'
+              : 'active')}
+            on:click={() => dispatch('datapicker', { id: video.id })}
+          >
+            <LeadingIcon class="material-icons" leading>date_range</LeadingIcon>
+            <Text>{readoutPeriod}</Text>
+          </Chip>
+        </Set>
+      {:else}
+        <SecondaryText>
+          <span>{`${video.description || $_('text.no-description')}`}</span>
+        </SecondaryText>
+      {/if}
+      {#if threeLine}
+        <SecondaryText>
+          <span class="text-xs text-inherit">
+            <Icon class="material-icons">
+              {timerOff ? 'timer_off' : 'timer'}
+            </Icon>
+            <span>{readoutDuration}</span>
+            <span>{pending ? `(${$_('text.pending')})` : ''}</span>
+          </span>
+        </SecondaryText>
+      {/if}
+    </Text>
+    <span class="action-buttons flex flex-1 justify-end">
+      <slot {expired} published={!custom} {unmanagable} />
+    </span>
+  </a>
 </Item>
 
 <style>
+  .item-inner {
+    border-bottom: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    height: 100%;
+    align-items: center;
+  }
 </style>

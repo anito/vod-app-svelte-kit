@@ -1,26 +1,20 @@
 <script>
   import './_meta.scss';
   import { page } from '$app/stores';
-  import { goto } from '$app/navigation';
-  import { createEventDispatcher } from 'svelte';
   import { infos } from '$lib/stores';
   import { UserGraphic, Dot } from '$lib/components';
   import { Meta, Item, Text, PrimaryText, SecondaryText } from '@smui/list';
-  import { ADMIN, SUPERUSER } from '$lib/utils';
+  import { ADMIN, buildUserUrl, SUPERUSER } from '$lib/utils';
 
   /** @type {any} */
   export let selectionUserId;
   /** @type {import('$lib/types').User} */
   export let user;
   /** @type {any} */
-  export let query;
-  /** @type {any} */
   export let id;
   export { className as class };
 
   let className = '';
-
-  const dispatch = createEventDispatcher();
 
   $: _infos = ($infos?.has(user.id) && $infos.get(user.id).params) || [];
   $: hasPrivileges = user.role === ADMIN || user.role === SUPERUSER;
@@ -31,24 +25,9 @@
     position: 'TOP_RIGHT',
     size: 'small'
   };
-  $: href = createUrl($page.url);
-
-  /** @param {CustomEvent} e */
-  function itemSelectHandler(e) {
-    setTimeout(() => dispatch('itemSelected', { user, target: e.target }), 10);
-    goto(`/users/${user.id}${query}`);
-  }
+  $: href = user && buildUserUrl(user.id, $page.url);
 
   function focusHandler() {}
-
-  /**
-   * @param {{ pathname: any; search: any; } | undefined} [url]
-   */
-  function createUrl(url) {
-    const pathname = url?.pathname;
-    const userPathname = pathname.replace(/\/[0-9a-zA-Z_-]+$/, `/${user?.id}`);
-    return `${userPathname}${url?.search}`;
-  }
 </script>
 
 <Item {id} class={className} selected={selectionUserId == user.id}

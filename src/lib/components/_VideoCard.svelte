@@ -27,19 +27,31 @@
   const { open, close } = getContext(key);
 
   let className = '';
-  /** @type {import('@smui/menu').MenuComponentDev} */
+  /**
+   * @type {import('@smui/menu').MenuComponentDev}
+   */
   let cardMenu;
-  /** @type {import('@smui/menu').MenuComponentDev} */
+  /**
+   * @type {import('@smui/menu').MenuComponentDev}
+   */
   let deleteMenu;
   let dispatch = createEventDispatcher();
-  /** @type {import('@smui/menu-surface').MenuSurfaceComponentDev} */
+  /**
+   * @type {import('@smui/menu-surface').MenuSurfaceComponentDev}
+   */
   let imageList;
-  /** @type {HTMLDivElement} */
+  /**
+   * @type {HTMLDivElement}
+   */
   let imageListAnchor;
   let isEditMode = false;
-  /** @type {string} */
+  /**
+   * @type {string}
+   */
   let title;
-  /** @type {string} */
+  /**
+   * @type {string}
+   */
   let description;
   let dateOptions = {
     day: '2-digit',
@@ -185,7 +197,7 @@
         </div>
         <div class="flex justify-end" style="flex-basis: 50%; max-width: 50%">
           <IconButton
-            on:click={() => goto(`/videos/${video.id}`)}
+            href={`/videos/${video.id}`}
             variant="outlined"
             class="button-shaped-round unelevated"
           >
