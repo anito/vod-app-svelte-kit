@@ -674,7 +674,7 @@
     </Modal>
   </Modal>
 {/if}
-<LoadingModal backgroundColor="#ffffff" opacity={loaderBackgroundOpacity} wait={350}>
+<LoadingModal backgroundColor="#ffffff" opacity={loaderBackgroundOpacity} wait={1000}>
   <DoubleBounce color={loaderColor} unit="px" size="200" />
 </LoadingModal>
 
