@@ -183,7 +183,6 @@
         type: 'avatar',
         uid: currentUser.id,
         options: {
-          uploadMultiple: false,
           parallelUploads: 1,
           maxFiles: 1
         },
@@ -676,7 +675,7 @@
                         variant="raised"
                         disabled={isProtected}
                         on:click={() =>
-                          !isProtected && proxyEvent('INFO:token:Generate', { open: !!jwt })}
+                          !isProtected && proxyEvent('info:token:generate', { open: !!jwt })}
                       >
                         <Icon class="material-icons">link</Icon>
                         <Label class="token-button-label">
@@ -688,7 +687,7 @@
                         label={$_('text.can-not-remove-admin-token')}
                         variant="raised"
                         on:click={() =>
-                          !isProtected && proxyEvent('INFO:token:Remove', { open: true })}
+                          !isProtected && proxyEvent('info:token:remove', { open: true })}
                       >
                         <Icon class="material-icons">link_off</Icon>
                         <Label class="token-button-label">{$_('text.remove-token')}</Label>
@@ -708,7 +707,7 @@
                           <Button
                             disabled={isProtected || hidden}
                             class="action-magic-link"
-                            on:click={() => !isProtected && proxyEvent('INFO:token:Redirect')}
+                            on:click={() => !isProtected && proxyEvent('info:token:redirect')}
                             variant="outlined"
                           >
                             <Icon class="material-icons">link</Icon>
@@ -786,7 +785,7 @@
                     <a
                       href="."
                       class="item"
-                      on:click|preventDefault={() => proxyEvent('INFO:open:InfoDialog')}
+                      on:click|preventDefault={() => proxyEvent('info:open:info-dialog')}
                     >
                       {$_('summary.howDoesItWork.text')}
                     </a>

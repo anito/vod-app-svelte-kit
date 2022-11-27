@@ -197,9 +197,9 @@
     }
   }
 
-  function itemSelectedHandler({ detail }) {
+  function videoSelectedHandler({ detail }) {
     const { video } = detail;
-    selectionVideoId = video.id;
+    selectionVideoId = video?.id;
     scrollIntoView();
   }
 
@@ -375,7 +375,7 @@
                       selectionVideoId != e.detail.id ||
                         !root.classList.contains('datapicker--open')
                     )}
-                  on:itemSelected={itemSelectedHandler}
+                  on:video:selected={videoSelectedHandler}
                   selected={selectionVideoId === video.id}
                   emptyPoster="/empty-poster.jpg"
                   {video}
@@ -459,7 +459,7 @@
           {#if noneUserVideos.length}
             {#each noneUserVideos as video (video.id)}
               <SimpleVideoCard
-                on:itemSelected={itemSelectedHandler}
+                on:video:selected={videoSelectedHandler}
                 let:unmanagable
                 class="video"
                 disabled={(hasCurrentPrivileges || hasPrivileges) && isUnmanagableNoneUserList}

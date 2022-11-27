@@ -4,7 +4,7 @@
   import { infos } from '$lib/stores';
   import { UserGraphic, Dot } from '$lib/components';
   import { Meta, Item, Text, PrimaryText, SecondaryText } from '@smui/list';
-  import { ADMIN, buildUserUrl, SUPERUSER } from '$lib/utils';
+  import { ADMIN, dynamicUrl, SUPERUSER } from '$lib/utils';
 
   /** @type {any} */
   export let selectionUserId;
@@ -25,7 +25,7 @@
     position: 'TOP_RIGHT',
     size: 'small'
   };
-  $: href = user && buildUserUrl(user.id, $page.url);
+  $: href = user && dynamicUrl(user.id, $page.url);
 
   function focusHandler() {}
 </script>

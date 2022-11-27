@@ -23,7 +23,7 @@ function createStore() {
     {
       key: {
         id: 'account-inaccessible',
-        eventType: 'INFO:open:ResolveAllDialog',
+        eventType: 'info:open:resolve-all-dialog',
         label: 'text.content-inaccessible',
         reason: '',
         flag: 'warning',
@@ -39,7 +39,7 @@ function createStore() {
     {
       key: {
         id: 'token-expired',
-        eventType: 'INFO:token:Generate',
+        eventType: 'info:token:generate',
         label: 'text.regenerate-expired-token',
         reason: 'text.token-expired',
         flag: 'flash',
@@ -54,7 +54,7 @@ function createStore() {
     {
       key: {
         id: 'user-inactive',
-        eventType: 'INFO:user:Activate',
+        eventType: 'info:user:activate',
         label: 'text.activate-user',
         reason: 'text.user-is-deactivated',
         flag: 'flash',
@@ -69,7 +69,7 @@ function createStore() {
     {
       key: {
         id: 'token-missing',
-        eventType: 'INFO:token:Generate',
+        eventType: 'info:token:generate',
         label: 'text.generate-token',
         flag: 'flash',
         type: 'issue'

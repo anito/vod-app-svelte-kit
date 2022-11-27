@@ -1,12 +1,10 @@
 <script>
-  // @ts-nocheck
-
   import './_user-video.scss';
   import { createEventDispatcher } from 'svelte';
   import { Icon } from '@smui/button';
   import { Item, Graphic, Text, PrimaryText, SecondaryText } from '@smui/list';
   import Chip, { Set, LeadingIcon } from '@smui/chips';
-  import { localeFormat, hasStarted, isExpired, buildUserUrl } from '$lib/utils';
+  import { localeFormat, hasStarted, isExpired, dynamicUrl } from '$lib/utils';
   import { getMedia } from '$lib/utils/media';
   import { parseISO } from 'date-fns';
   import { session, users } from '$lib/stores';
@@ -14,10 +12,20 @@
   import { _, locale } from 'svelte-i18n';
   import { page } from '$app/stores';
 
+  /**
+   * @type {import('$lib/types').Video}
+   */
   export let video;
-  export let disabled = false;
+  /**
+   * @type {string | null}
+   */
   export let selectionUserId = null;
+  /**
+   * @type {(arg0?: any, arg1?: URL) => any}
+   */
+  export let anchorFn;
   export { className as class };
+  export let disabled = false;
   export let threeLine = false;
   export let selected = false;
   export let isUserVideo = false;
@@ -25,23 +33,44 @@
 
   let dispatch = createEventDispatcher();
   let className = '';
-  let src = '';
+  /**
+   * @type {string | undefined}
+   */
+  let src;
   let _video;
+  /**
+   * @type {any}
+   */
   let readoutPeriod;
+  /**
+   * @type {any}
+   */
   let readoutDuration;
   let startDate;
   let endDate;
+  /**
+   * @type {boolean}
+   */
   let custom;
   let playhead;
   let duration;
+  /**
+   * @type {any}
+   */
   let pending;
+  /**
+   * @type {boolean}
+   */
   let expired;
+  /**
+   * @type {boolean}
+   */
   let timerOff;
   let filtered;
   let item;
 
   $: user = $session.user;
-  $: dateFormat = $locale.indexOf('de') != -1 ? 'dd. MMM yyyy' : 'yyyy-MM-dd';
+  $: dateFormat = $locale?.indexOf('de') != -1 ? 'dd. MMM yyyy' : 'yyyy-MM-dd';
   $: video && fetchBackgroundImage(video);
   $: unmanagable = disabled;
   $: currentUser =
@@ -49,7 +78,9 @@
     filtered.length &&
     filtered[0];
   $: joinData =
-    currentUser && (_video = currentUser.videos.find((v) => v.id === video.id)) && _video._joinData;
+    currentUser &&
+    (_video = currentUser.videos.find((/** @type {{ id: any; }} */ v) => v.id === video.id)) &&
+    _video._joinData;
   $: ((jData, _locale) => (
     (startDate = jData && jData.start && parseISO(jData.start)),
     (endDate = (jData && jData.end && parseISO(jData.end)) || startDate),
@@ -64,13 +95,20 @@
       $_('text.not-scheduled')),
     (readoutDuration = (startDate && _readoutDuration(startDate, endDate)) || '--')
   ))(joinData, $locale);
-  $: href = video && buildUserUrl(video.id, $page.url);
 
+  /**
+   * @param {any} date
+   * @param {number | Date} endDate
+   */
   function _timespan(date, endDate) {
     let start = hasStarted(date) ? new Date() : date;
     return Math.abs(differenceInHours(start, endDate));
   }
 
+  /**
+   * @param {any} date
+   * @param {number | Date} endDate
+   */
   function _readoutDuration(date, endDate) {
     if (endDate && isExpired(endDate)) return $_('text.expired');
 
@@ -82,6 +120,9 @@
     return `${daysReadout} ${hoursReadout}`;
   }
 
+  /**
+   * @param {import("$lib/types").Video<Record<string, any>>} video
+   */
   async function fetchBackgroundImage(video) {
     if (video.image_id) {
       await getPosterUrl(video.image_id)
@@ -92,6 +133,9 @@
     }
   }
 
+  /**
+   * @param {string} id
+   */
   async function getPosterUrl(id) {
     if (id) {
       // options.square: 0 => intelligent resize (keep ratio) | 1 => force resize | 2 => no resize (original)
@@ -119,10 +163,25 @@
   }
 
   function focusHandler() {}
+
+  /**
+   * @param {URL} url
+   */
+  function useAnchorFn(url) {
+    if (anchorFn) {
+      return anchorFn(video?.id, url);
+    }
+    return url.href;
+  }
 </script>
 
-<Item class="item {className}" disabled={unmanagable} bind:this={item} {selected}
-  ><a on:focus={() => focusHandler()} {href} class="flex flex-1 item-inner">
+<Item
+  on:SMUI:action={() => dispatch('video:selected', { video })}
+  class="item {className}"
+  disabled={unmanagable}
+  bind:this={item}
+  {selected}
+  ><a on:focus={() => focusHandler()} href={useAnchorFn($page.url)} class="flex flex-1 item-inner">
     <Graphic
       class="relative z-10"
       style="background-image: url({src}); background-position: center center;

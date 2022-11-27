@@ -110,25 +110,25 @@
     }
 
     // window.addEventListener('MDCChip:interaction', chipInteractionHandler);
-    window.addEventListener('INFO:open:ResolveAllDialog', resolveAllHandler);
-    window.addEventListener('INFO:open:InfoDialog', infoDialogHandler);
+    window.addEventListener('info:open:resolve-all-dialog', resolveAllHandler);
+    window.addEventListener('info:open:info-dialog', infoDialogHandler);
     // @ts-ignore
-    window.addEventListener('INFO:user:Activate', activateUserHandler);
-    window.addEventListener('INFO:token:Remove', removeTokenHandler);
+    window.addEventListener('info:user:activate', activateUserHandler);
+    window.addEventListener('info:token:remove', removeTokenHandler);
     // @ts-ignore
-    window.addEventListener('INFO:token:Generate', generateTokenHandler);
-    window.addEventListener('INFO:token:Redirect', tokenRedirectHandler);
+    window.addEventListener('info:token:generate', generateTokenHandler);
+    window.addEventListener('info:token:redirect', tokenRedirectHandler);
 
     return () => {
       // window.removeEventListener('MDCChip:interaction', chipInteractionHandler);
-      window.removeEventListener('INFO:open:ResolveAllDialog', resolveAllHandler);
-      window.removeEventListener('INFO:open:InfoDialog', infoDialogHandler);
+      window.removeEventListener('info:open:resolve-all-dialog', resolveAllHandler);
+      window.removeEventListener('info:open:info-dialog', infoDialogHandler);
       // @ts-ignore
-      window.removeEventListener('INFO:user:Activate', activateUserHandler);
-      window.removeEventListener('INFO:token:Remove', removeTokenHandler);
+      window.removeEventListener('info:user:activate', activateUserHandler);
+      window.removeEventListener('info:token:remove', removeTokenHandler);
       // @ts-ignore
-      window.removeEventListener('INFO:token:Generate', generateTokenHandler);
-      window.removeEventListener('INFO:token:Redirect', tokenRedirectHandler);
+      window.removeEventListener('info:token:generate', generateTokenHandler);
+      window.removeEventListener('info:token:redirect', tokenRedirectHandler);
     };
   });
 
@@ -136,7 +136,7 @@
   users.subscribe(() => usersFoundation.set(null));
 
   async function addUser() {
-    proxyEvent('USER:add');
+    proxyEvent('user:add');
   }
 
   /**
@@ -312,9 +312,8 @@
         type: 'video',
         options: {
           // acceptedFiles: '.mov .mp4 .m4a .m4v .3gp .3g2 .webm',
-          uploadMultiple: true,
-          parallelUploads: 2,
-          maxFiles: 2,
+          parallelUploads: 1,
+          maxFiles: 1,
           timeout: 3600 * 1000, // 60min
           maxFilesize: 1024 // Megabyte
         },

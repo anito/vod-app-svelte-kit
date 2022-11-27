@@ -70,9 +70,8 @@
           type: 'video',
           options: {
             // acceptedFiles: '.mov .mp4 .m4a .m4v .3gp .3g2 .webm',
-            uploadMultiple: true,
-            parallelUploads: 2,
-            maxFiles: 2,
+            parallelUploads: 1,
+            maxFiles: 1,
             timeout: 3600 * 1000, // 60min
             maxFilesize: 1024 // Megabyte
           },

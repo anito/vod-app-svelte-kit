@@ -72,10 +72,10 @@
   });
 
   onMount(() => {
-    window.addEventListener('USER:add', addUserHandler);
+    window.addEventListener('user:add', addUserHandler);
 
     return () => {
-      window.removeEventListener('USER:add', addUserHandler);
+      window.removeEventListener('user:add', addUserHandler);
     };
   });
 
@@ -138,7 +138,7 @@
     </Group>
     <div class="flex mr-2" class:hidden>
       <Button
-        on:click={() => proxyEvent('INFO:token:Redirect')}
+        on:click={() => proxyEvent('info:token:redirect')}
         disabled={!magicLink}
         variant="unelevated"
         user

@@ -6,7 +6,7 @@
   import Textfield from '@smui/textfield';
   import Icon from '@smui/textfield/icon';
   import { Legal, PageBar, SimpleVideoCard, Component } from '$lib/components';
-  import { sortByTitle } from '$lib/utils';
+  import { dynamicUrl, sortByTitle } from '$lib/utils';
   import { videos } from '$lib/stores';
   import { _ } from 'svelte-i18n';
 
@@ -55,6 +55,7 @@
               class="video"
               selected={selectionVideoId === video.id}
               emptyPoster="/empty-poster.jpg"
+              anchorFn={dynamicUrl}
               {video}
             />
           {/each}
