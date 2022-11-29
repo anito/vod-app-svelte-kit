@@ -1,12 +1,12 @@
 <script>
+  import { page } from '$app/stores';
   import { onDestroy, onMount } from 'svelte';
   import { Media, MediaContent } from '@smui/card';
   import Textfield, { Textarea } from '@smui/textfield';
   import { VideoPlayer } from '$lib/components/Video';
   import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, info, proxyEvent } from '$lib/utils';
-  import { session, users } from '$lib/stores';
+  import { session, users, videos } from '$lib/stores';
   import { _ } from 'svelte-i18n';
-  import { page } from '$app/stores';
 
   /**
    * @type {import('$lib/types').Video}
@@ -41,21 +41,24 @@
    * @type {ReturnType<typeof setTimeout>}
    */
   let timeoutId;
-  let canPlay = false;
+  let canplay = false;
   let paused = true;
   let poster = emptyPoster;
 
-  $: $session.user && (canPlay = false);
+  $: user = $users.find((user) => user?.id === $session.user?.id);
+  $: user && (canplay = false);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
-  $: joinData = $session.user?.videos?.find(
-    /** @param {import('$lib/types').Video} v */ (v) => v.id == video.id
-  )?._joinData;
+  $: joinData = $users
+    .find((/** @type {import('$lib/types').User} v */ u) => u?.id === user?.id)
+    ?.videos.find(
+      (/** @type {import('$lib/types').Video} v */ v) => v?.id === video?.id
+    )?._joinData;
   $: (video.image_id &&
     getMediaImage(video.image_id, $session.user?.jwt).then((res) => (poster = res))) ||
     (poster = emptyPoster);
-  $: video.id && getMediaVideo(video.id, $session.user?.jwt).then((res) => (src = res));
+  $: video?.id && getMediaVideo(video?.id, $session.user?.jwt).then((res) => (src = res));
   $: ((time) => {
-    if (!paused || !canPlay) return;
+    if (!paused || !canplay) return;
     let pauseTime = time;
     clearTimeout(timeoutId);
     timeoutId = setTimeout((saved) => saved === playhead && savePlayhead(), 500, pauseTime);
@@ -71,9 +74,9 @@
 
   // set playhead to the last saved position when the video is ready to play
   function handleCanPlay() {
-    if (canPlay) return;
-    canPlay = true;
-    playhead = hasPrivileges ? video.playhead : joinData.playhead;
+    if (canplay) return;
+    canplay = true;
+    playhead = hasPrivileges ? video?.playhead : joinData?.playhead;
   }
 
   /**
@@ -123,23 +126,23 @@
       event.detail.title
     );
     paused = true;
-    canPlay = false;
+    canplay = false;
   }
 
   async function savePlayhead() {
-    if (!canPlay) return;
+    if (!canplay) return;
     if (hasPrivileges) {
-      if (Math.round(video.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
-      proxyEvent('video:put', { data: { id: video.id, playhead }, show: true });
+      if (Math.round(video?.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
+      proxyEvent('video:put', { data: { id: video?.id, playhead }, show: true });
     } else {
-      if (Math.round(joinData.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
-      let associated = $session.user.videos
-        .filter(/** @param {import('$lib/types').Video} v */ (v) => v.id != video.id)
-        .map(/** @param {import('$lib/types').Video} v */ (v) => ({ id: v.id }));
+      if (Math.round(joinData?.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
+      let associated = user?.videos
+        .filter(/** @param {import('$lib/types').Video} v */ (v) => v?.id != video?.id)
+        .map(/** @param {import('$lib/types').Video} v */ (v) => ({ id: v?.id }));
       let data = {
         videos: [
           {
-            id: video.id,
+            id: video?.id,
             _joinData: { ...joinData, playhead }
           },
           ...associated
@@ -155,7 +158,7 @@
    * @param {any} data
    */
   async function saveUser(data) {
-    return await fetch(`/users/${$page.params.slug}`, {
+    return await fetch(`/users/${user?.id}`, {
       method: 'PUT',
       body: JSON.stringify(data)
     }).then(async (res) => {

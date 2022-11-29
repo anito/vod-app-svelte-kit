@@ -2,9 +2,8 @@
   import './_icon-button.scss';
   import './_date-range-picker.scss';
   import { page } from '$app/stores';
-  import { goto } from '$app/navigation';
   import { onMount, getContext, tick } from 'svelte';
-  import { createRedirectSlug, ADMIN, SUPERUSER, log } from '$lib/utils';
+  import { fly } from 'svelte/transition';
   import List, { Item, Graphic, Separator, Text } from '@smui/list';
   import Button, { Label, Icon as ButtonIcon } from '@smui/button';
   import IconButton, { Icon } from '@smui/icon-button';
@@ -18,11 +17,18 @@
   } from '$lib/components';
   import { endOfWeek, startOfYear, endOfYear, addYears, subYears, parseISO } from 'date-fns';
   import * as locales from 'date-fns/locale/index.js';
-  import { toISODate, proxyEvent, sortByEndDate, sortByTitle } from '$lib/utils';
+  import {
+    toISODate,
+    proxyEvent,
+    sortByEndDate,
+    sortByTitle,
+    createRedirectSlug,
+    ADMIN,
+    SUPERUSER
+  } from '$lib/utils';
   import Dialog, { Title, Content, Actions, InitialFocus } from '@smui/dialog';
   import Radio from '@smui/radio';
   import { _, locale } from 'svelte-i18n';
-  import { fly } from 'svelte/transition';
 
   /** @type {string} */
   export let selectionUserId;
@@ -115,7 +121,7 @@
    */
   let itemsList = {};
 
-  $: dateFormat = $locale.startsWith('de') ? 'dd. MMM yyyy' : 'yyyy-MM-dd';
+  $: dateFormat = $locale?.startsWith('de') ? 'dd. MMM yyyy' : 'yyyy-MM-dd';
   $: ((uid) => (selectionVideoId = null))(selectionUserId);
   $: currentUser = $users.find((usr) => usr.id === selectionUserId);
   $: name = currentUser?.name || '';
@@ -124,14 +130,12 @@
   $: active = currentUser?.active;
   $: joinData =
     (selectedVideo = currentUser?.videos?.find(
-      (/** @type {import('$lib/types').Video} */ v) => v.id === selectionVideoId
+      (/** @type {{ id: string | null; }} */ v) => v.id === selectionVideoId
     )) && selectedVideo._joinData;
-  $: startDate = (joinData && joinData.start && parseISO(joinData.start)) || endOfWeek(new Date(0));
-  $: endDate = (joinData && joinData.end && parseISO(joinData.end)) || endOfWeek(new Date(0));
+  $: startDate = (joinData?.start && parseISO(joinData.start)) || endOfWeek(new Date(0));
+  $: endDate = (joinData?.end && parseISO(joinData.end)) || endOfWeek(new Date(0));
   $: expires = currentUser?.expires;
   $: isExpired = (expires && expires * 1000 < +new Date().getTime()) || false;
-  $: console.log('datapickeropen', isopen);
-  $: console.log('selectionVideoId', selectionVideoId);
   $: schedulingVideo =
     schedulingVideoId && $videos?.find((video) => video.id === schedulingVideoId);
   $: schedulingVideoTitle = (schedulingVideo && schedulingVideo.title) || '';
@@ -147,11 +151,15 @@
   $: displayedVideos = hasPrivileges
     ? currentUser?.videos.sort(sortByEndDate) || []
     : currentUser?.videos
-        .filter((/** @type {import('$lib/types').Video} */ v) => {
-          return (
-            new Date(v._joinData.start) <= new Date() && new Date(v._joinData.end) >= new Date()
-          );
-        })
+        .filter(
+          (
+            /** @type {{ _joinData: { start: string | number | Date; end: string | number | Date; }; }} */ v
+          ) => {
+            return (
+              new Date(v._joinData.start) <= new Date() && new Date(v._joinData.end) >= new Date()
+            );
+          }
+        )
         .sort(sortByEndDate) || [];
   $: userVideos =
     displayedVideos.map((/** @type {{ id: any; }} */ video) => {
@@ -168,11 +176,13 @@
     : $videosAll
         .filter(
           (v) =>
-            !userVideos?.find((/** @type {import('$lib/types').Video} */ uv) => {
-              return (
-                v.id === uv.id && (!uv._joinData.end || new Date(uv._joinData.end) > new Date())
-              );
-            })
+            !userVideos?.find(
+              (/** @type {{ id: any; _joinData: { end: string | number | Date; }; }} */ uv) => {
+                return (
+                  v.id === uv.id && (!uv._joinData.end || new Date(uv._joinData.end) > new Date())
+                );
+              }
+            )
         )
         .sort(sortByTitle);
 
@@ -271,11 +281,9 @@
    */
   async function saveTime(id, start, end) {
     const associated = userVideos
-      .filter((/** @type {import('$lib/types').Video} */ v) => v.id != id)
-      .map((/** @type {import('$lib/types').Video} */ v) => ({ id: v.id }));
-    const currentVideo = userVideos.find(
-      (/** @type {import('$lib/types').Video} */ v) => v.id == id
-    );
+      .filter((/** @type {{ id: string | null; }} */ v) => v.id != id)
+      .map((/** @type {{ id: any; }} */ v) => ({ id: v.id }));
+    const currentVideo = userVideos.find((/** @type {{ id: string | null; }} */ v) => v.id == id);
     const joinData = currentVideo?._joinData || {};
 
     const data = {
@@ -289,7 +297,6 @@
     };
 
     const res = await saveUser(data);
-    console.log(res);
 
     let idx;
     if (res?.success) {
@@ -335,10 +342,10 @@
   }
 
   /**
-   * @param {{ videos: import('$lib/types').Video[] | { _ids: any[]; }; }} data
+   * @param {{ videos: ({ id: any; } | { id: string | null; _joinData: any; })[] | { _ids: any[]; }; }} data
    */
   async function saveUser(data) {
-    return await fetch(`/users/${$page.params.slug}`, {
+    return await fetch(`/users/${currentUser?.id}`, {
       method: 'PUT',
       body: JSON.stringify(data)
     }).then(async (res) => {
@@ -389,11 +396,9 @@
    */
   function toggleDataPicker(id) {
     if (selectionVideoId !== id) {
-      console.log('not current id');
       selectionVideoId = id;
       isopen = true;
     } else {
-      console.log('already current id');
       isopen = !isopen;
     }
   }

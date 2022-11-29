@@ -1,5 +1,4 @@
 <script>
-  import * as api from '$lib/api';
   import { page, navigating } from '$app/stores';
   import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
@@ -8,13 +7,10 @@
   import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, info, proxyEvent } from '$lib/utils';
   import { _ } from 'svelte-i18n';
 
-  /** @type {import('./$types').PageData} */
-  export let data;
-
   /** @type {boolean} */
   let paused;
   /** @type {boolean} */
-  let canPlay;
+  let canplay;
   /** @type {number} */
   let playhead;
   /** @type {ReturnType <typeof setTimeout>} */
@@ -24,16 +20,15 @@
   /** @type {string | undefined} */
   let src;
 
+  $: user = $users.find((user) => user.id === $session.user?.id);
+  $: user && (canplay = false);
   $: video = $videos.find((v) => v.id === $page.params.slug);
-  $: user = data.user;
-  $: user && (canPlay = false);
-  $: hasPrivileges = user?.role === ADMIN || user?.role === SUPERUSER;
-  $: joinData = user?.videos.find(
-    /** @param {import('$lib/types').Video} v */ (v) => video?.id == v.id
-  )?._joinData;
-  $: token = user?.jwt;
+  $: hasPrivileges = $session.user?.role === ADMIN || $session.user?.role === SUPERUSER;
+  $: joinData = $users
+    .find((/** @type {import('$lib/types').User} v */ u) => u.id === user?.id)
+    ?.videos.find((/** @type {import('$lib/types').Video} v */ v) => v.id === video?.id)?._joinData;
   $: ((time) => {
-    if (!paused || !canPlay) return;
+    if (!paused || !canplay) return;
     let pauseTime = time;
     clearTimeout(timeoutId);
     timeoutId = setTimeout((saved) => saved === playhead && savePlayhead(), 500, pauseTime);
@@ -46,58 +41,58 @@
 
   // set playhead to the last saved position when the video is ready to play
   function handleCanPlay() {
-    if (canPlay) return;
-    canPlay = true;
-    playhead = hasPrivileges ? video.playhead : joinData.playhead;
+    if (canplay) return;
+    canplay = true;
+    playhead = hasPrivileges ? video?.playhead : joinData?.playhead;
   }
 
-  /** @param {CustomEvent} ev */
-  function handleEmptied(ev) {
+  /** @param {CustomEvent} event */
+  function handleEmptied(event) {
     info(
       '%c EMPTIED   %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      ev.detail.title
+      event.detail.title
     );
   }
 
-  /** @param {CustomEvent} ev */
-  function handleLoadStart(ev) {
+  /** @param {CustomEvent} event */
+  function handleLoadStart(event) {
     info(
       '%c LOADSTART %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      ev.detail.title
+      event.detail.title
     );
   }
 
-  /** @param {CustomEvent} ev */
-  function handleLoadedData(ev) {
+  /** @param {CustomEvent} event */
+  function handleLoadedData(event) {
     info(
       '%c LOADEDDATA%c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      ev.detail.title
+      event.detail.title
     );
   }
 
-  /** @param {CustomEvent} ev */
-  function handleAborted(ev) {
+  /** @param {CustomEvent} event */
+  function handleAborted(event) {
     info(
       '%c ABORTED   %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      ev.detail.title
+      event.detail.title
     );
     // in Chrome we have to limit streams due to Chromes limitation
     // this is done by emptying src attribute on the video which forgets the playheads position
     // to set the videos canPlay flag to false will re-adjust playhead to last saved position when video canPlay again
     paused = true;
-    canPlay = false;
+    canplay = false;
   }
 
   async function savePlayhead() {
-    if (!canPlay) return;
+    if (!canplay) return;
     if (hasPrivileges) {
       if (Math.round(video.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
       proxyEvent('video:put', { data: { id: video.id, playhead } });
@@ -116,17 +111,20 @@
         ]
       };
 
-      saveUser(data);
+      const res = await saveUser(data);
+      if (res?.success) users.put(res.data);
     }
   }
 
   /**
-   *
    * @param {any} data
    */
   async function saveUser(data) {
-    await api.put(`users/${user.id}`, { data, token }).then((res) => {
-      res.success && users.put(res.data);
+    return await fetch(`/users/${user?.id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    }).then(async (res) => {
+      if (res.ok) return await res.json();
     });
   }
 </script>
