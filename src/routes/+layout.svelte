@@ -220,11 +220,10 @@
   $: searchParamsString = $page.url.searchParams.toString();
   $: search = searchParamsString && `?${searchParamsString}`;
   $: withConfig = () => {
-    const configSearchParams = new URLSearchParams($page.url.searchParams);
-    configSearchParams.set('config', 'load');
-    return `?${configSearchParams.toString()}`;
+    const searchParams = new URLSearchParams($page.url.searchParams);
+    searchParams.set('config', 'load');
+    return `?${searchParams.toString()}`;
   };
-  $: $page.url.searchParams.has('config') && configLoadReset();
 
   onMount(async () => {
     $mounted = true;
@@ -464,16 +463,6 @@
       snackbar?.open();
       return res;
     });
-  }
-
-  async function configLoadReset() {
-    if (!browser) return;
-
-    configSnackbar($_('text.config-reloaded'));
-    snackbar?.open();
-
-    $page.url.searchParams.delete('config');
-    setTimeout(async () => await goto($page.url.href), 500);
   }
 
   /**

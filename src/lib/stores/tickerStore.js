@@ -44,7 +44,7 @@ function createStore() {
         // );
       };
     },
-    5 * 1000 // initial value
+    100 * 1000 // initial value
   );
 }
 
