@@ -133,13 +133,14 @@
     if (!canplay) return;
     if (hasPrivileges) {
       if (Math.round(video?.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
-      proxyEvent('video:put', { data: { id: video?.id, playhead }, show: true });
+      proxyEvent('video:save', { data: { id: video?.id, playhead } });
     } else {
       if (Math.round(joinData?.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
-      let associated = user?.videos
+      const associated = user?.videos
         .filter(/** @param {import('$lib/types').Video} v */ (v) => v?.id != video?.id)
         .map(/** @param {import('$lib/types').Video} v */ (v) => ({ id: v?.id }));
-      let data = {
+      const data = {
+        id: user?.id,
         videos: [
           {
             id: video?.id,
@@ -149,21 +150,8 @@
         ]
       };
 
-      const res = await saveUser(data);
-      if (res.success) users.put(res.data);
+      proxyEvent('user:save', { data });
     }
-  }
-
-  /**
-   * @param {any} data
-   */
-  async function saveUser(data) {
-    return await fetch(`/users/${user?.id}`, {
-      method: 'PUT',
-      body: JSON.stringify(data)
-    }).then(async (res) => {
-      if (res.ok) return await res.json();
-    });
   }
 </script>
 

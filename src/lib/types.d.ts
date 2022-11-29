@@ -4,8 +4,10 @@ declare global {
     'session:error': CustomEvent;
     'session:stop': CustomEvent;
     'session:extend': CustomEvent;
-    'video:put': CustomEvent;
+    'video:save': CustomEvent;
     'video:delete': CustomEvent;
+    'user:save': CustomEvent;
+    'user:delete': CustomEvent;
     'player:loadstart': CustomEvent;
     'player:emptied': CustomEvent;
     'player:canplay': CustomEvent;

@@ -68,7 +68,7 @@
   $: canSave = description !== video.description || title !== video.title;
 
   function save() {
-    proxyEvent('video:put', { data: { id: video.id, title, description }, show: true });
+    proxyEvent('video:save', { data: { id: video.id, title, description }, show: true });
     isEditMode = false;
     return false;
   }

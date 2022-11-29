@@ -37,7 +37,8 @@
     theme,
     ticker,
     urls,
-    videos
+    videos,
+    users
   } from '$lib/stores';
   import { Modal, SvgIcon } from '$lib/components';
   import { DoubleBounce } from 'svelte-loading-spinners';
@@ -263,8 +264,10 @@
     window.addEventListener('session:error', sessionErrorHandler);
     window.addEventListener('session:stop', sessionStopHandler);
     window.addEventListener('session:extend', sessionExtendHandler);
-    window.addEventListener('video:put', videoPutHandler);
+    window.addEventListener('video:save', videoSaveHandler);
     window.addEventListener('video:delete', videoDeleteHandler);
+    window.addEventListener('user:save', userSaveHandler);
+    window.addEventListener('user:delete', userDeleteHandler);
   }
 
   function initClasses() {
@@ -299,8 +302,10 @@
     window.removeEventListener('session:error', sessionErrorHandler);
     window.removeEventListener('session:stop', sessionStopHandler);
     window.removeEventListener('session:extend', sessionExtendHandler);
-    window.removeEventListener('video:put', videoPutHandler);
+    window.removeEventListener('video:save', videoSaveHandler);
     window.removeEventListener('video:delete', videoDeleteHandler);
+    window.removeEventListener('user:save', userSaveHandler);
+    window.removeEventListener('user:delete', userDeleteHandler);
   }
 
   function removeClasses() {
@@ -311,7 +316,7 @@
    * Saves video changes
    * @param {CustomEvent} param0
    */
-  async function videoPutHandler({ detail }) {
+  async function videoSaveHandler({ detail }) {
     const { data, show } = detail;
     const res = await fetch(`/videos/${data.id}`, {
       method: 'PUT',
@@ -320,7 +325,7 @@
       if (res.ok) return await res.json();
     });
 
-    res?.success && videos.put(data);
+    if (res?.success) videos.put(data);
 
     if (show) {
       let message = res.message || res.data.message;
@@ -351,6 +356,41 @@
     }
   }
 
+  /**
+   * Saves change to user data
+   * @param {CustomEvent} param0
+   */
+  async function userSaveHandler({ detail }) {
+    const { data } = detail;
+    const res = await fetch(`/users/${data.id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    }).then(async (res) => {
+      if (res.ok) return await res.json();
+    });
+
+    if (res.success) users.put(res.data);
+  }
+
+  /**
+   * Deletes a user
+   * @param {CustomEvent} param0
+   */
+  async function userDeleteHandler({ detail }) {
+    const { id } = detail;
+    const res = await fetch(`/users/${id}`, {
+      method: 'DELETE',
+      body: JSON.stringify(data)
+    }).then(async (res) => {
+      if (res.ok) return await res.json();
+    });
+
+    if (res?.success) {
+      // at this point associated videos are not updated yet
+      // however we fetch a fresh set on load when changing to video page
+      users.del(id);
+    }
+  }
   /**
    *
    * @param {string} msg

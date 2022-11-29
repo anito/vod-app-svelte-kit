@@ -12,7 +12,7 @@ export async function PUT({ request, params, locals }) {
   const id = params.slug;
   const token = locals.session.data.user?.jwt;
 
-  return await api.put(`users/${id}?token=${token}`, { data }).then(async (res) => {
+  return await api.put(`users/${id}?token=${token}`, { data }).then((res) => {
     return json(res);
   });
 }
@@ -22,7 +22,7 @@ export async function DELETE({ params, locals }) {
   const id = params.slug;
   const token = locals.session.data.user?.jwt;
 
-  return await api.del(`users/${id}?token=${token}`).then(async (res) => {
+  return await api.del(`users/${id}?token=${token}`).then((res) => {
     return json(res);
   });
 }

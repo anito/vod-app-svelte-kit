@@ -7,5 +7,5 @@ export async function load({ data }) {
   videosAll.update(data.videosAll);
   images.update(data.images);
 
-  return { user: data.user };
+  return {};
 }

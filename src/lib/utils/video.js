@@ -28,7 +28,7 @@ export function posterSelectedHandler(image_id, video_id) {
  */
 export function posterRemoveHandler(id) {
   if (id) {
-    proxyEvent('video:put', { data: { id, image_id: null, image: null }, show: true });
+    proxyEvent('video:save', { data: { id, image_id: null, image: null }, show: true });
   }
 }
 
@@ -39,6 +39,6 @@ export function posterRemoveHandler(id) {
  */
 function selectPoster(image_id, video_id) {
   if (video_id) {
-    proxyEvent('video:put', { data: { id: video_id, image_id, image: null }, show: true });
+    proxyEvent('video:save', { data: { id: video_id, image_id, image: null }, show: true });
   }
 }
