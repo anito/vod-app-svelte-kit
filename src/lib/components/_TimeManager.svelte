@@ -163,7 +163,7 @@
   }
 
   function openRemoveDialog(e, video) {
-    e.stopPropagation();
+    e.preventDefault();
     schedulingVideoId = video.id;
     if (timeRemaining(video)) {
       removeDialog.setOpen(true);
