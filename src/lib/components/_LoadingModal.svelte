@@ -71,8 +71,8 @@
   $: !disabled &&
     ((isNavigating) => {
       clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => root?.classList.toggle('navigating', !!isNavigating), wait);
-    })($navigating);
+      timeoutId = setTimeout(() => root?.classList.toggle('navigating', isNavigating), wait);
+    })(!!$navigating);
   $: _step1 = backgroundColor.slice(0, 7);
   $: bgColor = `${_step1}${(_step1.length === 7 && opacityToHex) || ''}`;
   $: opacityToHex = convert.dec2Hex(opacity, true);

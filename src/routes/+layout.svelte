@@ -6,7 +6,7 @@
   import * as api from '$lib/api';
   import { derived, writable } from 'svelte/store';
   import { afterNavigate, goto, invalidate, invalidateAll } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { navigating, page } from '$app/stores';
   import { getContext, onMount, setContext } from 'svelte';
   import isMobile from 'ismobilejs';
   import { Icons } from '$lib/components';
@@ -184,13 +184,13 @@
 
   /**
    *
-   * @param {string | any} hit
+   * @param {string | any} exclude
    */
-  const navigationCallback = (hit) => {
-    if (!hit) {
+  const navigationCallback = (exclude) => {
+    if (!exclude) {
       clearTimeout(navTimeoutId);
       navTimeoutId = setTimeout(() => {
-        proxyEvent('session:extend');
+        !$navigating && proxyEvent('session:extend');
       }, 1500);
     }
   };
@@ -672,7 +672,7 @@
     </Modal>
   </Modal>
 {/if}
-<LoadingModal backgroundColor="#ffffff" opacity={loaderBackgroundOpacity} wait={2000}>
+<LoadingModal backgroundColor="#ffffff" opacity={loaderBackgroundOpacity} wait={1000}>
   <DoubleBounce color={loaderColor} unit="px" size="200" />
 </LoadingModal>
 

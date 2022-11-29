@@ -9,7 +9,7 @@
 -----------------------------------------------
 */
 :root, ::before, ::after {
-  --nav-h: 3.75rem;
+  --nav-h: 4.35rem;
   --main-h: calc(100vh - var(--nav-h));
   --top-offset: 3.75rem;
   --sidebar-w: 18.35rem;
