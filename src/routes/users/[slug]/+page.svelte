@@ -158,7 +158,7 @@
     </div>
   </div>
   {#if tab === TABS[0]}
-    <TimeManager {selectionUserId} {user} />
+    <TimeManager {selectionUserId} />
   {/if}
   {#if tab === TABS[1]}
     <UserManager

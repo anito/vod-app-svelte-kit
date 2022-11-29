@@ -317,7 +317,7 @@
           timeout: 3600 * 1000, // 60min
           maxFilesize: 1024 // Megabyte
         },
-        events: { 'upload:successmultiple': uploadSuccessHandler }
+        events: { 'upload:success': uploadSuccessHandler }
       },
       {
         closeOnOuterClick: false,
@@ -338,6 +338,7 @@
   function uploadSuccessHandler({ detail }) {
     /** @type {any} */
     const { data, message, success } = { ...detail.responseText };
+    console.log(detail);
 
     configSnackbar(message);
     snackbar.open();
@@ -355,8 +356,7 @@
     open$editor(
       VideoEditorList,
       {
-        data: uploadedData,
-        user
+        data: uploadedData
       },
       {
         closeOnOuterClick: false

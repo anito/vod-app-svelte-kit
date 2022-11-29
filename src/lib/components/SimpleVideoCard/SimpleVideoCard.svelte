@@ -21,9 +21,10 @@
    */
   export let selectionUserId = null;
   /**
-   * @type {(arg0?: any, arg1?: URL) => any}
+   * @param {string} [id]
+   * @param {any} [url]
    */
-  export let anchorFn;
+  export let anchorFn = (id, url) => $page.url.href;
   export { className as class };
   export let disabled = false;
   export let threeLine = false;
@@ -171,7 +172,6 @@
     if (anchorFn) {
       return anchorFn(video?.id, url);
     }
-    return url.href;
   }
 </script>
 

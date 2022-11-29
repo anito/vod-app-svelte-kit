@@ -3,9 +3,9 @@
   import { page, navigating } from '$app/stores';
   import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
-  import { session, sitename, videos, users, videoEmitter } from '$lib/stores';
+  import { session, sitename, videos, users } from '$lib/stores';
   import { VideoPlayer } from '$lib/components/Video';
-  import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, info } from '$lib/utils';
+  import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, info, proxyEvent } from '$lib/utils';
   import { _ } from 'svelte-i18n';
 
   /** @type {import('./$types').PageData} */
@@ -100,10 +100,7 @@
     if (!canPlay) return;
     if (hasPrivileges) {
       if (Math.round(video.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
-      videoEmitter.dispatch({
-        method: 'put',
-        data: { id: video.id, playhead }
-      });
+      proxyEvent('video:put', { data: { id: video.id, playhead } });
     } else {
       if (Math.round(joinData.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
       let associated = user.videos

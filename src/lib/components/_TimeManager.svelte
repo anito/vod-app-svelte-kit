@@ -1,7 +1,4 @@
 <script>
-  // @ts-nocheck
-
-  import * as api from '$lib/api';
   import './_icon-button.scss';
   import './_date-range-picker.scss';
   import { page } from '$app/stores';
@@ -19,25 +16,14 @@
     Component,
     VideoEditorList
   } from '$lib/components';
-  import {
-    startOfDay,
-    endOfDay,
-    startOfWeek,
-    endOfWeek,
-    startOfYear,
-    endOfYear,
-    addYears,
-    subYears,
-    parseISO
-  } from 'date-fns';
+  import { endOfWeek, startOfYear, endOfYear, addYears, subYears, parseISO } from 'date-fns';
   import * as locales from 'date-fns/locale/index.js';
   import { toISODate, proxyEvent, sortByEndDate, sortByTitle } from '$lib/utils';
   import Dialog, { Title, Content, Actions, InitialFocus } from '@smui/dialog';
   import Radio from '@smui/radio';
   import { _, locale } from 'svelte-i18n';
+  import { fly } from 'svelte/transition';
 
-  /** @type {import('$lib/types').User} */
-  export let user;
   /** @type {string} */
   export let selectionUserId;
 
@@ -55,72 +41,120 @@
   const USERVIDEOSLIST = 'user-video-list';
   const NONUSERVIDEOSLIST = 'non-user-videos-list';
 
-  /** @type {Element} */
+  /**
+   * @type {Element}
+   */
   let root;
-  /** @type {string} */
+  /**
+   * @type {string | null}
+   */
   let schedulingVideoId;
+  /**
+   * @type {boolean}
+   */
+  let isopen = false;
+  /**
+   * @type {import("@smui/dialog").DialogComponentDev}
+   */
   let scheduleDialog;
+  /**
+   * @type {import("@smui/dialog").DialogComponentDev}
+   */
   let removeDialog;
+  /**
+   * @type {number | string}
+   */
   let timespanSelection = timespanSelections[0].value;
+  /**
+   * @type {number | string}
+   */
   let timespanSelected;
   let firstDayOfWeek = 'monday';
-  /** @type {import("@smui/snackbar").SnackbarComponentDev} */
+  /**
+   * @type {import("@smui/snackbar").SnackbarComponentDev}
+   */
   let snackbar;
+  /**
+   * @type {string}
+   */
   let message;
-  /** @type {string} */
+  /**
+   * @type {number}
+   */
   let selectedIndex;
-  /** @type {string} */
+  /**
+   * @type {number}
+   */
   let selectedNoneUserIndex;
-  /** @type {string} */
+  /**
+   * @type {string | null}
+   */
   let selectionVideoId;
-  /** @type {import('$lib/types').Video} */
+  /**
+   * @type {import('$lib/types').Video}
+   */
   let selectedVideo;
+  /**
+   * @type {any}
+   */
   let readout;
-  let schedulingVideo = '';
+  /**
+   * @type {import('$lib/types').Video}
+   */
+  let schedulingVideo;
+  /**
+   * @type {number}
+   */
   let expires;
+  /**
+   * @type {boolean}
+   */
   let isExpired;
+  /**
+   * @type {any}
+   */
   let itemsList = {};
 
   $: dateFormat = $locale.startsWith('de') ? 'dd. MMM yyyy' : 'yyyy-MM-dd';
-  $: (() => (selectionVideoId = null))(selectionUserId);
+  $: ((uid) => (selectionVideoId = null))(selectionUserId);
   $: currentUser = $users.find((usr) => usr.id === selectionUserId);
   $: name = currentUser?.name || '';
   $: role = currentUser?.role;
   $: jwt = currentUser?.jwt;
   $: active = currentUser?.active;
   $: joinData =
-    (selectedVideo = currentUser?.videos?.find((v) => v.id === selectionVideoId)) &&
-    selectedVideo._joinData;
+    (selectedVideo = currentUser?.videos?.find(
+      (/** @type {import('$lib/types').Video} */ v) => v.id === selectionVideoId
+    )) && selectedVideo._joinData;
   $: startDate = (joinData && joinData.start && parseISO(joinData.start)) || endOfWeek(new Date(0));
   $: endDate = (joinData && joinData.end && parseISO(joinData.end)) || endOfWeek(new Date(0));
   $: expires = currentUser?.expires;
   $: isExpired = (expires && expires * 1000 < +new Date().getTime()) || false;
-  $: isDatapickerOpen = ((id) => {
-    if (!root) return;
-    !id && root.classList.remove('datapicker--open');
-    return root.classList.contains('datapicker--open');
-  })(selectionVideoId);
+  $: console.log('datapickeropen', isopen);
+  $: console.log('selectionVideoId', selectionVideoId);
   $: schedulingVideo =
     schedulingVideoId && $videos?.find((video) => video.id === schedulingVideoId);
   $: schedulingVideoTitle = (schedulingVideo && schedulingVideo.title) || '';
   $: localeObject = ((l) => locales[l.slice(0, 2)])($locale);
   $: userIssues =
     ($infos?.has(selectionUserId) &&
-      $infos.get(selectionUserId).params.filter((info) => info.type === 'issue')) ||
+      $infos
+        .get(selectionUserId)
+        .params.filter((/** @type {{ type: string; }} */ info) => info.type === 'issue')) ||
     [];
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: hasCurrentPrivileges = role === ADMIN || role === SUPERUSER;
   $: displayedVideos = hasPrivileges
     ? currentUser?.videos.sort(sortByEndDate) || []
     : currentUser?.videos
-        .filter((v) => {
+        .filter((/** @type {import('$lib/types').Video} */ v) => {
           return (
             new Date(v._joinData.start) <= new Date() && new Date(v._joinData.end) >= new Date()
           );
         })
         .sort(sortByEndDate) || [];
   $: userVideos =
-    displayedVideos.map((video) => {
+    displayedVideos.map((/** @type {{ id: any; }} */ video) => {
       const _video = $videos.find((vid) => vid.id === video.id);
       if (_video) {
         const { image_id, title } = _video;
@@ -134,7 +168,7 @@
     : $videosAll
         .filter(
           (v) =>
-            !userVideos?.find((uv) => {
+            !userVideos?.find((/** @type {import('$lib/types').Video} */ uv) => {
               return (
                 v.id === uv.id && (!uv._joinData.end || new Date(uv._joinData.end) > new Date())
               );
@@ -153,17 +187,22 @@
     } else {
       setFab();
     }
-
-    return () => root.classList.remove('timemanager--open', 'datapicker--open');
   });
 
+  /**
+   * @param {import('$lib/types').Video} video
+   */
   function openScheduleDialog(video) {
     schedulingVideoId = video.id;
     scheduleDialog.setOpen(true);
   }
 
-  function openRemoveDialog(e, video) {
-    e.preventDefault();
+  /**
+   * @param {CustomEvent<any>} event
+   * @param {import('$lib/types').Video} video
+   */
+  function openRemoveDialog(event, video) {
+    event.preventDefault();
     schedulingVideoId = video.id;
     if (timeRemaining(video)) {
       removeDialog.setOpen(true);
@@ -172,20 +211,26 @@
     }
   }
 
-  async function removeDialogCloseHandler(e) {
-    if (e.detail.action === 'approved') {
+  /**
+   * @param {CustomEvent} event
+   */
+  async function removeDialogCloseHandler({ detail }) {
+    if (detail.action === 'approved') {
       removeVideo();
     }
     schedulingVideoId = null;
   }
 
-  async function scheduleDialogCloseHandler(e) {
-    if (e.detail.action === 'accept') {
+  /**
+   * @param {CustomEvent} event
+   */
+  async function scheduleDialogCloseHandler(event) {
+    if (event.detail.action === 'accept') {
       let start = null;
       let end = null;
 
       timespanSelected = timespanSelection;
-      if (timespanSelected !== 'custom') {
+      if (typeof timespanSelected === 'number') {
         let now = new Date();
         let time = new Date(now.getTime() + timespanSelected * 24 * 60 * 60 * 1000);
         start = toISODate(now);
@@ -197,13 +242,20 @@
     }
   }
 
-  function videoSelectedHandler({ detail }) {
+  /**
+   * @param {CustomEvent} event
+   */
+  async function videoSelectedHandler({ detail }) {
     const { video } = detail;
     selectionVideoId = video?.id;
     scrollIntoView();
   }
 
+  /**
+   * @param {CustomEvent} event
+   */
   function onApplyHandler({ detail }) {
+    /** @type {any} */
     const { startDate, endDate } = { ...detail };
 
     let isoStart = toISODate(startDate);
@@ -212,9 +264,18 @@
     saveTime(selectionVideoId, isoStart, isoEnd);
   }
 
+  /**
+   * @param {string | null} id
+   * @param {string | null} start
+   * @param {string | null} end
+   */
   async function saveTime(id, start, end) {
-    const associated = userVideos.filter((v) => v.id != id).map((v) => ({ id: v.id }));
-    const currentVideo = userVideos.find((v) => v.id == id);
+    const associated = userVideos
+      .filter((/** @type {import('$lib/types').Video} */ v) => v.id != id)
+      .map((/** @type {import('$lib/types').Video} */ v) => ({ id: v.id }));
+    const currentVideo = userVideos.find(
+      (/** @type {import('$lib/types').Video} */ v) => v.id == id
+    );
     const joinData = currentVideo?._joinData || {};
 
     const data = {
@@ -227,31 +288,38 @@
       ]
     };
 
-    await saveUser(data).then((res) => {
-      let idx;
+    const res = await saveUser(data);
+    console.log(res);
 
-      if (res?.success) {
-        handleSuccess(res, $_('text.time-slot-updated'));
-        setTimeout(() => {
-          idx = userVideos.findIndex((v) => v.id == selectionVideoId);
-          idx !== -1 && itemsList[USERVIDEOSLIST].focusItemAtIndex(idx);
-        }, 500);
-      } else {
-        startDate = startDate;
-        handleError(res);
-      }
-    });
+    let idx;
+    if (res?.success) {
+      handleSuccess(res, $_('text.time-slot-updated'));
+      setTimeout(() => {
+        idx = userVideos.findIndex(
+          (/** @type {import('$lib/types').Video} */ v) => v.id == selectionVideoId
+        );
+        idx !== -1 && itemsList[USERVIDEOSLIST].focusItemAtIndex(idx);
+      }, 500);
+    } else {
+      startDate = startDate;
+      handleError(res);
+    }
   }
 
+  /**
+   * @param {import('$lib/types').Video} video
+   */
   function timeRemaining(video) {
     if (!video._joinData?.end) return 0;
-    let end = new Date(video._joinData.end).toISOString();
-    let now = new Date().toISOString();
-    return Math.max(0, new Date(end) - new Date(now));
+    const end = new Date(video._joinData.end).getTime();
+    const now = new Date().getTime();
+    return new Date(Math.max(0, end - now));
   }
 
   async function removeVideo() {
-    const idx = userVideos.findIndex((itm) => itm.id === schedulingVideoId);
+    const idx = userVideos.findIndex(
+      (/** @type {{ id: string | null; }} */ itm) => itm.id === schedulingVideoId
+    );
     const _userVideos = [...userVideos.slice(0, idx), ...userVideos.slice(idx + 1)];
     const ids = _userVideos.map((v) => v.id);
 
@@ -266,13 +334,22 @@
     }
   }
 
-  function saveUser(data) {
-    return api.put(`users/${selectionUserId}?locale=${$locale}`, {
-      data,
-      token: $session.user?.jwt
+  /**
+   * @param {{ videos: import('$lib/types').Video[] | { _ids: any[]; }; }} data
+   */
+  async function saveUser(data) {
+    return await fetch(`/users/${$page.params.slug}`, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    }).then(async (res) => {
+      if (res.ok) return await res.json();
     });
   }
 
+  /**
+   * @param {{ data: import("$lib/types").User<Record<any, any>>; message: any; }} res
+   * @param {string} msg
+   */
   function handleSuccess(res, msg) {
     snackbar.isOpen() && snackbar.close();
     users.put(res.data);
@@ -282,6 +359,9 @@
     snackbar?.open();
   }
 
+  /**
+   * @param {{ message: any; data: { message: any; code: any; }; statusText: any; status: any; }} res
+   */
   function handleError(res) {
     snackbar.isOpen() && snackbar.close();
 
@@ -299,23 +379,39 @@
     }
   }
 
-  function onDateRangeSelected(e) {}
+  /**
+   * @param {Event} event
+   */
+  function onDateRangeSelected(event) {}
 
-  function toggleDataPicker(id, open) {
-    selectionVideoId = id && root.classList.toggle('datapicker--open', open);
+  /**
+   * @param {string | null} id
+   */
+  function toggleDataPicker(id) {
+    if (selectionVideoId !== id) {
+      console.log('not current id');
+      selectionVideoId = id;
+      isopen = true;
+    } else {
+      console.log('already current id');
+      isopen = !isopen;
+    }
   }
 
+  // @ts-ignore
   function receiveListMethods({ focusItemAtIndex, items, listName }) {
     lists.add(listName);
     itemsList[listName] = { items, focusItemAtIndex };
   }
 
+  /**
+   * @param {import('$lib/types').Video} video
+   */
   function editVideo(video) {
     open(
       VideoEditorList,
       {
-        data: [video],
-        user
+        data: [video]
       },
       {
         closeOnOuterClick: false
@@ -327,14 +423,16 @@
     const options = { block: 'nearest', behavior: 'smooth' };
     setTimeout(() => {
       lists.forEach((name) => {
-        let item = itemsList[name].items.find((item) => item.selected);
+        let item = itemsList[name].items.find(
+          (/** @type {{ selected: any; }} */ item) => item.selected
+        );
         item?.element.scrollIntoView(options);
       });
     }, 100);
   }
 </script>
 
-<div class="main-grid">
+<div class="main-grid datapicker" class:isopen>
   <div
     class="grid-item user-videos"
     class:no-user-selected={!currentUser}
@@ -369,12 +467,7 @@
                   isUserVideo
                   threeLine
                   class="user-video video-list-item"
-                  on:datapicker={(e) =>
-                    toggleDataPicker(
-                      e.detail.id,
-                      selectionVideoId != e.detail.id ||
-                        !root.classList.contains('datapicker--open')
-                    )}
+                  on:datapicker={({ detail }) => toggleDataPicker(detail.id)}
                   on:video:selected={videoSelectedHandler}
                   selected={selectionVideoId === video.id}
                   emptyPoster="/empty-poster.jpg"
@@ -388,16 +481,13 @@
                     <Button
                       class="close-action-button button-shaped-round flex self-center"
                       variant="unelevated"
-                      on:click={() =>
-                        toggleDataPicker(
-                          video.id,
-                          selectionVideoId != video.id ||
-                            !root.classList.contains('datapicker--open')
-                        )}
+                      on:click={() => toggleDataPicker(video.id)}
                     >
                       <Icon class="material-icons">
-                        {isDatapickerOpen && selectionVideoId == video.id
-                          ? 'close'
+                        {isopen
+                          ? video.id === selectionVideoId
+                            ? 'close'
+                            : 'insert_invitation'
                           : 'insert_invitation'}
                       </Icon>
                       <Label>{$_('text.scheduler')}</Label>
@@ -437,85 +527,77 @@
       {/if}
     </Component>
   </div>
-  {#if !isDatapickerOpen}
-    <div class="grid-item videos" class:no-videos={!noneUserVideos.length}>
-      <Component variant="sm">
-        <div slot="header">
-          <Header mdc h="5">
-            <div class="uppercase" style="font-weight: 400; text-align: right;">
-              {$_('text.more-classes')}
-            </div></Header
-          >
-        </div>
-        <List
-          class="video-list mb-24"
-          on:SMUIList:mount={(e) =>
-            receiveListMethods({ ...e.detail, listName: NONUSERVIDEOSLIST })}
-          twoLine
-          avatarList
-          singleSelection
-          bind:selectedIndex={selectedNoneUserIndex}
+  <div class="grid-item videos" class:no-videos={!noneUserVideos.length}>
+    <Component variant="sm">
+      <div slot="header">
+        <Header mdc h="5">
+          <div class="uppercase" style="font-weight: 400; text-align: right;">
+            {$_('text.more-classes')}
+          </div></Header
         >
-          {#if noneUserVideos.length}
-            {#each noneUserVideos as video (video.id)}
-              <SimpleVideoCard
-                on:video:selected={videoSelectedHandler}
-                let:unmanagable
-                class="video"
-                disabled={(hasCurrentPrivileges || hasPrivileges) && isUnmanagableNoneUserList}
-                selected={selectionVideoId === video.id}
-                emptyPoster="/empty-poster.jpg"
-                {video}
-                {selectionUserId}
-              >
-                {#if hasPrivileges}
-                  <IconButton
-                    class="self-center mr-2"
-                    color="primary"
-                    style=""
-                    on:click={() => editVideo(video)}
-                  >
-                    <Icon class="material-icons">edit</Icon>
-                  </IconButton>
-                  <IconButton
-                    class="self-center mr-2"
-                    color="primary"
-                    style=""
-                    href={`/videos/${video.id}`}
-                  >
-                    <Icon class="material-icons">smart_display</Icon>
-                  </IconButton>
-                  <IconButton
-                    disabled={hasCurrentPrivileges || unmanagable || video.teaser}
-                    class="add-action-button add primary"
-                    on:click={() => openScheduleDialog(video)}
-                  >
-                    <Icon class="material-icons">add_circle</Icon>
-                  </IconButton>
-                {/if}
-              </SimpleVideoCard>
-            {/each}
-          {:else}
-            <li class="flex flex-1 flex-col self-center text-center">
-              <div class="m-5">{$_('text.no-videos-available')}</div>
-            </li>
-          {/if}
-        </List>
-      </Component>
-    </div>
-  {:else}
-    <div class="grid-item time">
+      </div>
+      <List
+        class="video-list mb-24"
+        on:SMUIList:mount={(e) => receiveListMethods({ ...e.detail, listName: NONUSERVIDEOSLIST })}
+        twoLine
+        avatarList
+        singleSelection
+        bind:selectedIndex={selectedNoneUserIndex}
+      >
+        {#if noneUserVideos.length}
+          {#each noneUserVideos as video (video.id)}
+            <SimpleVideoCard
+              on:video:selected={videoSelectedHandler}
+              let:unmanagable
+              class="video"
+              disabled={(hasCurrentPrivileges || hasPrivileges) && isUnmanagableNoneUserList}
+              selected={selectionVideoId === video.id}
+              emptyPoster="/empty-poster.jpg"
+              {video}
+              {selectionUserId}
+            >
+              {#if hasPrivileges}
+                <IconButton
+                  class="self-center mr-2"
+                  color="primary"
+                  style=""
+                  on:click={() => editVideo(video)}
+                >
+                  <Icon class="material-icons">edit</Icon>
+                </IconButton>
+                <IconButton
+                  class="self-center mr-2"
+                  color="primary"
+                  style=""
+                  href={`/videos/${video.id}`}
+                >
+                  <Icon class="material-icons">smart_display</Icon>
+                </IconButton>
+                <IconButton
+                  disabled={hasCurrentPrivileges || unmanagable || video.teaser}
+                  class="add-action-button add primary"
+                  on:click={() => openScheduleDialog(video)}
+                >
+                  <Icon class="material-icons">add_circle</Icon>
+                </IconButton>
+              {/if}
+            </SimpleVideoCard>
+          {/each}
+        {:else}
+          <li class="flex flex-1 flex-col self-center text-center">
+            <div class="m-5">{$_('text.no-videos-available')}</div>
+          </li>
+        {/if}
+      </List>
+    </Component>
+  </div>
+  {#if isopen}
+    <div in:fly={{ opacity: 0 }} out:fly={{ opacity: 0 }} class="grid-item time">
       <Component variant="sm">
         <div slot="header">
           <div class="">
             <Header mdc h="5">{readout}</Header>
-            <button
-              on:click={() => toggleDataPicker(selectionVideoId, false)}
-              class="button-close"
-              variant="unelevated"
-            >
-              <Icon class="material-icons" style="vertical-align: middle;">close</Icon>
-            </button>
+            <button on:click={() => toggleDataPicker(selectionVideoId)} class="button-close" />
           </div>
         </div>
         <DateRangePicker
@@ -650,6 +732,7 @@
     overflow: auto;
   }
   .time {
+    position: relative;
     background: #fff;
   }
   .no-user-selected {
@@ -661,8 +744,7 @@
     width: 100%;
   }
   .button-close {
-    position: absolute;
-    right: 20px;
+    right: 30px;
     top: 50%;
     transform: translate(50%, -50%);
   }

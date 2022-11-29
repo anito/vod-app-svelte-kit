@@ -3,7 +3,6 @@
   import '$lib/components/_button.scss';
   import '$lib/components/_notched_outline.scss';
   import '$lib/components/_colored_snackbar.scss';
-  import * as api from '$lib/api';
   import { derived, writable } from 'svelte/store';
   import { afterNavigate, beforeNavigate, goto, invalidate, invalidateAll } from '$app/navigation';
   import { navigating, page } from '$app/stores';
@@ -38,8 +37,7 @@
     theme,
     ticker,
     urls,
-    videos,
-    videoEmitter
+    videos
   } from '$lib/stores';
   import { Modal, SvgIcon } from '$lib/components';
   import { DoubleBounce } from 'svelte-loading-spinners';
@@ -55,7 +53,6 @@
   import { svg_manifest } from '$lib/svg_manifest';
   import { _, locale } from 'svelte-i18n';
   import { enhance } from '$app/forms';
-  import { browser } from '$app/environment';
 
   /** @type {import('./$types').LayoutData} */
   export let data;
@@ -99,10 +96,6 @@
    * @type {string}
    */
   let loggedInButtonTextSecondLine;
-  /**
-   * @type {import("svelte/store").Unsubscriber}
-   */
-  let unsubscribeVideoEmitter;
   /**
    * @type {string}
    */
@@ -164,15 +157,6 @@
     }
   });
 
-  unsubscribeVideoEmitter = videoEmitter.subscribe((t) => {
-    if ('put' === t.method) {
-      put(t);
-    }
-    if ('del' === t.method) {
-      del(t);
-    }
-  });
-
   setContext('mounted', {
     mounted
   });
@@ -212,7 +196,7 @@
     }
   });
 
-  $: printDiff(data);
+  // $: printDiff(data);
   $: settings.update(data.config);
   $: token = $session.user?.jwt;
   $: person = svg(svg_manifest.person, $theme.primary);
@@ -248,7 +232,6 @@
 
     return () => {
       removeListener();
-      removeSubscribers();
       removeClasses();
     };
   });
@@ -280,6 +263,8 @@
     window.addEventListener('session:error', sessionErrorHandler);
     window.addEventListener('session:stop', sessionStopHandler);
     window.addEventListener('session:extend', sessionExtendHandler);
+    window.addEventListener('video:put', videoPutHandler);
+    window.addEventListener('video:delete', videoDeleteHandler);
   }
 
   function initClasses() {
@@ -314,10 +299,8 @@
     window.removeEventListener('session:error', sessionErrorHandler);
     window.removeEventListener('session:stop', sessionStopHandler);
     window.removeEventListener('session:extend', sessionExtendHandler);
-  }
-
-  function removeSubscribers() {
-    unsubscribeVideoEmitter();
+    window.removeEventListener('video:put', videoPutHandler);
+    window.removeEventListener('video:delete', videoDeleteHandler);
   }
 
   function removeClasses() {
@@ -326,37 +309,46 @@
 
   /**
    * Saves video changes
-   * @param {import('$lib/types').VideoEmitter} VideoEmitterData
+   * @param {CustomEvent} param0
    */
-  async function put({ data, show }) {
-    await api.put(`videos/${data.id}`, { data, token: $session.user?.jwt }).then((res) => {
-      res?.success && videos.put(data);
-
-      if (show) {
-        let message = res.message || res.data.message;
-        configSnackbar(message);
-        snackbar?.open();
-      }
+  async function videoPutHandler({ detail }) {
+    const { data, show } = detail;
+    const res = await fetch(`/videos/${data.id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    }).then(async (res) => {
+      if (res.ok) return await res.json();
     });
+
+    res?.success && videos.put(data);
+
+    if (show) {
+      let message = res.message || res.data.message;
+      configSnackbar(message);
+      snackbar?.open();
+    }
   }
 
   /**
    * Deletes a video
-   * @param {import('$lib/types').VideoEmitter} VideoEmitterData
+   * @param {CustomEvent} param0
    */
-  async function del({ data, show }) {
-    await api.del(`videos/${data.id}`, { token }).then((res) => {
-      if (res?.success) {
-        urls.del(data.id);
-        videos.del(data.id);
-      }
-
-      if (show) {
-        let message = res.message || res.data.message;
-        configSnackbar(message);
-        snackbar?.open();
-      }
+  async function videoDeleteHandler({ detail }) {
+    const { data, show } = detail;
+    const res = await fetch(`/videos/${data.id}`, { method: 'DELETE' }).then(async (res) => {
+      if (res.ok) return await res.json();
     });
+
+    if (res?.success) {
+      urls.del(data.id);
+      videos.del(data.id);
+    }
+
+    if (show) {
+      let message = res.message || res.data.message;
+      configSnackbar(message);
+      snackbar?.open();
+    }
   }
 
   /**

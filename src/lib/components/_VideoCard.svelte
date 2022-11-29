@@ -1,12 +1,11 @@
 <script>
   import './_button.scss';
   import './_menu-surface.scss';
-  import { goto } from '$app/navigation';
   import { getContext, createEventDispatcher } from 'svelte';
   import { fly } from 'svelte/transition';
-  import { currentVideo, images, session, videoEmitter } from '$lib/stores';
+  import { currentVideo, images, session } from '$lib/stores';
   import { getMedia } from '$lib/utils/media';
-  import { ADMIN, SUPERUSER } from '$lib/utils';
+  import { ADMIN, proxyEvent, SUPERUSER } from '$lib/utils';
   import { VideoMedia, MediaUploader } from '$lib/components';
   import Card, { Content, PrimaryAction, Actions, ActionButtons, ActionIcons } from '@smui/card';
   import Button, { Label } from '@smui/button';
@@ -19,8 +18,6 @@
 
   /** @type {import('$lib/types').Video} */
   export let video;
-  /** @type {import('$lib/types').User} */
-  export let user;
   export { className as class };
   export let key = 'default-modal';
 
@@ -71,12 +68,7 @@
   $: canSave = description !== video.description || title !== video.title;
 
   function save() {
-    const data = { id: video.id, title, description };
-    videoEmitter.dispatch({
-      method: 'put',
-      data,
-      show: true
-    });
+    proxyEvent('video:put', { data: { id: video.id, title, description }, show: true });
     isEditMode = false;
     return false;
   }
@@ -96,11 +88,7 @@
   }
 
   function del() {
-    videoEmitter.dispatch({
-      method: 'del',
-      data: { id: video.id },
-      show: true
-    });
+    proxyEvent('video:delete', { data: { id: video.id }, show: true });
   }
 
   /**
@@ -161,7 +149,7 @@
 
 <Card class="card {className}">
   <PrimaryAction onclick={() => $currentVideo.set(video)}>
-    <VideoMedia {user} {video} bind:title bind:description {isEditMode} />
+    <VideoMedia {video} bind:title bind:description {isEditMode} />
     <Content class="mdc-typography--body2">
       <div class="wrapper flex flex-row justify-between">
         <div class="flex flex-col" style="flex-basis: 50%; max-width: 50%">

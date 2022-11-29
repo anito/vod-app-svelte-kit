@@ -10,8 +10,6 @@
 
   /** @type {import('$lib/types').Video[]} */
   export let data = [];
-  /** @type {import('$lib/types').User} */
-  export let user;
 
   $: storeData = $videos.filter(
     (video) => video.id === data.find((item) => item.id === video.id)?.id
@@ -31,7 +29,6 @@
           posterSelectedHandler(event.detail, $derivedCurrentVideo.id)}
         on:Video:removePoster={() => posterRemoveHandler($derivedCurrentVideo.id)}
         {video}
-        {user}
         {key}
       />
     {/each}

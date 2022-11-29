@@ -22,7 +22,6 @@ export { default as urls } from './urlStore';
 export { default as users } from './userStore';
 export { default as videos } from './videoStore';
 export { default as videosAll } from './videoAllStore';
-export { default as videoEmitter } from './videoEmitter';
 
 export { default as infos } from './infoStore'; // derived
 export { default as derivedCurrentVideo } from './derivedCurrentVideoStore'; // derived

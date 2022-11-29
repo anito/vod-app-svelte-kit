@@ -4,6 +4,8 @@ declare global {
     'session:error': CustomEvent;
     'session:stop': CustomEvent;
     'session:extend': CustomEvent;
+    'video:put': CustomEvent;
+    'video:delete': CustomEvent;
     'player:loadstart': CustomEvent;
     'player:emptied': CustomEvent;
     'player:canplay': CustomEvent;
@@ -68,6 +70,7 @@ export interface User<UserRepoType = Record<any, any>> {
   protected: boolean
   active: boolean
   group_id: string
+  message?: string
   avatar: Avatar[] | any;
   videos: Video[] | any;
   groups: Group[] | any;
@@ -169,12 +172,6 @@ export interface Session<SessionType = Record<string, any>> {
   code: number
   locale?: string
   _expires: Date | any
-}
-
-export interface VideoEmitter<VideoEmitterType = Record<string, any>> {
-  method: string
-  data: Video | any
-  show: boolean
 }
 
 export interface Sent<SentType = Record<string, any>> {

@@ -75,7 +75,7 @@
             timeout: 3600 * 1000, // 60min
             maxFilesize: 1024 // Megabyte
           },
-          events: { 'upload:successmultiple': uploadSuccessHandler }
+          events: { 'upload:success': uploadSuccessHandler }
         },
         {
           closeOnOuterClick: false,
@@ -115,8 +115,7 @@
     open$editor(
       VideoEditorList,
       {
-        data: uploadedData,
-        user
+        data: uploadedData
       },
       {},
       {}
@@ -134,7 +133,6 @@
           on:Video:selectedPoster={(event) => posterSelectedHandler(event.detail, video.id)}
           on:Video:removePoster={() => posterRemoveHandler(video.id)}
           {video}
-          {user}
         />
       {/each}
     </div>

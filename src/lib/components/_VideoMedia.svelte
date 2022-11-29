@@ -1,37 +1,53 @@
 <script>
-  import * as api from '$lib/api';
   import { onDestroy, onMount } from 'svelte';
   import { Media, MediaContent } from '@smui/card';
   import Textfield, { Textarea } from '@smui/textfield';
   import { VideoPlayer } from '$lib/components/Video';
-  import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, info } from '$lib/utils';
-  import { session, settings, users, videoEmitter } from '$lib/stores';
+  import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, info, proxyEvent } from '$lib/utils';
+  import { session, users } from '$lib/stores';
   import { _ } from 'svelte-i18n';
+  import { page } from '$app/stores';
 
-  /** @type {import('$lib/types').Video} */
+  /**
+   * @type {import('$lib/types').Video}
+   */
   export let video;
-  /** @type {import('$lib/types').User} */
-  export let user;
-  /** @type {string | undefined} */
+  /**
+   * @type {string | undefined}
+   */
   export let emptyPoster = '/empty-poster.jpg';
+  /**
+   * @type {string}
+   */
   export let title = '';
+  /**
+   * @type {string}
+   */
   export let description = '';
+  /**
+   * @type {boolean}
+   */
   export let isEditMode = false;
 
-  /** @type {string | undefined} */
+  /**
+   * @type {string | undefined}
+   */
   let src;
-  /** @type {number} */
+  /**
+   * @type {number}
+   */
   let playhead;
-  /** @type {ReturnType<typeof setTimeout>} */
+  /**
+   * @type {ReturnType<typeof setTimeout>}
+   */
   let timeoutId;
   let canPlay = false;
   let paused = true;
   let poster = emptyPoster;
 
-  $: user && (canPlay = false);
+  $: $session.user && (canPlay = false);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
-  $: token = user?.jwt;
-  $: joinData = user?.videos.find(
+  $: joinData = $session.user?.videos?.find(
     /** @param {import('$lib/types').Video} v */ (v) => v.id == video.id
   )?._joinData;
   $: (video.image_id &&
@@ -61,50 +77,50 @@
   }
 
   /**
-   * @param {CustomEvent} ev
+   * @param {CustomEvent} event
    */
-  function handleEmptied(ev) {
+  function handleEmptied(event) {
     info(
       '%c EMPTIED   %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      ev.detail.title
+      event.detail.title
     );
   }
 
   /**
-   * @param {CustomEvent} ev
+   * @param {CustomEvent} event
    */
-  function handleLoadStart(ev) {
+  function handleLoadStart(event) {
     info(
       '%c LOADSTART %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      ev.detail.title
+      event.detail.title
     );
   }
 
   /**
-   * @param {CustomEvent} ev
+   * @param {CustomEvent} event
    */
-  function handleLoadedData(ev) {
+  function handleLoadedData(event) {
     info(
       '%c LOADEDDATA%c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      ev.detail.title
+      event.detail.title
     );
   }
 
   /**
-   * @param {CustomEvent} ev
+   * @param {CustomEvent} event
    */
-  function handleAborted(ev) {
+  function handleAborted(event) {
     info(
       '%c ABORTED   %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      ev.detail.title
+      event.detail.title
     );
     paused = true;
     canPlay = false;
@@ -114,13 +130,10 @@
     if (!canPlay) return;
     if (hasPrivileges) {
       if (Math.round(video.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
-      videoEmitter.dispatch({
-        method: 'put',
-        data: { id: video.id, playhead }
-      });
+      proxyEvent('video:put', { data: { id: video.id, playhead }, show: true });
     } else {
       if (Math.round(joinData.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
-      let associated = user.videos
+      let associated = $session.user.videos
         .filter(/** @param {import('$lib/types').Video} v */ (v) => v.id != video.id)
         .map(/** @param {import('$lib/types').Video} v */ (v) => ({ id: v.id }));
       let data = {
@@ -133,7 +146,8 @@
         ]
       };
 
-      saveUser(data);
+      const res = await saveUser(data);
+      if (res.success) users.put(res.data);
     }
   }
 
@@ -141,8 +155,11 @@
    * @param {any} data
    */
   async function saveUser(data) {
-    await api.put(`users/${user.id}`, { data, token }).then((res) => {
-      res.success && users.put(res.data);
+    return await fetch(`/users/${$page.params.slug}`, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    }).then(async (res) => {
+      if (res.ok) return await res.json();
     });
   }
 </script>
@@ -174,7 +191,7 @@
       </div>
     {/if}
     <div class="media-player player-container flex flex-1 justify-center bg-black">
-      {#if user}
+      {#if $session.user}
         <VideoPlayer
           class="video-player flex flex-1"
           bind:paused
