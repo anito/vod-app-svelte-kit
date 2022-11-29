@@ -233,7 +233,7 @@
     "avatar": "Avatar",
     "video-posters": "Posters",
     "more": "More...",
-    "config-reloaded": "Configuration reloaded",
+    "loading-configuration": "Reloading configuration",
     "reload-config": "Reload configuration",
     "share": "Share"
   },

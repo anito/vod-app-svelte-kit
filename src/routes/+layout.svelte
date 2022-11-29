@@ -5,7 +5,7 @@
   import '$lib/components/_colored_snackbar.scss';
   import * as api from '$lib/api';
   import { derived, writable } from 'svelte/store';
-  import { afterNavigate, goto, invalidate, invalidateAll } from '$app/navigation';
+  import { afterNavigate, beforeNavigate, goto, invalidate, invalidateAll } from '$app/navigation';
   import { navigating, page } from '$app/stores';
   import { getContext, onMount, setContext } from 'svelte';
   import isMobile from 'ismobilejs';
@@ -204,6 +204,13 @@
     },
     navigationCallback
   );
+
+  beforeNavigate(({ to }) => {
+    if (to?.url.searchParams.get('config') === 'load') {
+      configSnackbar($_('text.loading-configuration'));
+      snackbar?.open();
+    }
+  });
 
   $: printDiff(data);
   $: settings.update(data.config);
