@@ -1,16 +1,25 @@
-// @ts-nocheck
 import { dev } from '$app/environment';
 import { locale as i18n } from 'svelte-i18n';
+import { bodyReader } from '$lib/utils';
 
+/**
+ * @type {string | null | undefined}
+ */
 let locale;
 i18n.subscribe((val) => (locale = val));
 
 export const base = dev ? `https://vod.mbp/v1` : `https://vod.webpremiere.de/v1`;
 
 async function send(atts = {}) {
+  /**
+   * @type {any}
+   */
   const { method, path, token, data } = { ...atts };
   let url = path.startsWith('http') ? path : `${base}/${path}`;
 
+  /**
+   * @type {any}
+   */
   const opts = {
     method,
     headers: {
@@ -30,31 +39,53 @@ async function send(atts = {}) {
   }
 
   return fetch(`${url}`, opts)
-    .then((res) => res.text())
+    .then(async (res) => {
+      if (opts.useReader) {
+        return bodyReader(res);
+      } else {
+        return res.text();
+      }
+    })
     .then((res) => {
       try {
         return JSON.parse(res);
       } catch (err) {
-        console.log('API FETCH ERROR #1', err);
+        console.log('API PARSE ERROR', err);
       }
     })
     .catch((err) => {
-      console.log('API FETCH ERROR #2', err);
+      console.log('API FETCH ERROR', err);
     });
 }
 
+/**
+ * @param {string} path
+ * @param {{} | undefined} [options]
+ */
 export function get(path, options) {
   return send({ method: 'GET', path, ...options });
 }
 
+/**
+ * @param {string} path
+ * @param {{} | undefined} [options]
+ */
 export function del(path, options) {
   return send({ method: 'DELETE', path, ...options });
 }
 
+/**
+ * @param {string} path
+ * @param {{} | undefined} options
+ */
 export function post(path, options) {
   return send({ method: 'POST', path, ...options });
 }
 
+/**
+ * @param {string} path
+ * @param {{} | undefined} options
+ */
 export function put(path, options) {
   return send({ method: 'PUT', path, ...options });
 }

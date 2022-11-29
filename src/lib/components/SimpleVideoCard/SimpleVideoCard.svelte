@@ -29,7 +29,9 @@
   export let threeLine = false;
   export let selected = false;
   export let isUserVideo = false;
-  export let emptyPoster = 'https://via.placeholder.com/40x40.png?text=';
+  export let emptyPoster = '';
+
+  const placeholderDotCom = 'https://via.placeholder.com/40x40.png?text=';
 
   let dispatch = createEventDispatcher();
   let className = '';
@@ -139,7 +141,7 @@
   async function getPosterUrl(id) {
     if (id) {
       // options.square: 0 => intelligent resize (keep ratio) | 1 => force resize | 2 => no resize (original)
-      const res = await getMedia('IMAGE', id, user.jwt, {
+      const res = await getMedia('IMAGE', id, user?.jwt, {
         width: 40,
         height: 40,
         square: 1
@@ -149,17 +151,15 @@
   }
 
   function fromTitle() {
-    let _src;
     if (video.title) {
       let initials = video.title
         .split(' ')
         .map((val) => val.substring(0, 1))
         .join('');
-      _src = `${emptyPoster}${initials}`;
+      return `${placeholderDotCom}${initials}`;
     } else {
-      _src = emptyPoster;
+      return emptyPoster;
     }
-    return _src;
   }
 
   function focusHandler() {}

@@ -1,17 +1,21 @@
 <script>
-  // @ts-nocheck
-
   import { setContext } from 'svelte';
   import { writable } from 'svelte/store';
 
+  /**
+   * @type {string}
+   */
   export let segment;
   export let page;
+  /**
+   * @type {any}
+   */
   export let logo;
   export let home = 'Home';
   export let home_title = 'Homepage';
 
   const showHome = true;
-  const current = writable(null);
+  const current = writable();
   setContext('nav', current);
 
   $: $current = segment;
@@ -24,6 +28,9 @@
     open = false;
   });
 
+  /**
+   * @param {TouchEvent} event
+   */
   function intercept_touchstart(event) {
     if (!open) {
       event.preventDefault();
@@ -103,6 +110,17 @@
     transform: translate(0, calc(-100% - 1rem));
     transition: transform 0.2s;
     color: inherit;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 3px;
+    background: var(--primary);
+    z-index: 1;
   }
 
   header.visible {

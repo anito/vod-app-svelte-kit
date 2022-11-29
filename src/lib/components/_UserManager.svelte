@@ -38,47 +38,79 @@
   const privilegedActions = [EDIT, PASS, DEL];
   const userActions = [EDIT, PASS];
 
-  /**  @type{string | null} */
+  /**
+   * @type{string | null}
+   */
   export let selectionUserId;
-  /**  @type{string | null} */
+  /**
+   * @type{string | null}
+   */
   export let selectedMode = EDIT;
 
-  /**  @type{number} */
+  /**
+   * @type{number}
+   */
   let code;
-  /** @type {Element}*/
+  /**
+   * @type {Element}
+   */
   let root;
-  /**  @type{boolean} */
+  /**
+   * @type{boolean}
+   */
   let invalidEmail = false;
-  /**  @type{string} */
+  /**
+   * @type{string}
+   */
   let password = '';
-  /**  @type{string} */
+  /**
+   * @type{string}
+   */
   let repeatedPassword = '';
-  /** @type {import("@smui/snackbar").SnackbarComponentDev} */
+  /**
+   * @type {import("@smui/snackbar").SnackbarComponentDev}
+   */
   let snackbar;
-  /**  @type{string} */
+  /**
+   * @type{string}
+   */
   let message;
 
-  /** @type {import('@smui/menu').MenuComponentDev} */
+  /**
+   * @type {import('@smui/menu').MenuComponentDev}
+   */
   let avatarMenu;
   let avatarMenuAnchor;
   let jwt = '';
   let activeLabel = '';
   let protectedLabel = '';
-  /** @type {HTMLInputElement} */
+  /**
+   * @type {HTMLInputElement}
+   */
   let inputElementMagicLink;
-  /** @type {ReturnType <typeof setTimeout>} */
+  /**
+   * @type {ReturnType <typeof setTimeout>}
+   */
   let copyTimeoutId;
-  /** @type {HTMLButtonElement} */
+  /**
+   * @type {HTMLButtonElement}
+   */
   let copyButton;
-  /** @param {HTMLButtonElement | any} node */
+  /**
+   * @param {HTMLButtonElement | any} node
+   */
   let setCopyButton = (node) => (copyButton = node);
-  /** @type {string} */
+  /**
+   * @type {string}
+   */
   let group_id;
   let name = '';
   let email = '';
   let active = false;
   let __protected = false;
-  /** @type {string} */
+  /**
+   * @type {string}
+   */
   let mode = EDIT;
 
   $: token = $session.user?.jwt;
@@ -175,7 +207,13 @@
     };
   });
 
-  let openUploader = () => {
+  /**
+   * @param {CustomEvent} event
+   */
+  let openUploader = (event) => {
+    event.stopPropagation();
+    avatarMenu.setOpen(false);
+
     open(
       MediaUploader,
       {
@@ -199,7 +237,9 @@
     );
   };
 
-  /** @param {string | any} m */
+  /**
+   * @param {string | any} m
+   */
   function redirectMode(m = EDIT) {
     if (browser) {
       mode = m;
@@ -208,7 +248,9 @@
     }
   }
 
-  /** @param {CustomEvent} param0 */
+  /**
+   * @param {CustomEvent} param0
+   */
   async function uploadSuccessHandler({ detail }) {
     /** @type {any} */
     const { success, message, data } = { ...detail.responseText };
@@ -298,7 +340,9 @@
       });
   }
 
-  /** @param {import('$lib/types').User} user */
+  /**
+   * @param {import('$lib/types').User} user
+   */
   function copy(user) {
     ({ name, email, active, group_id, __protected } = { ...user, __protected: !!user.protected });
   }
@@ -380,7 +424,7 @@
                     borderSize="4"
                     borderColor="--primary"
                     extendedBorderColor="--back-grid-item"
-                    extendedBorderSize="10"
+                    extendedBorderSize="6"
                     badge={{
                       icon: hasCurrentPrivileges ? 'admin_panel_settings' : '',
                       color: isCurrentSuperuser ? 'rgb(26, 4, 4)' : 'rgb(206, 4, 4)',
@@ -395,7 +439,7 @@
                     anchorCorner="TOP_END"
                   >
                     <List>
-                      <Item on:click={() => openUploader()}>
+                      <Item on:click={openUploader}>
                         <Text
                           >{currentUser.avatar
                             ? $_('text.change-avatar')

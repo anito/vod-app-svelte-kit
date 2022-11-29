@@ -307,6 +307,89 @@ export function searchParams(url) {
 }
 
 /**
+ * @param {Response} res
+ */
+export async function bodyReader(res) {
+  const reader = res.body?.getReader();
+  const contentLength = res.headers.get('content-length');
+
+  let chunks = [];
+  let receivedLength = 0;
+  while (true) {
+    /**
+     * @type {any}
+     */
+    const { done, value } = await reader?.read();
+
+    if (done) break;
+
+    chunks.push(value);
+    receivedLength += value?.length;
+    // @ts-ignore
+    let percent = (receivedLength * 100) / contentLength;
+    console.log('Progress', percent, '% of', contentLength);
+  }
+
+  /**
+   * concatenate chunks into single Uint8Array
+   * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
+   */
+  let chunksAll = new Uint8Array(receivedLength);
+  let position = 0;
+  for (let chunk of chunks) {
+    chunksAll.set(chunk, position);
+    position += chunk.length;
+  }
+
+  /**
+   * decode into a utf-8 string
+   * https://nodejs.org/api/util.html#class-utiltextdecoder
+   */
+  let result = new TextDecoder('utf-8').decode(chunksAll);
+  return result;
+}
+
+const DataSet = new Map();
+/**
+ * @param {{[s: string]: any;}} data
+ * @param {string | undefined} [prefix]
+ */
+export function printDiff(data, prefix = '') {
+  if (typeof data === 'object') {
+    Object.entries(data).forEach((val) => {
+      const key = val[0];
+      const value = val[1];
+      const newKey = `${prefix} » ${key}`;
+      if (typeof key !== 'object') {
+        let newValue = typeof value === 'string' ? value : JSON.stringify(value);
+        let oldValue = DataSet.get(newKey);
+        if (!DataSet.has(newKey)) {
+          if (typeof value === 'object' && !(value instanceof Array)) {
+            printDiff(value, key);
+          } else {
+            DataSet.set(newKey, newValue);
+          }
+        } else {
+          if (oldValue !== newValue) {
+            log(
+              '%s %c %s %c %s',
+              newKey,
+              'background: #ffebe9; color: #000000; padding:4px 6px 3px 0;',
+              oldValue,
+              'background: #e6ffec; color: #000000; padding:4px 6px 3px 0;',
+              newValue
+            );
+            DataSet.set(newKey, newValue);
+          }
+        }
+      } else {
+        printDiff(key);
+      }
+    });
+  }
+}
+
+/**
  * @param {string} id
  * @param {{ pathname: any; search: any; searchParams?: URLSearchParams } | undefined} [url]
  */

@@ -3,6 +3,8 @@ import {
   convert,
   createRedirectSlug,
   createTabSearch,
+  bodyReader,
+  printDiff,
   equals,
   formatter,
   info,
@@ -41,6 +43,7 @@ import { posterCreatedHandler, posterSelectedHandler, posterRemoveHandler } from
 
 export {
   afterOrBeforeNavigation,
+  printDiff,
   dynamicUrl,
   convert,
   createRedirectSlug,
@@ -58,6 +61,7 @@ export {
   getMediaImage,
   getMediaVideo,
   hasStarted,
+  bodyReader,
   isExpired,
   isToday,
   localeFormat,

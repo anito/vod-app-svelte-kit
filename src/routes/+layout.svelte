@@ -25,7 +25,8 @@
     SUPERUSER,
     randomItem,
     afterOrBeforeNavigation,
-    parseLifetime
+    parseLifetime,
+    printDiff
   } from '$lib/utils';
   import {
     fabs,
@@ -62,10 +63,6 @@
   const snackbarLifetime = 4000;
   const redirectDelay = 300;
 
-  /**
-   * @type {any}
-   */
-  let oldConfig;
   /**
    * @type {HTMLElement}
    */
@@ -185,6 +182,30 @@
 
   salutation.update(randomItem(data.config?.Site?.salutations) || 'Hi');
 
+  /**
+   *
+   * @param {string | any} hit
+   */
+  const navigationCallback = (hit) => {
+    if (!hit) {
+      clearTimeout(navTimeoutId);
+      navTimeoutId = setTimeout(() => {
+        proxyEvent('session:extend');
+      }, 1500);
+    }
+  };
+
+  afterOrBeforeNavigation(
+    afterNavigate,
+    {
+      to_searches: [['config', 'load']],
+      from_pathnames: ['login'],
+      to_pathnames: ['auth?/logout', 'auth?/login', 'login', 'logout', 'config']
+    },
+    navigationCallback
+  );
+
+  $: printDiff(data);
   $: settings.update(data.config);
   $: token = $session.user?.jwt;
   $: person = svg(svg_manifest.person, $theme.primary);
@@ -211,7 +232,7 @@
 
     snackbar = getSnackbar();
 
-    reveal();
+    fadeIn();
     initListener();
     checkSession();
     initClasses();
@@ -240,7 +261,7 @@
     }
   }
 
-  function reveal() {
+  function fadeIn() {
     setTimeout(() => {
       loaderBackgroundOpacity = 0.45;
       loaderColor = 'var(--flash)';
@@ -454,29 +475,6 @@
     $page.url.searchParams.delete('config');
     setTimeout(async () => await goto($page.url.href), 500);
   }
-
-  /**
-   *
-   * @param {string | any} hit
-   */
-  const navigationCallback = (hit) => {
-    if (!hit) {
-      clearTimeout(navTimeoutId);
-      navTimeoutId = setTimeout(() => {
-        proxyEvent('session:extend');
-      }, 1500);
-    }
-  };
-
-  afterOrBeforeNavigation(
-    afterNavigate,
-    {
-      to_searches: [['config', 'load']],
-      from_pathnames: ['login'],
-      to_pathnames: ['auth?/logout', 'auth?/login', 'login', 'logout', 'config']
-    },
-    navigationCallback
-  );
 
   /**
    *
