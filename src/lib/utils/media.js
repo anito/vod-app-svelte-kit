@@ -15,16 +15,13 @@ const MediaTypes = new Map([
  * @param {string} token
  * @param {string} type
  * @param {any} param3
- * @returns
+ * @returns {Promise<any>}
  */
 async function uri(id, token, type, { ...options }) {
   /** @type {{base: string} | any} */
   const { base } = MediaTypes.get(type);
-  let query = [];
-  for (var key in options) {
-    query.push(`${key}=${options[key]}`);
-  }
-  const url = `u/${base}/${id}/${query.length && '?' + query.join('&')}`;
+  const searchParam = new URLSearchParams(options).toString();
+  const url = `u/${base}/${id}${searchParam && '?' + searchParam}`;
 
   return await api.get(`${url}`, { token }).then((res) => {
     if (res?.success) {
@@ -36,12 +33,11 @@ async function uri(id, token, type, { ...options }) {
 }
 
 /**
- *
  * @param {string} type
  * @param {string} id
  * @param {string} token
- * @param {any} param3
- * @returns
+ * @param {{width: number, height: number, square: number, quality: number}} param3
+ * @returns {Promise<string | undefined>}
  */
 export async function getMedia(type, id, token, { ...options }) {
   if (token) {
@@ -71,7 +67,7 @@ export async function getMedia(type, id, token, { ...options }) {
  * @param {string} id
  * @param {string} jwt
  * @param {any} options
- * @returns
+ * @returns {Promise<string | undefined>}
  */
 export function getMediaAvatar(id, jwt, options = {}) {
   const defaults = {
@@ -88,7 +84,7 @@ export function getMediaAvatar(id, jwt, options = {}) {
  * @param {string} id
  * @param {string} jwt
  * @param {any} options
- * @returns
+ * @returns {Promise<string | undefined>}
  */
 export function getMediaImage(id, jwt, options = {}) {
   const defaults = {
@@ -105,7 +101,7 @@ export function getMediaImage(id, jwt, options = {}) {
  * @param {string} id
  * @param {string} jwt
  * @param {any} options
- * @returns
+ * @returns {Promise<string | undefined>}
  */
 export async function getMediaVideo(id, jwt, options = {}) {
   const defaults = { square: 2 };
@@ -116,9 +112,9 @@ export async function getMediaVideo(id, jwt, options = {}) {
 /**
  *
  * @param {*} fn
- * @returns
+ * @returns {string | undefined}
  */
 export function getExt(fn) {
   let match = fn?.match(/[A-Za-z0-9]+$/) || [];
-  return match.length && match[0].toLowerCase();
+  return (match.length && match[0].toLowerCase()) || undefined;
 }
