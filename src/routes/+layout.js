@@ -1,3 +1,4 @@
+import { buildSearchParams } from '$lib/utils';
 import { redirect } from '@sveltejs/kit';
 import { register, waitLocale, init, getLocaleFromNavigator } from 'svelte-i18n';
 
@@ -5,7 +6,7 @@ register('de-DE', () => import('../messages/de_DE.json'));
 register('en-US', () => import('../messages/en_US.json'));
 
 /**
- * @type {import('$lib/types').Config}
+ * @type {import('$lib/types').Setting}
  */
 let config;
 const fallbackLocale = 'de-DE';
@@ -20,9 +21,8 @@ export async function load({ data, fetch, depends, url }) {
       .catch((reason) => console.error(reason));
 
     if (hasConfigParam) {
-      url.searchParams.delete('config');
-      const searchParam = url.searchParams.toString();
-      throw redirect(302, `${url.pathname}${searchParam && '?' + searchParam}`);
+      const searchParam = buildSearchParams(url.searchParams, { removableKeys: ['config'] });
+      throw redirect(302, `${url.pathname}${searchParam}`);
     }
   }
 

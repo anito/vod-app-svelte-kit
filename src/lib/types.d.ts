@@ -120,12 +120,6 @@ export interface VideoAll<VideoAllRepoType = Record<string, any>> {
   created: Date
 }
 
-export interface Config<ConfigType = Record<string, any>> {
-  Site: Site
-  Console: any
-  Session: any
-}
-
 export interface GoogleUser<GoogleUserType = Record<string, any>> {
   id: string
   name: string
@@ -185,20 +179,24 @@ export interface Inbox<InboxType = Record<string, any>> {
 }
 
 export interface Setting<SettingType = Record<string, any>> {
-  Session: any
-  Site: Site | any
-  Console: Console | any
+  Session: SessionSettings
+  Site: SiteSettings
+  Console: ConsoleSettings
 }
 
-export interface Site<SiteType = Record<string, any>> {
-  defaultUserTab: boolean
+export interface SiteSettings<SiteSettingsType = Record<string, any>> {
+  defaultUserTab: string
   salutation: string
   salutations: Array
 }
 
-export interface Console<ConsoleType = Record<string, any>> {
-  info: boolean
+export interface ConsoleSettings<ConsoleSettingsType = Record<string, any>> {
+  infoLevel: number
   log: boolean
+}
+
+export interface SessionSettings<SessionSettingsType = Record<string, any>>  {
+  lifetime: number
 }
 
 export interface Error<ErrorType = Record<string, any>> {

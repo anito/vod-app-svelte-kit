@@ -1,28 +1,26 @@
 import { writable } from 'svelte/store';
 
 function createStore() {
-  /** @type {import('$lib/types').Setting} */
+  /** @type {any} */
   const defaults = {
     Session: {
       lifetime: 30 * 24 * 60 * 60 * 1000
     },
     Site: { defaultUserTab: 'profile', salutation: 'Hi', salutations: [] },
-    Console: { info: false, log: false }
+    Console: { infoLevel: 1, log: false }
   };
   const { subscribe, update, set } = writable(defaults);
 
   return {
     subscribe,
-    /** @param {import('$lib/types').Setting} val */
-    update: (val) =>
+    update: (/** @type {Object<any, any>} */ val) =>
       update((current) => {
-        let cur;
+        let currentItem;
         /** @type {Object<any, any>}} */
         let ret = {};
-        /** @type {string | any} */
+
         for (let item in val) {
-          // @ts-ignore
-          ret[item] = (cur = current[item] || {}) && { ...cur, ...val[item] };
+          ret[item] = (currentItem = current[item] || {}) && { ...currentItem, ...val[item] };
         }
         return { ...defaults, ...ret };
       }),

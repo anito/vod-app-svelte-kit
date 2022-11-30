@@ -49,6 +49,7 @@
   /** @param {CustomEvent} event */
   function handleEmptied(event) {
     info(
+      4,
       '%c EMPTIED   %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
@@ -59,6 +60,7 @@
   /** @param {CustomEvent} event */
   function handleLoadStart(event) {
     info(
+      4,
       '%c LOADSTART %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
@@ -69,6 +71,7 @@
   /** @param {CustomEvent} event */
   function handleLoadedData(event) {
     info(
+      4,
       '%c LOADEDDATA%c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
@@ -79,6 +82,7 @@
   /** @param {CustomEvent} event */
   function handleAborted(event) {
     info(
+      4,
       '%c ABORTED   %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',

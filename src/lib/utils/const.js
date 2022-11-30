@@ -7,3 +7,7 @@ export const DESC = 'DESC';
 export const ASC = 'ASC';
 export const TABS = ['time', 'profile', 'mail'];
 export const DEFAULT_TAB = 'user';
+export const DIFFSTORES = new Map([
+  ['config', new Map()],
+  ['page', new Map()]
+]);

@@ -25,7 +25,6 @@ export const afterOrBeforeNavigation = (
   const TO_SEARCH_KEY = 'to_searches';
   const FROM_PATH_KEY = 'from_paths';
   const TO_PATH_KEY = 'to_paths';
-  const BreakExecption = {};
 
   const omitter = new Map();
   omitter.set(
@@ -64,7 +63,6 @@ export const afterOrBeforeNavigation = (
      * @param {import('@sveltejs/kit').NavigationTarget} from
      */
     (from) => {
-      info(from.url.pathname);
       return from_pathnames?.find((slug) => {
         if (from.url.pathname.indexOf(slug) !== -1) {
           return slug;
@@ -78,7 +76,6 @@ export const afterOrBeforeNavigation = (
      * @param {import('@sveltejs/kit').NavigationTarget} to
      */
     (to) => {
-      info(to.url.pathname);
       return to_pathnames?.find((slug) => {
         if (to.url.pathname.indexOf(slug) !== -1) {
           return slug;
@@ -96,25 +93,25 @@ export const afterOrBeforeNavigation = (
         /**
          * @type {string | any | unknown}
          */
-        let ret;
+        let ret = new Map([]);
         omitter.forEach((fn, key) => {
           let found;
           try {
             if (key === FROM_SEARCH_KEY && from && (found = fn(from))) {
-              ret = found;
-              throw BreakExecption;
+              ret.set(key, found);
+              // throw BreakExecption;
             }
             if (key === TO_SEARCH_KEY && to && (found = fn(to))) {
-              ret = found;
-              throw BreakExecption;
+              ret.set(key, found);
+              // throw BreakExecption;
             }
             if (key === FROM_PATH_KEY && from && (found = fn(from))) {
-              ret = found;
-              throw BreakExecption;
+              ret.set(key, found);
+              // throw BreakExecption;
             }
             if (key === TO_PATH_KEY && to && (found = fn(to))) {
-              ret = found;
-              throw BreakExecption;
+              ret.set(key, found);
+              // throw BreakExecption;
             }
           } catch (error) {}
         });

@@ -1,5 +1,6 @@
 import { derived } from 'svelte/store';
 import { session } from '$lib/stores';
+import { info } from '$lib/utils';
 
 function createStore() {
   /**
@@ -38,10 +39,11 @@ function createStore() {
       return () => {
         clearInterval(intervalId);
 
-        // info(
-        //   `%c TICKER ${time ? 'EXTEND' : 'END'}`,
-        //   `background: ${time ? '#8bc44a' : '#ff5722'}; color: #000000; padding:4px 6px 3px 0;`
-        // );
+        info(
+          3,
+          '%c PAGE DATA RECEIVED',
+          'background: #8bc34a; color: #000000; padding:4px 6px 3px 0;'
+        );
       };
     },
     100 * 1000 // initial value

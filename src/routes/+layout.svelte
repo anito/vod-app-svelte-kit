@@ -6,6 +6,7 @@
   import { derived, writable } from 'svelte/store';
   import { afterNavigate, beforeNavigate, goto, invalidate, invalidateAll } from '$app/navigation';
   import { navigating, page } from '$app/stores';
+  import { enhance } from '$app/forms';
   import { getContext, onMount, setContext } from 'svelte';
   import isMobile from 'ismobilejs';
   import { Icons } from '$lib/components';
@@ -25,7 +26,9 @@
     randomItem,
     afterOrBeforeNavigation,
     parseLifetime,
-    printDiff
+    printDiff,
+    info,
+    parseConfigData
   } from '$lib/utils';
   import {
     fabs,
@@ -53,7 +56,6 @@
   } from '$lib/components';
   import { svg_manifest } from '$lib/svg_manifest';
   import { _, locale } from 'svelte-i18n';
-  import { enhance } from '$app/forms';
 
   /** @type {import('./$types').LayoutData} */
   export let data;
@@ -147,12 +149,13 @@
   const mounted = writable(isMounted);
 
   ticker.subscribe((val) => {
-    // log(
-    //   '%c TICKER %c %s',
-    //   'background: #ffd54f; color: #000000; padding:4px 6px 3px 0;',
-    //   'background: #ffff81; color: #000000; padding:4px 6px 3px 0;',
-    //   `${(!isNaN(val) && parseInt(val / 1000) + 's') || '--'}`
-    // );
+    info(
+      5,
+      '%c TICKER %c %s',
+      'background: #ffd54f; color: #000000; padding:4px 6px 3px 0;',
+      'background: #ffff81; color: #000000; padding:4px 6px 3px 0;',
+      `${(!isNaN(val) && val / 1000 + 's') || '--'}`
+    );
     if (val === 0) {
       proxyEvent('session:stop');
     }
@@ -169,14 +172,21 @@
 
   /**
    *
-   * @param {string | any} exclude
+   * @param {Map<string, any>} excludes
    */
-  const navigationCallback = (exclude) => {
-    if (!exclude) {
+  const navigationCallback = (excludes) => {
+    if (excludes.size) {
+      info(
+        2,
+        '%c Extending session was prevented',
+        'background: #ffd54f; color: #000000; padding:4px 6px 3px 0;',
+        excludes
+      );
+    } else {
       clearTimeout(navTimeoutId);
       navTimeoutId = setTimeout(() => {
         !$navigating && proxyEvent('session:extend');
-      }, 1500);
+      }, 2000);
     }
   };
 
@@ -197,9 +207,10 @@
     }
   });
 
-  // $: printDiff(data);
-  $: settings.update(data.config);
-  $: token = $session.user?.jwt;
+  $: configData = parseConfigData(data.config);
+  $: printDiff(configData, { store: 'config' });
+  $: printDiff($page.data, { store: 'page' });
+  $: settings.update(configData);
   $: person = svg(svg_manifest.person, $theme.primary);
   $: logo = svg(svg_manifest.logo_vod, $theme.primary);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
@@ -498,7 +509,6 @@
       snackbarMessage = res.message || res.data?.message;
 
       configSnackbar(snackbarMessage);
-      snackbar = getSnackbar();
       snackbar?.open();
       return res;
     });

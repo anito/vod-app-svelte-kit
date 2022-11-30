@@ -1,7 +1,7 @@
 import { get } from 'svelte/store';
 import * as api from '$lib/api';
 import { urls } from '$lib/stores';
-import { log } from '$lib/utils';
+import { buildSearchParams, log } from '$lib/utils';
 
 const MediaTypes = new Map([
   ['VIDEO', { base: 'v' }],
@@ -20,8 +20,8 @@ const MediaTypes = new Map([
 async function uri(id, token, type, { ...options }) {
   /** @type {{base: string} | any} */
   const { base } = MediaTypes.get(type);
-  const searchParam = new URLSearchParams(options).toString();
-  const url = `u/${base}/${id}${searchParam && '?' + searchParam}`;
+  const searchParam = buildSearchParams(options);
+  const url = `u/${base}/${id}${searchParam}`;
 
   return await api.get(`${url}`, { token }).then((res) => {
     if (res?.success) {

@@ -548,7 +548,6 @@
       editor.node?.classList.remove('editor');
 
       editor = new Editor({ ...editor, id, node, value: node.innerHTML, editable });
-      // console.log(editor);
       editor.node.classList.add('editor');
       editor.node.setAttribute('contenteditable', 'true');
       editor.node.addEventListener('keydown', keyListener);

@@ -1,6 +1,6 @@
 import { get } from 'svelte/store';
 import { settings } from '$lib/stores';
-import { ADMIN, SUPERUSER, INBOX } from './const';
+import { ADMIN, SUPERUSER, INBOX, DIFFSTORES } from './const';
 
 /**
  *
@@ -105,7 +105,7 @@ export function createRedirectSlug(url, searchMap = new Map([])) {
     let regex = new RegExp(`\\b${ignore}`, 'g');
     path = path.replace(regex, '');
   }
-  return `redirect=${path}${encodeURIComponent(parseSearchParams(searchParams))}`;
+  return `redirect=${path}${encodeURIComponent(parseRedirect(searchParams))}`;
 }
 
 /**
@@ -115,26 +115,24 @@ export function createRedirectSlug(url, searchMap = new Map([])) {
  * @returns
  */
 export function processRedirect(url, session) {
-  let redirect;
-  if ((redirect = url.searchParams.get('redirect'))) {
+  let redirect = url.searchParams.get('redirect');
+  if (redirect) {
     return redirect;
   } else {
     const hasPrivileges = session?.role === ADMIN || session?.role === SUPERUSER;
     const path = hasPrivileges ? '/users' : '/videos';
-    return path.concat(parseSearchParams(url.searchParams));
+    return path.concat(parseRedirect(url.searchParams));
   }
 }
 
 /**
  *
  * @param {URLSearchParams | string} search
- * @returns
+ * @returns {string}
  */
-export function parseSearchParams(search) {
-  const excludeSet = new Set(['token', 'redirect', 'sessionend']);
-  const searchParams = new URLSearchParams(search);
-  excludeSet.forEach((name) => searchParams.delete(name));
-  return searchParams.toString() ? `?${searchParams.toString()}` : '';
+export function parseRedirect(search) {
+  const removableKeys = ['token', 'redirect', 'sessionend'];
+  return buildSearchParams(search, { removableKeys });
 }
 
 export function windowSize() {
@@ -289,7 +287,7 @@ export function createTabSearch(tab) {
  */
 export function parseLifetime(lifetime) {
   const minToMs = 60 * 1000;
-  return parseInt(typeof lifetime === 'boolean' ? (true ? '1' : '0') : lifetime) * minToMs;
+  return parseFloat(typeof lifetime === 'boolean' ? (lifetime ? '1' : '0') : lifetime) * minToMs;
 }
 
 /**
@@ -311,10 +309,11 @@ export function searchParams(url) {
  */
 export async function bodyReader(res) {
   const reader = res.body?.getReader();
-  const contentLength = res.headers.get('content-length');
+  const contentLength = res.headers.get('content-length') || 0;
 
   let chunks = [];
   let receivedLength = 0;
+  let percent;
   while (true) {
     /**
      * @type {any}
@@ -325,8 +324,7 @@ export async function bodyReader(res) {
 
     chunks.push(value);
     receivedLength += value?.length;
-    // @ts-ignore
-    let percent = (receivedLength * 100) / contentLength;
+    if (contentLength !== 0) (receivedLength * 100) / parseInt(contentLength);
     console.log('Progress', percent, '% of', contentLength);
   }
 
@@ -349,37 +347,41 @@ export async function bodyReader(res) {
   return result;
 }
 
-const DataSet = new Map();
 /**
  * @param {{[s: string]: any;}} data
- * @param {string | undefined} [prefix]
+ * @param {{prefix?: string | undefined, store: string}} options - prefix: The key of object values (automatically set)
+ * @returns {void}
  */
-export function printDiff(data, prefix = '') {
-  if (typeof data === 'object') {
+export function printDiff(data, { prefix, store } = { prefix: '', store: '' }) {
+  const storeExists = DIFFSTORES.has(store);
+  if (typeof data === 'object' && storeExists) {
     Object.entries(data).forEach((val) => {
+      const diffStore = DIFFSTORES.get(store);
       const key = val[0];
       const value = val[1];
-      const newKey = `${prefix} » ${key}`;
+      const newKey = `{ ${prefix}: ${key} }`;
       if (typeof key !== 'object') {
         let newValue = typeof value === 'string' ? value : JSON.stringify(value);
-        let oldValue = DataSet.get(newKey);
-        if (!DataSet.has(newKey)) {
-          if (typeof value === 'object' && !(value instanceof Array)) {
-            printDiff(value, key);
+        let oldValue = diffStore?.get(newKey);
+        if (!diffStore?.has(newKey)) {
+          if (typeof value === 'object' && !Array.isArray(value)) {
+            printDiff(value, { prefix: key, store });
           } else {
-            DataSet.set(newKey, newValue);
+            diffStore?.set(newKey, newValue);
           }
         } else {
           if (oldValue !== newValue) {
-            log(
-              '%s %c %s %c %s',
-              newKey,
+            info(
+              1,
+              '%c %s %c %s %c %s',
+              `background: #d2d2d2; color: #000000; padding:4px 6px 3px 0;`,
+              `DIFF ${store.toUpperCase()} DATA: ${newKey}`,
               'background: #ffebe9; color: #000000; padding:4px 6px 3px 0;',
               oldValue,
               'background: #e6ffec; color: #000000; padding:4px 6px 3px 0;',
               newValue
             );
-            DataSet.set(newKey, newValue);
+            diffStore?.set(newKey, newValue);
           }
         }
       } else {
@@ -390,7 +392,7 @@ export function printDiff(data, prefix = '') {
 }
 
 /**
- * @param {string} id
+ * @param {string | undefined} id
  * @param {{ pathname: any; search: any; searchParams?: URLSearchParams } | undefined} [url]
  */
 export function dynamicUrl(id, url) {
@@ -402,16 +404,17 @@ export function dynamicUrl(id, url) {
 
 /**
  * Helper function for dynamicUrl
- * @param {URLSearchParams | undefined} searchParams
+ * @param {URLSearchParams | string | undefined} searchParams
  * @param {{ removableKeys: Array<string>}} [options]
+ * @returns {string}
  */
-function buildSearchParams(searchParams, options = { removableKeys: [] }) {
+export function buildSearchParams(searchParams, options = { removableKeys: [] }) {
   const { removableKeys } = { ...options };
-  searchParams = new URLSearchParams(searchParams);
+  const searchParam = new URLSearchParams(searchParams);
   removableKeys.forEach((key) => {
-    searchParams?.has(key) && searchParams.delete(key);
+    searchParam?.has(key) && searchParam.delete(key);
   });
-  const search = searchParams?.toString();
+  const search = searchParam?.toString();
   return (search && `?${search}`) || '';
 }
 
@@ -420,9 +423,37 @@ export function log() {
   if (log) console.log(...arguments);
 }
 
+/**
+ * Accepts 1 or more arguments
+ * First argument: Level
+ * Rest: parameter printed to console
+ * @returns
+ */
 export function info() {
-  const { info } = get(settings).Console;
-  if (info) console.log(...arguments);
+  if (arguments.length < 2) return;
+  const { infoLevel } = get(settings).Console;
+  const args = Array.from(arguments);
+  const level = args.splice(0, 1)[0];
+  if (level <= infoLevel) console.log(...args);
+}
+
+/**
+ * @param {any} data
+ */
+export function parseConfigData(data) {
+  if (typeof data === 'object') {
+    /** @type {any} */
+    const ret = {};
+    Object.entries(data).forEach((val) => {
+      let k = val[0];
+      let v = val[1];
+      v = typeof v === 'object' && !Array.isArray(v) ? parseConfigData(v) : v;
+      v = typeof v === 'boolean' ? (v ? 1 : 0) : v;
+      ret[k] = v;
+    });
+    return ret;
+  }
+  throw 'Configuration data incorrect';
 }
 
 Array.prototype.unique = function () {

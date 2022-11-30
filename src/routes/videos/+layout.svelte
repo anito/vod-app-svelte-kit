@@ -10,8 +10,13 @@
   import { videos } from '$lib/stores';
   import { _ } from 'svelte-i18n';
 
-  /** @type {number} */
+  /**
+   * @type {number}
+   */
   let selectedIndex;
+  /**
+   * @type {string}
+   */
   let search = '';
 
   $: sidebar = !!$page.params.slug;
