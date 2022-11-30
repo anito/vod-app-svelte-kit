@@ -1,5 +1,5 @@
-import { buildSearchParams } from '$lib/utils';
 import { redirect } from '@sveltejs/kit';
+import { buildSearchParams } from '$lib/utils';
 import { register, waitLocale, init, getLocaleFromNavigator } from 'svelte-i18n';
 
 register('de-DE', () => import('../messages/de_DE.json'));

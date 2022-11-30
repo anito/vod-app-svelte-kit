@@ -208,9 +208,9 @@
   });
 
   $: configData = parseConfigData(data.config);
+  $: settings.update(configData);
   $: printDiff(configData, { store: 'config' });
   $: printDiff($page.data, { store: 'page' });
-  $: settings.update(configData);
   $: person = svg(svg_manifest.person, $theme.primary);
   $: logo = svg(svg_manifest.logo_vod, $theme.primary);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;

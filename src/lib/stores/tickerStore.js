@@ -41,7 +41,7 @@ function createStore() {
 
         info(
           3,
-          '%c PAGE DATA RECEIVED',
+          '%c PAGE DATA (SESSION) RECEIVED',
           'background: #8bc34a; color: #000000; padding:4px 6px 3px 0;'
         );
       };

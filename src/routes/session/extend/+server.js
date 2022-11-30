@@ -4,9 +4,6 @@ import { json } from '@sveltejs/kit';
 export async function POST({ locals, request }) {
   const _expires = await request.json();
 
-  await locals.session.set({
-    ...locals.session.data,
-    _expires
-  });
+  await locals.session.update(() => ({ _expires }));
   return json({ success: true, _expires });
 }
