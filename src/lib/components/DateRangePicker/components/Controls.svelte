@@ -28,14 +28,8 @@
 
   const dispatch = createEventDispatcher();
 
-  let selectedMonth = {
-    value: month,
-    text: localeFormat(month, monthFormat)
-  };
-  let selectedYear = {
-    value: month,
-    text: localeFormat(month, 'yyyy')
-  };
+  let selectedMonth;
+  let selectedYear;
 
   $: months = buildMonthDropdown(month, monthFormat);
   $: years = buildYearDropdown(minDate, maxDate, pageNum);
@@ -87,7 +81,6 @@
           <option
             disabled={isOptionDisabled(mo.value)}
             selected={isSameMonth(mo.value, month) && setSelectedMonth(mo)}
-            data-selected={isSameMonth(mo.value, month)}
             value={mo}
           >
             {mo.text}
