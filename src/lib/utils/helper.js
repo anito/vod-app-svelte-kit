@@ -353,8 +353,7 @@ export async function bodyReader(res) {
  * @returns {void}
  */
 export function printDiff(data, { prefix, store } = { prefix: '', store: '' }) {
-  const storeExists = DIFFSTORES.has(store);
-  if (typeof data === 'object' && storeExists) {
+  if (data instanceof Object && DIFFSTORES.has(store)) {
     Object.entries(data).forEach((val) => {
       const diffStore = DIFFSTORES.get(store);
       const key = val[0];
@@ -441,7 +440,7 @@ export function info() {
  * @param {any} data
  */
 export function parseConfigData(data) {
-  if (typeof data === 'object') {
+  if (data instanceof Object) {
     /** @type {any} */
     const ret = {};
     Object.entries(data).forEach((val) => {

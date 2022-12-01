@@ -3,8 +3,10 @@ import { buildSearchParams, LOCALESTORE } from '$lib/utils';
 import { register, waitLocale, init, getLocaleFromNavigator } from 'svelte-i18n';
 
 LOCALESTORE.forEach((val, key) => {
-  register(key, () => import(`../messages/${val.filename}.json`));
+  // register(key, () => import(`../messages/${val.filename}.json`));
 });
+register('de-DE', () => import('../messages/de_DE.json'));
+register('en-US', () => import('../messages/en_US.json'));
 
 /**
  * @type {import('$lib/types').Setting}
