@@ -31,8 +31,6 @@
   let selectedMonth;
   let selectedYear;
 
-  $: console.log(month);
-  $: console.log(selectedMonth);
   $: months = buildMonthDropdown(month, monthFormat);
   $: years = buildYearDropdown(minDate, maxDate, pageNum);
   $: prevMonth = subMonths(month, 1);
