@@ -47,7 +47,7 @@
     setTimeout(() => (selectedMonth = month));
   }
 
-  async function setSelectedYear(year) {
+  function setSelectedYear(year) {
     setTimeout(() => (selectedYear = year));
   }
 </script>
