@@ -382,7 +382,7 @@ html a.no-underline {
   display: block;
   box-sizing: border-box;
   position: absolute;
-  z-index: 1000;
+  z-index: 1;
   top: 1rem;
   right: 1rem;
   margin: 0;

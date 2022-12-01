@@ -203,7 +203,7 @@
    */
   function openScheduleDialog(video) {
     schedulingVideoId = video.id;
-    scheduleDialog.setOpen(true);
+    scheduleDialog.setOpen?.(true);
   }
 
   /**
@@ -214,7 +214,7 @@
     event.preventDefault();
     schedulingVideoId = video.id;
     if (timeRemaining(video)) {
-      removeDialog.setOpen(true);
+      removeDialog.setOpen?.(true);
     } else {
       removeVideo();
     }
@@ -357,31 +357,31 @@
    * @param {string} msg
    */
   function handleSuccess(res, msg) {
-    snackbar.isOpen() && snackbar.close();
+    snackbar.isOpen?.() && snackbar.close?.();
     users.put(res.data);
 
     message = msg || res.message || res.data.message;
     configSnackbar(message);
-    snackbar?.open();
+    snackbar.open?.();
   }
 
   /**
    * @param {{ message: any; data: { message: any; code: any; }; statusText: any; status: any; }} res
    */
   function handleError(res) {
-    snackbar.isOpen() && snackbar.close();
+    snackbar.isOpen?.() && snackbar.close?.();
 
     message = res?.message || res?.data?.message || res?.statusText;
     const code = res.data?.code || res.status;
 
     if (400 <= code && code < 500) {
       configSnackbar(message);
-      snackbar.open();
+      snackbar.open?.();
     } else {
       flash.update({ type: 'error', message });
       const url = `login?${createRedirectSlug($page.url)}`;
       configSnackbar(message, url);
-      snackbar.open();
+      snackbar.open?.();
     }
   }
 

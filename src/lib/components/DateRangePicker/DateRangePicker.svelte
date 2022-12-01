@@ -85,7 +85,6 @@
   let numPages = twoPages ? 2 : 1;
   let navigator;
   let tempStartDate;
-  let months;
   let className = '';
 
   const dispatch = createEventDispatcher();
@@ -102,7 +101,6 @@
     return new Date(tempStartDate).toLocaleDateString(lang, dateTimeFormatOptions);
   };
   $: endDateReadout = () => {
-    let ret;
     if (!hasSelection) {
       if (isBefore(tempEndDate, tempStartDate))
         return new Date(tempStartDate).toLocaleDateString(lang, dateTimeFormatOptions);
