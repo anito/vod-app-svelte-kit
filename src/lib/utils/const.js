@@ -1,3 +1,13 @@
+import { de, enUS } from 'date-fns/locale';
+
+export const DIFFSTORES = new Map([
+  ['config', new Map()],
+  ['page', new Map()]
+]);
+export const LOCALESTORE = new Map([
+  ['de-DE', { fns: de, localized: 'Deutsch', filename: 'de_DE' }],
+  ['en-US', { fns: enUS, localized: 'English', filename: 'en_US' }]
+]);
 export const INBOX = 'inboxes';
 export const SENT = 'sents';
 export const ADMIN = 'Administrator';
@@ -7,7 +17,3 @@ export const DESC = 'DESC';
 export const ASC = 'ASC';
 export const TABS = ['time', 'profile', 'mail'];
 export const DEFAULT_TAB = 'user';
-export const DIFFSTORES = new Map([
-  ['config', new Map()],
-  ['page', new Map()]
-]);

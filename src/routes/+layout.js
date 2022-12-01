@@ -1,9 +1,10 @@
 import { redirect } from '@sveltejs/kit';
-import { buildSearchParams } from '$lib/utils';
+import { buildSearchParams, LOCALESTORE } from '$lib/utils';
 import { register, waitLocale, init, getLocaleFromNavigator } from 'svelte-i18n';
 
-register('de-DE', () => import('../messages/de_DE.json'));
-register('en-US', () => import('../messages/en_US.json'));
+LOCALESTORE.forEach((val, key) => {
+  register(key, () => import(`../messages/${val.filename}.json`));
+});
 
 /**
  * @type {import('$lib/types').Setting}
@@ -20,6 +21,7 @@ export async function load({ data, fetch, depends, url }) {
       .then(async (res) => await res.json())
       .catch((reason) => console.error(reason));
 
+    // redirect w/o config query
     if (hasConfigParam) {
       const searchParam = buildSearchParams(url.searchParams, { removableKeys: ['config'] });
       throw redirect(302, `${url.pathname}${searchParam}`);

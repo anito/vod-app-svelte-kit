@@ -16,7 +16,6 @@
     VideoEditorList
   } from '$lib/components';
   import { endOfWeek, startOfYear, endOfYear, addYears, subYears, parseISO } from 'date-fns';
-  import * as locales from 'date-fns/locale/index.js';
   import {
     toISODate,
     proxyEvent,
@@ -24,7 +23,8 @@
     sortByTitle,
     createRedirectSlug,
     ADMIN,
-    SUPERUSER
+    SUPERUSER,
+    LOCALESTORE
   } from '$lib/utils';
   import Dialog, { Title, Content, Actions, InitialFocus } from '@smui/dialog';
   import Radio from '@smui/radio';
@@ -122,7 +122,7 @@
   let itemsList = {};
 
   $: dateFormat = $locale?.startsWith('de') ? 'dd. MMM yyyy' : 'yyyy-MM-dd';
-  $: ((uid) => (selectionVideoId = null))(selectionUserId);
+  $: (1 || selectionUserId) && (selectionVideoId = null);
   $: currentUser = $users.find((usr) => usr.id === selectionUserId);
   $: name = currentUser?.name || '';
   $: role = currentUser?.role;
@@ -139,7 +139,6 @@
   $: schedulingVideo =
     schedulingVideoId && $videos?.find((video) => video.id === schedulingVideoId);
   $: schedulingVideoTitle = (schedulingVideo && schedulingVideo.title) || '';
-  $: localeObject = ((l) => locales[l.slice(0, 2)])($locale);
   $: userIssues =
     ($infos?.has(selectionUserId) &&
       $infos
@@ -615,7 +614,7 @@
           minDate={subYears(startOfYear(new Date()), 2)}
           maxDate={addYears(endOfYear(new Date()), 2)}
           {dateFormat}
-          {localeObject}
+          localeObject={LOCALESTORE.get($locale || 'en-US')?.fns}
           customHeaderHeight
           class="sm-header"
           disabled={!selectionVideoId}

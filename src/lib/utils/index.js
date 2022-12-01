@@ -27,16 +27,17 @@ import {
   windowSize
 } from './helper';
 import {
-  INBOX,
-  SENT,
   ADMIN,
-  SUPERUSER,
-  USER,
-  TABS,
+  ASC,
   DEFAULT_TAB,
   DESC,
-  ASC,
-  DIFFSTORES
+  DIFFSTORES,
+  LOCALESTORE,
+  INBOX,
+  SENT,
+  SUPERUSER,
+  TABS,
+  USER
 } from './const';
 import {
   ellapsedFormatted,
@@ -104,14 +105,15 @@ export {
   toLocalDate,
   toLocalTime,
   windowSize,
-  INBOX,
-  SENT,
   ADMIN,
-  SUPERUSER,
-  USER,
-  TABS,
+  ASC,
   DEFAULT_TAB,
   DESC,
-  ASC,
-  DIFFSTORES
+  DIFFSTORES,
+  INBOX,
+  LOCALESTORE,
+  SENT,
+  SUPERUSER,
+  TABS,
+  USER
 };

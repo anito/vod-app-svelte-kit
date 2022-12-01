@@ -3,13 +3,8 @@
   import Menu, { SelectionGroup, SelectionGroupIcon } from '@smui/menu';
   import { Anchor } from '@smui/menu-surface';
   import List, { Item, Text } from '@smui/list';
-  import { post } from '$lib/utils';
+  import { LOCALESTORE, post } from '$lib/utils';
   import { _, locale, locales } from 'svelte-i18n';
-
-  const localeLookup = new Map([
-    ['de', 'Deutsch'],
-    ['en', 'English']
-  ]);
 
   /** @type {import("@smui/menu").MenuComponentDev} */
   let localeMenu;
@@ -30,7 +25,7 @@
     if (value === currentLocale) return;
 
     await post('/locale', ($locale = value)).then(() => {
-      dispatch('changed:locale', { locale: localeLookup.get(value.slice(0, 2)) });
+      dispatch('changed:locale', { locale: LOCALESTORE.get(value)?.localized });
     });
   }
 </script>
