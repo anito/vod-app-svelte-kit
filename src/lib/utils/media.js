@@ -36,7 +36,7 @@ async function uri(id, token, type, { ...options }) {
  * @param {string} type
  * @param {string} id
  * @param {string} token
- * @param {{width: number, height: number, square: number, quality: number}} param3
+ * @param {{width?: number, height?: number, square?: number, quality?: number}} param3
  * @returns {Promise<string | undefined>}
  */
 export async function getMedia(type, id, token, { ...options }) {
