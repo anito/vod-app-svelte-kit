@@ -20,15 +20,24 @@
     startOfYear,
     subMonths
   } from 'date-fns';
-  import { localeFormat, passiveSupported, roundDown } from './utils';
+  import { passiveSupported, roundDown } from './utils';
   import Calendar from './components/Calendar.svelte';
   import TimePicker from './components/TimePicker.svelte';
+
+  /**
+   * @type {Intl.DateTimeFormatOptions}
+   */
+  const DateTimeFormatOptions = {
+    day: '2-digit',
+    year: 'numeric',
+    month: '2-digit'
+  };
 
   export let applyBtnText = 'Apply';
   export let btnClass = 'picker-btn';
   export let actionBtnClass = btnClass;
   export let cancelBtnText = 'Cancel';
-  export let dateFormat = 'MMM dd, yyyy';
+  export let dateTimeFormatOptions = DateTimeFormatOptions;
   export let disabledDates = [];
   export let endDate = endOfWeek(new Date());
   export let events = [];
@@ -87,22 +96,20 @@
   $: months = [...Array(numPages)].map((_, i) => addMonths(today, i));
   $: startDateReadout = () => {
     if (!hasSelection && isBefore(tempEndDate, tempStartDate)) {
-      return localeFormat(tempEndDate, dateFormat);
+      return new Date(tempEndDate).toLocaleDateString(lang, dateTimeFormatOptions);
     }
 
-    return localeFormat(tempStartDate, dateFormat);
+    return new Date(tempStartDate).toLocaleDateString(lang, dateTimeFormatOptions);
   };
   $: endDateReadout = () => {
     let ret;
     if (!hasSelection) {
-      if (isBefore(tempEndDate, tempStartDate)) {
-        ret = localeFormat(tempStartDate, dateFormat);
-      }
-      ret = localeFormat(tempEndDate, dateFormat);
+      if (isBefore(tempEndDate, tempStartDate))
+        return new Date(tempStartDate).toLocaleDateString(lang, dateTimeFormatOptions);
+      return new Date(tempEndDate).toLocaleDateString(lang, dateTimeFormatOptions);
     } else {
-      ret = localeFormat(tempEndDate, dateFormat);
+      return new Date(tempEndDate).toLocaleDateString(lang, dateTimeFormatOptions);
     }
-    return ret;
   };
   $: readout = `${startDateReadout()} - ${endDateReadout()}`;
   $: canResetView = !isSameMonth(tempStartDate, months[0]);

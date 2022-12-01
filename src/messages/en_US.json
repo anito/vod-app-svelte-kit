@@ -65,7 +65,7 @@
     "not-scheduled": "not scheduled",
     "uploaded-on": "{date}",
     "no-poster": "No poster",
-    "until-date": "until {date}",
+    "until-date": "until <strong>{date}</strong>",
     "more-options": "More options",
     "delete-video": "Delete Video",
     "delete-poster": "Delete Poster",

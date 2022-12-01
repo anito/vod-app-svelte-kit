@@ -14,9 +14,6 @@
   } from '$lib/utils';
   import { _ } from 'svelte-i18n';
 
-  /** @type {import('$lib/types').User} */
-  export let user;
-
   const { open: open$editor, close: close$editor } = getContext('editor-modal');
   const { open: open$uploader, close: close$uploader } = getContext('default-modal');
   const { getSnackbar, configSnackbar } = getContext('snackbar');

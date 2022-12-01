@@ -26,7 +26,12 @@
     aria-label={$_('text.more-options')}
     title={$_('text.more-options')}>more_vert</IconButton
   >
-  <Menu bind:this={menu} bind:anchorElement={menuAnchor} anchorCorner="BOTTOM_LEFT">
+  <Menu
+    bind:this={menu}
+    bind:anchorElement={menuAnchor}
+    anchorCorner="BOTTOM_LEFT"
+    style="overflow: visible;"
+  >
     <List class="option-list">
       <slot />
     </List>

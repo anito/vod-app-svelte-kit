@@ -4,7 +4,7 @@
   import { Icon } from '@smui/button';
   import { Item, Graphic, Text, PrimaryText, SecondaryText } from '@smui/list';
   import Chip, { Set, LeadingIcon } from '@smui/chips';
-  import { localeFormat, hasStarted, isExpired, dynamicUrl } from '$lib/utils';
+  import { hasStarted, isExpired, LOCALESTORE, DateTimeFormatOptions } from '$lib/utils';
   import { getMedia } from '$lib/utils/media';
   import { parseISO } from 'date-fns';
   import { session, users } from '$lib/stores';
@@ -94,7 +94,13 @@
     (timerOff = expired || custom),
     (readoutPeriod =
       (startDate &&
-        `${localeFormat(startDate, dateFormat)} - ${localeFormat(endDate, dateFormat)}`) ||
+        `${new Date(startDate).toLocaleDateString(
+          LOCALESTORE.get($locale)?.fns?.code,
+          DateTimeFormatOptions
+        )} - ${new Date(endDate).toLocaleDateString(
+          LOCALESTORE.get($locale)?.fns?.code,
+          DateTimeFormatOptions
+        )}`) ||
       $_('text.not-scheduled')),
     (readoutDuration = (startDate && _readoutDuration(startDate, endDate)) || '--')
   ))(joinData, $locale);

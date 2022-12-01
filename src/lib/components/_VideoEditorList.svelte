@@ -2,8 +2,13 @@
   import { getContext, onMount } from 'svelte';
   import { videos, derivedCurrentVideo } from '$lib/stores';
   import { Modal, VideoCard } from '$lib/components';
-  import { posterCreatedHandler, posterRemoveHandler, posterSelectedHandler } from '$lib/utils';
-  import { _ } from 'svelte-i18n';
+  import {
+    LOCALESTORE,
+    posterCreatedHandler,
+    posterRemoveHandler,
+    posterSelectedHandler
+  } from '$lib/utils';
+  import { locale, _ } from 'svelte-i18n';
 
   const key = 'editor-uploader-modal';
   const { close } = getContext('editor-modal');

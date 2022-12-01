@@ -5,7 +5,7 @@
   import { fly } from 'svelte/transition';
   import { currentVideo, images, session } from '$lib/stores';
   import { getMedia } from '$lib/utils/media';
-  import { ADMIN, proxyEvent, SUPERUSER } from '$lib/utils';
+  import { ADMIN, DateTimeFormatOptions, LOCALESTORE, proxyEvent, SUPERUSER } from '$lib/utils';
   import { VideoMedia, MediaUploader } from '$lib/components';
   import Card, { Content, PrimaryAction, Actions, ActionButtons, ActionIcons } from '@smui/card';
   import Button, { Label } from '@smui/button';
@@ -22,6 +22,7 @@
   export let key = 'default-modal';
 
   const { open, close } = getContext(key);
+  const dispatch = createEventDispatcher();
 
   let className = '';
   /**
@@ -32,7 +33,6 @@
    * @type {import('@smui/menu').MenuComponentDev}
    */
   let deleteMenu;
-  let dispatch = createEventDispatcher();
   /**
    * @type {import('@smui/menu-surface').MenuSurfaceComponentDev}
    */
@@ -41,6 +41,9 @@
    * @type {HTMLDivElement}
    */
   let imageListAnchor;
+  /**
+   * @type {boolean}
+   */
   let isEditMode = false;
   /**
    * @type {string}
@@ -50,11 +53,9 @@
    * @type {string}
    */
   let description;
-  let dateOptions = {
-    day: '2-digit',
-    year: 'numeric',
-    month: '2-digit'
-  };
+  /**
+   * @type {boolean}
+   */
   let isImageListOpen = false;
 
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
@@ -118,7 +119,9 @@
     );
   }
 
-  /** @param {string} id */
+  /**
+   * @param {string} id
+   */
   function getCachedImage(id) {
     let res = getMedia('IMAGE', id, $session.user?.jwt, {
       width: 100,
@@ -128,7 +131,9 @@
     return res;
   }
 
-  /** @param {CustomEvent} param0 */
+  /**
+   * @param {CustomEvent} param0
+   */
   function uploadSuccessHandler({ detail }) {
     dispatch('Video:posterCreated', detail);
     close();
@@ -163,7 +168,10 @@
               <span class="ellipsed pl-2"
                 >{$_('text.uploaded-on', {
                   values: {
-                    date: new Date(video.created).toLocaleDateString($locale, dateOptions)
+                    date: new Date(video.created).toLocaleDateString(
+                      LOCALESTORE.get($locale)?.fns?.code,
+                      DateTimeFormatOptions
+                    )
                   }
                 })}</span
               >
@@ -176,7 +184,10 @@
                   values: {
                     date:
                       matchingData &&
-                      new Date(matchingData.end).toLocaleDateString($locale, dateOptions)
+                      new Date(matchingData.end).toLocaleDateString(
+                        LOCALESTORE.get($locale)?.fns?.code,
+                        DateTimeFormatOptions
+                      )
                   }
                 })}</span
               >

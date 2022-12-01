@@ -1,8 +1,8 @@
 // @ts-nocheck
 import { format } from 'date-fns';
-import * as locale from 'date-fns/locale/index.js';
 import { get } from 'svelte/store';
-import { locale  as _locale} from 'svelte-i18n';
+import { locale } from 'svelte-i18n';
+import { LOCALESTORE } from './const';
 
 /**
  *
@@ -13,5 +13,5 @@ import { locale  as _locale} from 'svelte-i18n';
  *                     defaulting to the current system locale
  */
 export const localeFormat = (date, dateFormat) => {
-	return format(date, dateFormat, { locale: locale[get(_locale).slice(0, 2)] });
+  return format(date, dateFormat, { locale: LOCALESTORE.get(get(locale)).fns });
 };

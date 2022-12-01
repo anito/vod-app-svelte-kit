@@ -613,8 +613,7 @@
           {endDate}
           minDate={subYears(startOfYear(new Date()), 2)}
           maxDate={addYears(endOfYear(new Date()), 2)}
-          {dateFormat}
-          localeObject={LOCALESTORE.get($locale || 'en-US')?.fns}
+          localeObject={LOCALESTORE.get($locale)?.fns}
           customHeaderHeight
           class="sm-header"
           disabled={!selectionVideoId}

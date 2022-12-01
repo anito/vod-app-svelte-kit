@@ -19,6 +19,7 @@ export { default as ListMessages } from './_ListMessages.svelte';
 export { default as ListErrors } from './_ListErrors.svelte';
 export { default as LoadingModal } from './_LoadingModal.svelte';
 export { default as LocaleSwitcher } from './_LocaleSwitcher.svelte';
+export { default as LoggingMenu } from './_LoggingMenu.svelte';
 export { default as LoginForm } from './_LoginForm.svelte';
 export { default as MailList } from './_MailList.svelte';
 export { default as MailManager } from './_MailManager.svelte';
