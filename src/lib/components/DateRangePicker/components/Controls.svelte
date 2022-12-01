@@ -71,7 +71,6 @@
         bind:value={selectedMonth}
         class={selectClass}
         on:change={(e) => {
-          selectedMonth = selectedMonth;
           let incrementAmount = differenceInCalendarMonths(selectedMonth.value, month);
           dispatch('pageChange', {
             incrementAmount
