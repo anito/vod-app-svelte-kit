@@ -203,7 +203,7 @@
   beforeNavigate(({ to }) => {
     if (to?.url.searchParams.get('config') === 'load') {
       configSnackbar($_('text.loading-configuration'));
-      snackbar?.open();
+      snackbar?.open?.();
     }
   });
 
@@ -341,7 +341,7 @@
     if (show) {
       let message = res.message || res.data.message;
       configSnackbar(message);
-      snackbar?.open();
+      snackbar?.open?.();
     }
   }
 
@@ -363,7 +363,7 @@
     if (show) {
       let message = res.message || res.data.message;
       configSnackbar(message);
-      snackbar?.open();
+      snackbar?.open?.();
     }
   }
 
@@ -409,7 +409,7 @@
    */
   function configSnackbar(msg, link) {
     try {
-      snackbar.close();
+      snackbar?.close?.();
     } catch (e) {}
     configureAction(msg, link);
   }
@@ -458,7 +458,7 @@
         values: { name: user.name }
       })
     );
-    snackbar?.open();
+    snackbar?.open?.();
   }
 
   /**
@@ -509,7 +509,7 @@
       snackbarMessage = res.message || res.data?.message;
 
       configSnackbar(snackbarMessage);
-      snackbar?.open();
+      snackbar?.open?.();
       return res;
     });
   }
@@ -524,7 +524,7 @@
     /** @type {any} */
     const { locale } = { ...detail };
     configSnackbar($_('text.language_is_now', { values: { locale } }));
-    snackbar.open();
+    snackbar.open?.();
   }
 
   /**

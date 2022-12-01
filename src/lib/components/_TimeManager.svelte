@@ -52,6 +52,10 @@
    */
   let root;
   /**
+   * @type {Element}
+   */
+  let main;
+  /**
    * @type {string | null}
    */
   let schedulingVideoId;
@@ -184,6 +188,7 @@
             )
         )
         .sort(sortByTitle);
+  $: addClass(isopen);
 
   onMount(() => {
     root = document.documentElement;
@@ -434,9 +439,16 @@
       });
     }, 100);
   }
+
+  /**
+   * @param {boolean} isopen
+   */
+  function addClass(isopen) {
+    root?.classList.toggle('datapicker--open', isopen);
+  }
 </script>
 
-<div class="main-grid datapicker" class:isopen>
+<div bind:this={main} class="main-grid datapicker" class:isopen>
   <div
     class="grid-item user-videos"
     class:no-user-selected={!currentUser}

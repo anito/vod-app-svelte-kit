@@ -106,7 +106,7 @@
 
     let renewed;
     if ((renewed = localStorage.getItem('renewed')) && renewed == $session.user?.id) {
-      renewedTokenDialog.setOpen(true);
+      renewedTokenDialog.setOpen?.(true);
     }
 
     // window.addEventListener('MDCChip:interaction', chipInteractionHandler);
@@ -155,7 +155,7 @@
       users.put({ ...res.data });
       message = res.message;
       configSnackbar(message);
-      snackbar.open();
+      snackbar.open?.();
       return res;
     } else {
       try {
@@ -163,7 +163,7 @@
         let message = res.data.errors.token._isUnique || res.data.massage || 'Error';
         configSnackbar(message);
       } catch (e) {}
-      snackbar.open();
+      snackbar.open?.();
     }
   }
 
@@ -173,7 +173,7 @@
         users.put({ ...currentUser, ...res.data });
       }
       configSnackbar(res.message);
-      snackbar.open();
+      snackbar.open?.();
     });
   }
 
@@ -183,12 +183,13 @@
       message = res.message || res.data.message || res.statusText;
 
       if (res?.success) {
+        // @ts-ignore
         users.put({ ...currentUser, ...data });
       } else {
         active = !active;
       }
       configSnackbar(message);
-      snackbar.open();
+      snackbar.open?.();
     });
   }
 
@@ -199,7 +200,7 @@
   }
 
   function resolveAllHandler() {
-    resolveAllDialog.setOpen(true);
+    resolveAllDialog.setOpen?.(true);
   }
 
   /**
@@ -207,7 +208,7 @@
    * @param {CustomEvent} event
    */
   function activateUserHandler(event) {
-    (event.detail.silent && activateUser({ active: true })) || activateUserDialog.setOpen(true);
+    (event.detail.silent && activateUser({ active: true })) || activateUserDialog.setOpen?.(true);
   }
 
   /**
@@ -216,19 +217,19 @@
    */
   function generateTokenHandler(event) {
     (event.detail.silent && generateToken({ constrained: false })) ||
-      generateTokenDialog.setOpen(true);
+      generateTokenDialog.setOpen?.(true);
   }
 
   function removeTokenHandler() {
-    removeTokenDialog.setOpen(true);
+    removeTokenDialog.setOpen?.(true);
   }
 
   function tokenRedirectHandler() {
-    redirectDialog.setOpen(true);
+    redirectDialog.setOpen?.(true);
   }
 
   function infoDialogHandler() {
-    infoDialog.setOpen(true);
+    infoDialog.setOpen?.(true);
   }
 
   /**
@@ -341,7 +342,7 @@
     console.log(detail);
 
     configSnackbar(message);
-    snackbar.open();
+    snackbar.open?.();
 
     if (success) {
       uploadedData = data;
@@ -718,6 +719,7 @@
     position: absolute;
     z-index: 999;
   }
+  :global(.datapicker--open) .fab,
   :global(.add-user-view--open) .fab {
     display: none;
   }
