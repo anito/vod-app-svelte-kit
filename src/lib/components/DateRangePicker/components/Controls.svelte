@@ -1,7 +1,7 @@
 <script>
   // @ts-nocheck
 
-  import { createEventDispatcher, tick } from 'svelte';
+  import { createEventDispatcher } from 'svelte';
   import {
     addMonths,
     differenceInCalendarMonths,
@@ -31,6 +31,8 @@
   let selectedMonth;
   let selectedYear;
 
+  $: console.log(month);
+  $: console.log(selectedMonth);
   $: months = buildMonthDropdown(month, monthFormat);
   $: years = buildYearDropdown(minDate, maxDate, pageNum);
   $: prevMonth = subMonths(month, 1);
@@ -44,11 +46,11 @@
     (!isSameMonth(mo, minDate) && isAfter(mo, maxDate));
 
   function setSelectedMonth(month) {
-    selectedMonth = month;
+    setTimeout(() => (selectedMonth = month));
   }
 
-  function setSelectedYear(year) {
-    selectedYear = year;
+  async function setSelectedYear(year) {
+    setTimeout(() => (selectedYear = year));
   }
 </script>
 
@@ -71,6 +73,7 @@
         bind:value={selectedMonth}
         class={selectClass}
         on:change={(e) => {
+          selectedMonth = selectedMonth;
           let incrementAmount = differenceInCalendarMonths(selectedMonth.value, month);
           dispatch('pageChange', {
             incrementAmount
