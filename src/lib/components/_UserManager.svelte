@@ -212,7 +212,7 @@
    */
   let openUploader = (event) => {
     event.stopPropagation();
-    avatarMenu.setOpen(false);
+    avatarMenu.setOpen?.(false);
 
     open(
       MediaUploader,
@@ -264,11 +264,11 @@
         });
         await invalidate('app:session');
       }
-      await invalidate('app:users');
+      await invalidate('app:main');
     }
     close();
     configSnackbar(message);
-    snackbar.open();
+    snackbar.open?.();
   }
 
   async function deleteAvatar() {
@@ -287,12 +287,12 @@
           });
           await invalidate('app:session');
         }
-        await invalidate('app:users');
+        await invalidate('app:main');
       }
     });
 
     configSnackbar(msg);
-    snackbar.open();
+    snackbar.open?.();
   }
 
   async function activateUser() {
@@ -309,8 +309,7 @@
         }
 
         configSnackbar(message);
-        snackbar.isOpen() && snackbar.close();
-        snackbar.open();
+        snackbar.open?.();
       }
     });
   }
@@ -334,8 +333,7 @@
           }
 
           configSnackbar(message);
-          snackbar.isOpen() && snackbar.close();
-          snackbar.open();
+          snackbar.open?.();
         }
       });
   }
@@ -415,7 +413,7 @@
               <div
                 class="avatar-container"
                 on:keydown={() => {}}
-                on:click={() => avatarMenu.setOpen(true)}
+                on:click={() => avatarMenu.setOpen?.(true)}
               >
                 <div bind:this={avatarMenuAnchor} use:Anchor>
                   <UserGraphic
@@ -479,7 +477,7 @@
                     switch (formAction) {
                       case 'add': {
                         if (success) {
-                          await invalidate('app:users');
+                          await invalidate('app:main');
                           setTimeout(async () => {
                             await goto(`/users/${user.id}?tab=profile&mode=edit`);
                           }, 200);
@@ -493,7 +491,7 @@
                       }
                       case 'del': {
                         if (success) {
-                          await invalidate('app:users');
+                          await invalidate('app:main');
                         }
                         mode = EDIT;
                         break;
@@ -501,7 +499,7 @@
                     }
                     reset();
                     configSnackbar(message$1 || message$2);
-                    snackbar.open();
+                    snackbar.open?.();
                   }
                 };
               }}

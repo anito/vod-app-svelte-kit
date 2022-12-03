@@ -41,7 +41,7 @@ export async function load({ fetch, depends, locals }) {
         })
         .catch((reason) => console.error(reason)))) ||
     [];
-  depends('app:videos');
+  depends('app:main');
 
   return { users, videos, images, videosAll };
 }
