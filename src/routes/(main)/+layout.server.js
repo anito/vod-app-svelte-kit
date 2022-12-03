@@ -1,3 +1,5 @@
+import { USER } from '$lib/utils';
+
 /** @type {import('./$types').LayoutServerLoad} */
 export async function load({ fetch, depends, locals }) {
   /**
@@ -27,7 +29,19 @@ export async function load({ fetch, depends, locals }) {
     })
     .catch((reason) => console.error(reason));
 
+  const { role } = locals.session.data;
+  /**
+   * @type {import('$lib/types').VideoAll[]}
+   */
+  const videosAll =
+    (role === USER &&
+      (await fetch('/repos/videos/all')
+        .then(async (res) => {
+          if (res.ok) return await res.json();
+        })
+        .catch((reason) => console.error(reason)))) ||
+    [];
   depends('app:videos');
 
-  return { users, videos, images };
+  return { users, videos, images, videosAll };
 }
