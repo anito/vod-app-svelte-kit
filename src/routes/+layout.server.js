@@ -1,5 +1,5 @@
 /** @type {import('./$types').LayoutServerLoad} */
-export async function load({ fetch, depends }) {
+export async function load({ fetch, depends, locals }) {
   /**
    * @type {import('$lib/types').Session}
    */
@@ -7,7 +7,9 @@ export async function load({ fetch, depends }) {
     .then(async (res) => await res.json())
     .catch((reason) => console.error(reason));
 
+  const repos = locals.repos;
+
   depends('app:session');
 
-  return { session };
+  return { session, repos };
 }

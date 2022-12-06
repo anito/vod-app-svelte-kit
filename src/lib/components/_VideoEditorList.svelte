@@ -29,10 +29,10 @@
     {#each storeData as video}
       <VideoCard
         class="mb-3"
-        on:Video:posterCreated={(event) => posterCreatedHandler(event, $derivedCurrentVideo.id)}
-        on:Video:selectedPoster={(event) =>
+        on:video:posterCreated={(event) => posterCreatedHandler(event, $derivedCurrentVideo.id)}
+        on:video:selectedPoster={(event) =>
           posterSelectedHandler(event.detail, $derivedCurrentVideo.id)}
-        on:Video:removePoster={() => posterRemoveHandler($derivedCurrentVideo.id)}
+        on:video:removePoster={() => posterRemoveHandler($derivedCurrentVideo.id)}
         {video}
         {key}
       />

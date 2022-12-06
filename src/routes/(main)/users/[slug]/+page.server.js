@@ -1,4 +1,4 @@
-import { invalid, redirect } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load({ locals }) {
@@ -37,9 +37,8 @@ export const actions = {
         .catch((err) => console.error(err));
     });
   },
-  del: async ({ locals, params, fetch }) => {
+  del: async ({ params, fetch }) => {
     const id = params.slug;
-    const { jwt } = locals.session.data.user;
     return await fetch(`/users/${id}`, {
       method: 'DELETE'
     })

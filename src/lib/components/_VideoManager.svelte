@@ -97,7 +97,7 @@
     const { data, message, success } = { ...detail.responseText };
 
     configSnackbar(message);
-    snackbar.open();
+    snackbar.open?.();
 
     if (success) {
       uploadedData = data;
@@ -126,9 +126,9 @@
     <div class="grid lg:grid-cols-3 md:grid-cols-2 grid-flow-row gap-4">
       {#each $videos.sort(sortAZ) as video (video.id)}
         <VideoCard
-          on:Video:posterCreated={(event) => posterCreatedHandler(event, video.id)}
-          on:Video:selectedPoster={(event) => posterSelectedHandler(event.detail, video.id)}
-          on:Video:removePoster={() => posterRemoveHandler(video.id)}
+          on:video:posterCreated={(event) => posterCreatedHandler(event, video.id)}
+          on:video:selectedPoster={(event) => posterSelectedHandler(event.detail, video.id)}
+          on:video:removePoster={() => posterRemoveHandler(video.id)}
           {video}
         />
       {/each}

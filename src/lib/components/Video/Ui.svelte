@@ -222,7 +222,7 @@
           >
             {format(time)}
           </div>
-          <div class="slider scrubber" style="flex: 8; height: 16px; width: 100%;">
+          <div class="slider" style="flex: 8; height: 16px; width: 100%;">
             <div class="custom-slider">
               <div class="track fill" />
               <div class="primary fill" style="width: {percentageTime}%;" />

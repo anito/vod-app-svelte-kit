@@ -7,6 +7,7 @@
   import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, info, proxyEvent } from '$lib/utils';
   import { session, users, videos } from '$lib/stores';
   import { _ } from 'svelte-i18n';
+  import { invalidate } from '$app/navigation';
 
   /**
    * @type {import('$lib/types').Video}
@@ -53,15 +54,18 @@
     ?.videos.find(
       (/** @type {import('$lib/types').Video} v */ v) => v?.id === video?.id
     )?._joinData;
+  $: associated = user?.videos
+    .filter(/** @param {import('$lib/types').Video} v */ (v) => v?.id != video?.id)
+    .map(/** @param {import('$lib/types').Video} v */ (v) => ({ id: v?.id }));
   $: (video.image_id &&
     getMediaImage(video.image_id, $session.user?.jwt).then((res) => (poster = res))) ||
     (poster = emptyPoster);
   $: video?.id && getMediaVideo(video?.id, $session.user?.jwt).then((res) => (src = res));
   $: ((time) => {
     if (!paused || !canplay) return;
-    let pauseTime = time;
+    let pausedTime = time;
     clearTimeout(timeoutId);
-    timeoutId = setTimeout((saved) => saved === playhead && savePlayhead(), 500, pauseTime);
+    timeoutId = setTimeout((saved) => saved === time && savePlayhead(saved), 200, pausedTime);
   })(playhead);
 
   onMount(() => {});
@@ -77,6 +81,36 @@
     if (canplay) return;
     canplay = true;
     playhead = hasPrivileges ? video?.playhead : joinData?.playhead;
+  }
+
+  /**
+   * @param {number | undefined} [time]
+   */
+  async function savePlayhead(time) {
+    if (!canplay) return;
+    if (hasPrivileges) {
+      // if (Math.round(video?.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
+      proxyEvent('playhead', { data: { id: video.id, playhead } });
+      proxyEvent('video:save_', {
+        data: { id: video.id, playhead: time || playhead }
+      });
+    } else {
+      // if (Math.round(joinData?.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
+      const data = {
+        id: user?.id,
+        videos: [
+          {
+            id: video?.id,
+            _joinData: { ...joinData, playhead: time || playhead }
+          },
+          ...associated
+        ]
+      };
+
+      proxyEvent('user:save', {
+        data
+      });
+    }
   }
 
   /**
@@ -131,31 +165,6 @@
     );
     paused = true;
     canplay = false;
-  }
-
-  async function savePlayhead() {
-    if (!canplay) return;
-    if (hasPrivileges) {
-      if (Math.round(video?.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
-      proxyEvent('video:save', { data: { id: video?.id, playhead } });
-    } else {
-      if (Math.round(joinData?.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
-      const associated = user?.videos
-        .filter(/** @param {import('$lib/types').Video} v */ (v) => v?.id != video?.id)
-        .map(/** @param {import('$lib/types').Video} v */ (v) => ({ id: v?.id }));
-      const data = {
-        id: user?.id,
-        videos: [
-          {
-            id: video?.id,
-            _joinData: { ...joinData, playhead }
-          },
-          ...associated
-        ]
-      };
-
-      proxyEvent('user:save', { data });
-    }
   }
 </script>
 

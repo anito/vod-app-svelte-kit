@@ -339,7 +339,6 @@
   function uploadSuccessHandler({ detail }) {
     /** @type {any} */
     const { data, message, success } = { ...detail.responseText };
-    console.log(detail);
 
     configSnackbar(message);
     snackbar.open?.();

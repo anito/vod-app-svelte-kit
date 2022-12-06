@@ -3,7 +3,7 @@
   import './_menu-surface.scss';
   import { getContext, createEventDispatcher } from 'svelte';
   import { fly } from 'svelte/transition';
-  import { currentVideo, images, session } from '$lib/stores';
+  import { currentVideo, images, session, urls, videos } from '$lib/stores';
   import { getMedia } from '$lib/utils/media';
   import { ADMIN, DateTimeFormatOptions, LOCALESTORE, proxyEvent, SUPERUSER } from '$lib/utils';
   import { VideoMedia, MediaUploader } from '$lib/components';
@@ -69,7 +69,10 @@
   $: canSave = description !== video.description || title !== video.title;
 
   function save() {
-    proxyEvent('video:save', { data: { id: video.id, title, description }, show: true });
+    proxyEvent('video:save', {
+      data: { id: video.id, title, description },
+      show: true
+    });
     isEditMode = false;
     return false;
   }
@@ -84,18 +87,22 @@
    * @param {boolean} open
    */
   function setDeleteMenuOpen(open) {
-    deleteMenu.setOpen(open);
+    deleteMenu.setOpen?.(open);
     return false;
   }
 
-  function del() {
-    proxyEvent('video:delete', { data: { id: video.id }, show: true });
+  function remove() {
+    proxyEvent('video:delete', {
+      data: { id: video.id },
+      show: true,
+      onsuccess: (/** @type {{ data: { id: string; }; }} */ res) => {
+        urls.del(res?.data.id);
+        videos.del(res?.data.id);
+      }
+    });
   }
 
-  /**
-   * @param {any} type
-   */
-  function createPoster(type) {
+  function createPoster() {
     open(
       MediaUploader,
       {
@@ -135,7 +142,7 @@
    * @param {CustomEvent} param0
    */
   function uploadSuccessHandler({ detail }) {
-    dispatch('Video:posterCreated', detail);
+    dispatch('video:posterCreated', detail);
     close();
   }
 
@@ -229,34 +236,34 @@
         <ActionIcons style="position: relative;">
           <IconButton
             class="material-icons"
-            on:click={() => cardMenu.setOpen(true)}
+            on:click={() => cardMenu.setOpen?.(true)}
             toggle
             aria-label={$_('text.more-options')}
             title={$_('text.more-options')}>more_vert</IconButton
           >
           <Menu bind:this={cardMenu} on:MDCMenuSurface:opened={cardMenuOpenedHandler}>
             <List class="menu-list">
-              <Item on:click={() => createPoster('image')}>
+              <Item on:click={() => createPoster()}>
                 <Text>{$_('text.new-poster')}</Text>
               </Item>
-              <Item disabled={!$images.length} on:click={() => imageList.setOpen(true)}>
+              <Item disabled={!$images.length} on:click={() => imageList.setOpen?.(true)}>
                 <Text>{$_('text.select-poster')}</Text>
               </Item>
               <Separator />
               <Item
                 disabled={!video.image_id}
-                on:SMUI:action={() => dispatch('Video:removePoster', video.image_id)}
+                on:SMUI:action={() => dispatch('video:removePoster', video.image_id)}
               >
                 <Text>{$_('text.remove-poster')}</Text>
               </Item>
-              <Item class="text-red-700" on:SMUI:action={() => del()}>
+              <Item class="text-red-700" on:SMUI:action={() => remove()}>
                 <Text>{$_('text.delete-video')}</Text>
               </Item>
             </List>
           </Menu>
           <Menu bind:this={deleteMenu}>
             <List>
-              <Item class="text-red-700" on:SMUI:action={() => del()}>
+              <Item class="text-red-700" on:SMUI:action={() => remove()}>
                 <Text>{$_('text.delete-video')}</Text>
               </Item>
             </List>
@@ -280,7 +287,7 @@
                     <ImageAspectContainer>
                       <Image
                         class="preview-image"
-                        on:click={() => dispatch('Video:selectedPoster', image.id)}
+                        on:click={() => dispatch('video:selectedPoster', image.id)}
                         {src}
                       />
                     </ImageAspectContainer>

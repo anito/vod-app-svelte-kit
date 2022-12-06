@@ -328,7 +328,7 @@
    * @param {CustomEvent} param0
    */
   async function videoSaveHandler({ detail }) {
-    const { data, show } = detail;
+    const { data, show, onsuccess, onerror } = detail;
     const res = await fetch(`/videos/${data.id}`, {
       method: 'PUT',
       body: JSON.stringify(data)
@@ -336,7 +336,12 @@
       if (res.ok) return await res.json();
     });
 
-    if (res?.success) videos.put(data);
+    if (res?.success) {
+      videos.put(data);
+      onsuccess?.(res);
+    } else {
+      onerror?.(res);
+    }
 
     if (show) {
       let message = res.message || res.data.message;
@@ -350,15 +355,17 @@
    * @param {CustomEvent} param0
    */
   async function videoDeleteHandler({ detail }) {
-    const { data, show } = detail;
+    const { data, show, onsuccess, onerror } = detail;
     const res = await fetch(`/videos/${data.id}`, { method: 'DELETE' }).then(async (res) => {
       if (res.ok) return await res.json();
     });
 
     if (res?.success) {
-      urls.del(data.id);
-      videos.del(data.id);
+      onsuccess?.(res);
+    } else {
+      onerror?.(res);
     }
+    await invalidate('app:main');
 
     if (show) {
       let message = res.message || res.data.message;
@@ -372,7 +379,7 @@
    * @param {CustomEvent} param0
    */
   async function userSaveHandler({ detail }) {
-    const { data } = detail;
+    const { data, onsuccess, onerror } = detail;
     const res = await fetch(`/users/${data.id}`, {
       method: 'PUT',
       body: JSON.stringify(data)
@@ -380,7 +387,13 @@
       if (res.ok) return await res.json();
     });
 
-    if (res.success) users.put(res.data);
+    if (res.success) {
+      users.put(res.data);
+      onsuccess?.(res);
+    } else {
+      onerror?.(res);
+    }
+    await invalidate('app:main');
   }
 
   /**
@@ -388,7 +401,7 @@
    * @param {CustomEvent} param0
    */
   async function userDeleteHandler({ detail }) {
-    const { id } = detail;
+    const { id, onsuccess, onerror } = detail;
     const res = await fetch(`/users/${id}`, {
       method: 'DELETE',
       body: JSON.stringify(data)
@@ -399,7 +412,10 @@
     if (res?.success) {
       // at this point associated videos are not updated yet
       // however we fetch a fresh set on load when changing to video page
-      users.del(id);
+      // users.del(id);
+      onsuccess?.(res);
+    } else {
+      onerror?.(res);
     }
   }
   /**
@@ -535,7 +551,7 @@
     color = color || '#ad1457';
     -1 < navigator.userAgent.toLowerCase().indexOf('chrome')
       ? window.console.log.apply(console, [
-          '%c %c  Axel Nitzschner - Immersive Studio  %c %c  http://vod-app.vercel.app %c ',
+          '%c %c  Axel Nitzschner - Immersive Studio  %c %c  https://vod-app.vercel.app %c ',
           'background: #ad1457; padding:5px 0; margin:3px 0 10px 0;',
           'background: #eee; color: #e2370f; padding:5px 0; margin:3px 0 10px 0;',
           'background: #ad1457; padding:5px 0; margin:3px 0 10px 0;',
@@ -543,7 +559,7 @@
           'background: #ad1457; padding:5px 0; margin:3px 0 10px 0;'
         ])
       : window.console &&
-        window.console.log('Axel Nitzschner - Immersive Studio - http://vod-app.vercel.app');
+        window.console.log('Axel Nitzschner - Immersive Studio - https://vod-app.vercel.app');
   }
 </script>
 

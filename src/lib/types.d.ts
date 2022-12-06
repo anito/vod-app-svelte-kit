@@ -99,15 +99,15 @@ export interface Avatar<AvatarRepoType = Record<string, any>> {
 
 export interface Video<VideoRepoType = Record<string, any>> {
   id: string | any
-  title: string
-  description: string | never
-  image: Image | any
-  image_id: string | any
-  src: string | any
-  playhead: number | any
-  _joinData: any[] | any
-  _matchingData: any[] | any
-  created: Date
+  title?: string
+  description?: string | never
+  image?: Image | any
+  image_id?: string | any
+  src?: string | any
+  playhead?: number | any
+  _joinData?: any[] | any
+  _matchingData?: any[] | any
+  created: string | number | Date
 }
 
 export interface VideoAll<VideoAllRepoType = Record<string, any>> {
@@ -117,7 +117,7 @@ export interface VideoAll<VideoAllRepoType = Record<string, any>> {
   image: Image | any
   image_id: string | any
   src: string | any
-  created: Date
+  created?: string | number | Date
 }
 
 export interface GoogleUser<GoogleUserType = Record<string, any>> {

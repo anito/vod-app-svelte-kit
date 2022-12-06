@@ -14,15 +14,15 @@ const fallbackLocale = 'de-DE';
 
 /** @type {import('./$types').LayoutLoad} */
 export async function load({ data, fetch, depends, url }) {
-  const hasConfigParam = 'load' === url.searchParams.get('config');
+  const needsConfig = 'load' === url.searchParams.get('config');
 
-  if (hasConfigParam || !config) {
+  if (needsConfig || !config) {
     config = await fetch('/config')
       .then(async (res) => await res.json())
       .catch((reason) => console.error(reason));
 
     // redirect w/o config query
-    if (hasConfigParam) {
+    if (needsConfig) {
       const searchParam = buildSearchParams(url.searchParams, { removableKeys: ['config'] });
       throw redirect(302, `${url.pathname}${searchParam}`);
     }

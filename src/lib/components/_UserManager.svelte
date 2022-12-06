@@ -6,12 +6,12 @@
   import * as api from '$lib/api';
   import { page } from '$app/stores';
   import { browser } from '$app/environment';
-  import { goto, invalidate, invalidateAll } from '$app/navigation';
+  import { goto, invalidate } from '$app/navigation';
   import { getContext, onMount } from 'svelte';
   import Header from './_Header.svelte';
   import { fly } from 'svelte/transition';
   import { session, users } from '$lib/stores';
-  import { proxyEvent, ADMIN, SUPERUSER, post, log } from '$lib/utils';
+  import { proxyEvent, ADMIN, SUPERUSER, post } from '$lib/utils';
   import Textfield from '@smui/textfield';
   import TextfieldIcon from '@smui/textfield/icon';
   import HelperText from '@smui/textfield/helper-text';
@@ -486,13 +486,11 @@
                         break;
                       }
                       case 'edit': {
-                        if (success) users.put(user);
+                        await invalidate('app:main');
                         break;
                       }
                       case 'del': {
-                        if (success) {
-                          await invalidate('app:main');
-                        }
+                        await invalidate('app:main');
                         mode = EDIT;
                         break;
                       }

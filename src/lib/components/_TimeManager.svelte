@@ -250,7 +250,7 @@
         start = toISODate(now);
         end = toISODate(time, true);
       }
-      saveTime(schedulingVideoId, start, end);
+      saveScheduledTime(schedulingVideoId, start, end);
       timespanSelection = timespanSelections[0].value;
       schedulingVideoId = null;
     }
@@ -275,7 +275,7 @@
     let isoStart = toISODate(startDate);
     let isoEnd = toISODate(endDate);
 
-    saveTime(selectionVideoId, isoStart, isoEnd);
+    saveScheduledTime(selectionVideoId, isoStart, isoEnd);
   }
 
   /**
@@ -283,7 +283,7 @@
    * @param {string | null} start
    * @param {string | null} end
    */
-  async function saveTime(id, start, end) {
+  async function saveScheduledTime(id, start, end) {
     const associated = userVideos
       .filter((/** @type {{ id: string | null; }} */ v) => v.id != id)
       .map((/** @type {{ id: any; }} */ v) => ({ id: v.id }));
@@ -291,6 +291,7 @@
     const joinData = currentVideo?._joinData || {};
 
     const data = {
+      id: $session.user?.id,
       videos: [
         {
           id,
@@ -300,10 +301,10 @@
       ]
     };
 
-    const res = await saveUser(data);
-
-    let idx;
-    if (res?.success) {
+    const onsuccess = (
+      /** @type {{ data: import("$lib/types").User<Record<any, any>>; message: any; }} */ res
+    ) => {
+      let idx;
       handleSuccess(res, $_('text.time-slot-updated'));
       setTimeout(() => {
         idx = userVideos.findIndex(
@@ -311,10 +312,14 @@
         );
         idx !== -1 && itemsList[USERVIDEOSLIST].focusItemAtIndex(idx);
       }, 500);
-    } else {
+    };
+    const onerror = (
+      /** @type {{ message: any; data: { message: any; code: any; }; statusText: any; status: any; }} */ res
+    ) => {
       startDate = startDate;
-      handleError(res);
-    }
+      if (res) handleError(res);
+    };
+    proxyEvent('user:save', { data, onsuccess, onerror });
   }
 
   /**
@@ -333,28 +338,20 @@
     );
     const _userVideos = [...userVideos.slice(0, idx), ...userVideos.slice(idx + 1)];
     const ids = _userVideos.map((v) => v.id);
-
     const data = { videos: { _ids: [...ids] } };
-    const res = await saveUser(data);
 
-    if (res?.success) {
+    const onsuccess = (
+      /** @type {{ data: import("$lib/types").User<Record<any, any>>; message: any; }} */ res
+    ) => {
       selectionVideoId === schedulingVideoId && (selectionVideoId = null);
-      handleSuccess(res, $_('text.video-removed'));
-    } else {
-      handleError(res);
-    }
-  }
-
-  /**
-   * @param {{ videos: ({ id: any; } | { id: string | null; _joinData: any; })[] | { _ids: any[]; }; }} data
-   */
-  async function saveUser(data) {
-    return await fetch(`/users/${currentUser?.id}`, {
-      method: 'PUT',
-      body: JSON.stringify(data)
-    }).then(async (res) => {
-      if (res.ok) return await res.json();
-    });
+      if (res) handleSuccess(res, $_('text.video-removed'));
+    };
+    const onerror = (
+      /** @type {{ message: any; data: { message: any; code: any; }; statusText: any; status: any; }} */ res
+    ) => {
+      if (res) handleError(res);
+    };
+    proxyEvent('user:save', { data, onsuccess, onerror });
   }
 
   /**
