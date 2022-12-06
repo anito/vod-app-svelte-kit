@@ -3,7 +3,7 @@
   import './_menu-surface.scss';
   import { getContext, createEventDispatcher } from 'svelte';
   import { fly } from 'svelte/transition';
-  import { currentVideo, images, session, urls, videos } from '$lib/stores';
+  import { currentVideo, images, session } from '$lib/stores';
   import { getMedia } from '$lib/utils/media';
   import { ADMIN, DateTimeFormatOptions, LOCALESTORE, proxyEvent, SUPERUSER } from '$lib/utils';
   import { VideoMedia, MediaUploader } from '$lib/components';
@@ -94,11 +94,7 @@
   function remove() {
     proxyEvent('video:delete', {
       data: { id: video.id },
-      show: true,
-      onsuccess: (/** @type {{ data: { id: string; }; }} */ res) => {
-        urls.del(res?.data.id);
-        videos.del(res?.data.id);
-      }
+      show: true
     });
   }
 

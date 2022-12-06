@@ -361,6 +361,8 @@
     });
 
     if (res?.success) {
+      urls.del(data.id);
+      videos.del(data.id);
       onsuccess?.(res);
     } else {
       onerror?.(res);
@@ -408,9 +410,7 @@
     });
 
     if (res?.success) {
-      // at this point associated videos are not updated yet
-      // however we fetch a fresh set on load when changing to video page
-      // users.del(id);
+      users.del(id);
       onsuccess?.(res);
     } else {
       onerror?.(res);
