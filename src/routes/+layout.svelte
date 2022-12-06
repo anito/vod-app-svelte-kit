@@ -365,7 +365,6 @@
     } else {
       onerror?.(res);
     }
-    await invalidate('app:main');
 
     if (show) {
       let message = res.message || res.data.message;
@@ -393,7 +392,6 @@
     } else {
       onerror?.(res);
     }
-    await invalidate('app:main');
   }
 
   /**

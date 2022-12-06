@@ -65,7 +65,7 @@
     if (!paused || !canplay) return;
     let pausedTime = time;
     clearTimeout(timeoutId);
-    timeoutId = setTimeout((saved) => saved === time && savePlayhead(saved), 200, pausedTime);
+    timeoutId = setTimeout((saved) => saved === time && savePlayhead(), 200, pausedTime);
   })(playhead);
 
   onMount(() => {});
@@ -83,16 +83,12 @@
     playhead = hasPrivileges ? video?.playhead : joinData?.playhead;
   }
 
-  /**
-   * @param {number | undefined} [time]
-   */
-  async function savePlayhead(time) {
+  async function savePlayhead() {
     if (!canplay) return;
     if (hasPrivileges) {
       // if (Math.round(video?.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
-      proxyEvent('playhead', { data: { id: video.id, playhead } });
-      proxyEvent('video:save_', {
-        data: { id: video.id, playhead: time || playhead }
+      proxyEvent('video:save', {
+        data: { id: video.id, playhead }
       });
     } else {
       // if (Math.round(joinData?.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
@@ -101,7 +97,7 @@
         videos: [
           {
             id: video?.id,
-            _joinData: { ...joinData, playhead: time || playhead }
+            _joinData: { ...joinData, playhead }
           },
           ...associated
         ]
