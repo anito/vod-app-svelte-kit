@@ -6,10 +6,14 @@
   import { LOCALESTORE, post } from '$lib/utils';
   import { _, locale, locales } from 'svelte-i18n';
 
-  /** @type {import("@smui/menu").MenuComponentDev} */
-  let localeMenu;
   let localeMenuAnchor;
-  /** @type {string | null | undefined} */
+  /**
+   * @type {import("@smui/menu").MenuComponentDev}
+   */
+  let localeMenu;
+  /**
+   * @type {string | null | undefined}
+   */
   let currentLocale;
 
   $: currentLocale = $locale;
@@ -21,7 +25,7 @@
    * @param {string} value
    */
   async function setLocale(value) {
-    localeMenu.setOpen(false);
+    localeMenu.setOpen?.(false);
     if (value === currentLocale) return;
 
     await post('/locale', ($locale = value)).then(() => {
@@ -31,7 +35,7 @@
 </script>
 
 <span class="relative">
-  <a href="." on:click|preventDefault={() => localeMenu.setOpen(true)}>
+  <a href="." on:click|preventDefault={() => localeMenu.setOpen?.(true)}>
     <div class="menu-anchor switcher lg:-mr-8" bind:this={localeMenuAnchor} use:Anchor>
       <div class="current-locale">{currentLocale?.toUpperCase().slice(0, 2)}</div>
     </div>

@@ -404,13 +404,18 @@ export function dynamicUrl(id, url) {
 /**
  * Helper function for dynamicUrl
  * @param {URLSearchParams | string | undefined} searchParams
- * @param {{ removableKeys: Array<string>}} [options]
+ * @param {{ removableKeys?: Array<string>, addableKeys?: Array<[string, string]>}} [options]
  * @returns {string}
  */
-export function buildSearchParams(searchParams, options = { removableKeys: [] }) {
-  const { removableKeys } = { ...options };
+export function buildSearchParams(searchParams, options = { removableKeys: [], addableKeys: [] }) {
+  const { removableKeys, addableKeys } = { ...options };
   const searchParam = new URLSearchParams(searchParams);
-  removableKeys.forEach((key) => {
+  addableKeys?.forEach((key) => {
+    if (key.length === 2) {
+      searchParam?.set(key[0], key[1]);
+    }
+  });
+  removableKeys?.forEach((key) => {
     searchParam?.has(key) && searchParam.delete(key);
   });
   const search = searchParam?.toString();

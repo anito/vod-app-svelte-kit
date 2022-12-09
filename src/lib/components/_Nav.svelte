@@ -61,13 +61,7 @@
 
 <header class:visible={visible || open}>
   <nav>
-    <a
-      data-sveltekit-prefetch
-      href="/"
-      class="home"
-      title={home_title}
-      style="background-image: url('{logo}')">{home}</a
-    >
+    <a href="/" class="home" title={home_title} style="background-image: url('{logo}')">{home}</a>
 
     {#if open}
       <div
@@ -85,7 +79,7 @@
       on:mouseleave={() => (open = false)}
     >
       <li class:hide-if-desktop={!showHome} class:active={segment === 'home'} class="nav-item">
-        <a data-sveltekit-prefetch href="/">{home}</a>
+        <a href="/">{home}</a>
       </li>
       <slot />
     </ul>
@@ -181,6 +175,7 @@
   }
 
   .primary > :global(li.nav-item a),
+  .primary > :global(li.nav-item .link-button),
   .primary > :global(li.nav-item span):not(button span) {
     font-size: 1.1rem;
     font-weight: 600;
@@ -232,7 +227,8 @@
     transition: none;
   }
 
-  .primary > :global(li.nav-item):not(.active) :global(a):hover {
+  .primary > :global(li.nav-item):not(.active) :global(a):hover,
+  .primary > :global(li.nav-item):not(.active) :global(.link-button):hover {
     color: var(--flash);
   }
 

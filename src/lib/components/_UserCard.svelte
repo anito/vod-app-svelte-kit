@@ -27,7 +27,7 @@
   <div class="flex flex-col justify-end" style="flex:1 0 auto">
     <Actions>
       <ActionButtons>
-        <Button color="primary" on:click={() => menuUser.setOpen(true)}>
+        <Button color="primary" on:click={() => menuUser.setOpen?.(true)}>
           <Label>Löschen</Label>
           <Icon class="material-icons">delete</Icon>
         </Button>

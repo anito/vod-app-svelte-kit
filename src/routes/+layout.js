@@ -1,31 +1,22 @@
-import { redirect } from '@sveltejs/kit';
-import { buildSearchParams, LOCALESTORE } from '$lib/utils';
+import { CONFIG, LOCALESTORE } from '$lib/utils';
 import { register, waitLocale, init, getLocaleFromNavigator } from 'svelte-i18n';
+import UAParser from 'ua-parser-js';
 
 LOCALESTORE.forEach((val, key) => {
   register(key, () => import(`../messages/${val.filename}.json`));
 });
 
-/**
- * @type {import('$lib/types').Setting}
- */
-let config;
 const fallbackLocale = 'de-DE';
 
 /** @type {import('./$types').LayoutLoad} */
-export async function load({ data, fetch, depends, url }) {
-  const needsConfig = 'load' === url.searchParams.get('config');
-
-  if (needsConfig || !config) {
-    config = await fetch('/config')
-      .then(async (res) => await res.json())
-      .catch((reason) => console.error(reason));
-
-    // redirect w/o config query
-    if (needsConfig) {
-      const searchParam = buildSearchParams(url.searchParams, { removableKeys: ['config'] });
-      throw redirect(302, `${url.pathname}${searchParam}`);
-    }
+export async function load({ data, fetch, depends }) {
+  if (!CONFIG.has('data')) {
+    CONFIG.set(
+      'data',
+      await fetch('/config')
+        .then(async (res) => await res.json())
+        .catch((reason) => console.error(reason))
+    );
   }
 
   const session = data.session;
@@ -34,8 +25,11 @@ export async function load({ data, fetch, depends, url }) {
     initialLocale: session.locale || getLocaleFromNavigator()
   });
 
+  const parser = new UAParser(data.ua);
+  const browser = parser.getBrowser();
+
   depends('app:config');
 
   await waitLocale();
-  return { session, config };
+  return { session, config: CONFIG.get('data'), browser };
 }

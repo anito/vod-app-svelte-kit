@@ -235,7 +235,8 @@
     "more": "Mehr...",
     "loading-configuration": "Lade Konfiguration",
     "reload-config": "Konfiguration neu laden",
-    "share": "Teilen"
+    "share": "Teilen",
+    "settings": "Überblick Einstellungen"
   },
   "summary": {
     "copy-link": {

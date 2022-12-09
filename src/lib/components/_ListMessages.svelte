@@ -1,4 +1,7 @@
 <script>
+  /**
+   * @type {any}
+   */
   export let message;
 </script>
 

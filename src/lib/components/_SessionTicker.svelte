@@ -26,7 +26,7 @@
   /** @type {number} */
   let fadeoutTimeMs = 2000;
 
-  $: chipClassName = $ticker / 60000 <= leadTime ? signalType : '';
+  $: chipClassName = $ticker / (60 * 1000) <= leadTime ? signalType : '';
   $: signal = chipClassName === signalType;
   $: isVisible = !signalOnly || signal;
   $: indefinite = fails < Fails;

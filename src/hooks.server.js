@@ -15,6 +15,7 @@ export const handle = handleSession(
     event.locals.videosRepo = VideosRepo.getInstance();
     event.locals.imagesRepo = ImagesRepo.getInstance();
     event.locals.videosAllRepo = VideosAllRepo.getInstance();
+    event.locals.userAgent = event.request.headers.get('user-agent');
 
     return await resolve(event);
   }

@@ -1,6 +1,4 @@
 <script>
-  // @ts-nocheck
-
   import { log } from '$lib/utils';
   import { tick, createEventDispatcher, onMount } from 'svelte';
   import { _ } from 'svelte-i18n';
@@ -9,40 +7,67 @@
   const dispatch = createEventDispatcher();
   const scrubStart = { x: 0, y: 0, playhead: 0 };
 
-  /** @type {number} */
+  /**
+   * @type {number}
+   */
   let duration;
-  /** @type {ReturnType<typeof setTimeout>} */
+  /**
+   * @type {ReturnType<typeof setTimeout>}
+   */
   let controlsTimeout;
   let className = '';
   let hydrated = false;
   let hydrating = false;
-  /** @type {string | undefined} */
+  /**
+   * @type {string | undefined}
+   */
   let currentPoster;
   let buffered;
-  /** @type {boolean} */
+  /**
+   * @type {boolean}
+   */
   let scrubbing;
-  /** @type {Element} */
+  /**
+   * @type {Element}
+   */
   let target;
-  /** @type {boolean} */
+  /**
+   * @type {boolean}
+   */
   let isMouseAction;
-  /** @type {boolean} */
+  /**
+   * @type {boolean}
+   */
   let customControls;
-  /** @type {string | null} */
+  /**
+   * @type {string | null}
+   */
   let _src;
 
   export let allowScrubbing = false;
-
-  /** @type {HTMLVideoElement} */
+  /**
+   * @type {HTMLVideoElement}
+   */
   export let videoElement;
-  /** @type {string | undefined} */
+  /**
+   * @type {string | undefined}
+   */
   export let src;
-  /** @type {import('$lib/types').Video} */
+  /**
+   * @type {import('$lib/types').Video}
+   */
   export let video;
-  /** @type {boolean} */
+  /**
+   * @type {boolean}
+   */
   export let autoplay;
-  /** @type {string | undefined} */
+  /**
+   * @type {string | undefined}
+   */
   export let poster;
-  /** @type {string | undefined} */
+  /**
+   * @type {string | undefined}
+   */
   export let type;
   export let muted = true;
   export let controls = false; // use native controls if true

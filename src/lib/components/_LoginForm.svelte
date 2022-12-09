@@ -100,7 +100,7 @@
         /**
          * Show dialog after 3 fails
          */
-        if (++loginAttempts > 3) invalidTokenUserDialog.setOpen(true);
+        if (++loginAttempts > 3) invalidTokenUserDialog.setOpen?.(true);
       }
       reset();
       unblock();

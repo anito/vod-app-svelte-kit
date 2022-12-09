@@ -1,5 +1,5 @@
 import { derived } from 'svelte/store';
-import { session } from '$lib/stores';
+import { session, settings } from '$lib/stores';
 import { info } from '$lib/utils';
 
 function createStore() {
@@ -17,15 +17,23 @@ function createStore() {
   let intervalId;
 
   return derived(
-    [session],
+    [session, settings],
     /**
      *
-     * @param {[import('$lib/types').Session]} param0
+     * @param {[import('$lib/types').Session, import('$lib/types').Setting]} param0
      * @param {Function} set
      * @returns
      */
-    ([$session], set) => {
-      const _expires = new Date($session._expires).getTime();
+    ([$session, $settings], set) => {
+      const expires = () => {
+        return {
+          CONFIG: new Date($session._expires).getTime(),
+          SESSION: new Date().getTime() + $settings.Session.lifetime * 60 * 1000
+        };
+      };
+      const { CONFIG, SESSION } = expires();
+
+      const _expires = CONFIG;
       if (isNaN(_expires)) {
         return;
       }
@@ -41,12 +49,12 @@ function createStore() {
 
         info(
           3,
-          '%c PAGE DATA (SESSION) RECEIVED',
+          '%c PAGE DATA RECEIVED ',
           'background: #8bc34a; color: #000000; padding:4px 6px 3px 0;'
         );
       };
     },
-    100 * 1000 // initial value
+    60 * 1000 // initial value
   );
 }
 

@@ -1,9 +1,6 @@
 <script context="module">
   // @ts-nocheck
 
-  import UAParser from 'ua-parser-js';
-
-  const browserName = new UAParser().getBrowser().name;
   const MAXSTREAMS = 5;
 
   let players = new Set();
@@ -11,29 +8,43 @@
 </script>
 
 <script>
-  // @ts-nocheck
-
+  import { page } from '$app/stores';
   import Video from './Video.svelte';
   import { onMount } from 'svelte';
   import { getExt } from '$lib/utils';
   import { _ } from 'svelte-i18n';
 
   export let poster = '';
+  /**
+   * @type {import('$lib/types').Video}
+   */
   export let video;
+  /**
+   * @type {any}
+   */
   export let src;
   export let type = getExt(src);
   export let paused = true;
+  export let autoplay = false;
+  /**
+   * @type {any}
+   */
   export let playhead;
   export let controls = false;
   export let multiplayer = false;
   export let curtain = false;
 
+  const browserName = $page.data.browser.name;
+
+  /**
+   * @type {any}
+   */
   let videoElement;
   let className = '';
 
   export { className as class };
 
-  onMount((_) => {
+  onMount(() => {
     let timestamp = now;
     multiplayer &&
       players.add({
@@ -115,6 +126,7 @@
   on:player:rwd
   muted
   allowScrubbing
+  {autoplay}
   {controls}
   {poster}
   {src}

@@ -235,7 +235,8 @@
     "more": "More...",
     "loading-configuration": "Reloading configuration",
     "reload-config": "Reload configuration",
-    "share": "Share"
+    "share": "Share",
+    "settings": "Settings Overview"
   },
   "summary": {
     "copy-link": {

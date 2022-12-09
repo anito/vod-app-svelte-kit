@@ -7,9 +7,8 @@ export async function load({ fetch, depends, locals }) {
     .then(async (res) => await res.json())
     .catch((reason) => console.error(reason));
 
-  const repos = locals.repos;
-
   depends('app:session');
 
-  return { session, repos };
+  const ua = locals.userAgent;
+  return { session, ua };
 }

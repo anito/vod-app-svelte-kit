@@ -3,6 +3,7 @@
   import './_list.scss';
   import * as api from '$lib/api';
   import { onMount, tick, getContext, setContext } from 'svelte';
+  import { writable } from 'svelte/store';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import {
@@ -25,6 +26,7 @@
     BadgeGroup,
     Dot
   } from '$lib/components';
+  import { TextEditor } from '$lib/components/TextEditable';
   import { _ } from 'svelte-i18n';
   import Drawer, { AppContent, Content, Header, Title, Subtitle } from '@smui/drawer';
   import Button, { Group, Icon } from '@smui/button';
@@ -46,8 +48,6 @@
     InitialFocus
   } from '@smui/dialog';
   import { INBOX, SENT, ADMIN, SUPERUSER, log, DESC, ASC } from '$lib/utils';
-  import { writable } from 'svelte/store';
-  import { Editor } from '$lib/classes';
 
   const sortAZProtected = (
     /** @type {{ [x: string]: string; }} */ a,
@@ -91,54 +91,55 @@
   let sort = 'DESC';
   let drawer;
 
-  /** @type {import("@smui/snackbar").SnackbarComponentDev} */
+  /**
+   * @type {import("@smui/snackbar").SnackbarComponentDev}
+   */
   let snackbar;
-
-  /** @type {boolean | undefined} */
+  /**
+   * @type {boolean | undefined}
+   */
   let drawerOpen;
-
   let drawerOpenOnMount = true;
-
-  /** @type {import('$lib/types').Mail | null | undefined} */
+  /**
+   * @type {import('$lib/types').Mail | null | undefined}
+   */
   let selection;
-
   let unreadInboxes = 0;
-
-  /**  @type {string} */
+  /**
+   * @type {string}
+   */
   let activeTemplate = '';
-
-  /** @type {boolean} */
+  /**
+   * @type {boolean}
+   */
   let canSave;
-
-  /** @type {{} | undefined}  */
+  /**
+   * @type {{} | undefined}
+   */
   let working;
-
-  /** @type {MailTemplate} */
+  /**
+   * @type {MailTemplate}
+   */
   let mailTemplate;
-
-  /** @type {import("@smui/dialog").DialogComponentDev} */
+  /**
+   * @type {import("@smui/dialog").DialogComponentDev}
+   */
   let unsavedChangesDialog;
-
-  /** @type {HTMLElement} */
-  let editable;
-
-  /** @type {HTMLElement} */
+  /**
+   * @type {HTMLElement}
+   */
   let root;
-
-  let editor = new Editor({
-    id: '',
-    node: null,
-    value: '',
-    editable: null
-  });
-
-  /** @type {string | null | undefined} */
+  /**
+   * @type {string | null | undefined}
+   */
   let pendingActiveTemplate;
-
-  /** @type {string | null} */
+  /**
+   * @type {string | null}
+   */
   let activeListItem;
-
-  /** @type {number} */
+  /**
+   * @type {number}
+   */
   let selectionIndex;
   let totalInboxes = 0;
   let totalSents = 0;
@@ -321,7 +322,7 @@
   function createTemplatePath(slug) {
     // don't operate directly on $page since its reactive and causes infinite load requests!
     // instead stringify URLSearchParams before manipulating
-    let params = new URLSearchParams($page.url.searchParams.toString());
+    let params = new URLSearchParams($page.url.search);
     params.set('active', slug);
     params.delete('mail_id');
     return `${$page.url.pathname}?${params.toString()}`;
@@ -507,135 +508,33 @@
   }
 
   /**
-   * @param {{ detail: { action: string; }; }} e
+   * @param {{ detail: { action: string; }; }} event
    */
-  function unsavedChangesDialogCloseHandler(e) {
-    if (e.detail.action === 'discard') {
+  function unsavedChangesDialogCloseHandler(event) {
+    if (event.detail.action === 'discard') {
       pendingActiveTemplate && (activeListItem = pendingActiveTemplate);
       pendingActiveTemplate = void 0;
     }
   }
 
   /**
-   * @param {MouseEvent | CustomEvent} e
+   * @param {CustomEvent} event
    */
-  function overEditable(/** @type { {currentTarget: HTMLElement} | any} */ e) {
-    editable = e.currentTarget;
-    editable?.classList.add('hover');
-  }
-
-  /**
-   * @param {Event} e
-   */
-  function leaveEditable(e) {
-    if (editable?.getElementsByClassName('editor').length) return;
-    editable?.classList.remove('hover');
-  }
-
-  /**
-   * @param {CustomEvent<any>} e
-   * @param {any} id
-   */
-  function makeEditable(e, id) {
-    cancelEvent(e);
-    const range = document.createRange();
-    const selection = window.getSelection();
-    /** @type  {HTMLCollectionOf<Element> } */
-    const children = editable.getElementsByClassName('editable') || [];
-    if (children.length) {
-      /** @type {Element} */
-      const node = children[0];
-      editor.node?.classList.remove('editor');
-
-      editor = new Editor({ ...editor, id, node, value: node.innerHTML, editable });
-      editor.node.classList.add('editor');
-      editor.node.setAttribute('contenteditable', 'true');
-      editor.node.addEventListener('keydown', keyListener);
-      editor.node.addEventListener('click', cancelEvent);
-      editor.node.focus();
-      range.selectNodeContents(editor?.node);
-      range.collapse(false);
-      selection?.removeAllRanges();
-      selection?.addRange(range);
+  async function saveEditableHandler({ detail }) {
+    const { editable, onFailCallback, onSuccessCallback } = detail;
+    const success = await saveTemplateName(editable.id, editable.innerHTML);
+    if (success) {
+      onSuccessCallback?.();
+    } else {
+      onFailCallback?.();
     }
   }
 
   /**
-   * @param {KeyboardEvent} e
+   * @param {string | null | undefined} [id]
+   * @param {string | undefined} [name]
    */
-  function keyListener(e) {
-    e.stopPropagation();
-
-    const isEnter = e.key === 'Enter' || e.keyCode === 13;
-    const isEscape = e.key === 'Escape' || e.keyCode === 27;
-    if (isEnter) {
-      saveEditable(e);
-    }
-    if (isEscape) {
-      cancelEditable(e);
-    }
-  }
-
-  /**
-   * @param {MouseEvent | KeyboardEvent | CustomEvent} e
-   */
-  function cancelEvent(e) {
-    e.cancelBubble = true;
-    if (e.stopPropagation) e.stopPropagation();
-    if (e.preventDefault) e.preventDefault();
-  }
-
-  /**
-   * @param {MouseEvent | KeyboardEvent | CustomEvent} e
-   */
-  async function saveEditable(e) {
-    cancelEvent(e);
-    let success;
-    editor.node.classList.remove('editor');
-    editor.node.setAttribute('contenteditable', 'false');
-    editor.node.removeEventListener('keydown', keyListener);
-    editor.node.removeEventListener('click', cancelEvent);
-    editor.editable.classList.remove('hover');
-    if (editor.value !== editor.node.innerText) {
-      success = await saveTemplateName();
-      !success && restoreTemplateName();
-    }
-
-    editor.id = null;
-  }
-
-  /**
-   * @param {MouseEvent | KeyboardEvent | CustomEvent} e
-   */
-  function cancelEditable(e) {
-    cancelEvent(e);
-
-    editor.node.classList.remove('editor');
-    editor.node.setAttribute('contenteditable', 'false');
-    editor.node.removeEventListener('keydown', keyListener);
-    editor.node.removeEventListener('click', cancelEvent);
-    editor.editable.classList.remove('hover');
-
-    restoreTemplateName();
-
-    editor.id = void 0;
-  }
-
-  async function restoreTemplateName() {
-    let id = editor.id;
-    let name = editor.value;
-    let template = $templates.find((tmpl) => tmpl.id === id);
-
-    if (!template) return;
-
-    templates.put({ ...template, name: '' });
-    await tick();
-    templates.put({ ...template, name });
-  }
-
-  async function saveTemplateName() {
-    let id = editor.id;
-    let name = editor.node.innerText;
+  async function saveTemplateName(id, name) {
     let template = $templates.find((tmpl) => tmpl.id === id);
 
     if (!template) return;
@@ -799,34 +698,17 @@
 
                 {#each $templates.sort(sortAZProtected) as template (template.id)}
                   <Item
-                    disabled={!currentUser}
                     class="template-list-item"
-                    data-sveltekit-prefetch=""
                     href={dynamicTemplatePath(templateStringFromSlug(template.slug))}
                     activated={activeListItem === `template:${template.slug}`}
-                    on:mouseover={(e) => overEditable(e)}
-                    on:mouseleave={(e) => leaveEditable(e)}
                   >
                     <Graphic class="material-icons" aria-hidden="true">bookmark</Graphic>
-                    <Text class={!template.protected ? 'editable' : ''}>{template.name}</Text>
-                    {#if !template.protected}
-                      {#if editor.id === template.id}
-                        <Meta
-                          on:click={(e) => cancelEditable(e)}
-                          class="material-icons-outlined edit">cancel</Meta
-                        >
-                        <Meta on:click={(e) => saveEditable(e)} class="material-icons-outlined edit"
-                          >save</Meta
-                        >
-                      {:else}
-                        <Meta
-                          on:click={(e) => makeEditable(e, template.id)}
-                          class="material-icons-outlined edit">edit</Meta
-                        >
-                      {/if}
-                    {:else}
-                      <Meta class="material-icons-outlined">lock</Meta>
-                    {/if}
+                    <TextEditor
+                      id={template.id}
+                      locked={template.protected}
+                      on:save:editable={saveEditableHandler}
+                      >{template.name}
+                    </TextEditor>
                     {#if currentUser && !validateData(template)}
                       <Meta class="absolute" style="left: 0;">
                         <Dot size={5} />

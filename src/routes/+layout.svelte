@@ -13,7 +13,7 @@
   import Button, { Icon } from '@smui/button';
   import IconButton from '@smui/icon-button';
   import { Item, Separator, Text } from '@smui/list';
-  import Snackbar, { Actions } from '@smui/snackbar';
+  import Snackbar, { Actions as SnackbarActions } from '@smui/snackbar';
   import { Label } from '@smui/common';
   import {
     createRedirectSlug,
@@ -28,7 +28,10 @@
     parseLifetime,
     printDiff,
     info,
-    parseConfigData
+    parseConfigData,
+    CONFIG,
+    buildSearchParams,
+    searchParams
   } from '$lib/utils';
   import {
     fabs,
@@ -43,7 +46,7 @@
     videos,
     users
   } from '$lib/stores';
-  import { Modal, SvgIcon } from '$lib/components';
+  import { Modal, SvgIcon, LinkButton } from '$lib/components';
   import { DoubleBounce } from 'svelte-loading-spinners';
   import {
     UserGraphic,
@@ -56,6 +59,12 @@
   } from '$lib/components';
   import { svg_manifest } from '$lib/svg_manifest';
   import { _, locale } from 'svelte-i18n';
+  import Dialog, {
+    Title as DialogTitle,
+    Content,
+    Actions as DialogActions,
+    InitialFocus
+  } from '@smui/dialog';
 
   /** @type {import('./$types').LayoutData} */
   export let data;
@@ -108,6 +117,10 @@
    */
   let snackbar;
   /**
+   * @type {import("@smui/dialog").DialogComponentDev}
+   */
+  let settingsDialog;
+  /**
    * @type {number}
    */
   let loaderBackgroundOpacity = 1;
@@ -144,8 +157,11 @@
       })
   });
 
+  const editableSettings = new Map([
+    ['Console', ['infoLevel']],
+    ['Session', ['foo', 'bar']]
+  ]);
   const { getSnackbar } = getContext('snackbar');
-
   const mounted = writable(isMounted);
 
   ticker.subscribe((val) => {
@@ -193,8 +209,8 @@
   afterOrBeforeNavigation(
     afterNavigate,
     {
-      to_searches: [['config', 'load']],
-      from_pathnames: ['login'],
+      to_searches: [],
+      from_pathnames: [],
       to_pathnames: ['auth?/logout', 'auth?/login', 'login', 'logout', 'config']
     },
     navigationCallback
@@ -222,11 +238,7 @@
   }
   $: searchParamsString = $page.url.searchParams.toString();
   $: search = searchParamsString && `?${searchParamsString}`;
-  $: withConfig = () => {
-    const searchParams = new URLSearchParams($page.url.searchParams);
-    searchParams.set('config', 'load');
-    return `?${searchParams.toString()}`;
-  };
+  $: settingsDialog?.setOpen?.($page.url.searchParams.get('modal') === 'settings');
 
   onMount(async () => {
     $mounted = true;
@@ -376,7 +388,7 @@
   }
 
   /**
-   * Saves change to user data
+   * Saves changes to user data
    * @param {CustomEvent} param0
    */
   async function userSaveHandler({ detail }) {
@@ -481,7 +493,6 @@
    */
   async function sessionExtendHandler({ detail }) {
     if (!$session.user && !detail.start) return;
-
     const { lifetime } = $settings.Session;
     const time = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
     await post('/session/extend', time);
@@ -490,6 +501,7 @@
     } else {
       await invalidate('app:session');
     }
+    detail.callback?.();
   }
 
   /**
@@ -542,6 +554,36 @@
   }
 
   /**
+   * @param {any[]} item
+   */
+  function parseSettingItem(item) {
+    return {
+      title: item[0],
+      content: item[1]
+    };
+  }
+
+  /**
+   * @param {{ section: string; key: string; }} setting
+   */
+  function isEditable({ section, key }) {
+    let editableSection = editableSettings.get(section);
+    if (Array.isArray(editableSection)) {
+      return !!editableSection.find((item) => item === key);
+    } else {
+      return editableSection === key;
+    }
+  }
+
+  /**
+   * @param {MouseEvent} event
+   * @param {any} id
+   */
+  function makeEditable(event, id) {
+    // Todo
+  }
+
+  /**
    *
    * @param {string | void} color
    */
@@ -568,18 +610,35 @@
     <Modal header={{ name: 'text.edit-uploaded-content' }} key="editor-modal">
       <div bind:this={base} class="transition opacity-0">
         <form
-          use:enhance={() => {
-            loggedInButtonTextSecondLine = $_('text.one-moment');
-            return /** @param {{result: import('@sveltejs/kit').ActionResult | any}} param */ ({
+          use:enhance={({ action }) => {
+            /**
+             * @type {string}
+             */
+            let type;
+            new URLSearchParams(action.searchParams).forEach(async (v, k) => {
+              type = k.replace(/\//, '');
+              if (type === 'reload') {
+                CONFIG.delete('data');
+                await invalidate('app:config');
+              }
+            });
+            return /** @param {{result: import('@sveltejs/kit').ActionResult | any}} param */ async ({
               result
             }) => {
-              if ((result.type = 'success')) {
-                proxyEvent('session:stop', { ...result.data, redirect: '/login' });
+              if (type === 'reload') {
+                proxyEvent('session:extend', {
+                  callback: () => {}
+                });
+              }
+              if (type === 'logout') {
+                loggedInButtonTextSecondLine = $_('text.one-moment');
+                if ((result.type = 'success')) {
+                  proxyEvent('session:stop', { ...result.data, redirect: '/login' });
+                }
               }
             };
           }}
           class="main-menu login-form"
-          action="/auth?/logout"
         >
           <Nav segment={$segment} {page} {logo}>
             {#if $session.user}
@@ -607,6 +666,7 @@
                 <Button
                   variant="raised"
                   class="sign-in-out button-logout v-emph v-emph-bounce {emphasize}"
+                  formaction="/auth?/logout"
                   on:mouseenter={() => (emphasize = 'v-emph-active')}
                   on:mouseleave={() => (emphasize = '')}
                 >
@@ -694,26 +754,31 @@
                 <FrameworkSwitcher />
                 <Separator />
                 <Item class="justify-start">
-                  <a
-                    class="github"
+                  <Button
                     href={$frameworks.href}
-                    target={$frameworks.target}
-                    title={$_('text.goto-github')}
+                    target="_blank"
+                    class="link-button"
+                    ripple={false}
                   >
-                    <span style="display: flex; align-items: center;">
-                      <SvgIcon name="github" class="mr-2" style="max-width: 20%;" />
-                      <Text style="max-width: 80%;">GitHub</Text>
+                    <span style="display: flex; flex: 1 0 100%; align-items: center">
+                      <SvgIcon name="github" class="mr-2" />
+                      <Label>GitHub 2</Label>
                     </span>
-                  </a>
+                  </Button>
                 </Item>
                 <Separator />
                 <Item class="justify-start">
-                  <a href={`${$page.url.pathname}${withConfig()}`} title={$_('text.reload-config')}>
-                    <span style="display: flex; align-items: center;">
-                      <SvgIcon name="sync" class="mr-2" fillColor="#000" style="max-width: 20%;" />
-                      <Text style="max-width: 80%;">Rel.Config</Text>
-                    </span>
-                  </a>
+                  <Button
+                    href={`${$page.url.pathname}${buildSearchParams($page.url.searchParams, {
+                      addableKeys: [['modal', 'settings']]
+                    })}`}
+                    class="link-button"
+                    ripple={false}
+                    disabled
+                  >
+                    <Icon class="material-icons mr-2">settings</Icon>
+                    <Label style="">Settings</Label>
+                  </Button>
                 </Item>
               </MoreMenu>
             </NavItem>
@@ -727,6 +792,69 @@
 <LoadingModal backgroundColor="#ffffff" opacity={loaderBackgroundOpacity} wait={1000}>
   <DoubleBounce color={loaderColor} unit="px" size="200" />
 </LoadingModal>
+<Dialog
+  bind:this={settingsDialog}
+  aria-labelledby="info-title"
+  aria-describedby="info-content"
+  on:SMUIDialog:closed={async () =>
+    await goto(
+      `${$page.url.pathname}${buildSearchParams($page.url.searchParams, {
+        removableKeys: ['modal', 'edit']
+      })}`
+    )}
+>
+  <DialogTitle id="info-title">{$_('text.settings')}</DialogTitle>
+  <Content>
+    <div class="settings-list">
+      <ul class="level-1">
+        {#each Object.entries($settings).sort() as setting}
+          <li>
+            <div class="settings-headline">{$_(setting[0])}</div>
+            <span>
+              <ul class="level-2">
+                {#if setting[1] instanceof Object}
+                  {#each Object.entries(setting[1]) as item}
+                    <li class:editable-list={isEditable({ section: setting[0], key: item[0] })}>
+                      <span class="key">
+                        <strong>{item[0]}</strong>
+                      </span>
+                      <span
+                        class:editable={isEditable({ section: setting[0], key: item[0] })}
+                        contenteditable="false"
+                        class="val editable">{item[1]}</span
+                      >
+                      {#if isEditable({ section: setting[0], key: item[0] })}
+                        <!-- Todo -->
+                        <span class="hidden">
+                          <a
+                            class="edit"
+                            on:click|preventDefault={(event) =>
+                              makeEditable(event, `${setting[0]}:${item[0]}`)}
+                            href={`${$page.url.pathname}${buildSearchParams(
+                              $page.url.searchParams,
+                              {
+                                addableKeys: [['edit', `${setting[0]}:${item[0]}`]]
+                              }
+                            )}`}>edit</a
+                          >
+                        </span>
+                      {/if}
+                    </li>
+                  {/each}
+                {/if}
+              </ul>
+            </span>
+          </li>
+        {/each}
+      </ul>
+    </div>
+  </Content>
+  <DialogActions>
+    <Button action="none" variant="unelevated">
+      <Label>{$_('text.close')}</Label>
+    </Button>
+  </DialogActions>
+</Dialog>
 
 <Snackbar
   style="z-index: 1001;"
@@ -737,12 +865,12 @@
   on:MDCSnackbar:closed={handleSnackbarClosed}
 >
   <Label />
-  <Actions>
+  <SnackbarActions>
     {#if actionLabel}
       <a href={actionLink}>{actionLabel}</a>
     {/if}
     <IconButton class="material-icons" title="Dismiss">close</IconButton>
-  </Actions>
+  </SnackbarActions>
 </Snackbar>
 
 <style>
@@ -754,5 +882,52 @@
   }
   :global(.is-login-page .sign-in-out-item a) {
     pointer-events: none;
+  }
+  .settings-list .level-1 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: 'one two';
+    font-size: 0.8em;
+    font-weight: 600;
+  }
+  .settings-list .level-1 > li {
+    padding: 8px;
+  }
+  .settings-list .level-1 > li div {
+    margin-bottom: 10px;
+  }
+  .settings-list .level-2 li {
+    display: grid;
+    grid-template-areas: 'one two';
+    grid-template-columns: 2fr 3fr;
+    position: relative;
+    font-size: 0.8em;
+    font-weight: 400;
+  }
+  .settings-list .level-2 li.editable-list {
+    grid-template-areas: 'one two three';
+    grid-template-columns: 2fr 1.5fr 1.5fr;
+  }
+  .settings-list .level-2 li.editable-list .edit {
+    grid-area: three;
+  }
+  .level-2 span {
+    padding-left: 10px;
+  }
+  .level-2 .key {
+    grid-area: one;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .level-2 .val {
+    grid-area: two;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .settings-headline {
+    border-bottom: 1px solid var(--text-light);
+    border-left: 1px solid var(--text-light);
+    padding-left: 5px;
+    margin-bottom: 10px;
   }
 </style>
