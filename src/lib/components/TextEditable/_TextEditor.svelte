@@ -6,27 +6,23 @@
   import { createEventDispatcher, onMount } from 'svelte/internal';
   import Span from './_Span.svelte';
 
-  export let multiple = false;
   /**
    * @type {string}
    */
   export let id;
+  export let multiple = false;
   export { className as class };
+  export let locked = false;
+
+  const dispatch = createEventDispatcher();
   /**
    * @type {null | Span}
    */
   let selected;
   /**
-   * @type {boolean}
-   */
-  export let locked = false;
-
-  const dispatch = createEventDispatcher();
-  /**
    * @type {string}
    */
   let className = '';
-
   /**
    * @type {HTMLSpanElement}
    */
@@ -57,7 +53,9 @@
   });
   function cancelEditable() {
     active = false;
-    editable.isContentEditable && (editable.innerHTML = editable.dataset.value || '');
+    if (selected === span) {
+      editable.isContentEditable && (editable.innerHTML = editable.dataset.value || '');
+    }
   }
 
   function saveEditable() {
