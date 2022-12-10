@@ -25,10 +25,6 @@
   /**
    * @type {string}
    */
-  let restoreValue;
-  /**
-   * @type {string}
-   */
   let className = '';
 
   /**
@@ -45,8 +41,6 @@
     selected = span;
     if (!multiple) {
       editors.forEach((editor) => editor !== span && editor.cancel());
-    } else {
-      selected = null;
     }
   }
   $: contenteditable = active;
@@ -63,9 +57,7 @@
   });
   function cancelEditable() {
     active = false;
-    if (selected === span) {
-      editable.isContentEditable && (editable.innerHTML = editable.dataset.value || '');
-    }
+    editable.isContentEditable && (editable.innerHTML = editable.dataset.value || '');
   }
 
   function saveEditable() {
