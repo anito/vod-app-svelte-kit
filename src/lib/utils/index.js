@@ -29,7 +29,6 @@ import {
 import {
   ADMIN,
   ASC,
-  CONFIG,
   DateTimeFormatOptions,
   DEFAULT_TAB,
   DESC,
@@ -109,7 +108,6 @@ export {
   windowSize,
   ADMIN,
   ASC,
-  CONFIG,
   DateTimeFormatOptions,
   DEFAULT_TAB,
   DESC,

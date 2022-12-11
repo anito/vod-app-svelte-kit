@@ -30,57 +30,100 @@
   const { open: open$default, close: close$default } = getContext('default-modal');
   const { getSnackbar, configSnackbar } = getContext('snackbar');
   const { getSegment } = getContext('segment');
-  /** @type {SvelteStore<string>} */
+  /**
+   * @type {SvelteStore<string>}
+   */
   const segment = getSegment();
 
-  /** @type {import('$lib/types').User} */
+  /**
+   * @type {import('$lib/types').User}
+   */
   let currentUser;
-  /** @type {string} */
+  /**
+   * @type {string}
+   */
   let username;
   let tokenExpires;
-  /** @type {boolean} */
+  /**
+   * @type {boolean}
+   */
   let hasExpired;
-  /** @type {string} */
+  /**
+   * @type {string}
+   */
   let token;
-  /** @type {string | null} */
+  /**
+   * @type {string | null}
+   */
   let tokenId;
-  /** @type {string} */
+  /**
+   * @type {string}
+   */
   let magicLink;
-  /** @type {string} */
+  /**
+   * @type {string}
+   */
   let search = '';
-  /** @type {import("@smui/snackbar").SnackbarComponentDev} */
+  /**
+   * @type {import("@smui/snackbar").SnackbarComponentDev}
+   */
   let snackbar;
-  /** @type {string} */
+  /**
+   * @type {string}
+   */
   let message;
-  /** @type {import("@smui/dialog").DialogComponentDev} */
+  /**
+   * @type {import("@smui/dialog").DialogComponentDev}
+   */
   let infoDialog;
-  /** @type {import("@smui/dialog").DialogComponentDev} */
+  /**
+   * @type {import("@smui/dialog").DialogComponentDev}
+   */
   let generateTokenDialog;
-  /** @type {import("@smui/dialog").DialogComponentDev} */
+  /**
+   * @type {import("@smui/dialog").DialogComponentDev}
+   */
   let activateUserDialog;
-  /** @type {import("@smui/dialog").DialogComponentDev} */
+  /**
+   * @type {import("@smui/dialog").DialogComponentDev}
+   */
   let resolveAllDialog;
-  /** @type {import("@smui/dialog").DialogComponentDev} */
+  /**
+   * @type {import("@smui/dialog").DialogComponentDev}
+   */
   let renewedTokenDialog;
-  /** @type {import("@smui/dialog").DialogComponentDev} */
+  /**
+   * @type {import("@smui/dialog").DialogComponentDev}
+   */
   let removeTokenDialog;
-  /** @type {import("@smui/dialog").DialogComponentDev} */
+  /**
+   * @type {import("@smui/dialog").DialogComponentDev}
+   */
   let redirectDialog;
-  /** @type {number} */
+  /**
+   * @type {number}
+   */
   let selectionIndex;
-  /** @type {any} */
+  /**
+   * @type {any}
+   */
   let uploadedData;
-  /** @type {any} */
+  /**
+   * @type {any}
+   */
   let focusItemAtIndex;
-  /** @type {import("@smui/list").ItemComponentDev}[] */
+  /**
+   * @type {import("@smui/list").ItemComponentDev}[]
+   */
   let listItems;
-  /** @type {boolean} */
+  /**
+   * @type {boolean}
+   */
   let active;
 
   $: selectionUserId = $page.params.slug || $session.user?.id;
   $: selectionUserId && listItems && scrollIntoView();
   $: currentUser = ((id) => $users.find((usr) => usr.id === id))(selectionUserId);
-  $: user = $users.find((user) => $session.user?.id === user.id);
   $: ((usr) => {
     username = usr?.name;
     active = usr?.active || false;
@@ -337,7 +380,9 @@
    * @param {CustomEvent} param0
    */
   function uploadSuccessHandler({ detail }) {
-    /** @type {any} */
+    /**
+     * @type {any}
+     */
     const { data, message, success } = { ...detail.responseText };
 
     configSnackbar(message);
@@ -378,7 +423,9 @@
     const options = { block: 'nearest', behavior: 'smooth' };
     setTimeout(() => {
       const item = listItems.find(
-        /** @param {import("@smui/list").ItemComponentDev} item */ (item) => item.selected
+        /**
+         * @param {import("@smui/list").ItemComponentDev} item
+         */ (item) => item.selected
       );
       item?.element.scrollIntoView(options);
     }, 100);

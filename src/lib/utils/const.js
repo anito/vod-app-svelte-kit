@@ -19,7 +19,6 @@ export const DateTimeFormatOptions = {
   year: 'numeric',
   month: '2-digit'
 };
-export const CONFIG = new Map();
 export const INBOX = 'inboxes';
 export const SENT = 'sents';
 export const ADMIN = 'Administrator';

@@ -5,7 +5,7 @@
   import { tick } from 'svelte';
   import { frameworks, session } from '$lib/stores';
   import { SelectionGroup, SelectionGroupIcon } from '@smui/menu';
-  import { Item, Text } from '@smui/list';
+  import { Item, Label } from '@smui/list';
   import SvgIcon from './_SvgIcon.svelte';
   import { _ } from 'svelte-i18n';
   import { createRedirectSlug } from '$lib/utils';
@@ -74,7 +74,7 @@
         </SelectionGroupIcon>
       {/if}
 
-      <Text>{framework.name}</Text>
+      <Label class="label">{framework.name}</Label>
       {#if $frameworks.name === framework.name}
         <SelectionGroupIcon>
           <i class="material-icons">check</i>

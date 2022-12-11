@@ -1,4 +1,4 @@
-import { CONFIG, LOCALESTORE } from '$lib/utils';
+import { LOCALESTORE } from '$lib/utils';
 import { register, waitLocale, init, getLocaleFromNavigator } from 'svelte-i18n';
 import UAParser from 'ua-parser-js';
 
@@ -9,16 +9,7 @@ LOCALESTORE.forEach((val, key) => {
 const fallbackLocale = 'de-DE';
 
 /** @type {import('./$types').LayoutLoad} */
-export async function load({ data, fetch, depends }) {
-  if (!CONFIG.has('data')) {
-    CONFIG.set(
-      'data',
-      await fetch('/config')
-        .then(async (res) => await res.json())
-        .catch((reason) => console.error(reason))
-    );
-  }
-
+export async function load({ data }) {
   const session = data.session;
   init({
     fallbackLocale,
@@ -28,8 +19,6 @@ export async function load({ data, fetch, depends }) {
   const parser = new UAParser(data.ua);
   const browser = parser.getBrowser();
 
-  depends('app:config');
-
   await waitLocale();
-  return { session, config: CONFIG.get('data'), browser };
+  return { session, browser };
 }

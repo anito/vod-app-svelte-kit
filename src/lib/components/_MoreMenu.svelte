@@ -5,9 +5,14 @@
   import IconButton from '@smui/icon-button';
   import { _ } from 'svelte-i18n';
 
+  export { className as class };
+  export let labelSize = '1em';
+  export let iconSize = '20px';
+
   /** @type {import("@smui/menu").MenuComponentDev} */
   let menu;
   let menuAnchor;
+  let className = '';
 
   /**
    *
@@ -19,7 +24,12 @@
   }
 </script>
 
-<span class="menu-anchor lg:-mr-8" bind:this={menuAnchor} use:Anchor>
+<span
+  class="more-menu menu-anchor lg:-mr-8 {className}"
+  bind:this={menuAnchor}
+  use:Anchor
+  style="--label-size: {labelSize}; --icon-size: {iconSize}"
+>
   <IconButton
     class="material-icons on-surface items-stretch"
     on:click={handleClick}
@@ -39,4 +49,14 @@
 </span>
 
 <style>
+  .more-menu :global(li [class*='label']) {
+    font-size: var(--label-size, 1em);
+  }
+  .more-menu :global(li [class*='icon']) {
+    font-size: var(--icon-size, 20px);
+  }
+  :global(svg) {
+    width: var(--icon-size);
+    height: var(--icon-size);
+  }
 </style>

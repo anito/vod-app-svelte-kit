@@ -15,7 +15,6 @@ export { default as ImageManager } from './_ImageManager.svelte';
 export { default as Info } from './_Info.svelte';
 export { default as InfoChips } from './_InfoChips.svelte';
 export { default as Legal } from './_Legal.svelte';
-export { default as LinkButton } from './_LinkButton.svelte';
 export { default as ListMessages } from './_ListMessages.svelte';
 export { default as ListErrors } from './_ListErrors.svelte';
 export { default as LoadingModal } from './_LoadingModal.svelte';

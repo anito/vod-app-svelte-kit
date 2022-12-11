@@ -4,6 +4,7 @@
   import '$lib/components/_notched_outline.scss';
   import '$lib/components/_colored_snackbar.scss';
   import { derived, writable } from 'svelte/store';
+  import { browser } from '$app/environment';
   import { afterNavigate, beforeNavigate, goto, invalidate, invalidateAll } from '$app/navigation';
   import { navigating, page } from '$app/stores';
   import { enhance } from '$app/forms';
@@ -29,7 +30,6 @@
     printDiff,
     info,
     parseConfigData,
-    CONFIG,
     buildSearchParams,
     searchParams
   } from '$lib/utils';
@@ -46,7 +46,7 @@
     videos,
     users
   } from '$lib/stores';
-  import { Modal, SvgIcon, LinkButton } from '$lib/components';
+  import { Modal, SvgIcon } from '$lib/components';
   import { DoubleBounce } from 'svelte-loading-spinners';
   import {
     UserGraphic,
@@ -133,6 +133,16 @@
    */
   let isMounted = false;
 
+  settings.subscribe((val) => {
+    printDiff(val, { store: 'config' });
+  });
+
+  loadConfig()
+    .then((res) => {
+      settings.update(parseConfigData(res));
+    })
+    .catch((reason) => console.error(reason));
+
   setContext('fab', {
     setFab: (/** @type {any} */ name) => fabs.update(name),
     restoreFab: () => fabs.restore()
@@ -184,7 +194,7 @@
   const { getSegment } = getContext('segment');
   const segment = getSegment();
 
-  salutation.update(randomItem(data.config?.Site?.salutations) || 'Hi');
+  // salutation.update(randomItem(data.config?.Site?.salutations) || 'Hi');
 
   /**
    *
@@ -223,9 +233,6 @@
     }
   });
 
-  $: configData = parseConfigData(data.config);
-  $: settings.update(configData);
-  $: printDiff(configData, { store: 'config' });
   $: printDiff($page.data, { store: 'page' });
   $: person = svg(svg_manifest.person, $theme.primary);
   $: logo = svg(svg_manifest.logo_vod, $theme.primary);
@@ -329,6 +336,15 @@
     window.removeEventListener('video:delete', videoDeleteHandler);
     window.removeEventListener('user:save', userSaveHandler);
     window.removeEventListener('user:delete', userDeleteHandler);
+  }
+
+  async function loadConfig() {
+    if (browser)
+      return await fetch('/config', { method: 'GET' })
+        .then(async (res) => {
+          if (res.ok) return await res.json();
+        })
+        .catch((reason) => console.error(reason));
   }
 
   function removeClasses() {
@@ -617,18 +633,14 @@
             let type;
             new URLSearchParams(action.searchParams).forEach(async (v, k) => {
               type = k.replace(/\//, '');
-              if (type === 'reload') {
-                CONFIG.delete('data');
-                await invalidate('app:config');
-              }
             });
             return /** @param {{result: import('@sveltejs/kit').ActionResult | any}} param */ async ({
               result
             }) => {
               if (type === 'reload') {
-                proxyEvent('session:extend', {
-                  callback: () => {}
-                });
+                if (result.type === 'success') {
+                  settings.update(parseConfigData(result.data));
+                }
               }
               if (type === 'logout') {
                 loggedInButtonTextSecondLine = $_('text.one-moment');
@@ -750,7 +762,7 @@
             {/if}
 
             <NavItem title={$_('text.more')} style="vertical-align: middle;" class="hide-if-mobile">
-              <MoreMenu>
+              <MoreMenu class="more-menu" labelSize="1em" iconSize="18px">
                 <FrameworkSwitcher />
                 <Separator />
                 <Item class="justify-start">
@@ -762,8 +774,15 @@
                   >
                     <span style="display: flex; flex: 1 0 100%; align-items: center">
                       <SvgIcon name="github" class="mr-2" />
-                      <Label>GitHub 2</Label>
+                      <Label>GitHub</Label>
                     </span>
+                  </Button>
+                </Item>
+                <Separator />
+                <Item class="justify-start">
+                  <Button formaction="/config?/reload" class="link-button" ripple={false}>
+                    <SvgIcon name="sync" class="mr-2" />
+                    <Label>Reload Config</Label>
                   </Button>
                 </Item>
                 <Separator />
@@ -774,7 +793,6 @@
                     })}`}
                     class="link-button"
                     ripple={false}
-                    disabled
                   >
                     <Icon class="material-icons mr-2">settings</Icon>
                     <Label style="">Settings</Label>

@@ -1,17 +1,14 @@
-import { writable } from 'svelte/store';
+import { randomItem } from '$lib/utils';
+import { derived } from 'svelte/store';
+import { settings } from '.';
 
 function createStore() {
-  const { subscribe, update, set } = writable([]);
-
-  return {
-    subscribe,
-    /**
-     *
-     * @param {*} val
-     * @returns
-     */
-    update: (val) => update(() => val),
-    set
-  };
+  return derived(
+    [settings],
+    ([$settings], set) => {
+      set(randomItem($settings.Site?.salutations));
+    },
+    'Hi'
+  );
 }
 export default createStore();

@@ -176,8 +176,8 @@
 
   .primary > :global(li.nav-item a),
   .primary > :global(li.nav-item .link-button),
-  .primary > :global(li.nav-item span):not(button span) {
-    font-size: 1.1rem;
+  .primary > :global(li.nav-item [class*='label']) {
+    font-size: var(--label-size, 1.1em);
     font-weight: 600;
     border: none;
     color: inherit;
@@ -191,8 +191,8 @@
   }
 
   .primary :global(svg) {
-    width: 1.25rem;
-    height: 1.25rem;
+    width: var(--icon-size, 1.25rem);
+    height: var(--icon-size, 1.25rem);
   }
 
   .home {
