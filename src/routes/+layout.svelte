@@ -627,7 +627,7 @@
       <div bind:this={base} class="transition opacity-0">
         <form
           use:enhance={({ action }) => {
-            let actionParam = new URLSearchParams(action.searchParams)
+            const actionParam = new URLSearchParams(action.searchParams)
               .keys()
               .next()
               .value.replace(/\//, '');
