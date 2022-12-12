@@ -71,8 +71,8 @@
 
 {#if $session.user}
   <div class="container {className}" class:show class:signal>
-    <Set chips={[{ id: 0 }]} let:chip class="info">
-      <Chip class={chipClassName} on:MDCChip:interaction {chip}>
+    <Set chips={[{ id: 0 }]} let:chip class="info" on:MDCChip:interaction>
+      <Chip class={chipClassName} {chip}>
         <LeadingIcon class="material-icons" leading>av_timer</LeadingIcon>
         <Text>
           <span class="mr-1">

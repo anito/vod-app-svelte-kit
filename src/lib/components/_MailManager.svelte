@@ -320,8 +320,7 @@
    * @param {string} slug
    */
   function createTemplatePath(slug) {
-    // don't operate directly on $page since its reactive and causes infinite load requests!
-    // instead stringify URLSearchParams before manipulating
+    // don't operate directly on $page since its reactive
     let params = new URLSearchParams($page.url.search);
     params.set('active', slug);
     params.delete('mail_id');
@@ -586,9 +585,14 @@
    * @return {any}
    */
   function matchesTemplate(value) {
-    if (!value) return;
+    if (!value) return false;
     let matches = value.match(/(template):([\w-:\d]+)/);
-    if (matches) return matches[2];
+    if (matches?.length === 3) {
+      return matches[2];
+    } else {
+      working = undefined;
+      return false;
+    }
   }
 
   /**

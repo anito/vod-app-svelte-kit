@@ -155,6 +155,7 @@
 
   .primary {
     position: relative;
+    pointer-events: none;
     padding: 0 3rem 0 0;
     background: url(/icons/chevron.svg) calc(100% - 1em) 0.05em no-repeat;
     background-size: 1em 1em;
@@ -172,6 +173,10 @@
 
   .primary.open::after {
     display: none;
+  }
+
+  .primary > :global(li.nav-item) {
+    pointer-events: all;
   }
 
   .primary > :global(li.nav-item a),
