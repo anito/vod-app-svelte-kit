@@ -191,6 +191,9 @@
 
   .primary > :global(li.nav-item > a),
   .primary > :global(li.nav-item > span) {
+    display: inline-block;
+    vertical-align: middle;
+    vertical-align: -webkit-baseline-middle;
     padding: 0 0.7rem;
     min-width: 40px;
   }

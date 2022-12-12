@@ -88,7 +88,7 @@
   })(user);
 </script>
 
-<div class="user-graphics-outer" class:inactive class:dense {style}>
+<span class="user-graphics-outer" class:inactive class:dense {style}>
   {#if src}
     <Graphic
       class="user-graphics relative"
@@ -111,7 +111,7 @@
       </div>
     {/if}
   {/if}
-</div>
+</span>
 
 <style lang="scss">
   .user-graphics-outer {

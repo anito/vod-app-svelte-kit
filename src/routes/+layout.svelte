@@ -758,8 +758,8 @@
               </NavItem>
             {/if}
 
-            <NavItem title={$_('text.more')} style="vertical-align: middle;" class="hide-if-mobile">
-              <MoreMenu class="more-menu" labelSize="1em" iconSize="18px">
+            <NavItem title={$_('text.more')} class="hide-if-mobile">
+              <MoreMenu labelSize="1em" iconSize="18px">
                 <FrameworkSwitcher />
                 <Separator />
                 <Item class="justify-start">
@@ -778,7 +778,7 @@
                 <Separator />
                 <Item class="justify-start">
                   <Button formaction="/config?/reload" class="link-button" ripple={false}>
-                    <SvgIcon name="sync" class="mr-2" />
+                    <SvgIcon name="sync" class="mr-2" fillColor="#000" />
                     <Label>Reload Config</Label>
                   </Button>
                 </Item>

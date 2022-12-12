@@ -28,9 +28,7 @@
         ><slot /></a
       >
     {:else}
-      <span>
-        <slot />
-      </span>
+      <slot />
     {/if}
   </li>
 {/if}

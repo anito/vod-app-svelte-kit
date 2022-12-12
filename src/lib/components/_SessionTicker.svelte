@@ -2,7 +2,6 @@
   import './_chip.scss';
   import { onMount } from 'svelte';
   import Chip, { Set, LeadingIcon, Text } from '@smui/chips';
-  import Dot from './_Dot.svelte';
   import { session, ticker } from '$lib/stores';
   import { _ } from 'svelte-i18n';
 
@@ -29,7 +28,6 @@
   $: chipClassName = $ticker / (60 * 1000) <= leadTime ? signalType : '';
   $: signal = chipClassName === signalType;
   $: isVisible = !signalOnly || signal;
-  $: indefinite = fails < Fails;
   $: show = isVisible || forced;
 
   onMount(() => {
@@ -78,9 +76,6 @@
           <span class="mr-1">
             {parse($ticker)}
           </span>
-          <span class="no-tick-indicator">
-            <Dot size={indefinite ? 4 : 0} color="alt" />
-          </span>
         </Text>
       </Chip>
     </Set>
@@ -88,13 +83,6 @@
 {/if}
 
 <style>
-  .no-tick-indicator {
-    display: inline-block;
-    width: 4px;
-    margin: auto 0;
-    margin-right: 0px;
-    margin-left: -3px;
-  }
   .container {
     opacity: 0.3;
     transition: opacity 1s ease-out;

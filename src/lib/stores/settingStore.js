@@ -4,10 +4,10 @@ function createStore() {
   /** @type {any} */
   const defaults = {
     Session: {
-      lifetime: 30 * 24 * 60 * 60 * 1000
+      lifetime: 1
     },
     Site: { defaultUserTab: 'profile', salutation: 'Hi', salutations: [] },
-    Console: { infoLevel: 1, log: false }
+    Console: { infoLevel: 0, log: 0 }
   };
   const { subscribe, update, set } = writable(defaults);
 
