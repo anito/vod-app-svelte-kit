@@ -5,7 +5,7 @@ import { UsersRepo, VideosRepo, ImagesRepo, VideosAllRepo } from '$lib/classes';
 export const handle = handleSession(
   {
     secret: 'ALKDSFH§%&24LKFDJSD/&$§&ÖLDKFJSDL§&%$&=&=SLKAF',
-    key: 'vod',
+    key: 'VOD__SESSION',
     rolling: true
   },
   async ({ event, resolve }) => {

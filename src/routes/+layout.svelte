@@ -66,9 +66,6 @@
     InitialFocus
   } from '@smui/dialog';
 
-  /** @type {import('./$types').LayoutData} */
-  export let data;
-
   const snackbarLifetime = 4000;
   const redirectDelay = 300;
 
@@ -431,8 +428,7 @@
   async function userDeleteHandler({ detail }) {
     const { id, onsuccess, onerror } = detail;
     const res = await fetch(`/users/${id}`, {
-      method: 'DELETE',
-      body: JSON.stringify(data)
+      method: 'DELETE'
     }).then(async (res) => {
       if (res.ok) return await res.json();
     });
@@ -637,6 +633,7 @@
               if (actionParam === 'reload') {
                 if (result.type === 'success') {
                   settings.update(parseConfigData(result.data));
+                  invalidate('app:session');
                 }
               }
               if (actionParam === 'logout') {

@@ -27,8 +27,8 @@ function createStore() {
     ([$session, $settings], set) => {
       const expires = () => {
         return {
-          CONFIG: new Date($session._expires).getTime(),
-          SESSION: new Date().getTime() + $settings.Session.lifetime * 60 * 1000
+          SESSION: new Date($session._expires).getTime(),
+          CONFIG: new Date().getTime() + $settings.Session.lifetime * 60 * 1000
         };
       };
       const { CONFIG, SESSION } = expires();
