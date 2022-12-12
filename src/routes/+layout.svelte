@@ -135,12 +135,6 @@
     printDiff(val, { store: 'config' });
   });
 
-  loadConfig()
-    .then((res) => {
-      settings.update(parseConfigData(res));
-    })
-    .catch((reason) => console.error(reason));
-
   setContext('fab', {
     setFab: (/** @type {any} */ name) => fabs.update(name),
     restoreFab: () => fabs.restore()
@@ -202,7 +196,7 @@
     if (excludes.size) {
       info(
         2,
-        '%c Extending session was prevented',
+        '%c Extend session prevented',
         'background: #ffd54f; color: #000000; padding:4px 6px 3px 0;',
         excludes
       );
@@ -248,9 +242,9 @@
   onMount(async () => {
     $mounted = true;
     root = document.documentElement;
-
     snackbar = getSnackbar();
 
+    loadConfig();
     fadeIn();
     initListener();
     checkSession();
@@ -337,12 +331,14 @@
   }
 
   async function loadConfig() {
-    if (browser)
-      return await fetch('/config', { method: 'GET' })
-        .then(async (res) => {
-          if (res.ok) return await res.json();
-        })
-        .catch((reason) => console.error(reason));
+    return await fetch('/config', { method: 'GET' })
+      .then(async (res) => {
+        if (res.ok) return await res.json();
+      })
+      .then((res) => {
+        settings.update(parseConfigData(res));
+      })
+      .catch((reason) => console.error(reason));
   }
 
   function removeClasses() {
@@ -564,16 +560,6 @@
     const { locale } = { ...detail };
     configSnackbar($_('text.language_is_now', { values: { locale } }));
     snackbar.open?.();
-  }
-
-  /**
-   * @param {any[]} item
-   */
-  function parseSettingItem(item) {
-    return {
-      title: item[0],
-      content: item[1]
-    };
   }
 
   /**
