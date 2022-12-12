@@ -627,22 +627,19 @@
       <div bind:this={base} class="transition opacity-0">
         <form
           use:enhance={({ action }) => {
-            /**
-             * @type {string}
-             */
-            let type;
-            new URLSearchParams(action.searchParams).forEach(async (v, k) => {
-              type = k.replace(/\//, '');
-            });
+            let actionParam = new URLSearchParams(action.searchParams)
+              .keys()
+              .next()
+              .value.replace(/\//, '');
             return /** @param {{result: import('@sveltejs/kit').ActionResult | any}} param */ async ({
               result
             }) => {
-              if (type === 'reload') {
+              if (actionParam === 'reload') {
                 if (result.type === 'success') {
                   settings.update(parseConfigData(result.data));
                 }
               }
-              if (type === 'logout') {
+              if (actionParam === 'logout') {
                 loggedInButtonTextSecondLine = $_('text.one-moment');
                 if ((result.type = 'success')) {
                   proxyEvent('session:stop', { ...result.data, redirect: '/login' });
