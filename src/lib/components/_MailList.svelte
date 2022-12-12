@@ -41,6 +41,7 @@
   $: userId = $page.params.slug;
   $: sortBit = sort === DESC ? -1 : sort === ASC ? 1 : 0;
   $: activeItem = $page.url.searchParams.get('active');
+  $: selectionMailId = $page.url.searchParams.get('mail_id');
 
   onMount(() => {});
 
@@ -149,6 +150,7 @@
           on:mail:toggleRead
           on:mail:destroyed={mailDestroyedHandler}
           bind:selection
+          selected={mail.id === selectionMailId}
           mail={parseMail(mail)}
           type={activeItem}
         />

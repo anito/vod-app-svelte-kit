@@ -7,27 +7,35 @@
   import { locale } from 'svelte-i18n';
   import { page } from '$app/stores';
 
-  /** @type {import('$lib/types').Mail | null | undefined} */
-  export let selection;
   /**
    * @type {any | null | undefined}
    */
   export let mail;
-  /** @type {string | null} */
+  /**
+   * @type {string | null}
+   */
   export let type;
   export { className as class };
+  export let selected = false;
 
   const dispatch = createEventDispatcher();
 
-  /** @type {any | never[]} */
+  /**
+   * @type {any | never[]}
+   */
   let userItems = [];
   let created = '';
   let className = '';
-  /** @type {HTMLAnchorElement} */
+  /**
+   * @type {HTMLAnchorElement}
+   */
   let anchorElement;
+  /**
+   * @type {import('$lib/types').Mail | null | undefined}
+   */
+  export let selection;
 
   $: unread = !mail?._read;
-  $: mail_id = $page.url.searchParams.get('mail_id');
   $: dateFormat =
     /** @type {string | null | undefined} */
     $locale?.indexOf('de') != -1
@@ -39,11 +47,10 @@
       : 'yy-MM-dd hh:mm a';
 
   $: created = localeFormat(new Date(mail?.created), dateFormat);
-  $: mail && mail?.id === mail_id && (selection = mail) && selection;
 
   onMount(() => {
     userItems = type === INBOX ? mail?._from : type === SENT ? mail?._to : [];
-    setTimeout(() => {}, 100);
+    selected && anchorElement.focus();
   });
 
   onDestroy(() => {
@@ -53,9 +60,7 @@
   });
 
   function focusHandler() {
-    if (selection?.id !== mail?.id) {
-      selection = mail;
-    }
+    selection = mail;
     if (type === INBOX) {
       unread && dispatch('mail:toggleRead', { selection });
     }
@@ -78,7 +83,7 @@
 <Item
   on:focus={() => focusHandler()}
   class="{className} {mail?._read ? 'read' : 'unread'}"
-  selected={mail_id === mail?.id}
+  {selected}
   ><a
     on:focus={() => focusHandler()}
     bind:this={anchorElement}

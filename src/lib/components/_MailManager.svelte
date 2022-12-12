@@ -784,7 +784,7 @@
                   />
                 </div>
                 <div class="grid-item grid-mail-viewer">
-                  <MailViewer bind:selection />
+                  <MailViewer {selection} />
                 </div>
               {/if}
             </div>
