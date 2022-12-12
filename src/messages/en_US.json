@@ -236,7 +236,8 @@
     "loading-configuration": "Reloading configuration",
     "reload-config": "Reload configuration",
     "share": "Share",
-    "settings": "Settings Overview"
+    "settings": "Settings Overview",
+    "save-as-new-template": "Save as new template"
   },
   "summary": {
     "copy-link": {

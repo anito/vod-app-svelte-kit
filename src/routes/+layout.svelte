@@ -3,6 +3,7 @@
   import '$lib/components/_button.scss';
   import '$lib/components/_notched_outline.scss';
   import '$lib/components/_colored_snackbar.scss';
+  import '$lib/components/_dialog.scss';
   import { derived, writable } from 'svelte/store';
   import { browser } from '$app/environment';
   import { afterNavigate, beforeNavigate, goto, invalidate, invalidateAll } from '$app/navigation';
@@ -930,6 +931,7 @@
     grid-area: one;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-transform: capitalize;
   }
   .level-2 .val {
     grid-area: two;

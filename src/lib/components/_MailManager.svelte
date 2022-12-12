@@ -114,7 +114,7 @@
    */
   let canSave;
   /**
-   * @type {{} | undefined}
+   * @type {{ [x: string]: any; } | undefined}
    */
   let working;
   /**
@@ -463,8 +463,7 @@
     currentTemplate.items.map(
       (/** @type {{ field: { name: string | number; id: any; }; }} */ item) => {
         items.push({
-          // @ts-ignore
-          content: working[item.field.name],
+          content: working?.[item.field.name],
           field_id: item.field.id,
           field: item.field
         });
@@ -497,10 +496,14 @@
    * @param {string} slug
    */
   function getTemplateData(slug) {
+    /**
+     * @type {any}
+     */
     let data;
-    // @ts-ignore
-    if ((data = templateSlugData.find((i) => i[slug])) && typeof data[slug] === 'function') {
-      // @ts-ignore
+    if (
+      (data = templateSlugData.find((item) => slug in item)) &&
+      typeof data[slug] === 'function'
+    ) {
       return data[slug]();
     }
     return false;
@@ -509,10 +512,16 @@
   /**
    * @param {{ detail: { action: string; }; }} event
    */
-  function unsavedChangesDialogCloseHandler(event) {
+  async function unsavedChangesDialogCloseHandler(event) {
     if (event.detail.action === 'discard') {
       pendingActiveTemplate && (activeListItem = pendingActiveTemplate);
-      pendingActiveTemplate = void 0;
+      pendingActiveTemplate = null;
+    }
+    if (event.detail.action === 'save-as') {
+      duplicateTemplate().then((res) => {
+        pendingActiveTemplate && (activeListItem = pendingActiveTemplate);
+        pendingActiveTemplate = null;
+      });
     }
   }
 
@@ -810,11 +819,14 @@
       {@html $_('messages.you-have-unsaved-changes')}
     </div>
   </DialogContent>
-  <Actions>
-    <Button action="cancel">
+  <Actions class="button-overflow-ellipsis">
+    <Button class="max-w-33" action="cancel">
       <Label>{$_('text.cancel')}</Label>
     </Button>
-    <Button action="discard" variant="unelevated" default use={[InitialFocus]}>
+    <Button class="max-w-33" action="save-as" variant="outlined">
+      <Label>{$_('text.save-as-new-template')}</Label>
+    </Button>
+    <Button class="max-w-33" action="discard" variant="unelevated" default use={[InitialFocus]}>
       <Label>{$_('text.discard-changes')}</Label>
     </Button>
   </Actions>
