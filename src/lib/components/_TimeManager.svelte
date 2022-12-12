@@ -125,7 +125,6 @@
    */
   let itemsList = {};
 
-  $: dateFormat = $locale?.startsWith('de') ? 'dd. MMM yyyy' : 'yyyy-MM-dd';
   $: (1 || selectionUserId) && (selectionVideoId = null);
   $: currentUser = $users.find((usr) => usr.id === selectionUserId);
   $: name = currentUser?.name || '';
@@ -216,7 +215,6 @@
    * @param {import('$lib/types').Video} video
    */
   function openRemoveDialog(event, video) {
-    event.preventDefault();
     schedulingVideoId = video.id;
     if (timeRemaining(video)) {
       removeDialog.setOpen?.(true);
@@ -291,7 +289,7 @@
     const joinData = currentVideo?._joinData || {};
 
     const data = {
-      id: $session.user?.id,
+      id: currentUser?.id,
       videos: [
         {
           id,
@@ -329,16 +327,19 @@
     if (!video._joinData?.end) return 0;
     const end = new Date(video._joinData.end).getTime();
     const now = new Date().getTime();
-    return new Date(Math.max(0, end - now));
+    return Math.max(0, end - now);
   }
 
   async function removeVideo() {
+    if (!schedulingVideoId) {
+      throw 'You must indicate an ID to remove a video';
+    }
     const idx = userVideos.findIndex(
       (/** @type {{ id: string | null; }} */ itm) => itm.id === schedulingVideoId
     );
     const _userVideos = [...userVideos.slice(0, idx), ...userVideos.slice(idx + 1)];
     const ids = _userVideos.map((v) => v.id);
-    const data = { videos: { _ids: [...ids] } };
+    const data = { id: currentUser?.id, videos: { _ids: [...ids] } };
 
     const onsuccess = (
       /** @type {{ data: import("$lib/types").User<Record<any, any>>; message: any; }} */ res
@@ -507,7 +508,7 @@
                     </Button>
                     <IconButton
                       class="delete-action-button delete ml-2"
-                      on:click={(e) => openRemoveDialog(e, video)}
+                      on:click$preventDefault={(e) => openRemoveDialog(e, video)}
                     >
                       <Icon class="material-icons">remove_circle</Icon>
                     </IconButton>
