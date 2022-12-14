@@ -13,7 +13,8 @@
     DateRangePicker,
     Header,
     Component,
-    VideoEditorList
+    VideoEditorList,
+    Paginator
   } from '$lib/components';
   import { endOfWeek, startOfYear, endOfYear, addYears, subYears, parseISO } from 'date-fns';
   import {
@@ -46,6 +47,7 @@
   const lists = new Set();
   const USERVIDEOSLIST = 'user-video-list';
   const NONUSERVIDEOSLIST = 'non-user-videos-list';
+  const emptyPoster = '/src/assets/images/empty-poster.jpg';
 
   /**
    * @type {Element}
@@ -64,11 +66,11 @@
    */
   let isopen = false;
   /**
-   * @type {import("@smui/dialog").DialogComponentDev}
+   * @type {import("@smui/dialog")}
    */
   let scheduleDialog;
   /**
-   * @type {import("@smui/dialog").DialogComponentDev}
+   * @type {import("@smui/dialog")}
    */
   let removeDialog;
   /**
@@ -81,7 +83,7 @@
   let timespanSelected;
   let firstDayOfWeek = 'monday';
   /**
-   * @type {import("@smui/snackbar").SnackbarComponentDev}
+   * @type {import("@smui/snackbar")}
    */
   let snackbar;
   /**
@@ -124,6 +126,7 @@
    * @type {any}
    */
   let itemsList = {};
+  let pagination = $page.data.pagination.videos;
 
   $: (1 || selectionUserId) && (selectionVideoId = null);
   $: currentUser = $users.find((usr) => usr.id === selectionUserId);
@@ -176,7 +179,7 @@
   $: noneUserVideos = hasPrivileges
     ? $videos.sort(sortByTitle)
     : $videosAll
-        .filter(
+        ?.filter(
           (v) =>
             !userVideos?.find(
               (/** @type {{ id: any; _joinData: { end: string | number | Date; }; }} */ uv) => {
@@ -207,7 +210,7 @@
    */
   function openScheduleDialog(video) {
     schedulingVideoId = video.id;
-    scheduleDialog.setOpen?.(true);
+    scheduleDialog?.setOpen(true);
   }
 
   /**
@@ -217,7 +220,7 @@
   function openRemoveDialog(event, video) {
     schedulingVideoId = video.id;
     if (timeRemaining(video)) {
-      removeDialog.setOpen?.(true);
+      removeDialog?.setOpen(true);
     } else {
       removeVideo();
     }
@@ -365,7 +368,7 @@
 
     message = msg || res.message || res.data.message;
     configSnackbar(message);
-    snackbar.open?.();
+    snackbar?.open();
   }
 
   /**
@@ -379,12 +382,12 @@
 
     if (400 <= code && code < 500) {
       configSnackbar(message);
-      snackbar.open?.();
+      snackbar?.open();
     } else {
       flash.update({ type: 'error', message });
       const url = `login?${createRedirectSlug($page.url)}`;
       configSnackbar(message, url);
-      snackbar.open?.();
+      snackbar?.open();
     }
   }
 
@@ -484,7 +487,7 @@
                   on:datapicker={({ detail }) => toggleDataPicker(detail.id)}
                   on:video:selected={videoSelectedHandler}
                   selected={selectionVideoId === video.id}
-                  emptyPoster="/empty-poster.jpg"
+                  {emptyPoster}
                   {video}
                   {selectionUserId}
                 >
@@ -541,7 +544,7 @@
       {/if}
     </Component>
   </div>
-  <div class="grid-item videos" class:no-videos={!noneUserVideos.length}>
+  <div class="grid-item videos" class:no-videos={!noneUserVideos?.length}>
     <Component variant="sm">
       <div slot="header">
         <Header mdc h="5">
@@ -558,7 +561,7 @@
         singleSelection
         bind:selectedIndex={selectedNoneUserIndex}
       >
-        {#if noneUserVideos.length}
+        {#if noneUserVideos?.length}
           {#each noneUserVideos as video (video.id)}
             <SimpleVideoCard
               on:video:selected={videoSelectedHandler}
@@ -566,7 +569,7 @@
               class="video"
               disabled={(hasCurrentPrivileges || hasPrivileges) && isUnmanagableNoneUserList}
               selected={selectionVideoId === video.id}
-              emptyPoster="/empty-poster.jpg"
+              {emptyPoster}
               {video}
               {selectionUserId}
             >
@@ -597,6 +600,13 @@
               {/if}
             </SimpleVideoCard>
           {/each}
+          <Paginator
+            style="position: absolute; left: 30%; right: 30%; bottom: 10px; margin: 0 auto;"
+            bind:pagination
+            store={videos}
+            id="videos-paginator"
+            action="/videos?/more_videos"
+          />
         {:else}
           <li class="flex flex-1 flex-col self-center text-center">
             <div class="m-5">{$_('text.no-videos-available')}</div>

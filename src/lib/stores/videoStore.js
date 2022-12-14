@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { writable } from 'svelte/store';
 
 function createStore() {
@@ -18,17 +17,33 @@ function createStore() {
     subscribe,
     /**
      *
-     * @param {import('../types').Video} val
+     * @param {import('../types').Video[]} values
      * @returns
      */
-    add: (val) =>
-      update(/** @param {import('../types').Video} items */ (items) => [...items, ...val]),
+    add: (values) =>
+      update(
+        /**
+         * @param {any} items
+         * @return {never | any}
+         */
+        (items) => {
+          for (const value of values) {
+            if (!items.find((/** @type {{ id: string; }} */ item) => value.id === item.id))
+              items = [...items, value];
+          }
+          return items;
+        }
+      ),
     /**
      * @param {import('../types').Video} val
      */
     put: (val) =>
       update(
-        /** @param {import('../types').Video[]} items */ (items) => {
+        /**
+         * @param {any} items
+         * @return {never | any}
+         */
+        (items) => {
           const index = findIndexById(val.id, items);
           return [...items.slice(0, index), { ...items[index], ...val }, ...items.slice(index + 1)];
         }

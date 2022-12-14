@@ -27,7 +27,7 @@
 <dev style="position: relative;">
   <IconButton
     class="material-icons"
-    on:click={() => menu.setOpen?.(true)}
+    on:click={() => menu?.setOpen(true)}
     toggle
     aria-label="Mehr Optionen"
     title="Mehr Optionen"

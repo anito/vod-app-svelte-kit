@@ -232,12 +232,15 @@
     "image": "Poster",
     "avatar": "Avatar",
     "video-posters": "Posters",
-    "more": "More...",
+    "more": "More",
+    "more-dots": "More...",
     "loading-configuration": "Reloading configuration",
     "reload-config": "Reload configuration",
     "share": "Share",
     "settings": "Settings Overview",
-    "save-as-new-template": "Save as new template"
+    "save-as-new-template": "Save as new template",
+    "load-more": "Load more",
+    "paginator-indicator": "next {next_count} ({loaded_count}/{count})"
   },
   "summary": {
     "copy-link": {

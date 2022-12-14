@@ -12,7 +12,7 @@
   /** @type {string}*/
   export let appId;
 
-  const defaultSrc = 'transparent.png';
+  const defaultSrc = '/src/assets/images/transparent.png';
 
   /** @type {any | null} */
   let authResponse = null;

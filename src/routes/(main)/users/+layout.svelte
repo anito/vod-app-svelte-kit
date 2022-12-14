@@ -7,24 +7,25 @@
   import { infos, fabs, session, users, videos, usersFoundation } from '$lib/stores';
   import Layout from './layout.svelte';
   import {
+    Component,
     InfoChips,
     Legal,
-    SimpleUserCard,
-    PageBar,
     MediaUploader,
-    Component,
+    PageBar,
+    Paginator,
+    SimpleUserCard,
     SvgIcon,
-    VideoEditorList,
-    UserGraphic
+    UserGraphic,
+    VideoEditorList
   } from '$lib/components';
   import { proxyEvent } from '$lib/utils';
-  import Button, { Icon as Icon_ } from '@smui/button';
+  import Button, { Icon as ButtonIcon } from '@smui/button';
   import Fab, { Label } from '@smui/fab';
   import Textfield from '@smui/textfield';
   import Icon from '@smui/textfield/icon';
   import List from '@smui/list';
   import Dialog, { Title as DialogTitle, Content, Actions, InitialFocus } from '@smui/dialog';
-  import { _, locale } from 'svelte-i18n';
+  import { _ } from 'svelte-i18n';
 
   const { open: open$editor, close: close$editor } = getContext('editor-modal');
   const { open: open$default, close: close$default } = getContext('default-modal');
@@ -34,6 +35,10 @@
    * @type {SvelteStore<string>}
    */
   const segment = getSegment();
+  /**
+   * @type {import('./$types').LayoutData}
+   */
+  export let data;
 
   /**
    * @type {import('$lib/types').User}
@@ -65,7 +70,7 @@
    */
   let search = '';
   /**
-   * @type {import("@smui/snackbar").SnackbarComponentDev}
+   * @type {import("@smui/snackbar")}
    */
   let snackbar;
   /**
@@ -73,31 +78,31 @@
    */
   let message;
   /**
-   * @type {import("@smui/dialog").DialogComponentDev}
+   * @type {import("@smui/dialog")}
    */
   let infoDialog;
   /**
-   * @type {import("@smui/dialog").DialogComponentDev}
+   * @type {import("@smui/dialog")}
    */
   let generateTokenDialog;
   /**
-   * @type {import("@smui/dialog").DialogComponentDev}
+   * @type {import("@smui/dialog")}
    */
   let activateUserDialog;
   /**
-   * @type {import("@smui/dialog").DialogComponentDev}
+   * @type {import("@smui/dialog")}
    */
   let resolveAllDialog;
   /**
-   * @type {import("@smui/dialog").DialogComponentDev}
+   * @type {import("@smui/dialog")}
    */
   let renewedTokenDialog;
   /**
-   * @type {import("@smui/dialog").DialogComponentDev}
+   * @type {import("@smui/dialog")}
    */
   let removeTokenDialog;
   /**
-   * @type {import("@smui/dialog").DialogComponentDev}
+   * @type {import("@smui/dialog")}
    */
   let redirectDialog;
   /**
@@ -113,13 +118,14 @@
    */
   let focusItemAtIndex;
   /**
-   * @type {import("@smui/list").ItemComponentDev}[]
+   * @type {import("@smui/list")[]}
    */
   let listItems;
   /**
    * @type {boolean}
    */
   let active;
+  let pagination = data.pagination.users;
 
   $: selectionUserId = $page.params.slug || $session.user?.id;
   $: selectionUserId && listItems && scrollIntoView();
@@ -134,7 +140,11 @@
     magicLink = token ? `${$page.url.origin}/login?token=${token}` : '';
   })(currentUser);
   $: filteredUsers =
-    $users.filter((user) => user.name.toLowerCase().indexOf(search.toLowerCase()) !== -1) || [];
+    $users.filter(
+      (user) =>
+        user.name.toLowerCase().indexOf(search.toLowerCase()) !== -1 &&
+        user.id !== $session.user?.id
+    ) || [];
   $: userInfos = ($infos?.has(selectionUserId) && $infos.get(selectionUserId).params) || [];
   $: userIssues = userInfos.filter(
     /**
@@ -149,7 +159,7 @@
 
     let renewed;
     if ((renewed = localStorage.getItem('renewed')) && renewed == $session.user?.id) {
-      renewedTokenDialog.setOpen?.(true);
+      renewedTokenDialog?.setOpen(true);
     }
 
     // window.addEventListener('MDCChip:interaction', chipInteractionHandler);
@@ -188,7 +198,7 @@
    */
   async function generateToken(config) {
     const { constrained } = { ...config };
-    const res = await api.post(`tokens?locale=${$locale}`, {
+    const res = await api.post('tokens', {
       data: { user_id: currentUser.id, constrained },
       token: $session.user?.jwt
     });
@@ -198,7 +208,7 @@
       users.put({ ...res.data });
       message = res.message;
       configSnackbar(message);
-      snackbar.open?.();
+      snackbar?.open();
       return res;
     } else {
       try {
@@ -206,7 +216,7 @@
         let message = res.data.errors.token._isUnique || res.data.massage || 'Error';
         configSnackbar(message);
       } catch (e) {}
-      snackbar.open?.();
+      snackbar?.open();
     }
   }
 
@@ -216,7 +226,7 @@
         users.put({ ...currentUser, ...res.data });
       }
       configSnackbar(res.message);
-      snackbar.open?.();
+      snackbar?.open();
     });
   }
 
@@ -232,7 +242,7 @@
         active = !active;
       }
       configSnackbar(message);
-      snackbar.open?.();
+      snackbar?.open();
     });
   }
 
@@ -243,7 +253,7 @@
   }
 
   function resolveAllHandler() {
-    resolveAllDialog.setOpen?.(true);
+    resolveAllDialog?.setOpen(true);
   }
 
   /**
@@ -251,7 +261,7 @@
    * @param {CustomEvent} event
    */
   function activateUserHandler(event) {
-    (event.detail.silent && activateUser({ active: true })) || activateUserDialog.setOpen?.(true);
+    (event.detail.silent && activateUser({ active: true })) || activateUserDialog?.setOpen(true);
   }
 
   /**
@@ -260,19 +270,19 @@
    */
   function generateTokenHandler(event) {
     (event.detail.silent && generateToken({ constrained: false })) ||
-      generateTokenDialog.setOpen?.(true);
+      generateTokenDialog?.setOpen(true);
   }
 
   function removeTokenHandler() {
-    removeTokenDialog.setOpen?.(true);
+    removeTokenDialog?.setOpen(true);
   }
 
   function tokenRedirectHandler() {
-    redirectDialog.setOpen?.(true);
+    redirectDialog?.setOpen(true);
   }
 
   function infoDialogHandler() {
-    infoDialog.setOpen?.(true);
+    infoDialog?.setOpen(true);
   }
 
   /**
@@ -386,11 +396,11 @@
     const { data, message, success } = { ...detail.responseText };
 
     configSnackbar(message);
-    snackbar.open?.();
+    snackbar?.open();
 
     if (success) {
       uploadedData = data;
-      videos.add(data);
+      videos.add([data]);
       close$default();
     }
   }
@@ -422,11 +432,7 @@
   function scrollIntoView() {
     const options = { block: 'nearest', behavior: 'smooth' };
     setTimeout(() => {
-      const item = listItems.find(
-        /**
-         * @param {import("@smui/list").ItemComponentDev} item
-         */ (item) => item.selected
-      );
+      const item = listItems.find((item) => item.selected);
       item?.element.scrollIntoView(options);
     }, 100);
   }
@@ -442,12 +448,10 @@
       <div slot="header">
         <Textfield
           class="search"
-          style="width: 100%;"
+          style="width: 100%; height: 50px; border-radius: 0;"
           variant="filled"
           bind:value={search}
           label={$_('text.search-user')}
-          input$aria-controls="helper-text"
-          input$aria-describedby="helper-text"
         >
           <Icon
             role="button"
@@ -457,24 +461,39 @@
           >
         </Textfield>
       </div>
-      {#if filteredUsers.length}
-        <List
-          class="mb-24"
-          twoLine
-          avatarList
-          singleSelection
-          bind:selectedIndex={selectionIndex}
-          on:SMUIList:mount={receiveListMethods}
-        >
+      <List
+        class="mb-24 users-list"
+        twoLine
+        avatarList
+        singleSelection
+        bind:selectedIndex={selectionIndex}
+        on:SMUIList:mount={receiveListMethods}
+      >
+        <SimpleUserCard
+          id={$session.user?.id}
+          {selectionUserId}
+          user={$users.find((user) => user.id === $session.user?.id)}
+          ><div class="my-badge">
+            <Icon class="material-icons">face</Icon>
+          </div>
+        </SimpleUserCard>
+        {#if filteredUsers.length}
           {#each filteredUsers as user (user.id)}
             <SimpleUserCard id={user.id} class="flex" {selectionUserId} {user} />
           {/each}
-        </List>
-      {:else}
-        <div class="loader flex justify-center">
-          <SvgIcon name="animated-loader-3" size={50} fillColor="var(--primary)" class="mr-2" />
-        </div>
-      {/if}
+        {:else}
+          <div class="loader flex justify-center">
+            <SvgIcon name="animated-loader-3" size={50} fillColor="var(--primary)" class="mr-2" />
+          </div>
+        {/if}
+      </List>
+      <Paginator
+        style="position: absolute; left: 15%; right: 15%; bottom: 10px; margin: 0 auto;"
+        bind:pagination
+        store={users}
+        id="users-paginator"
+        action="/users?/more"
+      />
     </Component>
   </div>
   <div slot="ad">
@@ -518,7 +537,7 @@
     </div>
     <div class="item">
       <h4>{$_('text.transfer-to-third-parties')}</h4>
-      <Icon_ class="material-icons leading">warning</Icon_>
+      <ButtonIcon class="material-icons leading">warning</ButtonIcon>
       <p>
         {$_('messages.every-token-owner')}
       </p>
@@ -612,7 +631,7 @@
   <Content id="info-content">
     <div class="item">
       {#if token && !hasExpired}
-        <Icon_ class="material-icons leading">warning</Icon_>
+        <ButtonIcon class="material-icons leading">warning</ButtonIcon>
         <p>{$_('messages.previous-token-will-be-discarted')}</p>
       {/if}
       <p>
@@ -639,7 +658,7 @@
 >
   <DialogTitle id="info-title">{$_('text.delete-token')}</DialogTitle>
   <Content id="info-content">
-    <Icon_ class="material-icons leading">warning</Icon_>
+    <ButtonIcon class="material-icons leading">warning</ButtonIcon>
     <div class="item">{$_('messages.deactivating-token-locks-account')}</div>
   </Content>
   <Actions>
@@ -748,7 +767,7 @@
   <div class="fab">
     <Fab class="floating-fab" color="primary" on:click={addUser} extended>
       <Label>{$_('text.new-user')}</Label>
-      <Icon_ class="material-icons">person_add</Icon_>
+      <ButtonIcon class="material-icons">person_add</ButtonIcon>
     </Fab>
   </div>
 {:else if $fabs === 'add-video'}
@@ -788,5 +807,44 @@
   }
   :global(.redirect-dialog .mdc-dialog__surface) {
     overflow-y: visible;
+  }
+  :global(.users-list) {
+    margin-top: -5px;
+    padding-top: 5px;
+  }
+  :global(.users-list > li:first-child) {
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    border-bottom: 1px solid var(--primary);
+    background-color: var(--surface);
+  }
+  :global(.users-list > li:nth-child(2)) {
+    margin-top: 72px;
+  }
+  .my-badge {
+    position: absolute;
+    width: 74px;
+    height: 15px;
+    right: 12px;
+    bottom: 22px;
+    display: inline-flex;
+    transform: translate(40px, 20px) rotate(-40deg);
+  }
+  .my-badge::before {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--primary);
+  }
+  .my-badge :global(.material-icons) {
+    position: relative;
+    font-size: 0.7em;
+    z-index: 1;
+    vertical-align: middle;
+    margin: 0 auto;
+    color: white;
   }
 </style>

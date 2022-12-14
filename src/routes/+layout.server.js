@@ -1,14 +1,7 @@
 /** @type {import('./$types').LayoutServerLoad} */
-export async function load({ fetch, depends, locals }) {
-  /**
-   * @type {import('$lib/types').Session}
-   */
-  const session = await fetch('/session')
-    .then(async (res) => await res.json())
-    .catch((reason) => console.error(reason));
-
+export async function load({ depends, locals }) {
   depends('app:session');
 
   const ua = locals.userAgent;
-  return { session, ua };
+  return { session: locals.session.data, ua };
 }

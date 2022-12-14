@@ -1,9 +1,10 @@
 <script>
+  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { onMount, getContext } from 'svelte';
   import { fly } from 'svelte/transition';
   import Fab, { Label, Icon } from '@smui/fab';
-  import { Info, VideoCard, MediaUploader, VideoEditorList } from '$lib/components';
+  import { Info, VideoCard, MediaUploader, VideoEditorList, Paginator } from '$lib/components';
   import { session, videos, fabs } from '$lib/stores';
   import {
     ADMIN,
@@ -38,10 +39,15 @@
       return 0;
     };
 
-  /** @type {import("@smui/snackbar").SnackbarComponentDev} */
+  /**
+   * @type {import("@smui/snackbar")}
+   */
   let snackbar;
-  /** @type {any} */
+  /**
+   * @type {any}
+   */
   let uploadedData;
+  let pagination = $page.data.pagination.videos;
 
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
 
@@ -97,11 +103,11 @@
     const { data, message, success } = { ...detail.responseText };
 
     configSnackbar(message);
-    snackbar.open?.();
+    snackbar?.open();
 
     if (success) {
       uploadedData = data;
-      videos.add(data);
+      videos.add([data]);
       close$uploader();
     }
   }
@@ -123,7 +129,7 @@
 
 {#if $session.user}
   {#if $videos.length}
-    <div class="grid lg:grid-cols-3 md:grid-cols-2 grid-flow-row gap-4">
+    <div class="grid lg:grid-cols-3 md:grid-cols-2 grid-flow-row gap-4 mb-24">
       {#each $videos.sort(sortAZ) as video (video.id)}
         <VideoCard
           on:video:posterCreated={(event) => posterCreatedHandler(event, video.id)}
@@ -133,6 +139,13 @@
         />
       {/each}
     </div>
+    <Paginator
+      style="position: fixed; left: 30%; right: 30%; bottom: 70px; margin: 0 auto;"
+      bind:pagination
+      store={videos}
+      id="videos-paginator"
+      action="/videos?/more_videos"
+    />
   {:else}
     <div class="empty-selection">
       <span style="text-align: center;">{$_('text.no-content-available')}</span>

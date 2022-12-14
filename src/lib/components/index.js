@@ -34,6 +34,7 @@ export { default as MoreMenu } from './_MoreMenu.svelte';
 export { default as Nav } from './_Nav.svelte';
 export { default as NavItem } from './_NavItem.svelte';
 export { default as PageBar } from './_PageBar.svelte';
+export { default as Paginator } from './_Paginator.svelte';
 export { default as ParallaxLogo } from './_ParallaxLogo.svelte';
 export { default as PreviewTemplate } from './_PreviewTemplate.svelte';
 export { default as SessionTicker } from './_SessionTicker.svelte';

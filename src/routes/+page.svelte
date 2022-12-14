@@ -2,6 +2,8 @@
   // @ts-nocheck
 
   import './_form.scss';
+  import logo from 'assets/images/logo-type-vod.svg';
+  import hero from 'assets/images/logo_hero_vod.svg';
   import * as api from '$lib/api';
   import { getContext, onMount } from 'svelte';
   import { sitename, session } from '$lib/stores';
@@ -26,7 +28,6 @@
   /** @type {import("@smui/snackbar").SnackbarComponentDev} */
   let snackbar;
 
-  $: src = svg(svg_manifest.logo_hero_vod);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: user = (({ name: _name, email: _email }) => {
     name = _name;
@@ -75,7 +76,7 @@
       } else {
         configSnackbar($_('text.message-sent-failed'));
       }
-      snackbar.open();
+      snackbar?.open();
     });
   }
 
@@ -92,7 +93,7 @@
 </svelte:head>
 
 <Layout>
-  <Hero title="Immersive Studio" tagline="" outline={src} logotype="logo-type-vod.svg" />
+  <Hero title="Immersive Studio" tagline="" outline={hero} logotype={logo} />
 
   <Blurb>
     <a href="/" class="" slot="one">

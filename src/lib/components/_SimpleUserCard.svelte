@@ -6,19 +6,25 @@
   import { Meta, Item, Text, PrimaryText, SecondaryText } from '@smui/list';
   import { ADMIN, dynamicUrl, SUPERUSER } from '$lib/utils';
 
-  /** @type {any} */
+  /**
+   * @type {any}
+   */
   export let selectionUserId;
-  /** @type {import('$lib/types').User} */
+  /**
+   * @type {import('$lib/types').User}
+   */
   export let user;
-  /** @type {any} */
+  /**
+   * @type {any}
+   */
   export let id;
   export { className as class };
 
   let className = '';
 
-  $: _infos = ($infos?.has(user.id) && $infos.get(user.id).params) || [];
-  $: hasPrivileges = user.role === ADMIN || user.role === SUPERUSER;
-  $: isSuperuser = user.role === SUPERUSER;
+  $: _infos = ($infos?.has(user?.id) && $infos.get(user?.id).params) || [];
+  $: hasPrivileges = user?.role === ADMIN || user?.role === SUPERUSER;
+  $: isSuperuser = user?.role === SUPERUSER;
   $: badge = {
     icon: (hasPrivileges && 'admin_panel_settings') || '',
     color: isSuperuser ? 'rgb(26, 4, 4)' : 'rgb(206, 4, 4)',
@@ -30,23 +36,26 @@
   function focusHandler() {}
 </script>
 
-<Item {id} class={className} selected={selectionUserId == user.id}
-  ><a on:focus={() => focusHandler()} {href} class="flex flex-1 item-inner">
-    <UserGraphic size="40" {user} {badge} borderSize="1" borderColor="#c5c5c5" />
-    <Text>
-      <PrimaryText>{user.name}</PrimaryText>
-      <SecondaryText>{user.email}</SecondaryText>
-    </Text>
-    {#if user.protected}
-      <Meta class="material-icons locked">lock</Meta>
-    {/if}
-    <div class="infos">
-      {#each _infos as _info}
-        <Dot size={5} color={_info.flag} />
-      {/each}
-    </div>
-  </a>
-</Item>
+{#if user}
+  <Item {id} class={className} selected={selectionUserId == user?.id}
+    ><a on:focus={() => focusHandler()} {href} class="flex flex-1 item-inner">
+      <UserGraphic size="40" {user} {badge} borderSize="1" borderColor="#c5c5c5" />
+      <Text>
+        <PrimaryText>{user.name}</PrimaryText>
+        <SecondaryText>{user.email}</SecondaryText>
+      </Text>
+      {#if user?.protected}
+        <Meta class="material-icons locked">lock</Meta>
+      {/if}
+      <div class="infos">
+        {#each _infos as _info}
+          <Dot size={5} color={_info.flag} />
+        {/each}
+      </div>
+    </a>
+    <slot />
+  </Item>
+{/if}
 
 <style>
   .infos {

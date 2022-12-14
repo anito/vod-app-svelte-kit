@@ -17,12 +17,21 @@ export const handle = handleSession(
     event.locals.videosAllRepo = VideosAllRepo.getInstance();
     event.locals.userAgent = event.request.headers.get('user-agent');
 
-    return await resolve(event);
+    const response = await resolve(event);
+    // response.headers.set('x-custom-header', 'potato');
+    return response;
   }
 );
 
 /** @type {import('@sveltejs/kit').HandleFetch} */
-export async function handleFetch({ request, fetch }) {
+export async function handleFetch({ request, fetch, event }) {
+  const oldUrl = new URL(request.url);
+  const { origin, pathname, search } = oldUrl;
+  const searchParams = new URLSearchParams(search);
+  searchParams.set('locale', event.locals.session.data.locale);
+  const newUrl = new URL(`${origin}${pathname}?${searchParams.toString()}`);
+
+  request = new Request(newUrl.href, request);
   return fetch(request);
 }
 

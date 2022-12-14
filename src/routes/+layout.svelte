@@ -1,11 +1,11 @@
 <script>
-  import '../app.css';
+  import 'assets/base.css';
+  import 'assets/app.css';
   import '$lib/components/_button.scss';
   import '$lib/components/_notched_outline.scss';
   import '$lib/components/_colored_snackbar.scss';
   import '$lib/components/_dialog.scss';
   import { derived, writable } from 'svelte/store';
-  import { browser } from '$app/environment';
   import { afterNavigate, beforeNavigate, goto, invalidate, invalidateAll } from '$app/navigation';
   import { navigating, page } from '$app/stores';
   import { enhance } from '$app/forms';
@@ -111,11 +111,11 @@
    */
   let emphasize;
   /**
-   * @type {import("@smui/snackbar").SnackbarComponentDev}
+   * @type {Snackbar}
    */
   let snackbar;
   /**
-   * @type {import("@smui/dialog").DialogComponentDev}
+   * @type {Dialog}
    */
   let settingsDialog;
   /**
@@ -221,7 +221,7 @@
   beforeNavigate(({ to }) => {
     if (to?.url.searchParams.get('config') === 'load') {
       configSnackbar($_('text.loading-configuration'));
-      snackbar?.open?.();
+      snackbar?.open;
     }
   });
 
@@ -237,7 +237,7 @@
   }
   $: searchParamsString = $page.url.searchParams.toString();
   $: search = searchParamsString && `?${searchParamsString}`;
-  $: settingsDialog?.setOpen?.($page.url.searchParams.get('modal') === 'settings');
+  $: settingsDialog?.setOpen($page.url.searchParams.get('modal') === 'settings');
 
   onMount(async () => {
     $mounted = true;
@@ -368,7 +368,7 @@
     if (show) {
       let message = res.message || res.data.message;
       configSnackbar(message);
-      snackbar?.open?.();
+      snackbar?.open();
     }
   }
 
@@ -393,7 +393,7 @@
     if (show) {
       let message = res.message || res.data.message;
       configSnackbar(message);
-      snackbar?.open?.();
+      snackbar?.open();
     }
   }
 
@@ -444,7 +444,7 @@
    */
   function configSnackbar(msg, link) {
     try {
-      snackbar?.close?.();
+      snackbar?.close();
     } catch (e) {}
     configureAction(msg, link);
   }
@@ -493,7 +493,7 @@
         values: { name: user.name }
       })
     );
-    snackbar?.open?.();
+    snackbar?.open();
   }
 
   /**
@@ -544,7 +544,7 @@
       snackbarMessage = res.message || res.data?.message;
 
       configSnackbar(snackbarMessage);
-      snackbar?.open?.();
+      snackbar?.open();
       return res;
     });
   }
@@ -559,7 +559,7 @@
     /** @type {any} */
     const { locale } = { ...detail };
     configSnackbar($_('text.language_is_now', { values: { locale } }));
-    snackbar.open?.();
+    snackbar?.open();
   }
 
   /**
@@ -631,6 +631,7 @@
               }
             };
           }}
+          method="POST"
           class="main-menu login-form"
         >
           <Nav segment={$segment} {page} {logo}>
@@ -742,7 +743,7 @@
               </NavItem>
             {/if}
 
-            <NavItem title={$_('text.more')} class="hide-if-mobile">
+            <NavItem title={$_('text.more-dots')} class="hide-if-mobile">
               <MoreMenu labelSize="1em" iconSize="18px">
                 <FrameworkSwitcher />
                 <Separator />

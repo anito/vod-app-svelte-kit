@@ -5,10 +5,19 @@
   import List from '@smui/list';
   import Textfield from '@smui/textfield';
   import Icon from '@smui/textfield/icon';
-  import { Legal, PageBar, SimpleVideoCard, Component } from '$lib/components';
+  import { Legal, PageBar, SimpleVideoCard, Component, Paginator } from '$lib/components';
   import { dynamicUrl, sortByTitle } from '$lib/utils';
   import { videos } from '$lib/stores';
   import { _ } from 'svelte-i18n';
+
+  /**
+   * @type {import('./$types').LayoutData}
+   */
+  export let data;
+
+  let pagination = data.pagination.videos;
+
+  const emptyPoster = '/src/assets/images/empty-poster.jpg';
 
   /**
    * @type {number}
@@ -42,8 +51,6 @@
           variant="filled"
           bind:value={search}
           label={$_('text.search-video')}
-          input$aria-controls="helper-text"
-          input$aria-describedby="helper-text"
         >
           <Icon
             role="button"
@@ -59,7 +66,7 @@
             <SimpleVideoCard
               class="video"
               selected={selectionVideoId === video.id}
-              emptyPoster="/empty-poster.jpg"
+              {emptyPoster}
               anchorFn={dynamicUrl}
               {video}
             />
@@ -70,6 +77,13 @@
           </li>
         {/if}
       </List>
+      <Paginator
+        style="position: absolute; left: 30%; right: 30%; bottom: 10px; margin: 0 auto;"
+        bind:pagination
+        store={videos}
+        id="videos-paginator"
+        action="/videos?/more_videos"
+      />
     </Component>
   </div>
   <div slot="ad"><Legal /></div>

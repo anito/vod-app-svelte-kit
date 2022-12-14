@@ -5,8 +5,7 @@ import { createTabSearch } from '$lib/utils';
 
 /** @type {import('./$types').PageLoad} */
 export async function load({ parent }) {
-  const parentData = await parent();
-  const { session } = parentData;
+  const { session } = await parent();
   if (session.user) {
     const $settings = get(settings);
     const search = createTabSearch($settings.Site.defaultUserTab);

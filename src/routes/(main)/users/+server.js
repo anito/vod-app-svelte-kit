@@ -4,9 +4,10 @@ import { json } from '@sveltejs/kit';
 /** @type {import('@sveltejs/kit').RequestHandler} */
 export async function POST({ request, locals }) {
   const data = await request.json();
-  const token = locals.session.data.user?.jwt;
+  const { locale, user } = locals.session.data;
+  const token = user?.jwt;
 
-  return await api.post('users', { data, token }).then(async (res) => {
+  return await api.post(`users?locale=${locale}`, { data, token }).then(async (res) => {
     return json(res);
   });
 }

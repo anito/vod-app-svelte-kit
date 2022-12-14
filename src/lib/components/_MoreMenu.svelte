@@ -20,7 +20,7 @@
    */
   function handleClick(event) {
     event.preventDefault();
-    menu.setOpen?.(!menu.isOpen?.());
+    menu?.setOpen(!menu.isOpen?.());
   }
 </script>
 

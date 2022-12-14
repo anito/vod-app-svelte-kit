@@ -4,7 +4,7 @@
   import './_textfield.scss';
   import './_button.scss';
   import { settings, salutation } from '$lib/stores';
-  import Button, { Icon, Label } from '@smui/button';
+  import Button, { Label } from '@smui/button';
   import Textfield from '@smui/textfield';
   import { _ } from 'svelte-i18n';
 

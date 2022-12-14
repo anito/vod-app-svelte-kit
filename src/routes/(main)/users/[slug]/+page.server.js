@@ -10,7 +10,7 @@ export async function load({ locals }) {
 
 /** @type {import("@sveltejs/kit").Actions} */
 export const actions = {
-  add: async ({ request, fetch }) => {
+  add: async ({ request, fetch, locals }) => {
     return await request.formData().then(async (res) => {
       /** @type {any} */
       const formData = {};
@@ -23,7 +23,7 @@ export const actions = {
         .catch((err) => console.error(err));
     });
   },
-  edit: async ({ request, params, fetch }) => {
+  edit: async ({ request, params, fetch, locals }) => {
     const id = params.slug;
     return await request.formData().then(async (res) => {
       /**@type {any} */
@@ -31,13 +31,13 @@ export const actions = {
       res.forEach((value, key) => (formData[key] = value));
       return await fetch(`/users/${id}`, {
         method: 'PUT',
-        body: JSON.stringify({ ...formData })
+        body: JSON.stringify({ ...formData, locale: locals.session.data.locale })
       })
         .then(async (res) => await res.json())
         .catch((err) => console.error(err));
     });
   },
-  del: async ({ params, fetch }) => {
+  del: async ({ params, fetch, locals }) => {
     const id = params.slug;
     return await fetch(`/users/${id}`, {
       method: 'DELETE'

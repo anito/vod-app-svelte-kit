@@ -89,7 +89,7 @@
     /** @type {any} */
     const { message } = { ...detail };
     configSnackbar(message);
-    snackbar.open();
+    snackbar?.open();
   }
 </script>
 

@@ -68,7 +68,7 @@
    */
   let repeatedPassword = '';
   /**
-   * @type {import("@smui/snackbar").SnackbarComponentDev}
+   * @type {import("@smui/snackbar")}
    */
   let snackbar;
   /**
@@ -77,7 +77,7 @@
   let message;
 
   /**
-   * @type {import('@smui/menu').MenuComponentDev}
+   * @type {import('@smui/menu')}
    */
   let avatarMenu;
   let avatarMenuAnchor;
@@ -212,7 +212,7 @@
    */
   let openUploader = (event) => {
     event.stopPropagation();
-    avatarMenu.setOpen?.(false);
+    avatarMenu?.setOpen(false);
 
     open(
       MediaUploader,
@@ -268,7 +268,7 @@
     }
     close();
     configSnackbar(message);
-    snackbar.open?.();
+    snackbar?.open();
   }
 
   async function deleteAvatar() {
@@ -292,7 +292,7 @@
     });
 
     configSnackbar(msg);
-    snackbar.open?.();
+    snackbar?.open();
   }
 
   async function activateUser() {
@@ -309,7 +309,7 @@
         }
 
         configSnackbar(message);
-        snackbar.open?.();
+        snackbar?.open();
       }
     });
   }
@@ -333,7 +333,7 @@
           }
 
           configSnackbar(message);
-          snackbar.open?.();
+          snackbar?.open();
         }
       });
   }
@@ -413,7 +413,7 @@
               <div
                 class="avatar-container"
                 on:keydown={() => {}}
-                on:click={() => avatarMenu.setOpen?.(true)}
+                on:click={() => avatarMenu?.setOpen(true)}
               >
                 <div bind:this={avatarMenuAnchor} use:Anchor>
                   <UserGraphic
@@ -497,11 +497,12 @@
                     }
                     reset();
                     configSnackbar(message$1 || message$2);
-                    snackbar.open?.();
+                    snackbar?.open();
                   }
                 };
               }}
               action={`?/${formAction}`}
+              method="POST"
             >
               <div class="user-items h-full">
                 {#if selectedMode !== ADD}
@@ -555,13 +556,7 @@
                 {/if}
                 {#if selectedMode === ADD || selectedMode === EDIT}
                   <div class="item">
-                    <Textfield
-                      bind:value={name}
-                      label="Name"
-                      type="text"
-                      input$aria-controls="helper-text-name"
-                      input$aria-describedby="helper-text-name"
-                    >
+                    <Textfield bind:value={name} label="Name" type="text">
                       <input type="hidden" name="name" bind:value={name} />
                       <TextfieldIcon slot="leadingIcon" class="material-icons"
                         >contact_page</TextfieldIcon
@@ -620,8 +615,6 @@
                       bind:value={password}
                       label={$_('text.password')}
                       name="password"
-                      input$aria-controls="helper-password"
-                      input$aria-describedby="helper-password"
                       style="min-width: 250px;"
                     >
                       <input type="hidden" name="password" bind:value={password} />
@@ -640,8 +633,6 @@
                       bind:invalid={invalidRepeatedPassword}
                       bind:value={repeatedPassword}
                       label={$_('text.repeat-password')}
-                      input$aria-controls="helper-password-repeat"
-                      input$aria-describedby="helper-password-repeat"
                     >
                       <TextfieldIcon slot="leadingIcon" class="material-icons"
                         >fingerprint</TextfieldIcon

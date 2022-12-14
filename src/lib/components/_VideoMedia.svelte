@@ -1,13 +1,11 @@
 <script>
-  import { page } from '$app/stores';
   import { onDestroy, onMount } from 'svelte';
   import { Media, MediaContent } from '@smui/card';
   import Textfield, { Textarea } from '@smui/textfield';
   import { VideoPlayer } from '$lib/components/Video';
   import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, info, proxyEvent } from '$lib/utils';
-  import { session, users, videos } from '$lib/stores';
+  import { session, users } from '$lib/stores';
   import { _ } from 'svelte-i18n';
-  import { invalidate } from '$app/navigation';
 
   /**
    * @type {import('$lib/types').Video}
@@ -16,7 +14,7 @@
   /**
    * @type {string | undefined}
    */
-  export let emptyPoster = '/empty-poster.jpg';
+  export let emptyPoster = 'test';
   /**
    * @type {string}
    */
@@ -42,9 +40,12 @@
    * @type {ReturnType<typeof setTimeout>}
    */
   let timeoutId;
+  /**
+   * @type {string | undefined}
+   */
+  let poster;
   let canplay = false;
   let paused = true;
-  let poster = emptyPoster;
 
   $: user = $users.find((user) => user?.id === $session.user?.id);
   $: user && (canplay = false);

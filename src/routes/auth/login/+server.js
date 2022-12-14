@@ -9,29 +9,30 @@ import { parseLifetime } from '$lib/utils';
 export async function GET({ locals, url }) {
   const token = url.searchParams.get('token');
   const type = url.searchParams.get('type') || 'login';
+  const { locale } = locals.session.data;
+
   if (token) {
-    return await api.get(`${type}?token=${token}`).then(async (res) => {
-      const locale = locals.session.data.locale || get(i18n);
-      let cookieData;
-      if (res?.success) {
-        /** @type {import('$lib/types').User} */
-        const { id, name, email, avatar, jwt, role, groups } = { ...res.data.user, ...res.data };
-        const lifetime = parseLifetime(
-          url.searchParams.get('lifetime') || get(settings).Session.lifetime
-        );
-        const _expires = new Date(Date.now() + lifetime).toISOString();
-        cookieData = {
-          _expires,
-          user: { id, name, jwt, avatar, email },
-          role,
-          groups,
-          locale
-        };
-      } else {
-        cookieData = { locale };
-      }
+    return await api.get(`${type}?token=${token}&locale=${locale}`).then(async (res) => {
+      const locale = locals.session.data.locale;
+      const getData = (/** @type {any} */ { success, data }) => {
+        if (success) {
+          /** @type {import('$lib/types').User} */
+          const { id, name, email, avatar, jwt, role, groups } = { ...data.user, ...data };
+          const lifetime = parseLifetime(get(settings).Session.lifetime);
+          const _expires = new Date(Date.now() + lifetime).toISOString();
+          return {
+            _expires,
+            user: { id, name, jwt, avatar, email },
+            role,
+            groups,
+            locale
+          };
+        } else {
+          return { locale };
+        }
+      };
       await locals.session.destroy();
-      await locals.session.set(cookieData);
+      await locals.session.set(getData(res));
       return json(res);
     });
   }
@@ -42,29 +43,30 @@ export async function GET({ locals, url }) {
 export async function POST({ locals, request, url }) {
   const data = await request.json();
   const type = url.searchParams.get('type') || 'login';
+  const locale = locals.session.data.locale;
 
-  return await api.post(`${type}`, { token: data.token, data }).then(async (res) => {
-    const locale = locals.session.data.locale || get(i18n);
-    let sessionCookieData;
-    if (res?.success) {
-      /** @type {import('$lib/types').User} */
-      const { id, name, email, avatar, jwt, role, groups } = { ...res.data.user, ...res.data };
-      const lifetime = parseLifetime(
-        url.searchParams.get('lifetime') || get(settings).Session.lifetime
-      );
-      const _expires = new Date(Date.now() + lifetime).toISOString();
-      sessionCookieData = {
-        _expires,
-        user: { id, name, email, jwt, avatar },
-        role,
-        groups,
-        locale
+  return await api
+    .post(`${type}?locale=${locale}`, { token: data.token, data })
+    .then(async (res) => {
+      const getData = (/** @type {any} */ { success, data }) => {
+        if (success) {
+          /** @type {import('$lib/types').User} */
+          const { id, name, email, avatar, jwt, role, groups } = { ...data.user, ...data };
+          const lifetime = parseLifetime(get(settings).Session.lifetime);
+          const _expires = new Date(Date.now() + lifetime).toISOString();
+          return {
+            _expires,
+            user: { id, name, email, jwt, avatar },
+            role,
+            groups,
+            locale
+          };
+        } else {
+          return { locale };
+        }
       };
-    } else {
-      sessionCookieData = { locale };
-    }
-    await locals.session.destroy();
-    await locals.session.set(sessionCookieData);
-    return json(res);
-  });
+      await locals.session.destroy();
+      await locals.session.set(getData(res));
+      return json(res);
+    });
 }

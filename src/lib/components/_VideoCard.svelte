@@ -87,7 +87,7 @@
    * @param {boolean} open
    */
   function setDeleteMenuOpen(open) {
-    deleteMenu.setOpen?.(open);
+    deleteMenu?.setOpen(open);
     return false;
   }
 
@@ -157,7 +157,13 @@
 
 <Card class="card {className}">
   <PrimaryAction onclick={() => $currentVideo.set(video)}>
-    <VideoMedia {video} bind:title bind:description {isEditMode} />
+    <VideoMedia
+      {video}
+      bind:title
+      bind:description
+      {isEditMode}
+      emptyPoster="/src/assets/images/empty-poster.jpg"
+    />
     <Content class="mdc-typography--body2">
       <div class="wrapper flex flex-row justify-between">
         <div class="flex flex-col" style="flex-basis: 50%; max-width: 50%">
@@ -232,7 +238,7 @@
         <ActionIcons style="position: relative;">
           <IconButton
             class="material-icons"
-            on:click={() => cardMenu.setOpen?.(true)}
+            on:click={() => cardMenu?.setOpen(true)}
             toggle
             aria-label={$_('text.more-options')}
             title={$_('text.more-options')}>more_vert</IconButton
@@ -242,7 +248,7 @@
               <Item on:click={() => createPoster()}>
                 <Text>{$_('text.new-poster')}</Text>
               </Item>
-              <Item disabled={!$images.length} on:click={() => imageList.setOpen?.(true)}>
+              <Item disabled={!$images.length} on:click={() => imageList?.setOpen(true)}>
                 <Text>{$_('text.select-poster')}</Text>
               </Item>
               <Separator />

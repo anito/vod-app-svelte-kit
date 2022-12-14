@@ -26,14 +26,14 @@
   </PrimaryAction>
   <Actions class="card-actions">
     <ActionButtons class="justify-between">
-      <Button color="primary" on:click={() => menuPoster.setOpen?.(true)}>
+      <Button color="primary" on:click={() => menuPoster?.setOpen(true)}>
         <Label>{$_('text.delete')}</Label>
         <Icon class="material-icons">delete</Icon>
       </Button>
       <ActionIcons style="position: relative;">
         <IconButton
           class="material-icons"
-          on:click={() => menuPoster.setOpen?.(true)}
+          on:click={() => menuPoster?.setOpen(true)}
           toggle
           aria-label={$_('text.more-options')}
           title={$_('text.more-options')}

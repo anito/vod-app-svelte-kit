@@ -59,7 +59,7 @@
 
     <div class="grid-item two pt-3 pb-8 ">
       {#if tab === TABS[0]}
-        <VideoManager {user} />
+        <VideoManager />
       {/if}
       {#if tab === TABS[1]}
         <ImageManager />

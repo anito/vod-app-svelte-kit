@@ -10,7 +10,7 @@ export async function POST({ locals }) {
     await locals.session.set({ locale });
   }
 
-  return await api.post(`users/logout?locale=${locale}`, { fetch }).then((res) => {
+  return await api.post('users/logout').then((res) => {
     return json({
       ...res
     });

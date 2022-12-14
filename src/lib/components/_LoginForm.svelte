@@ -13,7 +13,7 @@
   import Textfield from '@smui/textfield';
   import Icon from '@smui/textfield/icon';
   import { Label } from '@smui/common';
-  import Dialog, { Title as DialogTitle, Content, Actions, InitialFocus } from '@smui/dialog';
+  import Dialog, { Title as DialogTitle, Content, Actions } from '@smui/dialog';
   import { FacebookLoginButton, GoogleLoginButton, Header } from '$lib/components';
   import { _ } from 'svelte-i18n';
   import { enhance } from '$app/forms';
@@ -56,18 +56,28 @@
   };
   const tabNames = tabs.names();
 
-  /** @type {Element}*/
+  /**
+   * @type {Element}
+   */
   let root;
+  /**
+   * @type {import("@smui/snackbar")}
+   */
+  let snackbar;
+  /**
+   * @type {import("@smui/dialog")}
+   */
+  let invalidTokenUserDialog;
+  /**
+   * @type {string}
+   */
+  let activeSignIn;
+  /**
+   * @type {string}
+   */
+  let activeTab;
   let password = '';
   let email = '';
-  /** @type {import("@smui/snackbar").SnackbarComponentDev} */
-  let snackbar;
-  /** @type {import("@smui/dialog").DialogComponentDev} */
-  let invalidTokenUserDialog;
-  /** @type {string} */
-  let activeSignIn;
-  /** @type {string} */
-  let activeTab;
 
   $: rows = activeTab && tabs.rows(activeTab);
   $: activeTab && browser && localStorage.setItem('activeSignIn', activeTab);
@@ -100,7 +110,7 @@
         /**
          * Show dialog after 3 fails
          */
-        if (++loginAttempts > 3) invalidTokenUserDialog.setOpen?.(true);
+        if (++loginAttempts > 3) invalidTokenUserDialog?.setOpen(true);
       }
       reset();
       unblock();
@@ -154,8 +164,6 @@
             bind:input$name={email}
             label="Email"
             autocomplete="user-email"
-            input$aria-controls="helper-text-outlined-email"
-            input$aria-describedby="helper-text-outlined-email"
           >
             <Icon class="material-icons" slot="leadingIcon">mail</Icon>
           </Textfield>
@@ -168,8 +176,6 @@
             bind:input$name={password}
             label={$_('text.password')}
             autocomplete="user-password"
-            input$aria-controls="helper-text-outlined-password"
-            input$aria-describedby="helper-text-outlined-password"
           >
             <Icon class="material-icons" slot="leadingIcon">login</Icon>
           </Textfield>
@@ -188,7 +194,7 @@
       {/if}
       {#if activeTab === tabNames[1]}
         <span class="one flex flex-col">
-          <form use:enhance={loginHandler} action="/auth?/login">
+          <form use:enhance={loginHandler} action="/auth?/login" method="POST">
             <div class="one flex justify-center">
               <Button
                 color={undefined}
@@ -206,7 +212,7 @@
           </form>
         </span>
         <span class="two flex flex-col">
-          <form use:enhance={loginHandler} action="/auth?/login">
+          <form use:enhance={loginHandler} action="/auth?/login" method="POST">
             <div class="two flex justify-center">
               <Button
                 color={undefined}

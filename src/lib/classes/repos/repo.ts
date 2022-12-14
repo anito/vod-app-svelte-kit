@@ -3,6 +3,7 @@ import * as api from '$lib/api';
 export class Repo {
   endpoint: string;
   token: string;
+  defaultLang = 'en-US';
 
   constructor() {
     this.token = '';
@@ -12,9 +13,11 @@ export class Repo {
   get = async (
     slug: string,
     {
+      lang = this.defaultLang,
       token
     }: {
-      token: string
+      token: string;
+      lang: string;
     }
   ) => {
     let endpoint = `${this.endpoint}/${slug}`;
@@ -24,21 +27,29 @@ export class Repo {
   };
 
   getAll = async ({
+    page = '1',
+    limit = '0',
+    locale = this.defaultLang,
     token,
-    limit,
     match = {}
   }: {
-    token: string,
-    limit: number,
-    match?: Record<string, unknown>
+    page: string;
+    limit: string;
+    locale: string;
+    token: string;
+    match?: Record<string, unknown>;
   }): Promise<Response> => {
-    const lt = (limit && '?limit=' + limit) || '';
-    let endpoint = this.endpoint + lt;
+    const searchParams = new URLSearchParams();
+    page && searchParams.append('page', page);
+    limit && searchParams.append('limit', limit);
+    searchParams.append('lang', locale);
+
+    const url = `${this.endpoint}?${searchParams.toString()}`;
     return await api
-      .get(endpoint, { fetch, token: token || this.token })
+      .get(url, { token: token || this.token })
       .then((res) => {
         if (res?.success) {
-          return res.data;
+          return res;
         }
         return [];
       })

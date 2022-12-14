@@ -298,7 +298,7 @@
           configSnackbar($_('text.message-sent-failed'));
         }
       });
-    snackbar.open?.();
+    snackbar?.open();
   }
 
   function validateUser() {
@@ -342,7 +342,7 @@
   function setActiveListItem(value) {
     if (activeListItem != matchesTemplate(value) && canSave) {
       pendingActiveTemplate = value;
-      unsavedChangesDialog.setOpen?.(true);
+      unsavedChangesDialog?.setOpen(true);
     } else {
       activeListItem = value;
     }
@@ -420,13 +420,14 @@
     const res = await api.post('templates', {
       data: { ...newTemplate },
       token: $session.user?.jwt
+      // locale: $session.data.locale
     });
     configSnackbar(res.message);
     if (res?.success) {
       templates.add({ ...newTemplate, id: res.data.id, items: res.data.items });
       gotoActiveBox(templateStringFromSlug(slug));
     }
-    snackbar.open?.();
+    snackbar?.open();
   }
 
   async function saveTemplate() {
@@ -451,7 +452,7 @@
       templates.put({ ...currentTemplate });
       mailTemplate.createWorkingCopy?.();
     }
-    snackbar.open?.();
+    snackbar?.open();
   }
 
   async function duplicateTemplate() {
@@ -480,7 +481,7 @@
       templates.add({ ...newTemplate, id: res.data.id, items: res.data.items });
       gotoActiveBox(templateStringFromSlug(slug));
     }
-    snackbar.open?.();
+    snackbar?.open();
   }
 
   async function removeTemplate() {
@@ -489,7 +490,7 @@
     if (res?.success) {
       templates.del(currentTemplate.id);
     }
-    snackbar.open?.();
+    snackbar?.open();
   }
 
   /**
@@ -554,7 +555,7 @@
     } else {
       configSnackbar($_('text.template-could-not-be-renamed'));
     }
-    snackbar.open?.();
+    snackbar?.open();
     return res.success;
   }
 

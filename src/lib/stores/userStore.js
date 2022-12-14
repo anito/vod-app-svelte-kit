@@ -16,16 +16,20 @@ function createStore() {
   return {
     subscribe,
     /**
-     * @param {import('$lib/types').User} val
+     * @param {import('$lib/types').User[]} values
      */
-    add: (val) =>
+    add: (values) =>
       update(
         /**
          * @param {any} items
          * @return {never | any}
          */
         (items) => {
-          return (findIndexById(val.id, items) == -1 && [...items, val]) || items;
+          for (const value of values) {
+            if (!items.find((/** @type {{ id: string; }} */ item) => value.id === item.id))
+              items = [...items, value];
+          }
+          return items;
         }
       ),
     /**

@@ -1,11 +1,12 @@
 <script>
   import * as api from '$lib/api';
+  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { onMount, getContext } from 'svelte';
   import { fly } from 'svelte/transition';
   import Fab, { Icon } from '@smui/fab';
   import { Label } from '@smui/common';
-  import { ImageCard, MediaUploader, Info } from '$lib/components';
+  import { ImageCard, MediaUploader, Info, Paginator } from '$lib/components';
   import { fabs, urls, sitename, images, session } from '$lib/stores';
   import { _ } from 'svelte-i18n';
 
@@ -13,8 +14,11 @@
   const { getSnackbar, configSnackbar } = getContext('snackbar');
   const { setFab } = getContext('fab');
 
-  /** @type {import("@smui/snackbar").SnackbarComponentDev} */
+  /**
+   * @type {import("@smui/snackbar")}
+   */
   let snackbar;
+  let pagination = $page.data.pagination.images;
   let openUploader = () => {
     open$uploader(
       MediaUploader,
@@ -53,7 +57,7 @@
     const { data, message, success } = { ...detail.responseText };
 
     configSnackbar(message);
-    snackbar.open();
+    snackbar?.open();
 
     if (success) {
       images.add(data);
@@ -77,7 +81,7 @@
         images.del(id);
       }
       configSnackbar(message);
-      snackbar.open();
+      snackbar?.open();
     });
   }
 </script>
@@ -88,10 +92,17 @@
 
 {#if $session.user}
   {#if $images.length}
-    <div class="grid grid-cols-3 grid-flow-row gap-4">
+    <div class="grid grid-cols-3 grid-flow-row gap-4 mb-24">
       {#each $images as image (image.id)}
         <ImageCard on:Image:delete={deletePoster} {image} />
       {/each}
+      <Paginator
+        style="position: fixed; left: 30%; right: 30%; bottom: 70px; margin: 0 auto;"
+        bind:pagination
+        store={images}
+        id="images-paginator"
+        action="/videos?/more_images"
+      />
     </div>
   {:else}
     <div class="empty-selection no-user-selection">

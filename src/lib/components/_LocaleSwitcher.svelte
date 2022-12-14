@@ -25,7 +25,7 @@
    * @param {string} value
    */
   async function setLocale(value) {
-    localeMenu.setOpen?.(false);
+    localeMenu?.setOpen(false);
     if (value === currentLocale) return;
 
     await post('/locale', ($locale = value)).then(() => {
@@ -35,7 +35,7 @@
 </script>
 
 <span class="relative">
-  <a href="." on:click|preventDefault={() => localeMenu.setOpen?.(true)}>
+  <a href="." on:click|preventDefault={() => localeMenu?.setOpen(true)}>
     <div class="menu-anchor switcher lg:-mr-8" bind:this={localeMenuAnchor} use:Anchor>
       <div class="current-locale">{currentLocale?.toUpperCase().slice(0, 2)}</div>
     </div>

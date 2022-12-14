@@ -4,7 +4,15 @@
   import { fly } from 'svelte/transition';
   import { session, sitename, videos, users } from '$lib/stores';
   import { VideoPlayer } from '$lib/components/Video';
-  import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, info, proxyEvent } from '$lib/utils';
+  import {
+    ADMIN,
+    SUPERUSER,
+    USER,
+    getMediaImage,
+    getMediaVideo,
+    info,
+    proxyEvent
+  } from '$lib/utils';
   import { _ } from 'svelte-i18n';
 
   /** @type {boolean} */
@@ -37,7 +45,9 @@
   $: video?.id && getMediaVideo(video.id, $session.user?.jwt).then((v) => (src = v));
   $: $navigating && savePlayhead();
 
-  onMount(() => {});
+  onMount(() => {
+    console.log($page.params);
+  });
 
   // set playhead to the last saved position when the video is ready to play
   function handleCanPlay() {
@@ -102,7 +112,7 @@
       proxyEvent('video:save', {
         data: { id: video.id, playhead }
       });
-    } else {
+    } else if ($session.role === USER) {
       if (Math.round(joinData.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
       const associated = user.videos
         .filter(/** @param {import('$lib/types').Video} v */ (v) => v.id != video.id)

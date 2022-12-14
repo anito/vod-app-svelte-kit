@@ -1,12 +1,7 @@
-import { dev } from '$app/environment';
-import { locale as i18n } from 'svelte-i18n';
+import { dev, browser } from '$app/environment';
+import { get as getStore } from 'svelte/store';
+import { locale } from 'svelte-i18n';
 import { bodyReader } from '$lib/utils';
-
-/**
- * @type {string | null | undefined}
- */
-let locale;
-i18n.subscribe((val) => (locale = val));
 
 export const base = dev ? `https://vod.mbp/v1` : `https://vod.webpremiere.de/v1`;
 
@@ -23,8 +18,7 @@ async function send(atts = {}) {
   const opts = {
     method,
     headers: {
-      Accept: 'application/json',
-      'Accept-Language': locale
+      Accept: 'application/json'
     },
     credentials: 'include'
   };
@@ -62,7 +56,7 @@ async function send(atts = {}) {
  * @param {string} path
  * @param {{} | undefined} [options]
  */
-export function get(path, options) {
+export function get(path, options = {}) {
   return send({ method: 'GET', path, ...options });
 }
 
@@ -70,7 +64,7 @@ export function get(path, options) {
  * @param {string} path
  * @param {{} | undefined} [options]
  */
-export function del(path, options) {
+export function del(path, options = {}) {
   return send({ method: 'DELETE', path, ...options });
 }
 
@@ -78,7 +72,7 @@ export function del(path, options) {
  * @param {string} path
  * @param {{} | undefined} options
  */
-export function post(path, options) {
+export function post(path, options = {}) {
   return send({ method: 'POST', path, ...options });
 }
 
@@ -86,6 +80,6 @@ export function post(path, options) {
  * @param {string} path
  * @param {{} | undefined} options
  */
-export function put(path, options) {
+export function put(path, options = {}) {
   return send({ method: 'PUT', path, ...options });
 }
