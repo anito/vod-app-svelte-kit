@@ -1,6 +1,5 @@
 <script>
   import { page, navigating } from '$app/stores';
-  import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
   import { session, sitename, videos, users } from '$lib/stores';
   import { VideoPlayer } from '$lib/components/Video';
@@ -15,19 +14,32 @@
   } from '$lib/utils';
   import { _ } from 'svelte-i18n';
 
-  /** @type {boolean} */
+  /**
+   * @type {boolean}
+   */
   let paused;
-  /** @type {boolean} */
+  /**
+   * @type {boolean}
+   */
   let canplay;
-  /** @type {number} */
+  /**
+   * @type {number}
+   */
   let playhead;
-  /** @type {ReturnType <typeof setTimeout>} */
+  /**
+   * @type {ReturnType <typeof setTimeout>}
+   */
   let timeoutId;
-  /** @type {string | undefined} */
+  /**
+   * @type {string | undefined}
+   */
   let poster;
-  /** @type {string | undefined} */
+  /**
+   * @type {string | undefined}
+   */
   let src;
 
+  $: $page.data.video && videos.add([$page.data.video]);
   $: user = $users.find((user) => user.id === $session.user?.id);
   $: user && (canplay = false);
   $: video = $videos.find((v) => v.id === $page.params.slug);
@@ -44,10 +56,6 @@
   $: video?.image_id && getMediaImage(video.image_id, $session.user?.jwt).then((v) => (poster = v));
   $: video?.id && getMediaVideo(video.id, $session.user?.jwt).then((v) => (src = v));
   $: $navigating && savePlayhead();
-
-  onMount(() => {
-    console.log($page.params);
-  });
 
   // set playhead to the last saved position when the video is ready to play
   function handleCanPlay() {

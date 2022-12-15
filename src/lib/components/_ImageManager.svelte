@@ -106,7 +106,7 @@
 
 {#if $session.user}
   {#if $images.length}
-    <ul bind:this={imagesList} class="grid grid-cols-3 grid-flow-row gap-4 mb-10">
+    <ul bind:this={imagesList} class="items-list grid grid-cols-3 grid-flow-row gap-4 mb-10">
       {#each $images as image (image.id)}
         <li class="list-item">
           <ImageCard on:Image:delete={deletePoster} {image} />
@@ -148,5 +148,9 @@
     font-size: 2em;
     font-weight: 600;
     color: #d8d8d8;
+  }
+  .items-list {
+    padding: 15px;
+    background-color: var(--background);
   }
 </style>

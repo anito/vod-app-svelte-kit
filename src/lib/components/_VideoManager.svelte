@@ -133,7 +133,10 @@
 
 {#if $session.user}
   {#if $videos.length}
-    <ul bind:this={videoList} class="grid lg:grid-cols-3 md:grid-cols-2 grid-flow-row gap-4">
+    <ul
+      bind:this={videoList}
+      class="items-list grid lg:grid-cols-3 md:grid-cols-2 grid-flow-row gap-4"
+    >
       {#each $videos.sort(sortAZ) as video (video.id)}
         <li class="list-item">
           <VideoCard
@@ -180,5 +183,9 @@
     font-size: 2em;
     font-weight: 600;
     color: #d8d8d8;
+  }
+  .items-list {
+    padding: 15px;
+    background-color: var(--background);
   }
 </style>

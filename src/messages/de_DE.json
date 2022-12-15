@@ -240,7 +240,8 @@
     "settings": "Überblick Einstellungen",
     "save-as-new-template": "Als neues Template speichern",
     "load-more": "Mehr laden",
-    "paginator-indicator": "nächste {next_count} ({loaded_count}/{count})"
+    "paginator-indicator": "nächste {next_count} ({loaded_count}/{count})",
+    "posters": "Poster"
   },
   "summary": {
     "copy-link": {

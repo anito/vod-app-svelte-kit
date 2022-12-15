@@ -52,12 +52,12 @@
           variant={tab === TABS[1] ? 'unelevated' : 'outlined'}
         >
           <Icon class="material-icons">collections</Icon>
-          <Label>Posters</Label>
+          <Label>{$_('text.posters')}</Label>
         </Button>
       </Group>
     </div>
 
-    <div class="grid-item two pt-3 pb-8 ">
+    <div class="grid-item two">
       {#if tab === TABS[0]}
         <VideoManager />
       {/if}
@@ -98,6 +98,7 @@
       'one'
       'two';
     max-width: var(--page-w);
+    overflow: hidden;
   }
   .grid-item {
     background: var(--back-grid-item);
@@ -110,5 +111,24 @@
   }
   .two {
     grid-area: two;
+    overflow: auto;
+    margin-top: 10px;
+  }
+  .two::before {
+    content: '';
+    height: 1px;
+    background: rgb(255, 255, 255);
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgb(167 167 167 / 44%) 13%,
+      rgb(167 167 167 / 44%) 88%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    display: block;
+    position: absolute;
+    width: var(--page-w);
+    z-index: 1;
+    transform: scaleX(1.15) translateX(10px);
   }
 </style>
