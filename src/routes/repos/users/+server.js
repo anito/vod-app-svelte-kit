@@ -5,7 +5,7 @@ export const GET = async ({ locals: { usersRepo, session }, url }) => {
   const { locale, user } = session.data;
   const token = user?.jwt;
   const page = url.searchParams.get('page') || 1;
-  const limit = url.searchParams.get('limit') || 6;
+  const limit = url.searchParams.get('limit') || 8;
 
   let users;
   if (url.searchParams.has('id')) {

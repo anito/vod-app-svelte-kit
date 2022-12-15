@@ -52,12 +52,13 @@
       PAGINATORS.set(id, pagination);
       return PAGINATORS.get(id);
     } else {
-      const { count: paginator_count, has_next_page: paginator_has_next_page } = PAGINATORS.get(id);
-      const { count: from_load_count } = pagination;
-      // tests
       let ok = true;
-      if (from_load_count !== paginator_count) ok = false;
+      const { count: paginator_count, has_next_page: paginator_has_next_page } = PAGINATORS.get(id);
       if (!paginator_has_next_page && paginator_count !== $store.length) ok = false;
+      try {
+        const { count: from_load_count } = pagination;
+        if (from_load_count !== paginator_count) ok = false;
+      } catch (e) {}
 
       if (ok === true) {
         return PAGINATORS.get(id);
@@ -102,7 +103,7 @@
   }}
 >
   {#if paginator?.has_next_page}
-    <div in:fly={{ y: 20 }} out:fly={{ y: -50 }} class="flex justify-center w-full">
+    <div class="flex justify-center w-full">
       <Button variant="raised" class="button-shaped-round" {style}>
         <input type="hidden" name="page" value={page_data.next_page} />
         <Label

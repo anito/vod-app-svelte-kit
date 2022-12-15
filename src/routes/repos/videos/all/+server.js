@@ -5,7 +5,7 @@ export const GET = async ({ locals: { videosAllRepo, session }, url }) => {
   const { locale, user } = session.data;
   const token = user?.jwt;
   const page = url.searchParams.get('page') || 1;
-  const limit = url.searchParams.get('limit') || 6;
+  const limit = url.searchParams.get('limit') || 10;
 
   let videos;
   if (url.searchParams.has('id')) {
