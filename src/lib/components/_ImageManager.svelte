@@ -112,15 +112,15 @@
           <ImageCard on:Image:delete={deletePoster} {image} />
         </li>
       {/each}
-      <Paginator
-        on:paginator:loaded={handlePaginatorAdded}
-        style="position: fixed; bottom: 70px;"
-        {pagination}
-        store={images}
-        id="images-paginator"
-        action="/videos?/more_images"
-      />
     </ul>
+    <Paginator
+      on:paginator:loaded={handlePaginatorAdded}
+      style="position: fixed; bottom: 70px;"
+      {pagination}
+      store={images}
+      id="images-paginator"
+      action="/videos?/more_images"
+    />
   {:else}
     <div class="empty-selection no-user-selection">
       <span style="text-align: center;">{$_('text.no-content-available')}</span>
