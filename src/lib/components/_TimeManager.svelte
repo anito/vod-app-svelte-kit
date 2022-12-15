@@ -151,7 +151,7 @@
         .params.filter((/** @type {{ type: string; }} */ info) => info.type === 'issue')) ||
     [];
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
-  $: pagination = hasPrivileges ? $page.data.pagination.videos : $page.data.pagination.videosAll;
+  $: pagination = hasPrivileges ? $page.data.pagination?.videos : $page.data.pagination?.videosAll;
   $: store = hasPrivileges ? videos : videosAll;
   $: action = hasPrivileges ? '/videos?/more_videos' : '/videos?/more_videos_all';
   $: id = hasPrivileges ? 'videos-paginator' : 'videos-all-paginator';
@@ -411,10 +411,14 @@
     }
   }
 
-  // @ts-ignore
-  function receiveListMethods({ focusItemAtIndex, items, listName }) {
+  /**
+   * @param {string} listName
+   * @param {{ focusItemAtIndex: Function; items: Array<any>; element: HTMLUListElement }} methods
+   */
+  function receiveListMethods(listName, methods) {
+    // console.log(methods);
     lists.add(listName);
-    itemsList[listName] = { items, focusItemAtIndex };
+    itemsList[listName] = methods;
   }
 
   /**
@@ -442,6 +446,14 @@
         item?.element.scrollIntoView(options);
       });
     }, 100);
+  }
+
+  async function handlePaginatorAdded() {
+    const options = { block: 'nearest', behavior: 'smooth' };
+    const { items, element } = itemsList[NONUSERVIDEOSLIST];
+    await tick();
+    const last = element.querySelector(`li:nth-child(${items.length})`); // :last-child fails for some reason
+    last.scrollIntoView(options);
   }
 
   /**
@@ -478,7 +490,7 @@
           avatarList
           singleSelection
           bind:selectedIndex
-          on:SMUIList:mount={(e) => receiveListMethods({ ...e.detail, listName: USERVIDEOSLIST })}
+          on:SMUIList:mount={(e) => receiveListMethods(USERVIDEOSLIST, { ...e.detail })}
         >
           {#if !hasCurrentPrivileges}
             {#if userVideos.length}
@@ -558,7 +570,7 @@
       </div>
       <List
         class="video-list mb-24"
-        on:SMUIList:mount={(e) => receiveListMethods({ ...e.detail, listName: NONUSERVIDEOSLIST })}
+        on:SMUIList:mount={(e) => receiveListMethods(NONUSERVIDEOSLIST, { ...e.detail })}
         twoLine
         avatarList
         singleSelection
@@ -604,7 +616,8 @@
             </SimpleVideoCard>
           {/each}
           <Paginator
-            style="position: absolute; left: 30%; right: 30%; bottom: 10px; margin: 0 auto;"
+            style="position: absolute; bottom: 10px;"
+            on:paginator:loaded={handlePaginatorAdded}
             {id}
             {pagination}
             {store}

@@ -26,7 +26,7 @@
    */
   let search = '';
 
-  $: pagination = data.pagination.videos;
+  $: pagination = data.pagination?.videos;
   $: sidebar = !!$page.params.slug;
   $: selectionVideoId = $page.params.slug;
   $: filteredVideos = $videos
@@ -77,7 +77,7 @@
         {/if}
       </List>
       <Paginator
-        style="position: absolute; left: 30%; right: 30%; bottom: 10px; margin: 0 auto;"
+        style="position: absolute; bottom: 10px;"
         {pagination}
         store={videos}
         id="videos-paginator"

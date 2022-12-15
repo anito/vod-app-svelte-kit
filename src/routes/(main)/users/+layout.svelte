@@ -116,7 +116,7 @@
   /**
    * @type {any}
    */
-  let focusItemAtIndex;
+  let listMethods;
   /**
    * @type {import("@smui/list")[]}
    */
@@ -126,7 +126,7 @@
    */
   let active;
 
-  $: pagination = data.pagination.users;
+  $: pagination = data.pagination?.users;
   $: selectionUserId = $page.params.slug || $session.user?.id;
   $: selectionUserId && listItems && scrollIntoView();
   $: currentUser = ((id) => $users.find((usr) => usr.id === id))(selectionUserId);
@@ -421,20 +421,28 @@
   }
 
   /**
-   *
-   * @param {any} param0
+   * @param {CustomEvent} event
    */
   function receiveListMethods({ detail }) {
-    // @ts-ignore
-    ({ focusItemAtIndex, items: listItems } = { ...detail });
+    listMethods = detail;
   }
 
   function scrollIntoView() {
     const options = { block: 'nearest', behavior: 'smooth' };
     setTimeout(() => {
+      // @ts-ignore
       const item = listItems.find((item) => item.selected);
+      // @ts-ignore
       item?.element.scrollIntoView(options);
     }, 100);
+  }
+
+  async function handlePaginatorAdded() {
+    const options = { block: 'nearest', behavior: 'smooth' };
+    const { items, element } = listMethods;
+    await tick();
+    const last = element.querySelector(`li:nth-child(${items.length})`); // :last-child fails for some reason
+    last.scrollIntoView(options);
   }
 </script>
 
@@ -488,7 +496,8 @@
         {/if}
       </List>
       <Paginator
-        style="position: absolute; left: 15%; right: 15%; bottom: 10px; margin: 0 auto;"
+        on:paginator:loaded={handlePaginatorAdded}
+        style="position: absolute; bottom: 10px;"
         {pagination}
         store={users}
         id="users-paginator"

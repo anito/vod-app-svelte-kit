@@ -122,10 +122,11 @@
     }
   }
 
-  /** @param {any} param0 */
+  /**
+   * @param {CustomEvent} event
+   */
   function receiveListMethods({ detail }) {
-    // @ts-ignore
-    ({ focusItemAtIndex, items } = { ...detail });
+    ({ focusItemAtIndex, items } = detail);
   }
 </script>
 

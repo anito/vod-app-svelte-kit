@@ -1,7 +1,7 @@
 <script>
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { onMount, getContext } from 'svelte';
+  import { onMount, getContext, tick } from 'svelte';
   import { fly } from 'svelte/transition';
   import Fab, { Label, Icon } from '@smui/fab';
   import { Info, VideoCard, MediaUploader, VideoEditorList, Paginator } from '$lib/components';
@@ -47,8 +47,12 @@
    * @type {any}
    */
   let uploadedData;
+  /**
+   * @type {HTMLUListElement}
+   */
+  let videoList;
 
-  $: pagination = $page.data.pagination.videos;
+  $: pagination = $page.data.pagination?.videos;
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
 
   onMount(() => {
@@ -125,22 +129,33 @@
     );
     uploadedData = null;
   }
+
+  async function handlePaginatorAdded() {
+    const options = { block: 'nearest', behavior: 'smooth' };
+    await tick();
+    const count = videoList.childElementCount;
+    const last = videoList.querySelector(`li.list-item:nth-child(${count - 1})`); // :last-child fails for some reason
+    last?.scrollIntoView(options);
+  }
 </script>
 
 {#if $session.user}
   {#if $videos.length}
-    <div class="grid lg:grid-cols-3 md:grid-cols-2 grid-flow-row gap-4 mb-24">
+    <ul bind:this={videoList} class="grid lg:grid-cols-3 md:grid-cols-2 grid-flow-row gap-4 mb-24">
       {#each $videos.sort(sortAZ) as video (video.id)}
-        <VideoCard
-          on:video:posterCreated={(event) => posterCreatedHandler(event, video.id)}
-          on:video:selectedPoster={(event) => posterSelectedHandler(event.detail, video.id)}
-          on:video:removePoster={() => posterRemoveHandler(video.id)}
-          {video}
-        />
+        <li class="list-item">
+          <VideoCard
+            on:video:posterCreated={(event) => posterCreatedHandler(event, video.id)}
+            on:video:selectedPoster={(event) => posterSelectedHandler(event.detail, video.id)}
+            on:video:removePoster={() => posterRemoveHandler(video.id)}
+            {video}
+          />
+        </li>
       {/each}
-    </div>
+    </ul>
     <Paginator
-      style="position: fixed; left: 30%; right: 30%; bottom: 70px; margin: 0 auto;"
+      on:paginator:loaded={handlePaginatorAdded}
+      style="position: fixed; bottom: 65px;"
       {pagination}
       store={videos}
       id="videos-paginator"

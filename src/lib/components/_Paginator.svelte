@@ -3,8 +3,10 @@
   import { writable } from 'svelte/store';
   import { enhance } from '$app/forms';
   import Button, { Label, Icon } from '@smui/button';
-  import { PAGINATORS } from '$lib/utils';
+  import { PAGINATORS, proxyEvent } from '$lib/utils';
   import { _ } from 'svelte-i18n';
+  import { createEventDispatcher } from 'svelte';
+  import { fly } from 'svelte/transition';
 
   /**
    * @type {any}
@@ -23,6 +25,8 @@
   if (!action) {
     throw 'No Paginator action specified';
   }
+
+  const dispatch = createEventDispatcher();
 
   $: paginator = (pagination || store) && sync();
   $: page_data = paginator && pageData();
@@ -48,9 +52,14 @@
       PAGINATORS.set(id, pagination);
       return PAGINATORS.get(id);
     } else {
-      const { count: paginator_count } = PAGINATORS.get(id);
+      const { count: paginator_count, has_next_page: paginator_has_next_page } = PAGINATORS.get(id);
       const { count: from_load_count } = pagination;
-      if (from_load_count === paginator_count) {
+      // tests
+      let ok = true;
+      if (from_load_count !== paginator_count) ok = false;
+      if (!paginator_has_next_page && paginator_count !== $store.length) ok = false;
+
+      if (ok === true) {
         return PAGINATORS.get(id);
       }
       PAGINATORS.delete(id);
@@ -77,7 +86,7 @@
 <form
   {action}
   method="POST"
-  use:enhance={({ action }) => {
+  use:enhance={() => {
     return /** @param {{result: import('@sveltejs/kit').ActionResult | any}} param */ async ({
       result
     }) => {
@@ -87,26 +96,32 @@
         success && store.add(data);
         PAGINATORS.set(id, resultData.pagination);
         paginator = PAGINATORS.get(id);
+        dispatch('paginator:loaded', id);
       }
     };
   }}
 >
   {#if paginator?.has_next_page}
-    <Button variant="raised" class="button-shaped-round" {style}>
-      <input type="hidden" name="page" value={page_data.next_page} />
-      <Label style="margin-bottom: 5px;">{$_('text.more')}</Label>
-      <Icon style="margin-bottom: 5px;" class="material-icons">download</Icon>
-      <small class="pagination-indicator"
-        >{$_('text.paginator-indicator', {
-          values: {
-            next_count: page_data.next_count,
-            current_page: page_data.current_page,
-            count: page_data.count,
-            loaded_count: page_data.loaded_count
-          }
-        })}</small
-      >
-    </Button>
+    <div in:fly={{ y: 20 }} out:fly={{ y: -50 }} class="flex justify-center w-full">
+      <Button variant="raised" class="button-shaped-round" {style}>
+        <input type="hidden" name="page" value={page_data.next_page} />
+        <Label
+          style="margin-bottom: 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+          >{$_('text.more')}</Label
+        >
+        <Icon style="margin-bottom: 5px;" class="material-icons">download</Icon>
+        <small class="pagination-indicator"
+          >{$_('text.paginator-indicator', {
+            values: {
+              next_count: page_data.next_count,
+              current_page: page_data.current_page,
+              count: page_data.count,
+              loaded_count: page_data.loaded_count
+            }
+          })}</small
+        >
+      </Button>
+    </div>
   {/if}
 </form>
 

@@ -2,7 +2,7 @@
   import * as api from '$lib/api';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { onMount, getContext } from 'svelte';
+  import { onMount, getContext, tick } from 'svelte';
   import { fly } from 'svelte/transition';
   import Fab, { Icon } from '@smui/fab';
   import { Label } from '@smui/common';
@@ -18,6 +18,10 @@
    * @type {import("@smui/snackbar")}
    */
   let snackbar;
+  /**
+   * @type {HTMLUListElement}
+   */
+  let imagesList;
   let openUploader = () => {
     open$uploader(
       MediaUploader,
@@ -42,7 +46,7 @@
     );
   };
 
-  $: pagination = $page.data.pagination.images;
+  $: pagination = $page.data.pagination?.images;
 
   onMount(() => {
     snackbar = getSnackbar();
@@ -85,6 +89,15 @@
       snackbar?.open();
     });
   }
+
+  async function handlePaginatorAdded() {
+    const options = { block: 'nearest', behavior: 'smooth' };
+    await tick();
+    const count = imagesList.childElementCount;
+    const last = imagesList.querySelector(`li.list-item:nth-child(${count - 1})`); // :last-child fails for some reason
+    // @ts-ignore
+    last?.scrollIntoView(options);
+  }
 </script>
 
 <svelte:head>
@@ -93,18 +106,21 @@
 
 {#if $session.user}
   {#if $images.length}
-    <div class="grid grid-cols-3 grid-flow-row gap-4 mb-24">
+    <ul bind:this={imagesList} class="grid grid-cols-3 grid-flow-row gap-4 mb-24">
       {#each $images as image (image.id)}
-        <ImageCard on:Image:delete={deletePoster} {image} />
+        <li class="list-item">
+          <ImageCard on:Image:delete={deletePoster} {image} />
+        </li>
       {/each}
       <Paginator
-        style="position: fixed; left: 30%; right: 30%; bottom: 70px; margin: 0 auto;"
+        on:paginator:loaded={handlePaginatorAdded}
+        style="position: fixed; bottom: 70px;"
         {pagination}
         store={images}
         id="images-paginator"
         action="/videos?/more_images"
       />
-    </div>
+    </ul>
   {:else}
     <div class="empty-selection no-user-selection">
       <span style="text-align: center;">{$_('text.no-content-available')}</span>

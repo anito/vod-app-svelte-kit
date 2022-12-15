@@ -477,7 +477,8 @@
                     switch (formAction) {
                       case 'add': {
                         if (success) {
-                          await invalidate('app:main');
+                          users.add([user]);
+                          // await invalidate('app:main');
                           setTimeout(async () => {
                             await goto(`/users/${user.id}?tab=profile&mode=edit`);
                           }, 200);
@@ -486,11 +487,13 @@
                         break;
                       }
                       case 'edit': {
-                        await invalidate('app:main');
+                        users.put(user);
+                        // await invalidate('app:main');
                         break;
                       }
                       case 'del': {
-                        await invalidate('app:main');
+                        users.del(currentUser.id);
+                        // await invalidate('app:main');
                         mode = EDIT;
                         break;
                       }
