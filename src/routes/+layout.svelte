@@ -32,7 +32,8 @@
     info,
     parseConfigData,
     buildSearchParams,
-    searchParams
+    searchParams,
+    PAGINATORS
   } from '$lib/utils';
   import {
     fabs,
@@ -45,18 +46,20 @@
     ticker,
     urls,
     videos,
-    users
+    users,
+    images
   } from '$lib/stores';
   import { Modal, SvgIcon } from '$lib/components';
   import { DoubleBounce } from 'svelte-loading-spinners';
   import {
-    UserGraphic,
+    FrameworkSwitcher,
     LoadingModal,
     LocaleSwitcher,
     MoreMenu,
-    FrameworkSwitcher,
     Nav,
-    NavItem
+    NavItem,
+    Paginator,
+    UserGraphic
   } from '$lib/components';
   import { svg_manifest } from '$lib/svg_manifest';
   import { _, locale } from 'svelte-i18n';
@@ -130,6 +133,10 @@
    * @type {boolean}
    */
   let isMounted = false;
+  /**
+   * @type {import('./$types').LayoutData}
+   */
+  export let data;
 
   settings.subscribe((val) => {
     printDiff(val, { store: 'config' });
@@ -506,7 +513,8 @@
     const time = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
     await post('/session/extend', time);
     if (detail.start) {
-      invalidateAll();
+      PAGINATORS.clear();
+      await invalidateAll();
     } else {
       await invalidate('app:session');
     }

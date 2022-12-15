@@ -15,8 +15,6 @@
    */
   export let data;
 
-  let pagination = data.pagination.videos;
-
   const emptyPoster = '/src/assets/images/empty-poster.jpg';
 
   /**
@@ -28,6 +26,7 @@
    */
   let search = '';
 
+  $: pagination = data.pagination.videos;
   $: sidebar = !!$page.params.slug;
   $: selectionVideoId = $page.params.slug;
   $: filteredVideos = $videos
@@ -79,7 +78,7 @@
       </List>
       <Paginator
         style="position: absolute; left: 30%; right: 30%; bottom: 10px; margin: 0 auto;"
-        bind:pagination
+        {pagination}
         store={videos}
         id="videos-paginator"
         action="/videos?/more_videos"

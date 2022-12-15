@@ -13,6 +13,7 @@ export async function load({ data }) {
     pagination: {
       users: data.users.pagination,
       videos: data.videos.pagination,
+      videosAll: data.videosAll.pagination,
       images: data.images.pagination
     }
   };

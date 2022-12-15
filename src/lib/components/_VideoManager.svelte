@@ -47,8 +47,8 @@
    * @type {any}
    */
   let uploadedData;
-  let pagination = $page.data.pagination.videos;
 
+  $: pagination = $page.data.pagination.videos;
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
 
   onMount(() => {
@@ -141,7 +141,7 @@
     </div>
     <Paginator
       style="position: fixed; left: 30%; right: 30%; bottom: 70px; margin: 0 auto;"
-      bind:pagination
+      {pagination}
       store={videos}
       id="videos-paginator"
       action="/videos?/more_videos"

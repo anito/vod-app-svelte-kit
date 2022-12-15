@@ -1,7 +1,6 @@
 <script>
   import './_button.scss';
   import { writable } from 'svelte/store';
-  import { onMount } from 'svelte';
   import { enhance } from '$app/forms';
   import Button, { Label, Icon } from '@smui/button';
   import { PAGINATORS } from '$lib/utils';
@@ -11,13 +10,13 @@
    * @type {any}
    */
   export let pagination;
-  export let style = '';
-  export let action = '';
-  export let store = createStore();
   /**
    * @type {string}
    */
   export let id;
+  export let style = '';
+  export let action = '';
+  export let store = createStore();
   if (!id) {
     throw 'No Paginator ID specified';
   }
@@ -25,22 +24,8 @@
     throw 'No Paginator action specified';
   }
 
-  /**
-   * @type {any}
-   */
-  let paginator;
-
+  $: paginator = (pagination || store) && sync();
   $: page_data = paginator && pageData();
-
-  onMount(() => {
-    let outOfSync = false;
-    if (!PAGINATORS.has(id)) {
-      PAGINATORS.set(id, pagination);
-    } else {
-      outOfSync = isOutOfSync();
-    }
-    paginator = !outOfSync ? PAGINATORS.get(id) : pagination;
-  });
 
   function pageData() {
     const { count, page_count, current_page, has_next_page, limit } = paginator;
@@ -58,9 +43,19 @@
     };
   }
 
-  function isOutOfSync() {
-    const { has_next_page, count } = PAGINATORS.get(id);
-    return !has_next_page && $store.length < count;
+  function sync() {
+    if (!PAGINATORS.has(id)) {
+      PAGINATORS.set(id, pagination);
+      return PAGINATORS.get(id);
+    } else {
+      const { count: paginator_count } = PAGINATORS.get(id);
+      const { count: from_load_count } = pagination;
+      if (from_load_count === paginator_count) {
+        return PAGINATORS.get(id);
+      }
+      PAGINATORS.delete(id);
+      sync();
+    }
   }
 
   function createStore() {

@@ -126,7 +126,6 @@
    * @type {any}
    */
   let itemsList = {};
-  let pagination = $page.data.pagination.videos;
 
   $: (1 || selectionUserId) && (selectionVideoId = null);
   $: currentUser = $users.find((usr) => usr.id === selectionUserId);
@@ -152,6 +151,10 @@
         .params.filter((/** @type {{ type: string; }} */ info) => info.type === 'issue')) ||
     [];
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
+  $: pagination = hasPrivileges ? $page.data.pagination.videos : $page.data.pagination.videosAll;
+  $: store = hasPrivileges ? videos : videosAll;
+  $: action = hasPrivileges ? '/videos?/more_videos' : '/videos?/more_videos_all';
+  $: id = hasPrivileges ? 'videos-paginator' : 'videos-all-paginator';
   $: hasCurrentPrivileges = role === ADMIN || role === SUPERUSER;
   $: displayedVideos = hasPrivileges
     ? currentUser?.videos.sort(sortByEndDate) || []
@@ -602,10 +605,10 @@
           {/each}
           <Paginator
             style="position: absolute; left: 30%; right: 30%; bottom: 10px; margin: 0 auto;"
-            bind:pagination
-            store={videos}
-            id="videos-paginator"
-            action="/videos?/more_videos"
+            {id}
+            {pagination}
+            {store}
+            {action}
           />
         {:else}
           <li class="flex flex-1 flex-col self-center text-center">

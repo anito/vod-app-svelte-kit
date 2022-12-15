@@ -125,8 +125,8 @@
    * @type {boolean}
    */
   let active;
-  let pagination = data.pagination.users;
 
+  $: pagination = data.pagination.users;
   $: selectionUserId = $page.params.slug || $session.user?.id;
   $: selectionUserId && listItems && scrollIntoView();
   $: currentUser = ((id) => $users.find((usr) => usr.id === id))(selectionUserId);
@@ -489,7 +489,7 @@
       </List>
       <Paginator
         style="position: absolute; left: 15%; right: 15%; bottom: 10px; margin: 0 auto;"
-        bind:pagination
+        {pagination}
         store={users}
         id="users-paginator"
         action="/users?/more"

@@ -18,7 +18,6 @@
    * @type {import("@smui/snackbar")}
    */
   let snackbar;
-  let pagination = $page.data.pagination.images;
   let openUploader = () => {
     open$uploader(
       MediaUploader,
@@ -42,6 +41,8 @@
       }
     );
   };
+
+  $: pagination = $page.data.pagination.images;
 
   onMount(() => {
     snackbar = getSnackbar();
@@ -98,7 +99,7 @@
       {/each}
       <Paginator
         style="position: fixed; left: 30%; right: 30%; bottom: 70px; margin: 0 auto;"
-        bind:pagination
+        {pagination}
         store={images}
         id="images-paginator"
         action="/videos?/more_images"
