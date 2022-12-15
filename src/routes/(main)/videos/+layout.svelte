@@ -70,19 +70,18 @@
               {video}
             />
           {/each}
+          <Paginator
+            {pagination}
+            store={videos}
+            id="videos-paginator"
+            action="/videos?/more_videos"
+          />
         {:else}
           <li class="flex flex-1 flex-col self-center text-center">
             <div class="m-5">{$_('text.no-videos')}</div>
           </li>
         {/if}
       </List>
-      <Paginator
-        style="position: absolute; bottom: 10px;"
-        {pagination}
-        store={videos}
-        id="videos-paginator"
-        action="/videos?/more_videos"
-      />
     </Component>
   </div>
   <div slot="ad"><Legal /></div>
