@@ -129,19 +129,11 @@
     );
     uploadedData = null;
   }
-
-  async function handlePaginatorAdded() {
-    const options = { block: 'nearest', behavior: 'smooth' };
-    await tick();
-    const count = videoList.childElementCount;
-    const last = videoList.querySelector(`li.list-item:nth-child(${count - 1})`); // :last-child fails for some reason
-    last?.scrollIntoView(options);
-  }
 </script>
 
 {#if $session.user}
   {#if $videos.length}
-    <ul bind:this={videoList} class="grid lg:grid-cols-3 md:grid-cols-2 grid-flow-row gap-4 mb-24">
+    <ul bind:this={videoList} class="grid lg:grid-cols-3 md:grid-cols-2 grid-flow-row gap-4">
       {#each $videos.sort(sortAZ) as video (video.id)}
         <li class="list-item">
           <VideoCard
@@ -153,14 +145,7 @@
         </li>
       {/each}
     </ul>
-    <Paginator
-      on:paginator:loaded={handlePaginatorAdded}
-      style="position: fixed; bottom: 65px;"
-      {pagination}
-      store={videos}
-      id="videos-paginator"
-      action="/videos?/more_videos"
-    />
+    <Paginator {pagination} store={videos} id="videos-paginator" action="/videos?/more_videos" />
   {:else}
     <div class="empty-selection">
       <span style="text-align: center;">{$_('text.no-content-available')}</span>

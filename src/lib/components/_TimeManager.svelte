@@ -485,7 +485,7 @@
       </div>
       {#if currentUser}
         <List
-          class="video-list mb-24"
+          class="video-list mb-10"
           threeLine
           avatarList
           singleSelection
@@ -569,7 +569,7 @@
         >
       </div>
       <List
-        class="video-list mb-24"
+        class="video-list mb-10"
         on:SMUIList:mount={(e) => receiveListMethods(NONUSERVIDEOSLIST, { ...e.detail })}
         twoLine
         avatarList
@@ -615,14 +615,7 @@
               {/if}
             </SimpleVideoCard>
           {/each}
-          <Paginator
-            style="position: absolute; bottom: 10px;"
-            on:paginator:loaded={handlePaginatorAdded}
-            {id}
-            {pagination}
-            {store}
-            {action}
-          />
+          <Paginator {id} {pagination} {store} {action} />
         {:else}
           <li class="flex flex-1 flex-col self-center text-center">
             <div class="m-5">{$_('text.no-videos-available')}</div>

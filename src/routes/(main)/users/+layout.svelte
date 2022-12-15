@@ -128,7 +128,7 @@
 
   $: pagination = data.pagination?.users;
   $: selectionUserId = $page.params.slug || $session.user?.id;
-  $: selectionUserId && listItems && scrollIntoView();
+  $: selectionUserId && listItems && scrollSelectedIntoView();
   $: currentUser = ((id) => $users.find((usr) => usr.id === id))(selectionUserId);
   $: ((usr) => {
     username = usr?.name;
@@ -156,7 +156,6 @@
 
   onMount(() => {
     snackbar = getSnackbar();
-
     let renewed;
     if ((renewed = localStorage.getItem('renewed')) && renewed == $session.user?.id) {
       renewedTokenDialog?.setOpen(true);
@@ -427,7 +426,7 @@
     listMethods = detail;
   }
 
-  function scrollIntoView() {
+  function scrollSelectedIntoView() {
     const options = { block: 'nearest', behavior: 'smooth' };
     setTimeout(() => {
       // @ts-ignore
@@ -435,14 +434,6 @@
       // @ts-ignore
       item?.element.scrollIntoView(options);
     }, 100);
-  }
-
-  async function handlePaginatorAdded() {
-    const options = { block: 'nearest', behavior: 'smooth' };
-    const { items, element } = listMethods;
-    await tick();
-    const last = element.querySelector(`li:nth-child(${items.length})`); // :last-child fails for some reason
-    last.scrollIntoView(options);
   }
 </script>
 
@@ -470,7 +461,7 @@
         </Textfield>
       </div>
       <List
-        class="mb-24 users-list"
+        class="mb-10 users-list"
         twoLine
         avatarList
         singleSelection
@@ -489,20 +480,9 @@
           {#each filteredUsers as user (user.id)}
             <SimpleUserCard id={user.id} class="flex" {selectionUserId} {user} />
           {/each}
-        {:else}
-          <div class="loader flex justify-center">
-            <SvgIcon name="animated-loader-3" size={50} fillColor="var(--primary)" class="mr-2" />
-          </div>
+          <Paginator {pagination} store={users} id="users-paginator" action="/users?/more" />
         {/if}
       </List>
-      <Paginator
-        on:paginator:loaded={handlePaginatorAdded}
-        style="position: absolute; bottom: 10px;"
-        {pagination}
-        store={users}
-        id="users-paginator"
-        action="/users?/more"
-      />
     </Component>
   </div>
   <div slot="ad">

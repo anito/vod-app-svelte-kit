@@ -106,7 +106,7 @@
 
 {#if $session.user}
   {#if $images.length}
-    <ul bind:this={imagesList} class="grid grid-cols-3 grid-flow-row gap-4 mb-24">
+    <ul bind:this={imagesList} class="grid grid-cols-3 grid-flow-row gap-4 mb-10">
       {#each $images as image (image.id)}
         <li class="list-item">
           <ImageCard on:Image:delete={deletePoster} {image} />
@@ -115,7 +115,6 @@
     </ul>
     <Paginator
       on:paginator:loaded={handlePaginatorAdded}
-      style="position: fixed; bottom: 70px;"
       {pagination}
       store={images}
       id="images-paginator"

@@ -59,7 +59,7 @@
           >
         </Textfield>
       </div>
-      <List class="video-list mb-24" twoLine avatarList singleSelection bind:selectedIndex>
+      <List class="video-list mb-10" twoLine avatarList singleSelection bind:selectedIndex>
         {#if filteredVideos.length}
           {#each filteredVideos as video (video.id)}
             <SimpleVideoCard

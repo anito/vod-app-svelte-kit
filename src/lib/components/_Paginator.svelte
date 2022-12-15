@@ -1,12 +1,11 @@
 <script>
   import './_button.scss';
-  import { writable } from 'svelte/store';
   import { enhance } from '$app/forms';
+  import { writable } from 'svelte/store';
+  import { createEventDispatcher, onMount, tick } from 'svelte';
   import Button, { Label, Icon } from '@smui/button';
-  import { PAGINATORS, proxyEvent } from '$lib/utils';
+  import { PAGINATORS } from '$lib/utils';
   import { _ } from 'svelte-i18n';
-  import { createEventDispatcher } from 'svelte';
-  import { fly } from 'svelte/transition';
 
   /**
    * @type {any}
@@ -30,6 +29,10 @@
 
   $: paginator = (pagination || store) && sync();
   $: page_data = paginator && pageData();
+
+  onMount(() => {
+    paginator?.has_next_page && setTimeout(() => scrollIntoView(), 200);
+  });
 
   function pageData() {
     const { count, page_count, current_page, has_next_page, limit } = paginator;
@@ -55,9 +58,12 @@
       let ok = true;
       const { count: paginator_count, has_next_page: paginator_has_next_page } = PAGINATORS.get(id);
       if (!paginator_has_next_page && paginator_count !== $store.length) ok = false;
+
+      // we don't know which fires first, store or pagination
+      // so pagination could be still undefined here
       try {
-        const { count: from_load_count } = pagination;
-        if (from_load_count !== paginator_count) ok = false;
+        const { count } = pagination;
+        if (count !== paginator_count) ok = false;
       } catch (e) {}
 
       if (ok === true) {
@@ -82,28 +88,35 @@
       subscribe
     };
   }
+
+  async function scrollIntoView() {
+    await tick();
+    const appendix = document.documentElement.querySelector(`.paginator-appendix-${id}`);
+    appendix?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
 </script>
 
-<form
-  {action}
-  method="POST"
-  use:enhance={() => {
-    return /** @param {{result: import('@sveltejs/kit').ActionResult | any}} param */ async ({
-      result
-    }) => {
-      if (result.type === 'success') {
-        const { data: resultData } = result;
-        const { success, data } = resultData;
-        success && store.add(data);
-        PAGINATORS.set(id, resultData.pagination);
-        paginator = PAGINATORS.get(id);
-        dispatch('paginator:loaded', id);
-      }
-    };
-  }}
->
-  {#if paginator?.has_next_page}
-    <div class="flex justify-center w-full">
+<li class="paginator-appendix paginator-appendix-{id}">
+  <form
+    {action}
+    method="POST"
+    use:enhance={() => {
+      return /** @param {{result: import('@sveltejs/kit').ActionResult | any}} param */ async ({
+        result
+      }) => {
+        if (result.type === 'success') {
+          const { data: resultData } = result;
+          const { success, data } = resultData;
+          success && store.add(data);
+          PAGINATORS.set(id, resultData.pagination);
+          paginator = PAGINATORS.get(id);
+          setTimeout(() => scrollIntoView(), 200);
+          dispatch('paginator:loaded', id);
+        }
+      };
+    }}
+  >
+    {#if paginator?.has_next_page}
       <Button variant="raised" class="button-shaped-round" {style}>
         <input type="hidden" name="page" value={page_data.next_page} />
         <Label
@@ -111,7 +124,7 @@
           >{$_('text.more')}</Label
         >
         <Icon style="margin-bottom: 5px;" class="material-icons">download</Icon>
-        <small class="pagination-indicator"
+        <small class="paginator-indicator"
           >{$_('text.paginator-indicator', {
             values: {
               next_count: page_data.next_count,
@@ -122,12 +135,22 @@
           })}</small
         >
       </Button>
-    </div>
-  {/if}
-</form>
+    {/if}
+  </form>
+</li>
 
 <style>
-  small.pagination-indicator {
+  .paginator-appendix {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+  .paginator-appendix::after {
+    content: '';
+    height: 90px;
+  }
+  small.paginator-indicator {
     position: absolute;
     font-size: 0.5em;
     bottom: 5px;
