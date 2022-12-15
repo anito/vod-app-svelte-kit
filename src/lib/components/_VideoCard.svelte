@@ -65,7 +65,7 @@
   $: rightButton = isEditMode
     ? { label: $_('text.cancel'), icon: 'cancel' }
     : { label: $_('text.delete'), icon: 'delete' };
-  $: matchingData = (video?.['_matchingData'] && video['_matchingData']['UsersVideos']) || null;
+  $: matchingData = ('_matchingData' in video && video._matchingData.UsersVideos) || null;
   $: canSave = description !== video.description || title !== video.title;
 
   function save() {
@@ -192,11 +192,12 @@
                 >{@html $_('text.until-date', {
                   values: {
                     date:
-                      matchingData &&
-                      new Date(matchingData.end).toLocaleDateString(
-                        LOCALESTORE.get($locale)?.fns?.code,
-                        DateTimeFormatOptions
-                      )
+                      (matchingData &&
+                        new Date(matchingData.end).toLocaleDateString(
+                          LOCALESTORE.get($locale)?.fns?.code,
+                          DateTimeFormatOptions
+                        )) ||
+                      'date invalid'
                   }
                 })}</span
               >

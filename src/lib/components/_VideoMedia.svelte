@@ -170,23 +170,13 @@
     {#if hasPrivileges}
       <div class="editor-wrapper" class:is-edit-mode={isEditMode}>
         <div class="editor p-2">
-          <Textfield
-            class="mb-3"
-            variant="outlined"
-            dense
-            bind:value={title}
-            label="Title"
-            input$aria-controls="helper-text-title"
-            input$aria-describedby="helper-text-title"
-          />
+          <Textfield class="mb-3" variant="outlined" dense bind:value={title} label="Title" />
           <Textfield
             class="flex-1"
             textarea
             variant="outlined"
             bind:value={description}
             label="Description"
-            input$aria-controls="helper-text-description"
-            input$aria-describedby="helper-text-description"
           />
         </div>
       </div>
