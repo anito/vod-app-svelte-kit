@@ -5,8 +5,8 @@ import { UsersRepo, VideosRepo, ImagesRepo, VideosAllRepo } from '$lib/classes';
 export const handle = handleSession(
   {
     secret: 'ALKDSFH§%&24LKFDJSD/&$§&ÖLDKFJSDL§&%$&=&=SLKAF',
-    key: 'VOD__SESSION',
-    rolling: true
+    key: 'VOD__SESSION'
+    // rolling: true
   },
   async ({ event, resolve }) => {
     dev && (process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0');

@@ -1,12 +1,13 @@
 <script>
-  // @ts-nocheck
-
   import './_chip.scss';
   import { proxyEvent } from '$lib/utils';
   import { infos } from '$lib/stores';
   import Chip, { Set, LeadingIcon, Text } from '@smui/chips';
   import { _ } from 'svelte-i18n';
 
+  /**
+   * @type {string}
+   */
   export let selectionUserId;
   export { className as class };
   export let staggered = false;
@@ -18,6 +19,9 @@
   $: chips = ($infos?.has(selectionUserId) && $infos.get(selectionUserId).params) || [];
   $: promise = Promise.resolve(chips);
 
+  /**
+   * @param {string} flag
+   */
   function getIcon(flag) {
     let icon;
     switch (flag) {
@@ -42,9 +46,9 @@
           color="primary"
           {chip}
           class={chip.flag}
-          on:MDCChip:interaction={(e) => proxyEvent(e, { ...chip, userId: selectionUserId })}
+          on:MDCChip:interaction={(e) => proxyEvent(e.type, { ...chip, userId: selectionUserId })}
         >
-          <LeadingIcon class="material-icons" leading>{getIcon(chip.flag)}</LeadingIcon>
+          <LeadingIcon class="material-icons">{getIcon(chip.flag)}</LeadingIcon>
           <Text>{$_(chip.label)}</Text>
         </Chip>
       </Set>

@@ -19,7 +19,7 @@ export const afterOrBeforeNavigation = (
     from_pathnames: [],
     to_pathnames: []
   },
-  callback
+  callback = () => void 0
 ) => {
   const FROM_SEARCH_KEY = 'from_searches';
   const TO_SEARCH_KEY = 'to_searches';
@@ -64,7 +64,7 @@ export const afterOrBeforeNavigation = (
      */
     (from) => {
       return from_pathnames?.find((slug) => {
-        if (from.url.pathname.indexOf(slug) !== -1) {
+        if (from.url.pathname.startsWith(slug)) {
           return slug;
         }
       });
@@ -77,7 +77,7 @@ export const afterOrBeforeNavigation = (
      */
     (to) => {
       return to_pathnames?.find((slug) => {
-        if (to.url.pathname.indexOf(slug) !== -1) {
+        if (to.url.pathname.startsWith(slug)) {
           return slug;
         }
       });
@@ -118,7 +118,7 @@ export const afterOrBeforeNavigation = (
         return ret;
       };
       const res = check();
-      if (typeof callback === 'function') callback(res);
+      if (typeof callback === 'function') callback(res, { from, to });
     }
   );
 };

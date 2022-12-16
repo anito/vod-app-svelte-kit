@@ -9,7 +9,7 @@
   import { afterNavigate, beforeNavigate, goto, invalidate, invalidateAll } from '$app/navigation';
   import { navigating, page } from '$app/stores';
   import { enhance } from '$app/forms';
-  import { getContext, onMount, setContext } from 'svelte';
+  import { getContext, onMount, setContext, tick } from 'svelte';
   import isMobile from 'ismobilejs';
   import { Icons } from '$lib/components';
   import Button, { Icon } from '@smui/button';
@@ -25,14 +25,12 @@
     svg,
     ADMIN,
     SUPERUSER,
-    randomItem,
     afterOrBeforeNavigation,
     parseLifetime,
     printDiff,
     info,
     parseConfigData,
     buildSearchParams,
-    searchParams,
     PAGINATORS
   } from '$lib/utils';
   import {
@@ -46,8 +44,7 @@
     ticker,
     urls,
     videos,
-    users,
-    images
+    users
   } from '$lib/stores';
   import { Modal, SvgIcon } from '$lib/components';
   import { DoubleBounce } from 'svelte-loading-spinners';
@@ -58,7 +55,6 @@
     MoreMenu,
     Nav,
     NavItem,
-    Paginator,
     UserGraphic
   } from '$lib/components';
   import { svg_manifest } from '$lib/svg_manifest';
@@ -198,8 +194,9 @@
   /**
    *
    * @param {Map<string, any>} excludes
+   * @param {import('@sveltejs/kit').AfterNavigate} param0
    */
-  const navigationCallback = (excludes) => {
+  const afterNavigationCallback = async (excludes, { from, to }) => {
     if (excludes.size) {
       info(
         2,
@@ -208,10 +205,7 @@
         excludes
       );
     } else {
-      clearTimeout(navTimeoutId);
-      navTimeoutId = setTimeout(() => {
-        !$navigating && proxyEvent('session:extend');
-      }, 2000);
+      proxyEvent('session:extend');
     }
   };
 
@@ -220,15 +214,14 @@
     {
       to_searches: [],
       from_pathnames: [],
-      to_pathnames: ['auth?/logout', 'auth?/login', 'login', 'logout', 'config']
+      to_pathnames: ['/auth?/logout', '/auth?/login', '/login', '/logout', '/config']
     },
-    navigationCallback
+    afterNavigationCallback
   );
 
-  beforeNavigate(({ to }) => {
-    if (to?.url.searchParams.get('config') === 'load') {
-      configSnackbar($_('text.loading-configuration'));
-      snackbar?.open;
+  beforeNavigate(({ cancel }) => {
+    if ($navigating) {
+      cancel();
     }
   });
 
@@ -509,14 +502,15 @@
    */
   async function sessionExtendHandler({ detail }) {
     if (!$session.user && !detail.start) return;
+    await tick();
     const { lifetime } = $settings.Session;
     const time = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
     await post('/session/extend', time);
     if (detail.start) {
       PAGINATORS.clear();
-      await invalidateAll();
+      if (!$navigating) await invalidateAll();
     } else {
-      await invalidate('app:session');
+      if (!$navigating) await invalidate('app:session');
     }
     detail.callback?.();
   }
@@ -769,13 +763,15 @@
                   </Button>
                 </Item>
                 <Separator />
-                <Item class="justify-start">
-                  <Button formaction="/config?/reload" class="link-button" ripple={false}>
-                    <SvgIcon name="sync" class="mr-2" fillColor="#000" />
-                    <Label>Reload Config</Label>
-                  </Button>
-                </Item>
-                <Separator />
+                {#if $session.role === SUPERUSER}
+                  <Item class="justify-start">
+                    <Button formaction="/config?/reload" class="link-button" ripple={false}>
+                      <SvgIcon name="sync" class="mr-2" fillColor="#000" />
+                      <Label>Reload Config</Label>
+                    </Button>
+                  </Item>
+                  <Separator />
+                {/if}
                 <Item class="justify-start">
                   <Button
                     href={`${$page.url.pathname}${buildSearchParams($page.url.searchParams, {

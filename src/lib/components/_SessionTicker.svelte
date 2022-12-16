@@ -12,17 +12,29 @@
 
   const Fails = 2;
 
-  /** @type {string} */
+  /**
+   * @type {string}
+   */
   let className = '';
-  /** @type {string} */
+  /**
+   * @type {string}
+   */
   let last;
-  /** @type {ReturnType<typeof setTimeout>} */
+  /**
+   * @type {ReturnType<typeof setTimeout>}
+   */
   let timeoutId;
-  /** @type {number} */
+  /**
+   * @type {number}
+   */
   let fails = Fails;
-  /** @type {boolean} */
+  /**
+   * @type {boolean}
+   */
   let forced = false;
-  /** @type {number} */
+  /**
+   * @type {number}
+   */
   let fadeoutTimeMs = 2000;
 
   $: chipClassName = $ticker / (60 * 1000) <= leadTime ? signalType : '';
@@ -71,7 +83,7 @@
   <div class="container {className}" class:show class:signal>
     <Set chips={[{ id: 0 }]} let:chip class="info" on:MDCChip:interaction>
       <Chip class={chipClassName} {chip}>
-        <LeadingIcon class="material-icons" leading>av_timer</LeadingIcon>
+        <LeadingIcon class="material-icons">av_timer</LeadingIcon>
         <Text>
           <span class="mr-1">
             {parse($ticker)}

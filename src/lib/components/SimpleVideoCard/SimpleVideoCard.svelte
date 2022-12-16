@@ -212,7 +212,7 @@
               : 'active')}
             on:click={() => dispatch('datapicker', { id: video.id })}
           >
-            <LeadingIcon class="material-icons" leading>date_range</LeadingIcon>
+            <LeadingIcon class="material-icons">date_range</LeadingIcon>
             <Text>{readoutPeriod}</Text>
           </Chip>
         </Set>
