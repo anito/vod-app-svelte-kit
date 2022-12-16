@@ -611,11 +611,12 @@
     <Modal header={{ name: 'text.edit-uploaded-content' }} key="editor-modal">
       <div bind:this={base} class="transition opacity-0">
         <form
-          use:enhance={({ action }) => {
+          use:enhance={({ action, cancel }) => {
             const actionParam = new URLSearchParams(action.searchParams)
               .keys()
               .next()
               .value?.replace(/\//, '');
+            if (!actionParam) cancel();
             return /** @param {{result: import('@sveltejs/kit').ActionResult | any}} param */ async ({
               result
             }) => {
