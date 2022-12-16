@@ -615,7 +615,7 @@
             const actionParam = new URLSearchParams(action.searchParams)
               .keys()
               .next()
-              .value.replace(/\//, '');
+              .value?.replace(/\//, '');
             return /** @param {{result: import('@sveltejs/kit').ActionResult | any}} param */ async ({
               result
             }) => {
