@@ -417,10 +417,9 @@
       });
     });
     let newTemplate = { name, slug, items };
-    const res = await api.post('templates', {
+    const res = await api.post(`templates?locale=${$page.data.session.data.locale}`, {
       data: { ...newTemplate },
       token: $session.user?.jwt
-      // locale: $session.data.locale
     });
     configSnackbar(res.message);
     if (res?.success) {
@@ -443,10 +442,13 @@
         items.push({ id: item.id, content });
       }
     );
-    const res = await api.put(`templates/${currentTemplate.id}`, {
-      data: { items },
-      token: $session.user?.jwt
-    });
+    const res = await api.put(
+      `templates/${currentTemplate.id}?locale=${$page.data.session.data.locale}`,
+      {
+        data: { items },
+        token: $session.user?.jwt
+      }
+    );
     configSnackbar(res.message);
     if (res?.success) {
       templates.put({ ...currentTemplate });
@@ -472,7 +474,7 @@
     );
 
     let newTemplate = { name, slug, items };
-    const res = await api.post('templates', {
+    const res = await api.post(`templates?locale=${$page.data.session.data.locale}`, {
       data: { ...newTemplate },
       token: $session.user?.jwt
     });
@@ -485,7 +487,9 @@
   }
 
   async function removeTemplate() {
-    const res = await api.del(`templates/${currentTemplate.id}`, { token: $session.user?.jwt });
+    const res = await api.del(`templates/${currentTemplate.id}?locale=${$session.locale}`, {
+      token: $session.user?.jwt
+    });
     configSnackbar(res.message);
     if (res?.success) {
       templates.del(currentTemplate.id);
@@ -548,7 +552,10 @@
 
     if (!template) return;
 
-    const res = await api.put(`templates/${id}`, { data: { name }, token: $session.user?.jwt });
+    const res = await api.put(`templates/${id}?locale=${$session.locale}`, {
+      data: { name },
+      token: $session.user?.jwt
+    });
     if (res?.success) {
       templates.put({ ...template, name });
       configSnackbar($_('text.template-renamed'));

@@ -273,45 +273,49 @@
 
   async function deleteAvatar() {
     let msg;
-    await api.del(`avatars/${currentUser.avatar.id}`, { token }).then(async (res) => {
-      /** @type {any} */
-      const { data, success, message } = { ...res };
-      msg = message || res.data?.message;
+    await api
+      .del(`avatars/${currentUser.avatar.id}?locale=${$session.locale}`, { token })
+      .then(async (res) => {
+        /** @type {any} */
+        const { data, success, message } = { ...res };
+        msg = message || res.data?.message;
 
-      if (success) {
-        // reflect the change in the session cookie
-        if ($session.user.id === currentUser.id) {
-          await post('/session', {
-            ...$session,
-            user: { ...$session.user, avatar: data.avatar }
-          });
-          await invalidate('app:session');
+        if (success) {
+          // reflect the change in the session cookie
+          if ($session.user.id === currentUser.id) {
+            await post('/session', {
+              ...$session,
+              user: { ...$session.user, avatar: data.avatar }
+            });
+            await invalidate('app:session');
+          }
+          await invalidate('app:main');
         }
-        await invalidate('app:main');
-      }
-    });
+      });
 
     configSnackbar(msg);
     snackbar?.open();
   }
 
   async function activateUser() {
-    await api.put(`users/${selectionUserId}`, { data: { active }, token }).then((res) => {
-      if (res) {
-        message = res.message || res.data.message || res.statusText;
-        code = (res.data && res.data.code) || res.status;
+    await api
+      .put(`users/${selectionUserId}?locale=${$session.locale}`, { data: { active }, token })
+      .then((res) => {
+        if (res) {
+          message = res.message || res.data.message || res.statusText;
+          code = (res.data && res.data.code) || res.status;
 
-        if (res?.success) {
-          users.put({ ...currentUser, active });
-        } else if (200 < code && code < 500) {
-          // Sample Users are protected
-          reset();
+          if (res?.success) {
+            users.put({ ...currentUser, active });
+          } else if (200 < code && code < 500) {
+            // Sample Users are protected
+            reset();
+          }
+
+          configSnackbar(message);
+          snackbar?.open();
         }
-
-        configSnackbar(message);
-        snackbar?.open();
-      }
-    });
+      });
   }
 
   async function changeProtection() {

@@ -27,7 +27,8 @@ function createStore() {
       code: 200,
       fromToken: false,
       success: false,
-      renewed: false
+      renewed: false,
+      locale: ''
     } // initial value
   );
 }

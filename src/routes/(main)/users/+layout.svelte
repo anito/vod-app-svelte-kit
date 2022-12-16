@@ -220,29 +220,36 @@
   }
 
   async function removeToken() {
-    await api.del(`tokens/${tokenId}`, { token: $session.user?.jwt }).then((res) => {
-      if (res?.success) {
-        users.put({ ...currentUser, ...res.data });
-      }
-      configSnackbar(res.message);
-      snackbar?.open();
-    });
+    await api
+      .del(`tokens/${tokenId}?locale=${$session.locale}`, { token: $session.user?.jwt })
+      .then((res) => {
+        if (res?.success) {
+          users.put({ ...currentUser, ...res.data });
+        }
+        configSnackbar(res.message);
+        snackbar?.open();
+      });
   }
 
   async function activateUser(state = {}) {
     let data = 'active' in state ? state : { active: !active };
-    await api.put(`users/${selectionUserId}`, { data, token: $session.user?.jwt }).then((res) => {
-      message = res.message || res.data.message || res.statusText;
+    await api
+      .put(`users/${selectionUserId}?locale=${$session.locale}`, {
+        data,
+        token: $session.user?.jwt
+      })
+      .then((res) => {
+        message = res.message || res.data.message || res.statusText;
 
-      if (res?.success) {
-        // @ts-ignore
-        users.put({ ...currentUser, ...data });
-      } else {
-        active = !active;
-      }
-      configSnackbar(message);
-      snackbar?.open();
-    });
+        if (res?.success) {
+          // @ts-ignore
+          users.put({ ...currentUser, ...data });
+        } else {
+          active = !active;
+        }
+        configSnackbar(message);
+        snackbar?.open();
+      });
   }
 
   function resolveAll() {
