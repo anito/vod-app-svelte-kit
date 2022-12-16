@@ -2,6 +2,7 @@
   // @ts-nocheck
 
   import './_fbButton.scss';
+  import transparent from 'assets/images/transparent.png';
   import Button from '@smui/button';
   import { onMount } from 'svelte';
   import SvgIcon from './_SvgIcon.svelte';
@@ -11,8 +12,6 @@
 
   /** @type {string}*/
   export let appId;
-
-  const defaultSrc = '/src/assets/images/transparent.png';
 
   /** @type {any | null} */
   let authResponse = null;
@@ -114,7 +113,7 @@
           <img
             alt={$_('text.profile_image', { values: { name } })}
             class="relative image"
-            src={src ?? defaultSrc}
+            src={src ?? transparent}
           />
         </div>
       {/if}

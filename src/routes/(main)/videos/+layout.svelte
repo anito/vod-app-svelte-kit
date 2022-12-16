@@ -8,14 +8,13 @@
   import { Legal, PageBar, SimpleVideoCard, Component, Paginator } from '$lib/components';
   import { dynamicUrl, sortByTitle } from '$lib/utils';
   import { videos } from '$lib/stores';
+  import emptyPoster from '/src/assets/images/empty-poster.jpg';
   import { _ } from 'svelte-i18n';
 
   /**
    * @type {import('./$types').LayoutData}
    */
   export let data;
-
-  const emptyPoster = '/src/assets/images/empty-poster.jpg';
 
   /**
    * @type {number}

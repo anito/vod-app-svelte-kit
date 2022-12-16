@@ -8,6 +8,7 @@
   import Button, { Label, Icon as ButtonIcon } from '@smui/button';
   import IconButton, { Icon } from '@smui/icon-button';
   import { flash, infos, session, users, videos, videosAll } from '$lib/stores';
+  import emptyPoster from '/src/assets/images/empty-poster.jpg';
   import {
     SimpleVideoCard,
     DateRangePicker,
@@ -47,7 +48,6 @@
   const lists = new Set();
   const USERVIDEOSLIST = 'user-video-list';
   const NONUSERVIDEOSLIST = 'non-user-videos-list';
-  const emptyPoster = '/src/assets/images/empty-poster.jpg';
 
   /**
    * @type {Element}

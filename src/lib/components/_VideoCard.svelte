@@ -14,6 +14,7 @@
   import MenuSurface, { Anchor } from '@smui/menu-surface';
   import ImageList, { Item as ImageListItem, ImageAspectContainer, Image } from '@smui/image-list';
   import List, { Item, Separator, Text } from '@smui/list';
+  import emptyPoster from '/src/assets/images/empty-poster.jpg';
   import { _, locale } from 'svelte-i18n';
 
   /** @type {import('$lib/types').Video} */
@@ -26,15 +27,15 @@
 
   let className = '';
   /**
-   * @type {import('@smui/menu').MenuComponentDev}
+   * @type {import('@smui/menu')}
    */
   let cardMenu;
   /**
-   * @type {import('@smui/menu').MenuComponentDev}
+   * @type {import('@smui/menu')}
    */
   let deleteMenu;
   /**
-   * @type {import('@smui/menu-surface').MenuSurfaceComponentDev}
+   * @type {import('@smui/menu-surface')}
    */
   let imageList;
   /**
@@ -157,13 +158,7 @@
 
 <Card class="card {className}">
   <PrimaryAction onclick={() => $currentVideo.set(video)}>
-    <VideoMedia
-      {video}
-      bind:title
-      bind:description
-      {isEditMode}
-      emptyPoster="/src/assets/images/empty-poster.jpg"
-    />
+    <VideoMedia {video} bind:title bind:description {isEditMode} {emptyPoster} />
     <Content class="mdc-typography--body2">
       <div class="wrapper flex flex-row justify-between">
         <div class="flex flex-col" style="flex-basis: 50%; max-width: 50%">

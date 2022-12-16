@@ -187,5 +187,7 @@
   .items-list {
     padding: 15px;
     background-color: var(--background);
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
   }
 </style>

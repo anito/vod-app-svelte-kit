@@ -2,11 +2,23 @@
   import { afterUpdate } from 'svelte';
   import SvgIcon from './_SvgIcon.svelte';
 
+  /**
+   * @type {any[]}
+   */
   export let sections = [];
+  /**
+   * @type {null}
+   */
   export let active_section = null;
+  /**
+   * @type {any}
+   */
   export let show_contents;
   export let prevent_sidebar_scroll = false;
 
+  /**
+   * @type {HTMLUListElement}
+   */
   let ul;
 
   afterUpdate(() => {
@@ -23,13 +35,13 @@
       const max = window.innerHeight - 200;
 
       if (top > max) {
-        ul.parentNode.scrollBy({
+        ul.parentNode?.scrollBy({
           top: top - max,
           left: 0,
           behavior: 'smooth'
         });
       } else if (bottom < min) {
-        ul.parentNode.scrollBy({
+        ul.parentNode?.scrollBy({
           top: bottom - min,
           left: 0,
           behavior: 'smooth'

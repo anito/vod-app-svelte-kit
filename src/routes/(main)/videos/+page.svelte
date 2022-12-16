@@ -57,7 +57,7 @@
       </Group>
     </div>
 
-    <div class="grid-item two">
+    <div class="frame grid-item two">
       {#if tab === TABS[0]}
         <VideoManager />
       {/if}
@@ -80,8 +80,10 @@
         </span>
       </div>
     </div>
-    <div class="p-8" style="height: auto">
-      <VideoManager {user} />
+    <div class="grid">
+      <div class="frame p-8" style="height: auto">
+        <VideoManager />
+      </div>
     </div>
   </Component>
 {/if}
@@ -112,9 +114,11 @@
   .two {
     grid-area: two;
     overflow: auto;
+  }
+  .frame {
     margin-top: 10px;
   }
-  .two::before {
+  .frame::before {
     content: '';
     height: 1px;
     background: rgb(255, 255, 255);
