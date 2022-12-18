@@ -1,6 +1,4 @@
-import { dev, browser } from '$app/environment';
-import { get as getStore } from 'svelte/store';
-import { locale } from 'svelte-i18n';
+import { dev } from '$app/environment';
 import { bodyReader } from '$lib/utils';
 
 export const base = dev ? `https://vod.mbp/v1` : `https://vod.webpremiere.de/v1`;
