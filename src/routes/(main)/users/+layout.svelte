@@ -481,7 +481,7 @@
           {selectionUserId}
           user={$users.find((user) => user.id === $session.user?.id)}
           ><div class="my-badge">
-            <Icon class="material-icons">face</Icon>
+            <Icon class="material-icons">contact_page</Icon>
           </div>
         </SimpleUserCard>
         {#if filteredUsers.length}
