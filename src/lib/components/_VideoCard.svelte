@@ -1,12 +1,13 @@
 <script>
   import './_button.scss';
   import './_menu-surface.scss';
+  import { page } from '$app/stores';
   import { getContext, createEventDispatcher } from 'svelte';
   import { fly } from 'svelte/transition';
   import { currentVideo, images, session } from '$lib/stores';
   import { getMedia } from '$lib/utils/media';
   import { ADMIN, DateTimeFormatOptions, LOCALESTORE, proxyEvent, SUPERUSER } from '$lib/utils';
-  import { VideoMedia, MediaUploader } from '$lib/components';
+  import { VideoMedia, MediaUploader, Paginator } from '$lib/components';
   import Card, { Content, PrimaryAction, Actions, ActionButtons, ActionIcons } from '@smui/card';
   import Button, { Label } from '@smui/button';
   import IconButton, { Icon } from '@smui/icon-button';
@@ -59,6 +60,7 @@
    */
   let isImageListOpen = false;
 
+  $: pagination = $page.data.pagination?.images;
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: leftButton = isEditMode
     ? { label: $_('text.save'), icon: 'save' }
@@ -200,11 +202,7 @@
           {/if}
         </div>
         <div class="flex justify-end" style="flex-basis: 50%; max-width: 50%">
-          <IconButton
-            href={`/videos/${video.id}`}
-            variant="outlined"
-            class="button-shaped-round unelevated"
-          >
+          <IconButton href={`/videos/${video.id}`} class="button-shaped-round unelevated">
             <i class="material-icons">smart_display</i>
           </IconButton>
         </div>
@@ -294,6 +292,12 @@
               {/each}
             {/if}
           </ImageList>
+          <Paginator
+            {pagination}
+            store={images}
+            action="/videos?/more_images"
+            id="image-paginator"
+          />
         </MenuSurface>
       </div>
     </Actions>

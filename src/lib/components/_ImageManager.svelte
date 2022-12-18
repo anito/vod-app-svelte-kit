@@ -89,15 +89,6 @@
       snackbar?.open();
     });
   }
-
-  async function handlePaginatorAdded() {
-    const options = { block: 'nearest', behavior: 'smooth' };
-    await tick();
-    const count = imagesList.childElementCount;
-    const last = imagesList.querySelector(`li.list-item:nth-child(${count - 1})`); // :last-child fails for some reason
-    // @ts-ignore
-    last?.scrollIntoView(options);
-  }
 </script>
 
 <svelte:head>
@@ -113,13 +104,7 @@
         </li>
       {/each}
     </ul>
-    <Paginator
-      on:paginator:loaded={handlePaginatorAdded}
-      {pagination}
-      store={images}
-      id="images-paginator"
-      action="/videos?/more_images"
-    />
+    <Paginator {pagination} store={images} id="images-paginator" action="/videos?/more_images" />
   {:else}
     <div class="empty-selection no-user-selection">
       <span style="text-align: center;">{$_('text.no-content-available')}</span>
