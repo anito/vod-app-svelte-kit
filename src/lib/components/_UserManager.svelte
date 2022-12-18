@@ -491,13 +491,17 @@
                         break;
                       }
                       case 'edit': {
-                        users.put(user);
-                        // await invalidate('app:main');
+                        if (success) {
+                          users.put(user);
+                          // await invalidate('app:main');
+                        }
                         break;
                       }
                       case 'del': {
-                        users.del(currentUser.id);
-                        // await invalidate('app:main');
+                        if (success) {
+                          users.del(currentUser.id);
+                          // await invalidate('app:main');
+                        }
                         mode = EDIT;
                         break;
                       }
