@@ -417,7 +417,7 @@
       });
     });
     let newTemplate = { name, slug, items };
-    const res = await api.post(`templates?locale=${$page.data.session.data.locale}`, {
+    const res = await api.post(`templates?locale=${$page.data.session.locale}`, {
       data: { ...newTemplate },
       token: $session.user?.jwt
     });
