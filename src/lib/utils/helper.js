@@ -21,9 +21,20 @@ export function sortByTitle(a, b) {
  * @returns {number}
  */
 export function sortByName(a, b) {
-  let _a = a.name?.toUpperCase() || '';
-  let _b = b.name?.toUpperCase() || '';
-  return (_a < _b && -1) || (_a > _b && 1) || 0;
+  let _a = a.name?.toLowerCase() || '';
+  let _b = b.name?.toLowerCase() || '';
+  return _a < _b ? -1 : _a > _b ? 1 : 0;
+}
+
+/**
+ * @param {string | number} prop
+ * @param {{ [x: string]: string; }} a
+ * @param {{ [x: string]: string; }} b
+ */
+export function sortBy(prop, a, b) {
+  let _a = a[prop]?.toLowerCase() || '';
+  let _b = b[prop]?.toLowerCase() || '';
+  return _a < _b ? -1 : _a > _b ? 1 : 0;
 }
 
 /**
@@ -459,6 +470,14 @@ export function parseConfigData(data) {
   }
   throw 'Configuration data incorrect';
 }
+
+Array.prototype.sortBy = function (/** @type {string | number} */ key) {
+  return this.sort((a, b) => {
+    let _a = a[key]?.toLowerCase() || '';
+    let _b = b[key]?.toLowerCase() || '';
+    return _a < _b ? -1 : _a > _b ? 1 : 0;
+  });
+};
 
 Array.prototype.unique = function () {
   return this.filter((val, index, self) => self.indexOf(index) != val);

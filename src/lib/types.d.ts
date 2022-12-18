@@ -24,29 +24,33 @@ declare global {
      * Converts a number to formatted string with a length of minimumIntegerDigits.
      * Utilizes ECMAScript Internationalization API Specification, see https://tc39.es/ecma402/#sec-intl.datetimeformat.prototype.format
      * Default length is 2
-     * @param minimumIntegerDigits 
+     * @param minimumIntegerDigits
      */
-    minDigits(minimumIntegerDigits?: number): string
+    minDigits(minimumIntegerDigits?: number): string;
   }
 
   interface Array {
     /**
      * Remove any multiple occurances from an array
      */
-    unique()
+    unique();
+    /**
+     * Sorting of Array Object Items by Object.key
+     */
+    sortBy(key);
   }
 
   interface String {
     /**
      * Remove all full-word occurances of the specifyed string from a string
-     * @param val The text to remove the given value from 
+     * @param val The text to remove the given value from
      */
-    remove(val: string)
+    remove(val: string);
     /**
      * Add all full-word occurances of val from a text
-     * @param val The text to remove the given value from 
+     * @param val The text to remove the given value from
      */
-    add(val: string)
+    add(val: string);
   }
 }
 export declare type EventType = keyof GlobalEventHandlersEventMap;
@@ -56,9 +60,9 @@ export declare type EventType = keyof GlobalEventHandlersEventMap;
 // export declare type SpecificWindowEventListener<K extends WindowEventType> = (evt: WindowEventMap[K]) => void;
 
 export interface Repo<RepoType = Record<string, void>> {
-  get: any
-  getAll: any
-  setToken: any
+  get: any;
+  getAll: any;
+  setToken: any;
 }
 
 export interface User<UserRepoType = Record<any, any>> {
@@ -69,12 +73,12 @@ export interface User<UserRepoType = Record<any, any>> {
   role: string;
   expires: number;
   token_id: string;
-  protected: boolean
-  active: boolean
-  group_id: string
-  message?: string
-  avatar: Avatar[] | any;
-  videos: Video[] | any;
+  protected: boolean;
+  active: boolean;
+  group_id: string;
+  message?: string;
+  avatar: Avatar[] | any;
+  videos: Video[] | any;
   groups: Group[] | any;
 }
 
@@ -82,69 +86,69 @@ export interface UserFoundation<UserFoundationType = Record<any, any>> {
   id: string;
   name: string;
   email: string;
-  group_id: string
-  avatar: Avatar[] | any;
+  group_id: string;
+  avatar: Avatar[] | any;
 }
 
 export interface Image<ImageRepoType = Record<string, any>> {
-  id: string | any
-  src: string
+  id: string | any;
+  src: string;
 }
 
 export interface Avatar<AvatarRepoType = Record<string, any>> {
-  id: string | any
-  user_id: string | any
-  src: string | any
+  id: string | any;
+  user_id: string | any;
+  src: string | any;
 }
 
 export interface Video<VideoRepoType = Record<string, any>> {
-  id: string | any
-  title?: string
-  description?: string | never
-  image?: Image | any
-  image_id?: string | any
-  src?: string | any
-  playhead?: number | any
-  _joinData?: any[] | any
-  _matchingData?: any[] | any
-  created: string | number | Date
+  id: string | any;
+  title?: string;
+  description?: string | never;
+  image?: Image | any;
+  image_id?: string | any;
+  src?: string | any;
+  playhead?: number | any;
+  _joinData?: any[] | any;
+  _matchingData?: any[] | any;
+  created: string | number | Date;
 }
 
 export interface VideoAll<VideoAllRepoType = Record<string, any>> {
-  id: string | any
-  title: string
-  description: string | never
-  image: Image | any
-  image_id: string | any
-  src: string | any
-  created?: string | number | Date
+  id: string | any;
+  title: string;
+  description: string | never;
+  image: Image | any;
+  image_id: string | any;
+  src: string | any;
+  created?: string | number | Date;
 }
 
 export interface GoogleUser<GoogleUserType = Record<string, any>> {
-  id: string
-  name: string
-  email: string | undefined
+  id: string;
+  name: string;
+  email: string | undefined;
 }
 
 export interface Group<GroupType = Record<string, any>> {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 export interface Mail<MailType = Record<string, any>> {
-  id: string | any
-  message: string
-  subject: string
-  _from: string | any
-  _to: string | any
-  _read: boolean
-  created: Date
+  id: string | any;
+  message: string;
+  subject: string;
+  _from: string | any;
+  _to: string | any;
+  _read: boolean;
+  created: Date;
 }
 
 export interface MailTemplate<TemplateType = Record<string, any>> {
-  id: string | any
-  name: string
-  items: any
+  id: string | any;
+  name: string;
+  items: any;
 }
 
 export interface Framework<FrameworkType = Record<string, any>> {
@@ -158,54 +162,54 @@ export interface Framework<FrameworkType = Record<string, any>> {
 }
 
 export interface Session<SessionType = Record<string, any>> {
-  data: Object
-  fromToken: boolean
-  user: User
-  role: string
-  message: string
-  success: boolean
-  renewed: boolean
-  code: number
-  locale?: string
-  _expires: Date | any
+  data: Object;
+  fromToken: boolean;
+  user: User;
+  role: string;
+  message: string;
+  success: boolean;
+  renewed: boolean;
+  code: number;
+  locale?: string;
+  _expires: Date | any;
 }
 
 export interface Sent<SentType = Record<string, any>> {
-  id: string
+  id: string;
 }
 
 export interface Inbox<InboxType = Record<string, any>> {
-  id: string
+  id: string;
 }
 
 export interface Setting<SettingType = Record<string, any>> {
-  Session: SessionSettings
-  Site: SiteSettings
-  Console: ConsoleSettings
+  Session: SessionSettings;
+  Site: SiteSettings;
+  Console: ConsoleSettings;
 }
 
 export interface SiteSettings<SiteSettingsType = Record<string, any>> {
-  defaultUserTab: string
-  salutation: string
-  salutations: Array
+  defaultUserTab: string;
+  salutation: string;
+  salutations: Array;
 }
 
 export interface ConsoleSettings<ConsoleSettingsType = Record<string, any>> {
-  infoLevel: number
-  log: boolean
+  infoLevel: number;
+  log: boolean;
 }
 
-export interface SessionSettings<SessionSettingsType = Record<string, any>>  {
-  lifetime: number
+export interface SessionSettings<SessionSettingsType = Record<string, any>> {
+  lifetime: number;
 }
 
 export interface Error<ErrorType = Record<string, any>> {
-  code: any
-  message: string
+  code: any;
+  message: string;
 }
 
 export interface Dropzone<DropzoneType = Record<string, any>> {
-  processQueue?: any
+  processQueue?: any;
   removeFile?: any;
   url?: string | undefined;
   timeout?: number | undefined;

@@ -145,6 +145,7 @@
         user.name.toLowerCase().indexOf(search.toLowerCase()) !== -1 &&
         user.id !== $session.user?.id
     ) || [];
+  $: filteredUsers.sortBy('name');
   $: userInfos = ($infos?.has(selectionUserId) && $infos.get(selectionUserId).params) || [];
   $: userIssues = userInfos.filter(
     /**
