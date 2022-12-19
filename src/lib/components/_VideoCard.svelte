@@ -296,7 +296,10 @@
             {pagination}
             store={images}
             action="/videos?/more_images"
-            id="image-paginator"
+            id="images-paginator"
+            style="--fontSize: 0.6em;"
+            indicator
+            icon="download"
           />
         </MenuSurface>
       </div>

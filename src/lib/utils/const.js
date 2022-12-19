@@ -4,7 +4,6 @@ export const DIFFSTORES = new Map([
   ['config', new Map()],
   ['page', new Map()]
 ]);
-export const PAGINATORS = new Map();
 /**
  * @type {Map<any, {fns: any; localized: string; filename: string; }>}
  */

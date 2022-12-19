@@ -1,10 +1,13 @@
+<script context="module">
+  const PAGINATORS = new Map();
+</script>
+
 <script>
   import './_button.scss';
   import { enhance } from '$app/forms';
   import { writable } from 'svelte/store';
   import { createEventDispatcher, onMount, tick } from 'svelte';
   import Button, { Label, Icon } from '@smui/button';
-  import { PAGINATORS } from '$lib/utils';
   import { _ } from 'svelte-i18n';
 
   /**
@@ -18,11 +21,17 @@
   export let style = '';
   export let action = '';
   export let store = createStore();
+  export let icon = '';
+  export let indicator = false;
+
   if (!id) {
     throw 'No Paginator ID specified';
   }
   if (!action) {
     throw 'No Paginator action specified';
+  }
+  if (!store.add) {
+    throw 'Store must implement an "add" method';
   }
 
   const dispatch = createEventDispatcher();
@@ -97,7 +106,7 @@
   }
 </script>
 
-<li class="paginator-appendix paginator-appendix-{id}">
+<li class="paginator-appendix paginator-appendix-{id}" class:indicator>
   <form
     {action}
     method="POST"
@@ -120,21 +129,24 @@
     {#if paginator?.has_next_page}
       <Button variant="raised" class="button-shaped-round" {style}>
         <input type="hidden" name="page" value={page_data.next_page} />
-        <Label
-          style="margin-bottom: 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+        <Label class="label" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
           >{$_('text.more')}</Label
         >
-        <Icon style="margin-bottom: 5px;" class="material-icons">download</Icon>
-        <small class="paginator-indicator"
-          >{$_('text.paginator-indicator', {
-            values: {
-              next_count: page_data.next_count,
-              current_page: page_data.current_page,
-              count: page_data.count,
-              loaded_count: page_data.loaded_count
-            }
-          })}</small
-        >
+        {#if icon}
+          <Icon class="material-icons">{icon}</Icon>
+        {/if}
+        {#if indicator}
+          <small class="paginator-indicator"
+            >{$_('text.paginator-indicator', {
+              values: {
+                next_count: page_data.next_count,
+                current_page: page_data.current_page,
+                count: page_data.count,
+                loaded_count: page_data.loaded_count
+              }
+            })}</small
+          >
+        {/if}
       </Button>
     {/if}
   </form>
@@ -153,8 +165,11 @@
   }
   small.paginator-indicator {
     position: absolute;
-    font-size: 0.5em;
+    font-size: 0.6em;
     bottom: 5px;
     line-height: 1em;
+  }
+  .paginator-appendix.indicator :global(.label) {
+    margin-bottom: 5px;
   }
 </style>

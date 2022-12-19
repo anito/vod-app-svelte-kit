@@ -3,30 +3,6 @@ import { settings } from '$lib/stores';
 import { ADMIN, SUPERUSER, INBOX, DIFFSTORES } from './const';
 
 /**
- *
- * @param {*} a
- * @param {*} b
- * @returns
- */
-export function sortByTitle(a, b) {
-  let _a = a.title?.toUpperCase() || '';
-  let _b = b.title?.toUpperCase() || '';
-  return (_a < _b && -1) || (_a > _b && 1) || 0;
-}
-
-/**
- *
- * @param {*} a
- * @param {*} b
- * @returns {number}
- */
-export function sortByName(a, b) {
-  let _a = a.name?.toLowerCase() || '';
-  let _b = b.name?.toLowerCase() || '';
-  return _a < _b ? -1 : _a > _b ? 1 : 0;
-}
-
-/**
  * @param {string | number} prop
  * @param {{ [x: string]: string; }} a
  * @param {{ [x: string]: string; }} b

@@ -22,7 +22,6 @@
     toISODate,
     proxyEvent,
     sortByEndDate,
-    sortByTitle,
     createRedirectSlug,
     ADMIN,
     SUPERUSER,
@@ -180,7 +179,7 @@
       }
     }) || [];
   $: noneUserVideos = hasPrivileges
-    ? $videos.sort(sortByTitle)
+    ? $videos.sortBy('title')
     : $videosAll
         ?.filter(
           (v) =>
@@ -192,7 +191,7 @@
               }
             )
         )
-        .sort(sortByTitle);
+        .sortBy('title');
   $: addClass(isopen);
 
   onMount(() => {

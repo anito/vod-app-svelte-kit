@@ -30,8 +30,7 @@
     printDiff,
     info,
     parseConfigData,
-    buildSearchParams,
-    PAGINATORS
+    buildSearchParams
   } from '$lib/utils';
   import {
     fabs,
@@ -507,7 +506,6 @@
     const time = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
     await post('/session/extend', time);
     if (detail.start) {
-      PAGINATORS.clear();
       if (!$navigating) await invalidateAll();
     } else {
       if (!$navigating) await invalidate('app:session');
