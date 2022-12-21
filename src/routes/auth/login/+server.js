@@ -1,7 +1,6 @@
 import * as api from '$lib/api';
 import { error, json } from '@sveltejs/kit';
 import { get } from 'svelte/store';
-import { locale as i18n } from 'svelte-i18n';
 import { settings } from '$lib/stores';
 import { parseLifetime } from '$lib/utils';
 

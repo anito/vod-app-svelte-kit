@@ -6,14 +6,24 @@ LOCALESTORE.forEach((val, key) => {
   register(key, () => import(`../messages/${val.filename}.json`));
 });
 
-const fallbackLocale = 'de-DE';
+const fallbackLocale = 'en';
+
+function getInitialLocale() {
+  let locale;
+  LOCALESTORE.forEach((val, key) => {
+    if (getLocaleFromNavigator()?.startsWith(key)) {
+      locale = key;
+    }
+  });
+  return locale;
+}
 
 /** @type {import('./$types').LayoutLoad} */
 export async function load({ data }) {
   const session = data.session;
   init({
     fallbackLocale,
-    initialLocale: session.locale || getLocaleFromNavigator()
+    initialLocale: session.locale || getInitialLocale()
   });
 
   const parser = new UAParser(data.ua);

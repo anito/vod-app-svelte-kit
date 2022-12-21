@@ -1,4 +1,4 @@
-import { de, enUS } from 'date-fns/locale/index';
+import { de, enUS, enGB } from 'date-fns/locale/index';
 
 export const DIFFSTORES = new Map([
   ['config', new Map()],
@@ -8,8 +8,8 @@ export const DIFFSTORES = new Map([
  * @type {Map<any, {fns: any; localized: string; filename: string; }>}
  */
 export const LOCALESTORE = new Map([
-  ['de-DE', { fns: de, localized: 'Deutsch', filename: 'de_DE' }],
-  ['en-US', { fns: enUS, localized: 'English', filename: 'en_US' }]
+  ['de', { fns: de, localized: 'Deutsch', filename: 'de_DE' }],
+  ['en', { fns: enUS, localized: 'English', filename: 'en_US' }]
 ]);
 /**
  * @type {Intl.DateTimeFormatOptions}

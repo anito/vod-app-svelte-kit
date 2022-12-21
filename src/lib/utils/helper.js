@@ -3,17 +3,6 @@ import { settings } from '$lib/stores';
 import { ADMIN, SUPERUSER, INBOX, DIFFSTORES } from './const';
 
 /**
- * @param {string | number} prop
- * @param {{ [x: string]: string; }} a
- * @param {{ [x: string]: string; }} b
- */
-export function sortBy(prop, a, b) {
-  let _a = a[prop]?.toLowerCase() || '';
-  let _b = b[prop]?.toLowerCase() || '';
-  return _a < _b ? -1 : _a > _b ? 1 : 0;
-}
-
-/**
  *
  * @param {*} a
  * @param {*} b

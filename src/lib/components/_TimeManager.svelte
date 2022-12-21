@@ -632,34 +632,36 @@
             <button on:click={() => toggleDataPicker(selectionVideoId)} class="button-close" />
           </div>
         </div>
-        <DateRangePicker
-          on:apply={onApplyHandler}
-          on:selection={onDateRangeSelected}
-          bind:readout
-          {firstDayOfWeek}
-          {startDate}
-          {endDate}
-          minDate={subYears(startOfYear(new Date()), 2)}
-          maxDate={addYears(endOfYear(new Date()), 2)}
-          localeObject={LOCALESTORE.get($locale)?.fns}
-          customHeaderHeight
-          class="sm-header"
-          disabled={!selectionVideoId}
-          resetTrigger={selectionVideoId}
-          monthDropdown={true}
-          weekGuides
-          weekNumbers
-          todayBtn
-          twoPages
-          resetViewBtn
-          timePicker
-          timePickerSeconds
-          timePickerControls
-          todayBtnText={$_('text.today')}
-          cancelBtnText={$_('text.reset')}
-          applyBtnText={$_('text.apply')}
-          actionBtnClass="picker-btn mdc-button mdc-ripple-upgraded mdc-button--unelevated"
-        />
+        {#if $locale}
+          <DateRangePicker
+            on:apply={onApplyHandler}
+            on:selection={onDateRangeSelected}
+            bind:readout
+            {firstDayOfWeek}
+            {startDate}
+            {endDate}
+            minDate={subYears(startOfYear(new Date()), 2)}
+            maxDate={addYears(endOfYear(new Date()), 2)}
+            localeObject={LOCALESTORE.get($locale)?.fns}
+            customHeaderHeight
+            class="sm-header"
+            disabled={!selectionVideoId}
+            resetTrigger={selectionVideoId}
+            monthDropdown={true}
+            weekGuides
+            weekNumbers
+            todayBtn
+            twoPages
+            resetViewBtn
+            timePicker
+            timePickerSeconds
+            timePickerControls
+            todayBtnText={$_('text.today')}
+            cancelBtnText={$_('text.reset')}
+            applyBtnText={$_('text.apply')}
+            actionBtnClass="picker-btn mdc-button mdc-ripple-upgraded mdc-button--unelevated"
+          />
+        {/if}
       </Component>
     </div>
   {/if}

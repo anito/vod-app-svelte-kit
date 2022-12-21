@@ -13,5 +13,5 @@ import { LOCALESTORE } from './const';
  *                     defaulting to the current system locale
  */
 export const localeFormat = (date, dateFormat) => {
-  return format(date, dateFormat, { locale: LOCALESTORE.get(get(locale)).fns });
+  return format(date, dateFormat, { locale: LOCALESTORE.get(get(locale))?.fns });
 };
