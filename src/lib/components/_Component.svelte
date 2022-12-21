@@ -7,11 +7,11 @@
   let className = '';
 </script>
 
-<div class="component flex flex-1 flex-col {className} {variant}" class:extended class:transparent>
+<div class="component flex flex-1 flex-col {variant}" class:extended class:transparent>
   <div class="header">
     <slot name="header">You must provide a header</slot>
   </div>
-  <div class="content flex-1">
+  <div class="content {className}">
     <slot />
   </div>
 </div>

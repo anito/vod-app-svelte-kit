@@ -64,6 +64,7 @@
     Actions as DialogActions,
     InitialFocus
   } from '@smui/dialog';
+  import Paginator from '$lib/components/_Paginator.svelte';
 
   const snackbarLifetime = 4000;
   const redirectDelay = 300;

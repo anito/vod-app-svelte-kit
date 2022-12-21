@@ -15,7 +15,7 @@
 </script>
 
 <div class="svelte-header">
-  <svelte:element this={tag} class={mdcClassName} class:className {style}>
+  <svelte:element this={tag} class="{mdcClassName} {className}" {style}>
     <slot />
   </svelte:element>
 </div>

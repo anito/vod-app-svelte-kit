@@ -1,5 +1,6 @@
 <script context="module">
   const PAGINATORS = new Map();
+  export const clear = PAGINATORS.clear();
 </script>
 
 <script>

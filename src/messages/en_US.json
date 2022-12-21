@@ -241,7 +241,8 @@
     "save-as-new-template": "Save as new template",
     "load-more": "Load more",
     "paginator-indicator": "next {next_count} ({loaded_count}/{count})",
-    "posters": "Posters"
+    "posters": "Posters",
+    "your-videos": "Your videos"
   },
   "summary": {
     "copy-link": {

@@ -35,7 +35,7 @@
 </svelte:head>
 
 {#if hasPrivileges}
-  <div class="media-grid {tab} flex-1">
+  <div class="media-grid {tab} flex-1 has-privileges" style="margin-top: 10px;">
     <div class="grid-item one mt-2">
       <Group variant="unelevated">
         <Button
@@ -68,7 +68,7 @@
     </div>
   </div>
 {:else}
-  <Component variant="sm">
+  <Component variant="sm" class="flex">
     <div slot="header">
       <div class="grid grid-cols-2">
         <span class="ml-2">
@@ -81,19 +81,31 @@
         </span>
       </div>
     </div>
-    <div class="grid">
-      <div class="frame p-8" style="height: auto">
-        <VideoManager />
+    <div class="flex flex-1">
+      <div class="grid-inner">
+        <div class="media-grid non-admin">
+          <div class="grid-item one pl-8">
+            <Header h="5" mdc class="m-8">{$_('text.your-videos')}</Header>
+          </div>
+          <div class="frame grid-item two">
+            <VideoManager />
+          </div>
+        </div>
       </div>
     </div>
   </Component>
 {/if}
 
 <style>
+  .media-grid:not(.has-privileges) ::after,
+  .media-grid:not(.has-privileges) ::before,
+  .media-grid:not(.has-privileges) {
+    --page-w: 100vw;
+  }
   .media-grid {
     --toolbar: calc(var(--toolbar-h) * 1.2);
     display: grid;
-    grid-template-rows: var(--toolbar) auto;
+    grid-template-rows: 1fr;
     grid-template-columns: 1fr;
     grid-gap: var(--grid-gap);
     align-items: initial;
@@ -101,6 +113,7 @@
       'one'
       'two';
     max-width: var(--page-w);
+    width: var(--page-w);
     overflow: hidden;
   }
   .grid-item {
@@ -112,14 +125,19 @@
     align-items: center;
     height: var(--toolbar);
   }
+  .non-admin .one {
+    grid-area: one;
+    display: flex;
+    align-items: center;
+    height: 100px;
+  }
   .two {
     grid-area: two;
     overflow: auto;
   }
-  .frame {
-    margin-top: 10px;
-  }
   .frame::before {
+    --scale-x: 1;
+    --translate-x: 0;
     content: '';
     height: 1px;
     background: rgb(255, 255, 255);
@@ -134,6 +152,10 @@
     position: absolute;
     width: var(--page-w);
     z-index: 1;
-    transform: scaleX(1.15) translateX(10px);
+    transform: scaleX(var(--scale-x)) translateX(var(--translate-x));
+  }
+  .has-privileges .frame::before {
+    --scale-x: 1.15;
+    --translate-x: calc(10% / 2 - 10% / 2);
   }
 </style>

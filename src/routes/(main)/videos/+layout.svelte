@@ -28,9 +28,11 @@
   $: pagination = data.pagination?.videos;
   $: sidebar = !!$page.params.slug;
   $: selectionVideoId = $page.params.slug;
-  $: filteredVideos = $videos
-    .filter((video) => video.title?.toLowerCase().indexOf(search.toLowerCase()) !== -1)
-    .sortBy('title');
+  $: filteredVideos =
+    Array.isArray($videos) &&
+    $videos
+      .filter?.((video) => video.title?.toLowerCase().indexOf(search.toLowerCase()) !== -1)
+      .sortBy('title');
 
   onMount(() => {});
 </script>
