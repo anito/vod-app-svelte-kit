@@ -70,7 +70,7 @@
    */
   let search = '';
   /**
-   * @type {import("@smui/snackbar")}
+   * @type {import('@smui/snackbar')}
    */
   let snackbar;
   /**
@@ -78,31 +78,31 @@
    */
   let message;
   /**
-   * @type {import("@smui/dialog")}
+   * @type {Dialog}
    */
   let infoDialog;
   /**
-   * @type {import("@smui/dialog")}
+   * @type {Dialog}
    */
   let generateTokenDialog;
   /**
-   * @type {import("@smui/dialog")}
+   * @type {Dialog}
    */
   let activateUserDialog;
   /**
-   * @type {import("@smui/dialog")}
+   * @type {Dialog}
    */
   let resolveAllDialog;
   /**
-   * @type {import("@smui/dialog")}
+   * @type {Dialog}
    */
   let renewedTokenDialog;
   /**
-   * @type {import("@smui/dialog")}
+   * @type {Dialog}
    */
   let removeTokenDialog;
   /**
-   * @type {import("@smui/dialog")}
+   * @type {Dialog}
    */
   let redirectDialog;
   /**
@@ -118,17 +118,12 @@
    */
   let listMethods;
   /**
-   * @type {import("@smui/list")[]}
-   */
-  let listItems;
-  /**
    * @type {boolean}
    */
   let active;
 
   $: pagination = data.pagination?.users;
   $: selectionUserId = $page.params.slug || $session.user?.id;
-  $: selectionUserId && listItems && scrollSelectedIntoView();
   $: currentUser = ((id) => $users.find((usr) => usr.id === id))(selectionUserId);
   $: ((usr) => {
     username = usr?.name;
@@ -157,6 +152,9 @@
 
   onMount(() => {
     snackbar = getSnackbar();
+
+    if (selectionUserId) scrollSelectedIntoView();
+
     let renewed;
     if ((renewed = localStorage.getItem('renewed')) && renewed == $session.user?.id) {
       renewedTokenDialog?.setOpen(true);
@@ -435,12 +433,10 @@
   }
 
   function scrollSelectedIntoView() {
-    const options = { block: 'nearest', behavior: 'smooth' };
+    const { items } = listMethods;
     setTimeout(() => {
-      // @ts-ignore
-      const item = listItems.find((item) => item.selected);
-      // @ts-ignore
-      item?.element.scrollIntoView(options);
+      const item = items.find((/** @type {{ selected: any; }} */ item) => item.selected);
+      item?.element.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }, 100);
   }
 </script>

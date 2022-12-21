@@ -7,7 +7,7 @@ export async function load({ data }) {
   images.update(data.images.data);
   videosAll.update(data.videosAll.data);
 
-  users.add([data.user]);
+  if (data.user) users.add([data.user]);
 
   return {
     pagination: {

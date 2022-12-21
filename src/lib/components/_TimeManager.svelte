@@ -436,23 +436,21 @@
   }
 
   function scrollIntoView() {
-    const options = { block: 'nearest', behavior: 'smooth' };
     setTimeout(() => {
       lists.forEach((name) => {
         let item = itemsList[name].items.find(
           (/** @type {{ selected: any; }} */ item) => item.selected
         );
-        item?.element.scrollIntoView(options);
+        item?.element.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
       });
     }, 100);
   }
 
   async function handlePaginatorAdded() {
-    const options = { block: 'nearest', behavior: 'smooth' };
     const { items, element } = itemsList[NONUSERVIDEOSLIST];
     await tick();
     const last = element.querySelector(`li:nth-child(${items.length})`); // :last-child fails for some reason
-    last.scrollIntoView(options);
+    last.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
 
   /**
