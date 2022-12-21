@@ -2,7 +2,7 @@ import { get } from 'svelte/store';
 import { users } from '$lib/stores';
 
 /** @type {import('./$types').PageLoad} */
-export async function load({ params, data, parent, fetch }) {
+export async function load({ params, fetch }) {
   const id = params.slug;
   /**
    * @type {never[]}
