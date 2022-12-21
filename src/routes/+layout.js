@@ -19,16 +19,29 @@ function getInitialLocale() {
 }
 
 /** @type {import('./$types').LayoutLoad} */
-export async function load({ data }) {
-  const session = data.session;
+export async function load({ data, fetch }) {
+  const { session } = data;
+  const initialLocale = session.locale || getInitialLocale();
   init({
     fallbackLocale,
-    initialLocale: session.locale || getInitialLocale()
+    initialLocale
   });
+
+  // we need locale in session early for api calls, so don't wait until user switches locale to store locale in session
+  let { locale } = session;
+  if (!locale) {
+    await fetch(`/locale`, {
+      method: 'POST',
+      body: JSON.stringify({ locale: initialLocale || fallbackLocale })
+    }).then(async (res) => {
+      const json = await res.json();
+      locale = json.locale;
+    });
+  }
 
   const parser = new UAParser(data.ua);
   const browser = parser.getBrowser();
 
   await waitLocale();
-  return { session, browser };
+  return { session: { ...session, locale }, browser };
 }

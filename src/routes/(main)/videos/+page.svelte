@@ -9,12 +9,13 @@
   import { Header } from '$lib/components';
   import { _ } from 'svelte-i18n';
 
-  /** @type {import('./$types').PageData} */
+  /**
+   * @type {import('./$types').PageData}
+   */
   export let data;
 
   const TABS = ['videos', 'images'];
 
-  $: user = data.user;
   $: tab = ((tab) => TABS.find((itm) => itm === tab))($page.url.searchParams.get('tab')) || TABS[0];
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
 

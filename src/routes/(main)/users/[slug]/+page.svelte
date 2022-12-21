@@ -5,17 +5,14 @@
   import { onMount, setContext } from 'svelte';
   import { UserManager, TimeManager, MailManager, UserGraphic } from '$lib/components';
   import Button, { Group, Label, Icon } from '@smui/button';
-  import {
-    users,
-    usersFoundation,
-    sitename,
-    session,
-    videos,
-    videosAll,
-    images
-  } from '$lib/stores';
+  import { users, usersFoundation, sitename, session } from '$lib/stores';
   import { proxyEvent, INBOX, ADMIN, SUPERUSER, TABS, log } from '$lib/utils';
   import { _ } from 'svelte-i18n';
+
+  /**
+   * @type {import('./$types').PageData}
+   */
+  export let data;
 
   /**  * @type {string} */
   let selectedMode = 'edit';
@@ -38,11 +35,11 @@
   /** @type {any} */
   let username;
 
+  $: if (data.user) users.add([data.user]);
   $: selectionUserId = $page.params.slug;
   $: currentUser = ((id) => $users.find((usr) => usr.id === id) || ($users.length && $users[0]))(
     selectionUserId
   );
-  $: user = $users.find((user) => $session.user?.id === user.id);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: isCurrentSuperUser = currentUser?.role === SUPERUSER;
   $: username = currentUser?.name || '';
@@ -109,7 +106,6 @@
   <div class="grid-item toolbar justify-between">
     <Group variant="unelevated">
       <Button
-        data-sveltekit-prefetch=""
         class="focus:outline-none focus:shadow-outline"
         href="/users/{selectionUserId}?tab=time"
         variant={tab === TABS[0] ? 'unelevated' : 'outlined'}
@@ -118,7 +114,6 @@
         <Label>{$_('text.videos')}</Label>
       </Button>
       <Button
-        data-sveltekit-prefetch=""
         class="focus:outline-none focus:shadow-outline"
         href="/users/{selectionUserId}?tab=profile"
         variant={tab === TABS[1] ? 'unelevated' : 'outlined'}
@@ -127,7 +122,6 @@
         <Label>{$_('text.user-profil')}</Label>
       </Button>
       <Button
-        data-sveltekit-prefetch=""
         class="focus:outline-none focus:shadow-outline"
         href="/users/{selectionUserId}?tab=mail&active={INBOX}"
         variant={tab === TABS[2] ? 'unelevated' : 'outlined'}
@@ -141,7 +135,6 @@
         on:click={() => proxyEvent('info:token:redirect')}
         disabled={!magicLink}
         variant="unelevated"
-        user
       >
         <UserGraphic
           borderSize="1"

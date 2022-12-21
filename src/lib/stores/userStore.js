@@ -1,13 +1,13 @@
 import { writable } from 'svelte/store';
 
 function createStore() {
-  const { subscribe, update, set } = writable([], () => {
+  const { subscribe, update, set } = writable(/** @type {import('$lib/types').User[]} */ [], () => {
     // first subscriber
   });
 
   /**
    * @param {string} id
-   * @param {import('$lib/types').User[] | any} items
+   * @param {import('$lib/types').User[]} items
    */
   let findIndexById = (id, items) => {
     return items.findIndex(/** @param {import('$lib/types').User} itm */ (itm) => itm.id == id);
@@ -21,7 +21,7 @@ function createStore() {
     add: (values) =>
       update(
         /**
-         * @param {any} items
+         * @param {import('$lib/types').User[]} items
          * @return {never | any}
          */
         (items) => {
@@ -38,7 +38,7 @@ function createStore() {
     put: (val) =>
       update(
         /**
-         * @param {any} items
+         * @param {import('$lib/types').User[]} items
          * @return {never | any}
          */
         (items) => {
@@ -56,11 +56,8 @@ function createStore() {
           (itm) => itm.id !== id
         )
       ),
-    /**
-     * @param {any} val
-     * @return {never | any}
-     */
-    update: (val) => update((items) => val),
+
+    update: (/** @type {never[]} */ val) => update(() => val),
     set
   };
 }

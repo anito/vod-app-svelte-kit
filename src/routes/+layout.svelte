@@ -69,6 +69,11 @@
   const redirectDelay = 300;
 
   /**
+   * @type {import('./$types').LayoutData}
+   */
+  export let data;
+
+  /**
    * @type {HTMLElement}
    */
   let root;
@@ -92,10 +97,6 @@
    * @type {ReturnType<typeof setTimeout>}
    */
   let timeoutId;
-  /**
-   * @type {ReturnType<typeof setTimeout>}
-   */
-  let navTimeoutId;
   /**
    * @type {ReturnType<typeof setInterval>}
    */
@@ -128,10 +129,6 @@
    * @type {boolean}
    */
   let isMounted = false;
-  /**
-   * @type {import('./$types').LayoutData}
-   */
-  export let data;
 
   settings.subscribe((val) => {
     printDiff(val, { store: 'config' });

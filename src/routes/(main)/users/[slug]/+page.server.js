@@ -1,6 +1,10 @@
 import { redirect } from '@sveltejs/kit';
+import { locale } from 'svelte-i18n';
+import { get } from 'svelte/store';
 
-/** @type {import('./$types').PageServerLoad} */
+/**
+ * @type {import('./$types').PageServerLoad}
+ */
 export async function load({ locals }) {
   if (!locals.session.data.user) {
     throw redirect(301, `/`);
@@ -8,7 +12,9 @@ export async function load({ locals }) {
   return {};
 }
 
-/** @type {import("@sveltejs/kit").Actions} */
+/**
+ * @type {import("@sveltejs/kit").Actions}
+ */
 export const actions = {
   add: async ({ request, fetch, locals }) => {
     return await request.formData().then(async (res) => {
@@ -31,7 +37,7 @@ export const actions = {
       res.forEach((value, key) => (formData[key] = value));
       return await fetch(`/users/${id}`, {
         method: 'PUT',
-        body: JSON.stringify({ ...formData, locale: locals.session.data.locale })
+        body: JSON.stringify({ ...formData, locale: get(locale) })
       })
         .then(async (res) => await res.json())
         .catch((err) => console.error(err));

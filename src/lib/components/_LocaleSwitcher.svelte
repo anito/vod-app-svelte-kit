@@ -28,7 +28,8 @@
     localeMenu?.setOpen(false);
     if (value === currentLocale) return;
 
-    await post('/locale', ($locale = value)).then(() => {
+    $locale = value;
+    await post('/locale', { locale: $locale }).then(() => {
       dispatch('changed:locale', { locale: LOCALESTORE.get(value)?.localized });
     });
   }

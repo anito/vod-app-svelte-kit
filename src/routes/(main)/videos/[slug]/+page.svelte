@@ -15,6 +15,11 @@
   import { _ } from 'svelte-i18n';
 
   /**
+   * @type {import('./$types').PageData}
+   */
+  export let data;
+
+  /**
    * @type {boolean}
    */
   let paused;
@@ -39,7 +44,7 @@
    */
   let src;
 
-  $: $page.data.video && videos.add([$page.data.video]);
+  $: if (data.video) videos.add([data.video]);
   $: user = $users.find((user) => user.id === $session.user?.id);
   $: user && (canplay = false);
   $: video = $videos.find((v) => v.id === $page.params.slug);
