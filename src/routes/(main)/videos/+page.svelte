@@ -142,7 +142,7 @@
   .non-admin .one {
     grid-area: one;
     display: flex;
-    align-items: end;
+    align-items: flex-end;
   }
   .two {
     grid-area: two;
