@@ -1,5 +1,5 @@
 <script>
-// @ts-nocheck
+  // @ts-nocheck
 
   import { createEventDispatcher } from 'svelte';
   import { addDays, addMonths, addWeeks, isSameDay, subDays, subMonths, subWeeks } from 'date-fns';
@@ -11,7 +11,8 @@
   let mouseDownDate = null;
 
   const dispatchEvent = createEventDispatcher();
-  const getEl = (date) => document.querySelector(`[data-date="${localeFormat(date, 'yyyy-MM-dd')}"]`);
+  const getEl = (date) =>
+    document.querySelector(`[data-date="${localeFormat(date, 'yyyy-MM-dd')}"]`);
   // Enter should submit / apply the selection, not activate a button.
   const onKeydown = (e, date) => {
     let newDate = date;
@@ -126,6 +127,10 @@
 
   .day:not(.disabled):not(.next-month):not(.prev-month)::after {
     background-color: var(--drp-theme-selection);
+  }
+
+  .within-selection:not(.start-date):not(.end-date) {
+    color: var(--drp-theme-within-selection-color);
   }
 
   .within-selection:not(.start-date):not(.end-date)::after {

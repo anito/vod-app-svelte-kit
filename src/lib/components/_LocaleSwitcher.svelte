@@ -29,7 +29,7 @@
     if (value === currentLocale) return;
 
     $locale = value;
-    await post('/locale', { locale: $locale }).then(() => {
+    await post('/session', { locale: $locale }).then(() => {
       dispatch('changed:locale', { locale: LOCALESTORE.get(value)?.localized });
     });
   }

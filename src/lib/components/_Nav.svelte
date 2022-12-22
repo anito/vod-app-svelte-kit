@@ -96,7 +96,7 @@
     height: var(--nav-h);
     padding: 0 var(--side-nav);
     margin: 0 auto;
-    background-color: white;
+    background-color: var(--surface);
     box-shadow: 0 -0.4rem 0.9rem 0.2rem rgba(0, 0, 0, 0.5);
     font-family: var(--font);
     z-index: 100;

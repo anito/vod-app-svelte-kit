@@ -3,12 +3,10 @@ import { error, json } from '@sveltejs/kit';
 
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ locals }) {
-  const locale = locals.session.data.locale;
+  const { locale, mode } = locals.session.data;
   await locals.session.destroy();
   // re-save locale to session
-  if (locale) {
-    await locals.session.set({ locale });
-  }
+  await locals.session.set({ locale, mode });
 
   return await api.post(`users/logout?locale=${locale}`).then((res) => {
     return json({

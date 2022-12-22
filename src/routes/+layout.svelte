@@ -64,10 +64,15 @@
     Actions as DialogActions,
     InitialFocus
   } from '@smui/dialog';
-  import Paginator from '$lib/components/_Paginator.svelte';
 
   const snackbarLifetime = 4000;
   const redirectDelay = 300;
+  const LIGHT = 'light';
+  const DARK = 'dark';
+  const getSchemaIcon = (/** @type {string} */ m) =>
+    m === DARK ? 'dark_mode' : m === LIGHT ? 'light_mode' : '';
+  const getSchemaLabel = (/** @type {string} */ m) =>
+    m === DARK ? $_('text.dark_mode') : m === LIGHT ? $_('light_mode') : '';
 
   /**
    * @type {import('./$types').LayoutData}
@@ -222,6 +227,28 @@
     }
   });
 
+  $: ({ mode } = $page.data.session);
+  $: setThemeMode(mode);
+  $: colorSchema =
+    data &&
+    ((m) => {
+      const mode = m === LIGHT ? DARK : LIGHT;
+      const base = '/config?/mode=';
+      return {
+        current: {
+          mode: m,
+          action: base.concat(m),
+          icon: getSchemaIcon(m),
+          label: getSchemaLabel(m)
+        },
+        next: {
+          mode,
+          action: base.concat(mode),
+          icon: getSchemaIcon(mode),
+          label: getSchemaLabel(mode)
+        }
+      };
+    })(mode);
   $: printDiff($page.data, { store: 'page' });
   $: person = svg(svg_manifest.person, $theme.primary);
   $: logo = svg(svg_manifest.logo_vod, $theme.primary);
@@ -241,6 +268,7 @@
     root = document.documentElement;
     snackbar = getSnackbar();
 
+    setThemeMode(mode);
     loadConfig();
     fadeIn();
     initListener();
@@ -299,6 +327,13 @@
       primary: styles.getPropertyValue('--primary'),
       secondary: styles.getPropertyValue('--secondary')
     });
+  }
+
+  /**
+   * @param {string | undefined} [mode]
+   */
+  function setThemeMode(mode) {
+    if (mode) root?.classList.add(mode);
   }
 
   function startPolling() {}
@@ -600,6 +635,10 @@
   }
 </script>
 
+<svelte:head>
+  <link rel="stylesheet" href={`/smui${mode === 'light' ? '' : '-dark'}.css`} />
+</svelte:head>
+
 <Icons />
 
 {#if $locale}
@@ -626,6 +665,14 @@
                 loggedInButtonTextSecondLine = $_('text.one-moment');
                 if ((result.type = 'success')) {
                   proxyEvent('session:stop', { ...result.data, redirect: '/login' });
+                }
+              }
+              if (actionParam === 'mode') {
+                if ((result.type = 'success')) {
+                  const mode = result.data.mode;
+                  invalidate('app:session');
+                  root.classList.toggle('light', mode === 'light');
+                  root.classList.toggle('dark', mode === 'dark');
                 }
               }
             };
@@ -760,10 +807,19 @@
                   </Button>
                 </Item>
                 <Separator />
+                <Item class="justify-start">
+                  <Button formaction={colorSchema.next.action} class="link-button" ripple={false}>
+                    <span style="display: flex; flex: 1 0 100%; align-items: center">
+                      <SvgIcon name={colorSchema.next.icon} class="mr-2" fillColor="none" />
+                      <Label>{colorSchema.next.label}</Label>
+                    </span>
+                  </Button>
+                </Item>
+                <Separator />
                 {#if $session.role === SUPERUSER}
                   <Item class="justify-start">
                     <Button formaction="/config?/reload" class="link-button" ripple={false}>
-                      <SvgIcon name="sync" class="mr-2" fillColor="#000" />
+                      <SvgIcon name="sync" class="mr-2" fillColor="none" />
                       <Label>Reload Config</Label>
                     </Button>
                   </Item>
@@ -777,7 +833,7 @@
                     class="link-button"
                     ripple={false}
                   >
-                    <Icon class="material-icons mr-2">settings</Icon>
+                    <SvgIcon name="settings" class="mr-2" fillColor="none" />
                     <Label style="">Settings</Label>
                   </Button>
                 </Item>

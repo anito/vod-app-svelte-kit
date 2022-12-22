@@ -3,7 +3,7 @@
 </script>
 
 <LayoutGrid fullscreen>
-  <GridItem name="content" let:inner class="has-background" style="--background: #ffffff">
+  <GridItem name="content" let:inner class="has-background">
     <div class={inner}>
       <slot />
     </div>

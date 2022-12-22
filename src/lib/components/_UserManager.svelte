@@ -1,6 +1,7 @@
 <script>
   import './_switch.scss';
   import './_button.scss';
+  import './_icon-button.scss';
   import './_icon_size.scss';
   import { enhance } from '$app/forms';
   import * as api from '$lib/api';
@@ -903,8 +904,7 @@
   }
   .table-wrapper {
     flex: 1;
-    background: #fff;
-    border: 1px solid #dcdcdc;
+    background: var(--background);
     margin-left: 3rem;
     border-radius: 2px;
     padding: 30px;
@@ -972,8 +972,7 @@
     min-height: 90px;
     align-items: center;
     font-size: 0.9em;
-    border: 1px solid #c8dbe3;
-    background: #e0e9ee;
+    background: var(--surface);
     color: #c8dbe3;
   }
   :global(.user-add-view) .button-close {

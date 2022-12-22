@@ -134,10 +134,10 @@
     font-weight: 600;
     color: #d8d8d8;
   }
-  .items-list {
+  :global(.dark) .items-list {
     padding: 15px;
-    min-height: 330px;
-    background-color: var(--background);
+    min-height: 200px;
+    background-color: var(--background-100);
     border-bottom-right-radius: 5px;
     border-bottom-left-radius: 5px;
   }

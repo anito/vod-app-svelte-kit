@@ -1,4 +1,5 @@
 <script>
+  import './_icon-button.scss';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { onMount, getContext, tick } from 'svelte';
@@ -186,8 +187,8 @@
   }
   .items-list {
     padding: 15px;
-    min-height: 330px;
-    background-color: var(--background);
+    min-height: 200px;
+    background-color: var(--background-100);
     border-bottom-right-radius: 5px;
     border-bottom-left-radius: 5px;
   }

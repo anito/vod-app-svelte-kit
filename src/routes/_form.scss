@@ -24,7 +24,7 @@
       @include select-theme.bottom-line-color(
         (
           default: on-secondary,
-          focus: on-secondary,
+          focus: on-secondary
         )
       );
       @include label-color(on-secondary);
@@ -44,6 +44,31 @@
   }
 }
 
+.flash {
+  .user-info-form {
+    .mdc-button {
+      &.submit {
+        @include container-fill-color(transparent);
+        @include ink-color(white);
+        @include icon-color(white);
+        @include disabled-icon-color(white);
+      }
+    }
+    .mdc-text-field {
+      &.user-message {
+        @include ink-color(white);
+        @include bottom-line-color(white);
+        @include label-color(white);
+        @include caret-color(white);
+        @include hover-bottom-line-color(white);
+        @include outline-color(white);
+        @include hover-outline-color(white);
+        @include focused-outline-color(white);
+      }
+    }
+  }
+}
+
 .mdc-text-field {
   &.user-message {
     @include ink-color(surface);
@@ -59,13 +84,13 @@
 
 .user-info {
   .mdc-text-field {
-    @include ink-color(surface);
-    @include label-color(surface);
+    @include ink-color(on-surface);
+    @include label-color(on-surface);
     @include disabled-ink-color(rgba(theme-color.$surface, 0.38));
     @include disabled-label-color(rgba(theme-color.$surface, 0.38));
-    @include bottom-line-color(surface);
-    @include hover-bottom-line-color(surface);
-    @include caret-color(surface);
+    @include bottom-line-color(on-surface);
+    @include hover-bottom-line-color(on-surface);
+    @include caret-color(on-surface);
     @include line-ripple-color(surface);
   }
 }

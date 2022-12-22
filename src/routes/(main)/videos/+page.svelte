@@ -128,7 +128,6 @@
       'two';
     max-width: var(--page-w);
     width: var(--page-w);
-    overflow: hidden;
   }
   .grid-item {
     background: var(--back-grid-item);
@@ -146,7 +145,6 @@
   }
   .two {
     grid-area: two;
-    overflow: auto;
   }
   .frame::before {
     --scale-x: 1;

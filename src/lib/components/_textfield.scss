@@ -17,18 +17,18 @@
     line-height: 1.25rem;
     padding-top: 10px;
   }
+}
 
-  .banner {
-    .mdc-text-field {
-      @include ink-color(surface);
-      @include bottom-line-color(surface);
-      @include hover-bottom-line-color(surface);
-      @include label-color(surface);
-      @include caret-color(surface);
-    }
-
-    .mdc-text-field__input {
-      font-size: 1em;
+.light {
+  .templates {
+    .banner {
+      .mdc-text-field {
+        @include ink-color(on-primary);
+        @include bottom-line-color(on-primary);
+        @include hover-bottom-line-color(on-primary);
+        @include label-color(on-primary);
+        @include caret-color(on-primary);
+      }
     }
   }
 }

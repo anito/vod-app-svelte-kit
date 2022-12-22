@@ -2,24 +2,36 @@
 
 @use '@material/theme/color-palette';
 
-// Svelte Colors! (Dark Theme)
+// Svelte Colors!
 @use '@material/theme/index' as theme with (
-  $primary: #ff3e00,
-  $secondary: color.scale(#676778, $whiteness: -10%),
-  $surface: color.adjust(color-palette.$grey-900, $blue: +4),
-  $background: #000,
-  $error: color-palette.$red-700
+  $primary: color-palette.$pink-800,
+  $on-primary: #e5ccd5,
+  $secondary: color-palette.$light-blue-400,
+  $on-secondary: color-palette.$light-blue-50,
+  $surface: color-palette.$grey-800,
+  $on-surface: color-palette.$grey-400,
+  $error: color-palette.$deep-orange-a700,
+  $on-error: color-palette.$deep-orange-50,
+  $background: color-palette.$grey-800
 );
 
-html,
-body {
-  background-color: #000;
-  color: theme.$on-surface;
+@import '@material/typography/mdc-typography';
+$mdc-typography-font-family: var(--font, 'sans-serif');
+
+.mdc-typography--headline5,
+.mdc-typography--headline6 {
+  font-weight: 700;
 }
 
-a {
-  color: #40b3ff;
-}
-a:visited {
-  color: color.scale(#40b3ff, $lightness: -35%);
+.theme-default.dark,
+.theme-default.dark::before,
+.theme-default.dark::after {
+  --primary: #{theme.$primary};
+  --on-primary: #{theme.$on-primary};
+  --secondary: #{theme.$secondary};
+  --on-secondary: #{theme.$on-secondary};
+  --surface: #{theme.$surface};
+  --on-surface: #{theme.$on-surface};
+  --error: #{theme.$error};
+  --background: #{theme.$background};
 }

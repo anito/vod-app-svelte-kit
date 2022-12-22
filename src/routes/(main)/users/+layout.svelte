@@ -820,7 +820,7 @@
     z-index: 1;
     width: 100%;
     border-bottom: 1px solid var(--primary);
-    background-color: var(--surface);
+    background-color: var(--background);
   }
   :global(.users-list > li:nth-child(2)) {
     margin-top: 72px;

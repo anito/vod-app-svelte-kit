@@ -559,9 +559,7 @@
     padding: 2rem 0;
   }
   .readout {
-    background: var(--drp-theme-readout-bg);
     padding: 10px;
-    color: var(--drp-theme-readout-c);
   }
   form {
     display: grid;

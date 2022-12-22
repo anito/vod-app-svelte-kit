@@ -142,7 +142,6 @@
     pointer-events: none;
   }
   .control {
-    color: rgba(0, 0, 0, 0.38);
     align-self: center;
     font-size: 1em;
     pointer-events: all;

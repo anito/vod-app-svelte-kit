@@ -1,6 +1,7 @@
 <script>
   import './_drawer.scss';
   import './_list.scss';
+  import './_icon-button.scss';
   import * as api from '$lib/api';
   import { onMount, tick, getContext, setContext } from 'svelte';
   import { writable } from 'svelte/store';
@@ -698,6 +699,7 @@
                     </IconButton>
                     <IconButton
                       class="material-icons"
+                      color="primary"
                       on:click={() => duplicateTemplate()}
                       toggle
                       aria-label={$_('text.template-duplicate')}
@@ -707,6 +709,7 @@
                       file_copy
                     </IconButton>
                     <IconButton
+                      color="primary"
                       class="material-icons"
                       on:click={() => addTemplate()}
                       toggle

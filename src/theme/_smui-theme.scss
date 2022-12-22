@@ -4,34 +4,35 @@
 
 // Svelte Colors!
 @use '@material/theme/index' as theme with (
-	$primary: color-palette.$pink-800,
-	$on-primary: color-palette.$pink-50,
-	$secondary: color-palette.$light-blue-400,
-	$on-secondary: color-palette.$light-blue-50,
-	$surface: #ffffff,
-	$on-surface: color-palette.$grey-900,
-	$error: color-palette.$deep-orange-a700,
-	$on-error: color-palette.$deep-orange-50,
-	$background: color-palette.$grey-300,
-	// $on-background: color-palette.$grey-900 // not supported
-);
+    $primary: color-palette.$pink-800,
+    $on-primary: #e5ccd5,
+    $secondary: color-palette.$light-blue-400,
+    $on-secondary: color-palette.$light-blue-50,
+    $surface: #ffffff,
+    $on-surface: color-palette.$grey-900,
+    $error: color-palette.$deep-orange-a700,
+    $on-error: color-palette.$deep-orange-50,
+    $background: color-palette.$grey-300,
+    // $on-background: color-palette.$grey-900 // not supported
+  );
 
 @import '@material/typography/mdc-typography';
 $mdc-typography-font-family: var(--font, 'sans-serif');
 
 .mdc-typography--headline5,
 .mdc-typography--headline6 {
-	font-weight: 700;
+  font-weight: 700;
 }
 
-.theme-default, ::before, ::after {
-	--primary: #{theme.$primary};
-	--on-primary: #{theme.$on-primary};
-	--secondary: #{theme.$secondary};
-	--on-secondary: #{theme.$on-secondary};
-	--surface: #{theme.$surface};
-	--on-surface: #{theme.$on-surface};
-	--error: #{theme.$error};
-	--background: #{theme.$background};
-	// --on-background: #{theme.$on-background}; // not supported
+.theme-default,
+::before,
+::after {
+  --primary: #{theme.$primary};
+  --on-primary: #{theme.$on-primary};
+  --secondary: #{theme.$secondary};
+  --on-secondary: #{theme.$on-secondary};
+  --surface: #{theme.$surface};
+  --on-surface: #{theme.$on-surface};
+  --error: #{theme.$error};
+  --background: #{theme.$background};
 }

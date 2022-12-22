@@ -242,7 +242,8 @@
     "load-more": "Mehr laden",
     "paginator-indicator": "nächste {next_count} ({loaded_count}/{count})",
     "posters": "Poster",
-    "your-videos": "Deine <span class=\"selected-bg-color\">Videos</span>"
+    "your-videos": "Deine <span class=\"selected-bg-color\">Videos</span>",
+    "dark_mode": "Lichter aus"
   },
   "summary": {
     "copy-link": {
@@ -332,5 +333,6 @@
   "message": {},
   "test": {
     "empty-mail-selection": "Keine Email ausgewählt"
-  }
+  },
+  "light_mode": "Lichter an"
 }

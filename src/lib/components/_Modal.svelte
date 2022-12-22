@@ -181,6 +181,7 @@
     position: relative;
     padding: 1rem;
     max-height: calc(100vh - 4rem);
+    background-color: var(--back-grid-item);
     /* overflow: auto; */
   }
 </style>

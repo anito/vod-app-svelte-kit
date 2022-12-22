@@ -1,20 +1,21 @@
 @use '@material/icon-button/mixins';
 
-@import "@material/icon-button";
+@import '@material/icon-button';
 
-.mdc-icon-button {
-	@include ink-color(primary);
-	&.secondary {
-		color: ink-color(secondary);
-	}
-	&.on-surface {
-		color: ink-color(on-surface);
-	}
+.theme-default {
+  .mdc-icon-button {
+    @include ink-color(primary);
+    &.small {
+      .material-icons {
+        /// @param {Number} $width - Width value for icon-button.
+        /// @param {Number} $height - Height value for icon-button. (default: $width)
+        /// @param {Number} $padding - Padding value for icon-button. (default: max($width, $height) / 2)
+        @include icon-size(19px);
+      }
+    }
 
-	.material-icons {
-		/// @param {Number} $width - Width value for icon-button.
-		/// @param {Number} $height - Height value for icon-button. (default: $width)
-		/// @param {Number} $padding - Padding value for icon-button. (default: max($width, $height) / 2)
-		@include icon-size(19px);
-	}
+    &.material-icons {
+      @include icon-size(23px);
+    }
+  }
 }

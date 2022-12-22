@@ -202,7 +202,11 @@
           {/if}
         </div>
         <div class="flex justify-end" style="flex-basis: 50%; max-width: 50%">
-          <IconButton href={`/videos/${video.id}`} class="button-shaped-round unelevated">
+          <IconButton
+            href={`/videos/${video.id}`}
+            color="primary"
+            class="button-shaped-round unelevated small"
+          >
             <i class="material-icons">smart_display</i>
           </IconButton>
         </div>
@@ -237,7 +241,11 @@
             aria-label={$_('text.more-options')}
             title={$_('text.more-options')}>more_vert</IconButton
           >
-          <Menu bind:this={cardMenu} on:MDCMenuSurface:opened={cardMenuOpenedHandler}>
+          <Menu
+            bind:this={cardMenu}
+            on:MDCMenuSurface:opened={cardMenuOpenedHandler}
+            anchorCorner="TOP_LEFT"
+          >
             <List class="menu-list">
               <Item on:click={() => createPoster()}>
                 <Text>{$_('text.new-poster')}</Text>

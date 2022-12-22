@@ -500,7 +500,11 @@
                   {video}
                   {selectionUserId}
                 >
-                  <IconButton class="self-center mr-2" color="primary" href={`/videos/${video.id}`}>
+                  <IconButton
+                    class="self-center mr-2 small"
+                    color="primary"
+                    href={`/videos/${video.id}`}
+                  >
                     <Icon class="material-icons">smart_display</Icon>
                   </IconButton>
                   {#if hasPrivileges}
@@ -519,7 +523,8 @@
                       <Label>{$_('text.scheduler')}</Label>
                     </Button>
                     <IconButton
-                      class="delete-action-button delete ml-2"
+                      color="primary"
+                      class="delete-action-button delete ml-2 small"
                       on:click$preventDefault={(e) => openRemoveDialog(e, video)}
                     >
                       <Icon class="material-icons">remove_circle</Icon>
@@ -584,15 +589,15 @@
             >
               {#if hasPrivileges}
                 <IconButton
-                  class="self-center mr-2"
-                  color="primary"
+                  class="self-center mr-2 small"
+                  color="secondary"
                   style=""
                   on:click={() => editVideo(video)}
                 >
                   <Icon class="material-icons">edit</Icon>
                 </IconButton>
                 <IconButton
-                  class="self-center mr-2"
+                  class="self-center mr-2 small"
                   color="primary"
                   style=""
                   href={`/videos/${video.id}`}
@@ -601,7 +606,7 @@
                 </IconButton>
                 <IconButton
                   disabled={hasCurrentPrivileges || unmanagable || video.teaser}
-                  class="add-action-button add primary"
+                  class="add-action-button add small"
                   on:click={() => openScheduleDialog(video)}
                 >
                   <Icon class="material-icons">add_circle</Icon>
@@ -761,7 +766,6 @@
   }
   .time {
     position: relative;
-    background: #fff;
   }
   .no-user-selected {
     display: flex;

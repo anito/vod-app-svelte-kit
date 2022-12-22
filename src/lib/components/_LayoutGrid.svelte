@@ -30,16 +30,16 @@
     padding: var(--nav-h) 0 0 0;
   }
   :global(.grid-item.has-background.content) {
-    background: var(--background, --primary);
+    background: var(--back-grid-item, --primary);
   }
   :global(.grid-item.has-background.side) {
-    background: var(--background, --secondary);
+    background: var(--back-grid-item, --secondary);
   }
   :global(.grid-item.has-background.footer) {
-    background: var(--background, --flash);
+    background: var(--back-grid-item, --flash);
   }
   :global(.grid-item.has-background.ad) {
-    background: var(--background, --alt);
+    background: var(--back-grid-item, --alt);
   }
   :global(.ismobile) .grid {
     height: -webkit-fill-available;

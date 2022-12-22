@@ -156,7 +156,8 @@
     border: 0 none;
   }
   .content.main-grid-area {
-    border: 1px solid #ddd;
+    border: 1px solid var(--on-surface);
+    border-top: 0 none;
     padding: 20px;
   }
   .main-grid-area {
@@ -189,7 +190,6 @@
       'before-content'
       'content'
       'after-content';
-    background-color: var(--back-white);
   }
   .grid.footer {
     grid-area: footer;

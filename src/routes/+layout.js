@@ -27,21 +27,22 @@ export async function load({ data, fetch }) {
     initialLocale
   });
 
-  // we need locale in session early for api calls, so don't wait until user switches locale to store locale in session
-  let { locale } = session;
-  if (!locale) {
-    await fetch(`/locale`, {
-      method: 'POST',
-      body: JSON.stringify({ locale: initialLocale || fallbackLocale })
-    }).then(async (res) => {
-      const json = await res.json();
-      locale = json.locale;
-    });
-  }
+  let { locale, mode } = session;
+  await fetch(`/session`, {
+    method: 'POST',
+    body: JSON.stringify({
+      locale: locale || initialLocale || fallbackLocale,
+      mode: mode || 'light'
+    })
+  }).then(async (res) => {
+    const json = await res.json();
+    locale = json.locale;
+    mode = json.mode;
+  });
 
   const parser = new UAParser(data.ua);
   const browser = parser.getBrowser();
 
   await waitLocale();
-  return { session: { ...session, locale }, browser };
+  return { session: { ...session, locale, mode }, browser };
 }
