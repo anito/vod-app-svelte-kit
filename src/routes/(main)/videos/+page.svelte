@@ -85,7 +85,7 @@
       <div class="grid-inner">
         <div class="media-grid non-admin">
           <div class="grid-item one pl-8">
-            <Header h="5" mdc class="m-8">{$_('text.your-videos')}</Header>
+            <Header h="5" mdc>{$_('text.your-videos')}</Header>
           </div>
           <div class="frame grid-item two">
             <VideoManager />
@@ -105,7 +105,7 @@
   .media-grid {
     --toolbar: calc(var(--toolbar-h) * 1.2);
     display: grid;
-    grid-template-rows: 1fr;
+    grid-template-rows: 70px auto;
     grid-template-columns: 1fr;
     grid-gap: var(--grid-gap);
     align-items: initial;
@@ -123,13 +123,12 @@
     grid-area: one;
     display: flex;
     align-items: center;
-    height: var(--toolbar);
+    height: 70px;
   }
   .non-admin .one {
     grid-area: one;
     display: flex;
     align-items: center;
-    height: 100px;
   }
   .two {
     grid-area: two;
