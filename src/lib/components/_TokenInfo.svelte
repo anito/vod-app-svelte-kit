@@ -6,7 +6,7 @@
   import { _, locale } from 'svelte-i18n';
 
   /**
-   * @type {string}
+   * @type {string | null}
    */
   export let selectionUserId;
 

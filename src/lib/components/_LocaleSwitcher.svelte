@@ -8,7 +8,7 @@
 
   let localeMenuAnchor;
   /**
-   * @type {import("@smui/menu").MenuComponentDev}
+   * @type {Menu}
    */
   let localeMenu;
   /**

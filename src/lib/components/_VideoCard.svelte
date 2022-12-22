@@ -28,15 +28,15 @@
 
   let className = '';
   /**
-   * @type {import('@smui/menu')}
+   * @type {Menu}
    */
   let cardMenu;
   /**
-   * @type {import('@smui/menu')}
+   * @type {Menu}
    */
   let deleteMenu;
   /**
-   * @type {import('@smui/menu-surface')}
+   * @type {MenuSurface}
    */
   let imageList;
   /**

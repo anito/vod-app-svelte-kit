@@ -17,7 +17,7 @@
   export { className as class };
 
   let className = '';
-  let menuUser;
+  let userMenu;
 </script>
 
 <Card class="flex content-between {className}" style="width: var(--poster-w);">
@@ -27,7 +27,7 @@
   <div class="flex flex-col justify-end" style="flex:1 0 auto">
     <Actions>
       <ActionButtons>
-        <Button color="primary" on:click={() => menuUser?.setOpen(true)}>
+        <Button color="primary" on:click={() => userMenu?.setOpen(true)}>
           <Label>Löschen</Label>
           <Icon class="material-icons">delete</Icon>
         </Button>
@@ -40,7 +40,7 @@
           aria-label="Mehr Optionen"
           title="Mehr Optionen">more_vert</IconButton
         >
-        <Menu bind:this={menuUser}>
+        <Menu bind:this={userMenu}>
           <List>
             <Item
               class="text-red-700"

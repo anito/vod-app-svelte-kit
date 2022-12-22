@@ -186,6 +186,7 @@
   }
   .items-list {
     padding: 15px;
+    min-height: 330px;
     background-color: var(--background);
     border-bottom-right-radius: 5px;
     border-bottom-left-radius: 5px;

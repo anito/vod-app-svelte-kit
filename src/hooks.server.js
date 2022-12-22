@@ -17,9 +17,8 @@ export const handle = handleSession(
     event.locals.videosAllRepo = VideosAllRepo.getInstance();
     event.locals.userAgent = event.request.headers.get('user-agent');
 
-    const response = await resolve(event);
+    return resolve(event);
     // response.headers.set('x-custom-header', 'potato');
-    return response;
   }
 );
 

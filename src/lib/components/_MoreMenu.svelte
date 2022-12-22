@@ -9,7 +9,7 @@
   export let labelSize = '1em';
   export let iconSize = '20px';
 
-  /** @type {import("@smui/menu").MenuComponentDev} */
+  /** @type {Menu} */
   let menu;
   let menuAnchor;
   let className = '';

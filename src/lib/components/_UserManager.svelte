@@ -75,9 +75,8 @@
    * @type{string}
    */
   let message;
-
   /**
-   * @type {import('@smui/menu')}
+   * @type {Menu}
    */
   let avatarMenu;
   let avatarMenuAnchor;
@@ -475,7 +474,7 @@
                 return async ({ result }) => {
                   if (result.type === 'success') {
                     /** @type {any | undefined} */
-                    const { success, message: message$1, data: user } = { ...result.data };
+                    const { success, message: message$1, data: user } = result.data;
                     /** @type {any | undefined} */
                     const { message: message$2 } = { ...user };
                     switch (formAction) {
@@ -567,8 +566,7 @@
                 {/if}
                 {#if selectedMode === ADD || selectedMode === EDIT}
                   <div class="item">
-                    <Textfield bind:value={name} label="Name" type="text">
-                      <input type="hidden" name="name" bind:value={name} />
+                    <Textfield bind:value={name} label="Name" type="text" input$name="name">
                       <TextfieldIcon slot="leadingIcon" class="material-icons"
                         >contact_page</TextfieldIcon
                       >
@@ -586,8 +584,8 @@
                       type="email"
                       updateInvalid
                       input$autocomplete="email"
+                      input$name="email"
                     >
-                      <input type="hidden" name="email" bind:value={email} />
                       <TextfieldIcon
                         slot="leadingIcon"
                         class="material-icons"
@@ -627,8 +625,8 @@
                       label={$_('text.password')}
                       name="password"
                       style="min-width: 250px;"
+                      input$name="password"
                     >
-                      <input type="hidden" name="password" bind:value={password} />
                       <TextfieldIcon slot="leadingIcon" class="material-icons"
                         >fingerprint</TextfieldIcon
                       >
@@ -827,7 +825,7 @@
                     <a
                       href="."
                       class="item"
-                      on:click|preventDefault={() => proxyEvent('info:open:info-dialog')}
+                      on:click|preventDefault={() => proxyEvent('info:open:help-dialog')}
                     >
                       {$_('summary.howDoesItWork.text')}
                     </a>

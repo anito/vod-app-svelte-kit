@@ -1,10 +1,7 @@
 <script>
-  // @ts-nocheck
-
   import './_form.scss';
   import logo from 'assets/images/logo-type-vod.svg';
   import hero from 'assets/images/logo_hero_vod.svg';
-  import * as api from '$lib/api';
   import { getContext, onMount } from 'svelte';
   import { sitename, session } from '$lib/stores';
   import Layout from './layout.svelte';
@@ -12,28 +9,28 @@
   import Textfield from '@smui/textfield';
   import Select, { Option } from '@smui/select';
   import Button, { Icon } from '@smui/button';
-  import { ADMIN, SUPERUSER, svg } from '$lib/utils';
-  import { svg_manifest } from '$lib/svg_manifest';
+  import { ADMIN, SUPERUSER } from '$lib/utils';
   import { _ } from 'svelte-i18n';
+  import { enhance } from '$app/forms';
 
   const { getSnackbar, configSnackbar } = getContext('snackbar');
   const void0 = void 0;
+  const template = 'from-user';
 
-  let root;
   let name = '';
   let email = '';
   let message = '';
   let invalidEmail = true;
+  /**
+   * @type {string | null | undefined}
+   */
   let selected;
-  /** @type {import("@smui/snackbar").SnackbarComponentDev} */
+  /**
+   * @type {import("@smui/snackbar")}
+   */
   let snackbar;
 
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
-  $: user = (({ name: _name, email: _email }) => {
-    name = _name;
-    email = _email;
-    return { name, email };
-  })({ name, email, ...$session.user });
   $: options = [
     { key: void0, label: '' },
     {
@@ -47,38 +44,27 @@
       subject: $_('text.new-message-from-user', { values: { name } })
     }
   ];
-  $: content = selected === 'message' ? message : '';
   $: continueWith = $session.user
     ? { title: $_('text.yourCourses'), url: 'videos' }
     : { title: $_('text.login'), url: 'login' };
-  $: formValid = selected !== void0 && name && email && !invalidEmail;
+  $: formValid = selected !== void0;
   $: canSend = selected === 'message' ? formValid && message.length >= 5 : formValid;
+  $: (({ _name, _email }) => {
+    name = $session.user?.name || _name;
+    email = $session.user?.email || _email;
+  })({ _name: name, _email: email });
+  $: subject = options.find((option) => option.key === selected)?.subject;
+
+  /**
+   * on the backend the following will be considered:
+   * w/ token => sender is of type admin
+   * w/o token => sender is of type user
+   */
+  $: token = hasPrivileges && $session.user?.jwt;
 
   onMount(() => {
-    root = document.documentElement;
     snackbar = getSnackbar();
   });
-
-  async function submit(e) {
-    const data = {
-      data: {
-        user,
-        subject: options.find((option) => option.key === selected).subject,
-        content,
-        template: 'from-user'
-      },
-      token: hasPrivileges && $session.user?.jwt
-    };
-    await api.post('sents/add', { ...data }).then((res) => {
-      if (res?.success) {
-        configSnackbar($_('text.thank-you-for-your-message'));
-        reset();
-      } else {
-        configSnackbar($_('text.message-sent-failed'));
-      }
-      snackbar?.open();
-    });
-  }
 
   function reset() {
     selected = null;
@@ -114,16 +100,53 @@
         {/if}
       </div>
       <form
-        method="post"
-        on:submit|preventDefault={submit}
+        method="POST"
+        action="/?/send"
         class="user-info-form flex-col justify-between"
+        use:enhance={() => {
+          return ({ result }) => {
+            if (result.type === 'success') {
+              /** @type {any | undefined} */
+              const { success } = result?.data;
+              if (success) {
+                configSnackbar($_('text.thank-you-for-your-message'));
+                reset();
+              } else {
+                configSnackbar($_('text.message-sent-failed'));
+              }
+            } else {
+              configSnackbar($_('text.message-sent-failed'));
+            }
+            snackbar?.open();
+          };
+        }}
       >
         {#if selected}
+          <input type="hidden" name="subject" value={subject} />
+          <input type="hidden" name="template" value={template} />
+          <input type="hidden" name="token" value={token} />
+          {#if !!$session.user}
+            <input type="hidden" name="name" value={name} />
+            <input type="hidden" name="email" value={email} />
+          {/if}
           {#if selected === 'message'}
-            <Textfield class="user-message" textarea bind:value={message} style="width:100%;  " />
+            <Textfield
+              class="user-message"
+              textarea
+              bind:value={message}
+              style="width:100%;"
+              input$name="message"
+            />
           {/if}
           <div class="user-info flex justify-between" style="width: 100%;">
-            <Textfield bind:value={name} disabled={!!$session.user} label="" style="flex: 0.49">
+            <Textfield
+              bind:value={name}
+              name="name"
+              disabled={!!$session.user}
+              label=""
+              style="flex: 0.49"
+              input$name="name"
+            >
               <span slot="label">
                 <Icon
                   class="material-icons"
@@ -135,6 +158,7 @@
             <Textfield
               bind:value={email}
               bind:invalid={invalidEmail}
+              input$name="email"
               disabled={!!$session.user}
               type="email"
               label=""

@@ -6,7 +6,7 @@
   import { _ } from 'svelte-i18n';
 
   /**
-   * @type {string}
+   * @type {string | null}
    */
   export let selectionUserId;
   export { className as class };
@@ -46,7 +46,7 @@
           color="primary"
           {chip}
           class={chip.flag}
-          on:MDCChip:interaction={(e) => proxyEvent(e.type, { ...chip, userId: selectionUserId })}
+          on:click={() => proxyEvent(chip.eventType, { ...chip, userId: selectionUserId })}
         >
           <LeadingIcon class="material-icons">{getIcon(chip.flag)}</LeadingIcon>
           <Text>{$_(chip.label)}</Text>

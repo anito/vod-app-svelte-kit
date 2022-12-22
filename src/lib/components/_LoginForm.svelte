@@ -61,11 +61,7 @@
    */
   let root;
   /**
-   * @type {import("@smui/snackbar")}
-   */
-  let snackbar;
-  /**
-   * @type {import("@smui/dialog")}
+   * @type {Dialog}
    */
   let invalidTokenUserDialog;
   /**
@@ -87,7 +83,6 @@
     unblock();
     activeSignIn = localStorage.getItem('activeSignIn') || '';
     activeTab = (tabMap.has(activeSignIn) && activeSignIn) || defaultTab;
-    snackbar = getSnackbar();
 
     return () => {
       unblock();

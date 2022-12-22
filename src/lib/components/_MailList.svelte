@@ -28,7 +28,9 @@
 
   const currentStore = getMailStore();
 
-  /** @type {import("@smui/list").ListComponentDev} */
+  /**
+   * @type {List<keyof import("@smui/common").SmuiElementMap, import("svelte").ComponentType<import("svelte").SvelteComponent>>}
+   */
   let list;
   /**
    * @type {(arg0: import("@material/list").MDCListIndex) => void}

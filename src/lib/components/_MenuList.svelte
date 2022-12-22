@@ -1,23 +1,16 @@
 <script>
   import { onMount } from 'svelte';
-  import List, {
-    Item,
-    Graphic,
-    Meta,
-    Separator,
-    Subheader,
-    Text,
-    PrimaryText,
-    SecondaryText
-  } from '@smui/list';
-  import Menu from '@smui/menu';
+  import List from '@smui/list';
+  import MenuSurface, { Corner } from '@smui/menu-surface';
   import IconButton, { Icon } from '@smui/icon-button';
 
-  export let lines = false;
-  export let anchorCorner = 'BOTTOM_RIGHT';
+  /**
+   * @type {Corner}
+   */
+  export let anchorCorner = 1;
 
   /**
-   * @type {import("@smui/menu").MenuComponentDev}
+   * @type {MenuSurface}
    */
   let menu;
 
@@ -34,9 +27,9 @@
   >
     more_vert
   </IconButton>
-  <Menu bind:this={menu} {lines} {anchorCorner}>
+  <MenuSurface bind:this={menu} {anchorCorner}>
     <List>
       <slot />
     </List>
-  </Menu>
+  </MenuSurface>
 </dev>

@@ -65,11 +65,11 @@
    */
   let isopen = false;
   /**
-   * @type {import("@smui/dialog")}
+   * @type {Dialog}
    */
   let scheduleDialog;
   /**
-   * @type {import("@smui/dialog")}
+   * @type {Dialog}
    */
   let removeDialog;
   /**
@@ -82,7 +82,7 @@
   let timespanSelected;
   let firstDayOfWeek = 'monday';
   /**
-   * @type {import("@smui/snackbar")}
+   * @type {import('@smui/snackbar')}
    */
   let snackbar;
   /**
@@ -365,7 +365,6 @@
    * @param {string} msg
    */
   function handleSuccess(res, msg) {
-    snackbar.isOpen?.() && snackbar.close?.();
     users.put(res.data);
 
     message = msg || res.message || res.data.message;
@@ -377,8 +376,6 @@
    * @param {{ message: any; data: { message: any; code: any; }; statusText: any; status: any; }} res
    */
   function handleError(res) {
-    snackbar.isOpen?.() && snackbar.close?.();
-
     message = res?.message || res?.data?.message || res?.statusText;
     const code = res.data?.code || res.status;
 

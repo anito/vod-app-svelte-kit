@@ -9,15 +9,19 @@
   import List, { Item, Separator, Text, PrimaryText, SecondaryText, Graphic } from '@smui/list';
   import { _ } from 'svelte-i18n';
 
-  /** @type {import('$lib/types').Image} */
+  /**
+   * @type {import('$lib/types').Image}
+   */
   export let image;
   export { className as class };
 
   const dispatch = createEventDispatcher();
 
   let className = '';
-  /** @type {import('@smui/menu').MenuComponentDev} */
-  let menuPoster;
+  /**
+   * @type {Menu}
+   */
+  let posterMenu;
 </script>
 
 <Card class="card {className}">
@@ -26,21 +30,21 @@
   </PrimaryAction>
   <Actions class="card-actions">
     <ActionButtons class="justify-between">
-      <Button color="primary" on:click={() => menuPoster?.setOpen(true)}>
+      <Button color="primary" on:click={() => posterMenu?.setOpen(true)}>
         <Label>{$_('text.delete')}</Label>
         <Icon class="material-icons">delete</Icon>
       </Button>
       <ActionIcons style="position: relative;">
         <IconButton
           class="material-icons"
-          on:click={() => menuPoster?.setOpen(true)}
+          on:click={() => posterMenu?.setOpen(true)}
           toggle
           aria-label={$_('text.more-options')}
           title={$_('text.more-options')}
         >
           more_vert
         </IconButton>
-        <Menu bind:this={menuPoster}>
+        <Menu bind:this={posterMenu}>
           <List>
             <Item class="text-red-700" on:SMUI:action={() => dispatch('Image:delete', { image })}>
               <Text>{$_('text.delete-poster')}</Text>

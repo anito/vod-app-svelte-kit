@@ -25,7 +25,7 @@
    */
   let uploader;
   /**
-   * @type {import("@smui/snackbar").SnackbarComponentDev}
+   * @type {import("@smui/snackbar")}
    * */
   let snackbar;
 

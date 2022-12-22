@@ -92,7 +92,7 @@
   let drawer;
 
   /**
-   * @type {import("@smui/snackbar").SnackbarComponentDev}
+   * @type {import("@smui/snackbar")}
    */
   let snackbar;
   /**
@@ -122,7 +122,7 @@
    */
   let mailTemplate;
   /**
-   * @type {import("@smui/dialog").DialogComponentDev}
+   * @type {Dialog}
    */
   let unsavedChangesDialog;
   /**
@@ -180,6 +180,7 @@
    * we're able to control whether mails should be reloaded
    */
   $: currentSlug = (currentSlug !== $page.params.slug && $page.params.slug) || currentSlug;
+  $: isValidTemplate = currentUser && validateData(currentTemplate?.slug);
   $: waitForData =
     currentSlug &&
     getSIUX()
@@ -621,11 +622,11 @@
   }
 
   /**
-   * @param {any} [template]
+   * @param {string} slug
    * @return {any}
    */
-  function validateData(template) {
-    let data = getTemplateData(template?.slug);
+  function validateData(slug) {
+    let data = getTemplateData(slug);
     if (data) {
       return data.validate();
     }
@@ -730,7 +731,7 @@
                       on:save:editable={saveEditableHandler}
                       >{template.name}
                     </TextEditor>
-                    {#if currentUser && !validateData(template)}
+                    {#if currentUser && !validateData(template.slug)}
                       <Meta class="absolute" style="left: 0;">
                         <Dot size={5} />
                       </Meta>
@@ -840,7 +841,13 @@
   </Actions>
 </Dialog>
 {#if $fabs === 'send-mail'}
-  <Fab class="floating-fab" color="primary" on:click={() => sendMail()} extended>
+  <Fab
+    class="floating-fab"
+    color="primary"
+    on:click={() => sendMail()}
+    extended
+    disabled={!isValidTemplate}
+  >
     <Label>{$_('text.send-mail')}</Label>
     <FabIcon class="material-icons">send</FabIcon>
   </Fab>

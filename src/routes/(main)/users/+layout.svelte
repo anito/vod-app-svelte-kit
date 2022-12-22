@@ -162,7 +162,7 @@
 
     // window.addEventListener('MDCChip:interaction', chipInteractionHandler);
     window.addEventListener('info:open:resolve-all-dialog', resolveAllHandler);
-    window.addEventListener('info:open:info-dialog', infoDialogHandler);
+    window.addEventListener('info:open:help-dialog', infoDialogHandler);
     // @ts-ignore
     window.addEventListener('info:user:activate', activateUserHandler);
     window.addEventListener('info:token:remove', removeTokenHandler);
@@ -173,7 +173,7 @@
     return () => {
       // window.removeEventListener('MDCChip:interaction', chipInteractionHandler);
       window.removeEventListener('info:open:resolve-all-dialog', resolveAllHandler);
-      window.removeEventListener('info:open:info-dialog', infoDialogHandler);
+      window.removeEventListener('info:open:help-dialog', infoDialogHandler);
       // @ts-ignore
       window.removeEventListener('info:user:activate', activateUserHandler);
       window.removeEventListener('info:token:remove', removeTokenHandler);
@@ -357,7 +357,9 @@
    *
    * @param {CustomEvent} event
    */
-  function chipInteractionHandler(event) {}
+  function chipInteractionHandler({ detail }) {
+    console.log(detail);
+  }
 
   /**
    *
@@ -493,7 +495,9 @@
     <div class="m-auto ml-0"><Legal /></div>
   </div>
   <div slot="footer" class="flex justify-between">
-    <div class="m-auto ml-0"><InfoChips staggered {selectionUserId} /></div>
+    <div class="m-auto ml-0">
+      <InfoChips staggered {selectionUserId} />
+    </div>
     <div class="m-auto mr-0" />
   </div>
 </Layout>
@@ -680,7 +684,13 @@
         {#each userIssues as issue}
           <span class="self-center mr-2"><strong>{$_(issue.reason)}:</strong></span>
           <span>
-            <Button variant="raised" on:click={() => proxyEvent(issue.eventType, { silent: true })}>
+            <Button
+              variant="raised"
+              on:click={() => {
+                console.log(issue);
+                proxyEvent(issue.eventType, { silent: true });
+              }}
+            >
               <Label>{$_(issue.label)}</Label>
             </Button>
           </span>

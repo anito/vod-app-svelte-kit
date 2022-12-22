@@ -8,7 +8,7 @@
   import SvgIcon from './_SvgIcon.svelte';
   import { _ } from 'svelte-i18n';
 
-  /** @type {import("@smui/menu").MenuComponentDev} */
+  /** @type {Menu} */
   let menu;
   let menuAnchor;
   /**
