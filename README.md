@@ -2,7 +2,10 @@
 
 # Video On Demand Manager (SvelteKit)
 
-*This Project is still under development.*
+*This repo is a Proof Of Concept*
+
+In order to learn (and learn to love) the benefits of this javascript framework over others, this project deals with most of the main concepts which form the base of SvelteKit.
+In order to accomplish that, I referred to an old clients request enabling his (physical therapy) clients to adhere prescribed therapies and not to dispense of the homes comfort by means of video footage.
 
 Manage videos on a per user basis.
 Create time frames limiting access to booked video content.
