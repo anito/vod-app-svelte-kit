@@ -85,7 +85,21 @@
       <div class="grid-inner">
         <div class="media-grid non-admin">
           <div class="grid-item one pl-8">
-            <Header h="5" mdc>{$_('text.your-videos')}</Header>
+            <Header
+              h="5"
+              mdc
+              wrapperStyle="
+            padding: 10px 10px 0;
+            --border-color: #d7d7d7;
+            border-left: 1px solid var(--border-color);
+            border-top: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            border-top-left-radius: 3px;
+            border-top-right-radius: 3px;
+            background: #f4f4f4;
+            box-shadow: 0px 0px 15.7px rgb(202 202 202 / 44%);"
+              >{@html $_('text.your-videos')}</Header
+            >
           </div>
           <div class="frame grid-item two">
             <VideoManager />
@@ -105,9 +119,9 @@
   .media-grid {
     --toolbar: calc(var(--toolbar-h) * 1.2);
     display: grid;
-    grid-template-rows: 70px auto;
+    grid-template-rows: 80px auto;
     grid-template-columns: 1fr;
-    grid-gap: var(--grid-gap);
+    grid-gap: 0;
     align-items: initial;
     grid-template-areas:
       'one'
@@ -123,12 +137,12 @@
     grid-area: one;
     display: flex;
     align-items: center;
-    height: 70px;
+    height: 100%;
   }
   .non-admin .one {
     grid-area: one;
     display: flex;
-    align-items: center;
+    align-items: end;
   }
   .two {
     grid-area: two;

@@ -5,16 +5,19 @@
   export let h = DEFAULT_LEVEL;
   export let mdc = false;
   export { className as class };
+  export { wrapperClassName as wrapperClass };
   export let style = '';
+  export let wrapperStyle = '';
 
   let className = '';
+  let wrapperClassName = '';
 
   $: h = (regex.test(h) && h.match(regex)?.[0]) || DEFAULT_LEVEL;
   $: tag = `h${h}`;
   $: mdcClassName = (mdc && `mdc-typography--headline${h}`) || '';
 </script>
 
-<div class="svelte-header">
+<div class="svelte-header" class:wrapperClassName style={wrapperStyle}>
   <svelte:element this={tag} class="{mdcClassName} {className}" {style}>
     <slot />
   </svelte:element>
@@ -25,7 +28,6 @@
     color: inherit;
   }
   .svelte-header {
-    margin: auto 0;
     :global {
       h1,
       h2,

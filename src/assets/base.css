@@ -33,6 +33,10 @@
   /* easings */
   --out-back: cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
+::selection {
+  background: var(--error);
+  color: white;
+}
 @media screen and (min-width: 768px) {
   :root {
     --side-page: 14vw;
@@ -248,10 +252,6 @@ details summary {
 .CodeMirror {
   font-size: var(--code-fs) !important;
 }
-::selection {
-  background: var(--error);
-  color: white;
-}
 /*	opinionated styles --------------------- */
 
 li:not(.white) > h2 {
@@ -346,7 +346,12 @@ html a.no-underline {
   border-bottom: none;
   padding: 0;
 }
-
+.selected-bg-color {
+  background: var(--error);
+  color: white;
+  display: inline-block;
+  padding: 0.2em;
+}
 /*  lists ---------------------------------- */
 .listify ol,
 .listify ul {

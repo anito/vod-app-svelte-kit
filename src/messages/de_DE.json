@@ -242,7 +242,7 @@
     "load-more": "Mehr laden",
     "paginator-indicator": "nächste {next_count} ({loaded_count}/{count})",
     "posters": "Poster",
-    "your-videos": "Deine Videos"
+    "your-videos": "Deine <span class=\"selected-bg-color\">Videos</span>"
   },
   "summary": {
     "copy-link": {
