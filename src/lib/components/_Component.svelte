@@ -3,16 +3,19 @@
   export let variant = '';
   export { className as class };
   export let transparent = false;
+  export let headerHeight = '50px';
 
   let className = '';
 </script>
 
-<div class="component flex flex-1 flex-col {variant}" class:extended class:transparent>
-  <div class="header">
-    <slot name="header">You must provide a header</slot>
-  </div>
-  <div class="content {className}">
-    <slot />
+<div style={`display: contents; --height: ${headerHeight}`}>
+  <div class="component flex flex-1 flex-col {variant}" class:extended class:transparent>
+    <div class="header">
+      <slot name="header" height={headerHeight}>You must provide a header</slot>
+    </div>
+    <div class="content {className}">
+      <slot />
+    </div>
   </div>
 </div>
 
@@ -55,9 +58,8 @@
   }
   .component::before,
   .header {
-    --h: 50px;
-    height: var(--h);
-    min-height: var(--h);
+    height: var(--height, 50px);
+    min-height: var(--height, 50px);
   }
   :global(.xs).component::before,
   :global(.xs) .header {

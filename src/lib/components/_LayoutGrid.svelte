@@ -46,7 +46,7 @@
   }
   .layout-grid {
     display: grid;
-    grid-gap: var(--grid-gap);
+    grid-gap: var(--grid-gap-sm);
     grid-template-rows: var(--pagebar-h) repeat(2, auto) repeat(2, var(--footer-h));
     grid-template-columns: 1fr;
     grid-template-areas:

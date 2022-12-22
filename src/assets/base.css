@@ -26,7 +26,10 @@
   --footer-h: 3rem;
   --toolbar-h: 3rem;
   --pagebar-h: 3rem;
-  --grid-gap: 0.1rem;
+  --grid-gap-sm: 1px;
+  --grid-gap: 2px;
+  --grid-gap-md: 3px;
+  --grid-gap-lg: 4px;
   --xs-h: 50px;
   --sm-h: 80px;
   --md-h: 100px;

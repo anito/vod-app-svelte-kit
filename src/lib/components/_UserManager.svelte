@@ -850,7 +850,7 @@
     grid-area: main;
     display: grid;
     grid-template-rows: var(--toolbar-h) auto;
-    grid-gap: var(--grid-gap);
+    grid-gap: var(--grid-gap-sm);
     align-items: center;
     grid-template-areas: 'one one';
     grid-template-columns: 4fr 4fr;

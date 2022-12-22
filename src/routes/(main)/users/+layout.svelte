@@ -449,11 +449,11 @@
   </div>
   <slot />
   <div class="sidebar flex-1" slot="side">
-    <Component transparent>
+    <Component transparent headerHeight="57px">
       <div slot="header">
         <Textfield
           class="search"
-          style="width: 100%; height: 50px; border-radius: 0;"
+          style={`width: 100%; height: var(--height); border-radius: 0;`}
           variant="filled"
           bind:value={search}
           label={$_('text.search-user')}

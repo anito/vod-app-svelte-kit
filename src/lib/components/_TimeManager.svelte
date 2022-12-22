@@ -465,8 +465,8 @@
     class:no-videos={!userVideos.length || hasCurrentPrivileges}
   >
     <Component variant="sm">
-      <div slot="header">
-        <Header mdc h="5" class="xxx">
+      <div slot="header" let:height>
+        <Header mdc h="5">
           <div class="flex">
             {#if currentUser}
               <span class="header-name pr-5">{name}</span>
@@ -625,7 +625,7 @@
   </div>
   {#if isopen}
     <div in:fly={{ opacity: 0 }} out:fly={{ opacity: 0 }} class="grid-item time">
-      <Component variant="sm">
+      <Component variant="" --height="100px">
         <div slot="header">
           <div class="">
             <Header mdc h="5">{readout}</Header>
@@ -743,7 +743,7 @@
     grid-area: main;
     display: grid;
     grid-template-rows: var(--toolbar-h) auto;
-    grid-gap: var(--grid-gap);
+    grid-gap: var(--grid-gap-sm);
     align-items: center;
     grid-template-areas: 'one two';
     grid-template-columns: 4fr 4fr;
