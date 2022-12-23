@@ -776,8 +776,8 @@
                 {/if}
               </div>
               {#if activeTemplate}
-                {#if currentTemplate}
-                  <div class="grid-item grid-full">
+                <div class="grid-item grid-full">
+                  {#if currentTemplate}
                     <MailTemplate
                       bind:this={mailTemplate}
                       bind:canSave
@@ -785,14 +785,12 @@
                       template={{ ...currentTemplate, data }}
                       user={currentUser}
                     />
-                  </div>
-                {:else}
-                  <div class="grid-item grid-full">
+                  {:else}
                     <div class="empty-selection">
                       <span style="text-align: center;">{$_('text.empty-template-selection')}</span>
                     </div>
-                  </div>
-                {/if}
+                  {/if}
+                </div>
               {:else}
                 <div class="grid-item grid-mail-list">
                   <MailList

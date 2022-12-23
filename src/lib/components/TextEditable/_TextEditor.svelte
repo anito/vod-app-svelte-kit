@@ -5,6 +5,7 @@
 <script>
   import { createEventDispatcher, onMount } from 'svelte/internal';
   import Span from './_Span.svelte';
+  import { Graphic, Meta } from '@smui/list';
 
   /**
    * @type {string}
@@ -117,20 +118,20 @@
   {#if !locked}
     {#if contenteditable}
       <span class="control-group">
-        <span on:keydown on:click|preventDefault={cancelEditable} class="material-icons control"
-          >cancel</span
+        <Meta
+          on:keydown
+          on:click$preventDefault={cancelEditable}
+          class="material-icons control meta">cancel</Meta
         >
-        <span on:keydown on:click|preventDefault={saveEditable} class="material-icons control"
-          >save</span
+        <Meta on:keydown on:click$preventDefault={saveEditable} class="material-icons control meta"
+          >save</Meta
         >
       </span>
     {:else}
-      <span on:keydown on:click|preventDefault={createEditable} class="material-icons control"
-        >edit</span
-      >
+      <Meta on:click$preventDefault={createEditable} class="material-icons control meta">edit</Meta>
     {/if}
   {:else}
-    <span class="material-icons control">lock</span>
+    <Meta class="material-icons meta" aria-hidden="true">lock</Meta>
   {/if}
 </Span>
 
@@ -141,21 +142,21 @@
     flex: 1 1 100%;
     pointer-events: none;
   }
-  .control {
-    align-self: center;
+  :global(.meta) {
+    margin-right: 0;
     font-size: 1em;
-    pointer-events: all;
-    cursor: pointer;
+    align-self: center;
   }
   .control-group {
     display: flex;
     align-self: center;
   }
-  .control-group .control:not(:last-child) {
+  .control-group :global(.control:not(:last-child)) {
     padding-right: 10px;
   }
-  :global(.text-editor:hover) .control {
+  :global(.control) {
     visibility: visible;
+    cursor: pointer;
     pointer-events: all;
   }
   .active[contenteditable] {

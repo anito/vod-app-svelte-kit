@@ -157,13 +157,29 @@
   --mdc-typography-font-family: var(--font);
 
   --mdc-theme-primary: var(--primary);
-  --mdc-theme-on-primary: var(--on-primary);
   --mdc-theme-secondary: var(--secondary);
-  --mdc-theme-on-secondary: var(--on-secondary);
-  --mdc-theme-error: var(--error);
   --mdc-theme-background: var(--background);
   --mdc-theme-surface: var(--surface);
+  --mdc-theme-error: var(--error);
+  --mdc-theme-on-primary: var(--on-primary);
+  --mdc-theme-on-secondary: var(--on-secondary);
   --mdc-theme-on-surface: var(--on-surface);
+  --mdc-theme-on-error: var(--on-error);
+  --mdc-theme-text-primary-on-background: rgba(0, 0, 0, 0.87);
+  --mdc-theme-text-secondary-on-background: rgba(0, 0, 0, 0.54);
+  --mdc-theme-text-hint-on-background: rgba(0, 0, 0, 0.38);
+  --mdc-theme-text-disabled-on-background: rgba(0, 0, 0, 0.38);
+  --mdc-theme-text-icon-on-background: rgba(0, 0, 0, 0.38);
+  --mdc-theme-text-primary-on-light: rgba(0, 0, 0, 0.87);
+  --mdc-theme-text-secondary-on-light: rgba(0, 0, 0, 0.54);
+  --mdc-theme-text-hint-on-light: rgba(0, 0, 0, 0.38);
+  --mdc-theme-text-disabled-on-light: rgba(0, 0, 0, 0.38);
+  --mdc-theme-text-icon-on-light: rgba(0, 0, 0, 0.38);
+  --mdc-theme-text-primary-on-dark: white;
+  --mdc-theme-text-secondary-on-dark: rgba(255, 255, 255, 0.7);
+  --mdc-theme-text-hint-on-dark: rgba(255, 255, 255, 0.5);
+  --mdc-theme-text-disabled-on-dark: rgba(255, 255, 255, 0.5);
+  --mdc-theme-text-icon-on-dark: rgba(255, 255, 255, 0.5);
 
   --drp-theme-primary: var(--primary);
   --drp-theme-selection: var(--on-primary);
@@ -175,6 +191,15 @@
   --drp-theme-label-color: var(--on-surface);
   --drp-theme-label-background: var(--back-grid-item);
   --drp-theme-font: var(--font);
+}
+.theme-default.dark,
+.theme-default.dark ::before,
+.theme-default.dark ::after {
+  --mdc-theme-text-primary-on-background: rgba(255, 255, 255, 0.87);
+  --mdc-theme-text-secondary-on-background: rgba(255, 255, 255, 0.54);
+  --mdc-theme-text-hint-on-background: rgba(255, 255, 255, 0.38);
+  --mdc-theme-text-disabled-on-background: rgba(255, 255, 255, 0.38);
+  --mdc-theme-text-icon-on-background: rgba(255, 255, 255, 0.38);
 }
 /*	typo vars */
 .typo-default {
@@ -427,6 +452,7 @@ html a.no-underline {
   height: 100%;
   font-size: 2em;
   font-weight: 600;
+  opacity: 0.5;
 }
 /*  lists ---------------------------------- */
 .listify ol,
