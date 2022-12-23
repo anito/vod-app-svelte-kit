@@ -465,7 +465,7 @@
     class:no-videos={!userVideos.length || hasCurrentPrivileges}
   >
     <Component variant="sm">
-      <div slot="header" let:height>
+      <div slot="header">
         <Header mdc h="5">
           <div class="flex">
             {#if currentUser}
