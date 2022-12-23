@@ -2,6 +2,7 @@
   import { page, navigating } from '$app/stores';
   import { fly } from 'svelte/transition';
   import { session, sitename, videos, users } from '$lib/stores';
+  import { FlexContainer } from '$lib/components';
   import { VideoPlayer } from '$lib/components/Video';
   import {
     ADMIN,
@@ -168,9 +169,9 @@
     />
   </div>
 {:else}
-  <div class="empty-selection">
-    <span style="text-align: center;">{$_('text.empty-video-selection')}</span>
-  </div>
+  <FlexContainer>
+    {$_('text.empty-video-selection')}
+  </FlexContainer>
 {/if}
 
 <style>

@@ -52,6 +52,7 @@
       editors.delete(span);
     };
   });
+
   function cancelEditable() {
     active = false;
     if (selected === span) {
@@ -60,12 +61,14 @@
   }
 
   function saveEditable() {
+    const innerHtml = stripHTMLTags(editable);
+    editable.innerHTML = innerHtml;
     active = false;
-    if (editable.dataset.value === editable.innerHTML) return;
+    if (editable.dataset.value === innerHtml) return;
     dispatch('save:editable', {
       editable,
       onFailCallback: () => cancelEditable(),
-      onSuccessCallback: () => (editable.dataset.value = editable.innerHTML)
+      onSuccessCallback: () => (editable.dataset.value = innerHtml)
     });
   }
 
@@ -86,6 +89,15 @@
   function cancelEvent(event) {
     event.stopPropagation?.();
     event.preventDefault?.();
+  }
+
+  /**
+   * @param {HTMLElement} node
+   */
+  function stripHTMLTags(node) {
+    return node.innerHTML
+      .replace(/<(script|title|style).*?<\/(script|title|style) *?>/gi, '')
+      .replace(/<br[ ]*\/?>/gi, ' ');
   }
 
   /**

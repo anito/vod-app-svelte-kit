@@ -25,7 +25,14 @@
   import Menu from '@smui/menu';
   import { Anchor } from '@smui/menu-surface';
   import List, { Item, Separator, Text } from '@smui/list';
-  import { Component, InfoChips, TokenInfo, MediaUploader, UserGraphic } from '$lib/components';
+  import {
+    Component,
+    InfoChips,
+    TokenInfo,
+    MediaUploader,
+    UserGraphic,
+    FlexContainer
+  } from '$lib/components';
   import { _ } from 'svelte-i18n';
 
   const { setFab } = getContext('fab');
@@ -407,9 +414,9 @@
           {#if notFound}
             <div class="exception user-not-found">
               <div class="flex justify-center items-center flex-1">
-                <div class="empty-selection">
-                  <span style="text-align: center;">{$_('text.empty-user-selection')}</span>
-                </div>
+                <FlexContainer>
+                  {$_('text.empty-user-selection')}
+                </FlexContainer>
               </div>
             </div>
           {:else}
@@ -698,9 +705,9 @@
                   </div>
                 {/if}
                 {#if !selectedMode}
-                  <div class="exception empty-selection">
-                    <span style="text-align: center;">{$_('text.empty-edit-mode')}</span>
-                  </div>
+                  <FlexContainer>
+                    {$_('text.empty-edit-mode')}
+                  </FlexContainer>
                 {/if}
               </div>
             </form>
@@ -839,9 +846,9 @@
       </Component>
     </div>
   {:else}
-    <div class="empty-selection no-user-selection">
-      <span style="text-align: center;">{$_('text.empty-user-selection')}</span>
-    </div>
+    <FlexContainer style="grid-area: one;">
+      {$_('text.empty-user-selection')}
+    </FlexContainer>
   {/if}
 </div>
 
@@ -989,8 +996,5 @@
   .mdc-theme-error-color {
     color: var(--mdc-theme-error);
     border-color: var(--mdc-theme-error);
-  }
-  .empty-selection {
-    grid-area: one;
   }
 </style>

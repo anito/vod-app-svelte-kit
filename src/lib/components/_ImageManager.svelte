@@ -6,7 +6,7 @@
   import { fly } from 'svelte/transition';
   import Fab, { Icon } from '@smui/fab';
   import { Label } from '@smui/common';
-  import { ImageCard, MediaUploader, Info, Paginator } from '$lib/components';
+  import { ImageCard, MediaUploader, Info, Paginator, FlexContainer } from '$lib/components';
   import { fabs, urls, sitename, images, session } from '$lib/stores';
   import { _ } from 'svelte-i18n';
 
@@ -106,9 +106,9 @@
     </ul>
     <Paginator {pagination} store={images} id="images-paginator" action="/videos?/more_images" />
   {:else}
-    <div class="empty-selection no-user-selection">
-      <span style="text-align: center;">{$_('text.no-content-available')}</span>
-    </div>
+    <FlexContainer>
+      {$_('text.no-content-available')}
+    </FlexContainer>
   {/if}
   {#if $fabs === 'add-image'}
     <Fab class="floating-fab" color="primary" on:click={() => openUploader()} extended>

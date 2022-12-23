@@ -25,7 +25,8 @@
     MailTemplate,
     Badge,
     BadgeGroup,
-    Dot
+    Dot,
+    FlexContainer
   } from '$lib/components';
   import { TextEditor } from '$lib/components/TextEditable';
   import { _ } from 'svelte-i18n';
@@ -786,9 +787,9 @@
                       user={currentUser}
                     />
                   {:else}
-                    <div class="empty-selection">
-                      <span style="text-align: center;">{$_('text.empty-template-selection')}</span>
-                    </div>
+                    <FlexContainer>
+                      {$_('text.empty-template-selection')}
+                    </FlexContainer>
                   {/if}
                 </div>
               {:else}
@@ -812,9 +813,9 @@
       </div>
     </div>
   {:else}
-    <div class="empty-selection no-user-selection">
-      <span style="text-align: center;">{$_('text.empty-user-selection')}</span>
-    </div>
+    <FlexContainer style="grid-area: one;">
+      {$_('text.empty-user-selection')}
+    </FlexContainer>
   {/if}
 </div>
 <Dialog
@@ -919,9 +920,6 @@
   .grid-item {
     background: var(--back-grid-item);
     height: 100%;
-  }
-  .empty-selection {
-    grid-area: one;
   }
   :global(.mailbox-list:not([class*='non-interactive']) .edit) {
     pointer-events: all;

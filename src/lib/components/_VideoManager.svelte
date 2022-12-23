@@ -5,7 +5,14 @@
   import { onMount, getContext, tick } from 'svelte';
   import { fly } from 'svelte/transition';
   import Fab, { Label, Icon } from '@smui/fab';
-  import { Info, VideoCard, MediaUploader, VideoEditorList, Paginator } from '$lib/components';
+  import {
+    Info,
+    VideoCard,
+    MediaUploader,
+    VideoEditorList,
+    Paginator,
+    FlexContainer
+  } from '$lib/components';
   import { session, videos, fabs } from '$lib/stores';
   import {
     ADMIN,
@@ -151,9 +158,9 @@
     </ul>
     <Paginator {pagination} store={videos} id="videos-paginator" action="/videos?/more_videos" />
   {:else}
-    <div class="empty-selection">
-      <span style="text-align: center;">{$_('text.no-content-available')}</span>
-    </div>
+    <FlexContainer style="grid-area: one;">
+      {$_('text.no-content-available')}
+    </FlexContainer>
   {/if}
   {#if $fabs === 'add-video'}
     <Fab class="floating-fab" color="primary" on:click={() => openUploader('video')} extended>

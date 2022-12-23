@@ -15,7 +15,8 @@
     Header,
     Component,
     VideoEditorList,
-    Paginator
+    Paginator,
+    FlexContainer
   } from '$lib/components';
   import { endOfWeek, startOfYear, endOfYear, addYears, subYears, parseISO } from 'date-fns';
   import {
@@ -552,9 +553,9 @@
           {/if}
         </List>
       {:else}
-        <div class="flex-1 flex-col">
-          <span class="empty-selection no-user-selection">{$_('text.empty-user-selection')}</span>
-        </div>
+        <FlexContainer>
+          {$_('text.empty-user-selection')}
+        </FlexContainer>
       {/if}
     </Component>
   </div>

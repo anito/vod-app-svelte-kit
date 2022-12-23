@@ -1,7 +1,7 @@
 <script>
-  import { tick } from 'svelte';
-  import { _ } from 'svelte-i18n';
   import { fade } from 'svelte/transition';
+  import { FlexContainer } from '.';
+  import { _ } from 'svelte-i18n';
 
   /** @type {import('$lib/types').Mail | null | undefined} */
   export let selection;
@@ -45,9 +45,9 @@
       use:renderMail
     />
   {:else}
-    <div class="empty-selection">
-      <span style="text-align: center;">{$_('text.empty-email-selection')}</span>
-    </div>
+    <FlexContainer>
+      {$_('text.empty-email-selection')}
+    </FlexContainer>
   {/if}
 {/await}
 
