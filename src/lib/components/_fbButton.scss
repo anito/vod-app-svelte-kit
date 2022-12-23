@@ -1,18 +1,20 @@
 @import '@material/button/mixins';
 @import '@material/shape/variables';
 
-.fb-button {
-  --fill: #1877f2;
-  --ink-color: #ffffff;
-  @include mdc-button-shape-radius(999px);
-  @include mdc-button-container-fill-color(var(--fill));
-  @include mdc-button-ink-color(var(--ink-color));
-  @include mdc-button-label-overflow-ellipsis();
-  @include mdc-button-density(0);
-  width: 221px;
-  max-width: 400px;
-  font-size: 0.9em;
-  &.connected {
-    font-size: 0.7em;
+.mdc-button {
+  &.fb-button {
+    --fill: #1877f2;
+    --ink-color: #ffffff;
+    @include mdc-button-shape-radius(999px);
+    @include mdc-button-container-fill-color(var(--fill));
+    @include mdc-button-ink-color(var(--ink-color));
+    @include mdc-button-label-overflow-ellipsis();
+    @include mdc-button-density(0);
+    width: 221px;
+    max-width: 400px;
+    font-size: 0.9em;
+    &.connected {
+      font-size: 0.7em;
+    }
   }
 }
