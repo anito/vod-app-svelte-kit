@@ -1,7 +1,7 @@
 <script>
   import './_form.scss';
   import logo from 'assets/images/logo-type-vod.svg';
-  import hero from 'assets/images/logo_hero_vod.svg';
+  import hero from 'assets/images/logo-hero-vod.svg';
   import { getContext, onMount } from 'svelte';
   import { sitename, session } from '$lib/stores';
   import Layout from './layout.svelte';

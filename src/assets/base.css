@@ -167,7 +167,7 @@
 
   --drp-theme-primary: var(--primary);
   --drp-theme-selection: var(--on-primary);
-  --drp-theme-within-selection-color: var(--background);
+  --drp-theme-within-selection-color: #424242;
   --drp-theme-readout-background: var(--primary);
   --drp-theme-readout-color: var(--on-primary);
   --drp-theme-border-color: inherit;
