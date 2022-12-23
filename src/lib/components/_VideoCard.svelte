@@ -306,7 +306,6 @@
             action="/videos?/more_images"
             id="images-paginator"
             style="--fontSize: 0.6em;"
-            indicator
             icon="download"
           />
         </MenuSurface>
