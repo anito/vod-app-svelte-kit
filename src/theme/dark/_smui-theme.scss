@@ -15,6 +15,14 @@
   $on-error: color-palette.$deep-orange-50
 );
 
+@import '@material/typography/mdc-typography';
+$mdc-typography-font-family: var(--font, 'sans-serif');
+
+.mdc-typography--headline5,
+.mdc-typography--headline6 {
+  font-weight: 700;
+}
+
 .theme-default.dark,
 .theme-default.dark::before,
 .theme-default.dark::after {
