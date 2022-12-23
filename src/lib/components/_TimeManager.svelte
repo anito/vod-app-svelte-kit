@@ -625,9 +625,9 @@
   </div>
   {#if isopen}
     <div in:fly={{ opacity: 0 }} out:fly={{ opacity: 0 }} class="grid-item time">
-      <Component variant="" --height="100px">
+      <Component variant="sm">
         <div slot="header">
-          <div class="">
+          <div>
             <Header mdc h="5">{readout}</Header>
             <button on:click={() => toggleDataPicker(selectionVideoId)} class="button-close" />
           </div>
