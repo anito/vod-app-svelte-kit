@@ -12,7 +12,7 @@
     justify-content: center;
     align-items: center;
     height: 100%;
-    font-size: 2em;
+    font-size: 1.5em;
     font-weight: 600;
     opacity: 0.5;
   }
