@@ -132,6 +132,10 @@
    */
   let loaderColor = 'var(--primary)';
   /**
+   * @type {string}
+   */
+  let loaderBackgroundColor;
+  /**
    * @type {boolean}
    */
   let isMounted = false;
@@ -262,6 +266,7 @@
   $: searchParamsString = $page.url.searchParams.toString();
   $: search = searchParamsString && `?${searchParamsString}`;
   $: settingsDialog?.setOpen($page.url.searchParams.get('modal') === 'settings');
+  $: loaderBackgroundColor = colorSchema.current.mode === DARK ? '#000000' : '#ffffff';
 
   onMount(async () => {
     $mounted = true;
@@ -846,7 +851,7 @@
     </Modal>
   </Modal>
 {/if}
-<LoadingModal backgroundColor="#ffffff" opacity={loaderBackgroundOpacity} wait={1000}>
+<LoadingModal backgroundColor={loaderBackgroundColor} opacity={loaderBackgroundOpacity} wait={1000}>
   <DoubleBounce color={loaderColor} unit="px" size="200" />
 </LoadingModal>
 <Dialog
@@ -916,7 +921,7 @@
 <Snackbar
   style="z-index: 1001;"
   bind:this={snackbar}
-  snackbarLifetimeMs={snackbarLifetime}
+  timeoutMs={snackbarLifetime}
   labelText={snackbarMessage}
   on:MDCSnackbar:opened={handleSnackbarOpened}
   on:MDCSnackbar:closed={handleSnackbarClosed}
