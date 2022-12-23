@@ -82,7 +82,7 @@
     filtered[0];
   $: joinData =
     currentUser &&
-    (_video = currentUser.videos.find((/** @type {{ id: any; }} */ v) => v.id === video.id)) &&
+    (_video = currentUser.videos?.find((/** @type {{ id: any; }} */ v) => v.id === video.id)) &&
     _video._joinData;
   $: ((jData, _locale) => (
     (startDate = jData && jData.start && parseISO(jData.start)),

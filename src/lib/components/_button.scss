@@ -33,7 +33,7 @@
 .mdc-button {
   &.error {
     @include mdc-button-container-fill-color(error);
-    @include mdc-button-ink-color(surface);
+    @include mdc-button-ink-color(on-surface);
   }
 }
 .card-actions {

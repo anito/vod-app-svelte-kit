@@ -125,15 +125,6 @@
 {/if}
 
 <style>
-  .empty-selection {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    font-size: 2em;
-    font-weight: 600;
-    color: #d8d8d8;
-  }
   :global(.dark) .items-list {
     padding: 15px;
     min-height: 200px;

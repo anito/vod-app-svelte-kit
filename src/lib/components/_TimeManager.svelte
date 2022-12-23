@@ -156,9 +156,9 @@
   $: id = hasPrivileges ? 'videos-paginator' : 'videos-all-paginator';
   $: hasCurrentPrivileges = role === ADMIN || role === SUPERUSER;
   $: displayedVideos = hasPrivileges
-    ? currentUser?.videos.sort(sortByEndDate) || []
+    ? currentUser?.videos?.sort(sortByEndDate) || []
     : currentUser?.videos
-        .filter(
+        ?.filter(
           (
             /** @type {{ _joinData: { start: string | number | Date; end: string | number | Date; }; }} */ v
           ) => {
@@ -792,15 +792,6 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     font-weight: 600;
-  }
-  .empty-selection {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    font-size: 2em;
-    font-weight: 600;
-    color: #d8d8d8;
   }
 
   @media (max-width: 990px) {

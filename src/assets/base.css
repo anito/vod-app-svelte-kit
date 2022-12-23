@@ -420,6 +420,14 @@ html a.no-underline {
   display: inline-block;
   padding: 0.2em;
 }
+.empty-selection {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 2em;
+  font-weight: 600;
+}
 /*  lists ---------------------------------- */
 .listify ol,
 .listify ul {
@@ -449,7 +457,6 @@ html a.no-underline {
 .listify ol {
   list-style: decimal;
 }
-
 /*  close-button --------------------------- */
 .button-close {
   display: block;

@@ -991,13 +991,6 @@
     border-color: var(--mdc-theme-error);
   }
   .empty-selection {
-    display: flex;
     grid-area: one;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    font-size: 2em;
-    font-weight: 600;
-    color: #d8d8d8;
   }
 </style>
