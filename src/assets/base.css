@@ -63,34 +63,32 @@
   }
 }
 /*	theme vars */
-@media (prefers-color-scheme: light) {
-  .theme-default,
-  .theme-default ::before,
-  .theme-default ::after {
-    --background-100: #dedede;
-    --back-light: #f6fafd;
-    --back-white: #fff;
-    --back-dark: #868585;
-    --back-api: #eff8ff;
-    --back-grid-item: #eeeeee;
-    --second-unused: #676778;
-    --alt: #787867;
-    --flash: #40b3ff;
-    --warning: #ff3e00;
-    --warning-500: #ff622d;
-    --warning-400: #ff8056;
-    --warning-300: #ff9e7e;
-    --warning-200: #ffbfa9;
-    --warning-100: #ffd1c2;
-    --info: #536b86;
-    --success: var(--primary);
-    --heading: var(--secondary);
-    --text: #444;
-    --text-light: #ebebeb;
-    --text-grey: #a5a5a5;
-    --text-light-grey: #c7c7c7;
-    --sidebar-text: rgba(255, 255, 255, 0.75);
-  }
+.theme-default,
+.theme-default ::before,
+.theme-default ::after {
+  --background-100: #dedede;
+  --back-light: #f6fafd;
+  --back-white: #fff;
+  --back-dark: #868585;
+  --back-api: #eff8ff;
+  --back-grid-item: #eeeeee;
+  --second-unused: #676778;
+  --alt: #787867;
+  --flash: #40b3ff;
+  --warning: #ff3e00;
+  --warning-500: #ff622d;
+  --warning-400: #ff8056;
+  --warning-300: #ff9e7e;
+  --warning-200: #ffbfa9;
+  --warning-100: #ffd1c2;
+  --info: #536b86;
+  --success: var(--primary);
+  --heading: var(--secondary);
+  --text: #444;
+  --text-light: #ebebeb;
+  --text-grey: #a5a5a5;
+  --text-light-grey: #c7c7c7;
+  --sidebar-text: rgba(255, 255, 255, 0.75);
 }
 @media (prefers-color-scheme: dark) {
   .theme-default.dark,

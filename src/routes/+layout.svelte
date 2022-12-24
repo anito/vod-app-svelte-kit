@@ -69,10 +69,6 @@
   const redirectDelay = 300;
   const LIGHT = 'light';
   const DARK = 'dark';
-  const getSchemaIcon = (/** @type {string} */ m) =>
-    m === DARK ? 'dark_mode' : m === LIGHT ? 'light_mode' : '';
-  const getSchemaLabel = (/** @type {string} */ m) =>
-    m === DARK ? $_('text.dark_mode') : m === LIGHT ? $_('light_mode') : '';
 
   /**
    * @type {import('./$types').LayoutData}
@@ -136,9 +132,21 @@
    */
   let loaderBackgroundColor;
   /**
+   * @type {{requested: any, current: any}}
+   */
+  let colorSchema;
+  /**
+   * @type {string | undefined}
+   */
+  let mediaMode;
+  /**
    * @type {boolean}
    */
   let isMounted = false;
+  /**
+   * @type {boolean}
+   */
+  let isPreferredDarkMode;
 
   settings.subscribe((val) => {
     printDiff(val, { store: 'config' });
@@ -231,28 +239,8 @@
     }
   });
 
-  $: ({ mode } = $page.data.session);
-  $: setThemeMode(mode);
-  $: colorSchema =
-    data &&
-    ((m) => {
-      const mode = m === LIGHT ? DARK : LIGHT;
-      const base = '/config?/mode=';
-      return {
-        current: {
-          mode: m,
-          action: base.concat(m),
-          icon: getSchemaIcon(m),
-          label: getSchemaLabel(m)
-        },
-        next: {
-          mode,
-          action: base.concat(mode),
-          icon: getSchemaIcon(mode),
-          label: getSchemaLabel(mode)
-        }
-      };
-    })(mode);
+  $: ({ mode } = data && data.session);
+  $: $mounted && setMode(mode);
   $: printDiff($page.data, { store: 'page' });
   $: person = svg(svg_manifest.person, $theme.primary);
   $: logo = svg(svg_manifest.logo_vod, $theme.primary);
@@ -266,22 +254,25 @@
   $: searchParamsString = $page.url.searchParams.toString();
   $: search = searchParamsString && `?${searchParamsString}`;
   $: settingsDialog?.setOpen($page.url.searchParams.get('modal') === 'settings');
-  $: loaderBackgroundColor = colorSchema.current.mode === DARK ? '#000000' : '#ffffff';
+  $: loaderBackgroundColor = colorSchema?.current.mode === DARK ? '#000000' : '#ffffff';
 
   onMount(async () => {
     $mounted = true;
     root = document.documentElement;
     snackbar = getSnackbar();
 
-    setThemeMode(mode);
     loadConfig();
-    fadeIn();
     initListener();
+    initMediaListener();
     checkSession();
     initClasses();
     initStyles();
     startPolling();
     printCopyright();
+
+    isPreferredDarkMode = !window.matchMedia('(prefers-color-scheme: light)').matches;
+    mode = isPreferredDarkMode ? DARK : LIGHT;
+    setMode(mode);
 
     return () => {
       removeListener();
@@ -291,14 +282,18 @@
 
   async function checkSession() {
     const { user, _expires, fromToken } = { ...$session };
-    if (!user || fromToken) return;
+    if (!user || fromToken) {
+      fadeIn();
+      return;
+    }
 
     const valid = new Date() < new Date(_expires);
     if (valid) {
-      proxyEvent('session:success', $session);
+      proxyEvent('session:success', { session: $session, callback: fadeIn });
     } else {
       proxyEvent('session:stop', {
-        redirect: `/login`
+        redirect: `/login`,
+        callback: fadeIn
       });
     }
   }
@@ -335,10 +330,37 @@
   }
 
   /**
-   * @param {string | undefined} [mode]
+   * @param {string | undefined} mode
    */
-  function setThemeMode(mode) {
-    if (mode) root?.classList.add(mode);
+  function setMode(mode) {
+    colorSchema = setColorSchema(mode);
+    root?.classList.toggle(DARK, mode === DARK);
+    mediaMode = mode;
+  }
+
+  /**
+   * @param {string | undefined} m
+   */
+  function setColorSchema(m) {
+    const mode = m === LIGHT ? DARK : LIGHT;
+    const base = '/config?/mode=';
+    const getSchemaIcon = (/** @type {string} */ m) => (m === DARK ? 'dark_mode' : 'light_mode');
+    const getSchemaLabel = (/** @type {string} */ m) =>
+      m === DARK ? $_('text.dark_mode') : $_('light_mode');
+    return {
+      current: {
+        mode: m,
+        action: base.concat(m),
+        icon: getSchemaIcon(m),
+        label: getSchemaLabel(m)
+      },
+      requested: {
+        mode,
+        action: base.concat(mode),
+        icon: getSchemaIcon(mode),
+        label: getSchemaLabel(mode)
+      }
+    };
   }
 
   function startPolling() {}
@@ -380,6 +402,27 @@
 
   function removeClasses() {
     root.classList.remove('ismobile');
+  }
+
+  function initMediaListener() {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
+    mediaQuery.addEventListener('change', mediaChangedHandler);
+  }
+
+  /**
+   * @param {MediaQueryListEvent} event
+   */
+  async function mediaChangedHandler(event) {
+    mode = event.matches ? LIGHT : DARK;
+    await removeMediaModeFromSession();
+  }
+
+  async function removeMediaModeFromSession() {
+    return await fetch('/session', { method: 'POST', body: JSON.stringify({ mode: null }) })
+      .then(async (res) => {
+        if (res.ok) return await res.json();
+      })
+      .catch((reason) => console.error(reason));
   }
 
   /**
@@ -517,10 +560,11 @@
    * @param {CustomEvent} event
    */
   async function sessionSuccessHandler({ detail }) {
+    const { session, callback } = detail;
     /**
      * @type {{user: import('$lib/types').User, renewed: string, message: string}}
      */
-    const { user, renewed, message } = { ...detail };
+    const { user, renewed, message } = { ...session };
     proxyEvent('session:extend', { start: true });
     flash.update({ message, type: 'success', timeout: 2000 });
 
@@ -531,6 +575,10 @@
       })
     );
     snackbar?.open();
+
+    if (typeof callback === 'function') {
+      callback();
+    }
   }
 
   /**
@@ -570,11 +618,20 @@
    */
   async function sessionStopHandler({ detail }) {
     await killSession();
-    const path = detail.redirect ?? '/';
+    const { redirect, callback } = detail;
+    const path = redirect || '/';
     const search = createRedirectSlug($page.url);
 
-    invalidate('app:session');
-    setTimeout(async () => await goto(`${path}?${search}`), 500);
+    await invalidate('app:session');
+    setTimeout(
+      async () =>
+        await goto(`${path}?${search}`).then(() => {
+          if (typeof callback === 'function') {
+            callback();
+          }
+        }),
+      300
+    );
   }
 
   async function killSession() {
@@ -641,7 +698,7 @@
 </script>
 
 <svelte:head>
-  <link rel="stylesheet" href={`/smui${mode === 'light' ? '' : '-dark'}.css`} />
+  <link id="media-mode" rel="stylesheet" href={`/smui${mediaMode === DARK ? '-dark' : ''}.css`} />
 </svelte:head>
 
 <Icons />
@@ -674,10 +731,7 @@
               }
               if (actionParam === 'mode') {
                 if ((result.type = 'success')) {
-                  const mode = result.data.mode;
-                  invalidate('app:session');
-                  root.classList.toggle('light', mode === 'light');
-                  root.classList.toggle('dark', mode === 'dark');
+                  await invalidate('app:session');
                 }
               }
             };
@@ -813,10 +867,14 @@
                 </Item>
                 <Separator />
                 <Item class="justify-start">
-                  <Button formaction={colorSchema.next.action} class="link-button" ripple={false}>
+                  <Button
+                    formaction={colorSchema?.requested.action}
+                    class="link-button"
+                    ripple={false}
+                  >
                     <span style="display: flex; flex: 1 0 100%; align-items: center">
-                      <SvgIcon name={colorSchema.next.icon} class="mr-2" fillColor="none" />
-                      <Label>{colorSchema.next.label}</Label>
+                      <SvgIcon name={colorSchema?.requested.icon} class="mr-2" fillColor="none" />
+                      <Label>{colorSchema?.requested.label}</Label>
                     </span>
                   </Button>
                 </Item>

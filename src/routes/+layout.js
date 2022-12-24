@@ -7,7 +7,6 @@ LOCALESTORE.forEach((val, key) => {
 });
 
 const fallbackLocale = 'en';
-const initialColorScheme = 'dark';
 
 function getInitialLocale() {
   let locale;
@@ -33,7 +32,7 @@ export async function load({ data, fetch }) {
     method: 'POST',
     body: JSON.stringify({
       locale: locale || initialLocale || fallbackLocale,
-      mode: mode || initialColorScheme
+      mode
     })
   }).then(async (res) => {
     const json = await res.json();

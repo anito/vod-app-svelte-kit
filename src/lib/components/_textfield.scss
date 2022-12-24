@@ -19,16 +19,14 @@
   }
 }
 
-.light {
-  .templates {
-    .banner {
-      .mdc-text-field {
-        @include ink-color(on-primary);
-        @include bottom-line-color(on-primary);
-        @include hover-bottom-line-color(on-primary);
-        @include label-color(on-primary);
-        @include caret-color(on-primary);
-      }
+.templates {
+  .banner {
+    .mdc-text-field {
+      @include ink-color(on-primary);
+      @include bottom-line-color(on-primary);
+      @include hover-bottom-line-color(on-primary);
+      @include label-color(on-primary);
+      @include caret-color(on-primary);
     }
   }
 }

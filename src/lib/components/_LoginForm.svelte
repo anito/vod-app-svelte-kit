@@ -98,7 +98,7 @@
       /** @type {{success: boolean, data: any}}*/
       const { success, data } = { ...result.data };
       if (success) {
-        proxyEvent('session:success', { ...data });
+        proxyEvent('session:success', { session: { ...data } });
       } else {
         proxyEvent('session:error', { ...data });
 

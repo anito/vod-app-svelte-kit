@@ -57,7 +57,7 @@
 
   async function loginFromToken() {
     if (data.success) {
-      proxyEvent('session:success', { ...data.data });
+      proxyEvent('session:success', { session: { ...data.data } });
     } else {
       proxyEvent('session:error', { ...data.data, redirect: '/login' });
     }

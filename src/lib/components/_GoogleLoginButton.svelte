@@ -46,7 +46,7 @@
       const { success, data } = { ...res };
       if (success) {
         googleUser.set(data.user);
-        proxyEvent('session:success', { ...data });
+        proxyEvent('session:success', { session: { ...data } });
       } else {
         proxyEvent('session:error', { ...data, redirect: '/login' });
       }

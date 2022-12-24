@@ -140,7 +140,7 @@
 </script>
 
 {#if $session.user}
-  {#if $videos.length}
+  {#if $videos?.length}
     <ul
       bind:this={videoList}
       class="items-list grid lg:grid-cols-3 md:grid-cols-2 grid-flow-row gap-4"
