@@ -8,7 +8,7 @@ import { parseLifetime } from '$lib/utils';
 export async function GET({ locals, url }) {
   const token = url.searchParams.get('token');
   const type = url.searchParams.get('type') || 'login';
-  const { locale, mode } = locals.session.data;
+  const { locale } = locals.session.data;
 
   if (token) {
     return await api.get(`${type}?token=${token}&locale=${locale}`).then(async (res) => {
@@ -23,11 +23,10 @@ export async function GET({ locals, url }) {
             user: { id, name, jwt, avatar, email },
             role,
             groups,
-            locale,
-            mode
+            locale
           };
         } else {
-          return { locale, mode };
+          return { locals };
         }
       };
       await locals.session.destroy();
@@ -42,7 +41,7 @@ export async function GET({ locals, url }) {
 export async function POST({ locals, request, url }) {
   const data = await request.json();
   const type = url.searchParams.get('type') || 'login';
-  const { locale, mode } = locals.session.data;
+  const { locale } = locals.session.data;
 
   return await api
     .post(`${type}?locale=${locale}`, { token: data.token, data })
@@ -58,11 +57,10 @@ export async function POST({ locals, request, url }) {
             user: { id, name, email, jwt, avatar },
             role,
             groups,
-            locale,
-            mode
+            locale
           };
         } else {
-          return { locale, mode };
+          return { locale };
         }
       };
       await locals.session.destroy();

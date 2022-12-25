@@ -171,7 +171,6 @@ export interface Session<SessionType = Record<string, any>> {
   renewed: boolean;
   code: number;
   locale?: string;
-  mode?: string;
   _expires: Date | any;
 }
 

@@ -239,8 +239,6 @@
     }
   });
 
-  $: ({ mode } = data && data.session);
-  $: $mounted && setMode(mode);
   $: printDiff($page.data, { store: 'page' });
   $: person = svg(svg_manifest.person, $theme.primary);
   $: logo = svg(svg_manifest.logo_vod, $theme.primary);
@@ -271,7 +269,7 @@
     printCopyright();
 
     isPreferredDarkMode = !window.matchMedia('(prefers-color-scheme: light)').matches;
-    mode = isPreferredDarkMode ? DARK : LIGHT;
+    const mode = isPreferredDarkMode ? DARK : LIGHT;
     setMode(mode);
 
     return () => {
@@ -330,7 +328,7 @@
   }
 
   /**
-   * @param {string | undefined} mode
+   * @param {string} mode
    */
   function setMode(mode) {
     colorSchema = setColorSchema(mode);
@@ -339,7 +337,7 @@
   }
 
   /**
-   * @param {string | undefined} m
+   * @param {string} m
    */
   function setColorSchema(m) {
     const mode = m === LIGHT ? DARK : LIGHT;
@@ -350,13 +348,11 @@
     return {
       current: {
         mode: m,
-        action: base.concat(m),
         icon: getSchemaIcon(m),
         label: getSchemaLabel(m)
       },
       requested: {
         mode,
-        action: base.concat(mode),
         icon: getSchemaIcon(mode),
         label: getSchemaLabel(mode)
       }
@@ -413,16 +409,8 @@
    * @param {MediaQueryListEvent} event
    */
   async function mediaChangedHandler(event) {
-    mode = event.matches ? LIGHT : DARK;
-    await removeMediaModeFromSession();
-  }
-
-  async function removeMediaModeFromSession() {
-    return await fetch('/session', { method: 'POST', body: JSON.stringify({ mode: null }) })
-      .then(async (res) => {
-        if (res.ok) return await res.json();
-      })
-      .catch((reason) => console.error(reason));
+    const mode = event.matches ? LIGHT : DARK;
+    setMode(mode);
   }
 
   /**
@@ -729,11 +717,6 @@
                   proxyEvent('session:stop', { ...result.data, redirect: '/login' });
                 }
               }
-              if (actionParam === 'mode') {
-                if ((result.type = 'success')) {
-                  await invalidate('app:session');
-                }
-              }
             };
           }}
           method="POST"
@@ -868,7 +851,7 @@
                 <Separator />
                 <Item class="justify-start">
                   <Button
-                    formaction={colorSchema?.requested.action}
+                    on:click$preventDefault={() => setMode(colorSchema?.requested.mode)}
                     class="link-button"
                     ripple={false}
                   >

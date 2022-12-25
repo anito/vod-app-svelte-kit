@@ -27,22 +27,20 @@ export async function load({ data, fetch }) {
     initialLocale
   });
 
-  let { locale, mode } = session;
+  let { locale } = session;
   await fetch(`/session`, {
     method: 'POST',
     body: JSON.stringify({
-      locale: locale || initialLocale || fallbackLocale,
-      mode
+      locale: locale || initialLocale || fallbackLocale
     })
   }).then(async (res) => {
     const json = await res.json();
     locale = json.locale;
-    mode = json.mode;
   });
 
   const parser = new UAParser(data.ua);
   const browser = parser.getBrowser();
 
   await waitLocale();
-  return { session: { ...session, locale, mode }, browser };
+  return { session: { ...session, locale }, browser };
 }
