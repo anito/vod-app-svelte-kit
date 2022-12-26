@@ -252,7 +252,9 @@
   $: searchParamsString = $page.url.searchParams.toString();
   $: search = searchParamsString && `?${searchParamsString}`;
   $: settingsDialog?.setOpen($page.url.searchParams.get('modal') === 'settings');
-  $: loaderBackgroundColor = colorSchema?.current.mode === DARK ? '#000000' : '#ffffff';
+  $: $locale && setMode(colorSchema?.current.mode);
+  $: $mounted &&
+    (loaderBackgroundColor = colorSchema.current.mode === DARK ? '#000000' : '#ffffff');
 
   onMount(async () => {
     $mounted = true;
@@ -339,9 +341,8 @@
   /**
    * @param {string} m
    */
-  function setColorSchema(m) {
+  function setColorSchema(m = LIGHT) {
     const mode = m === LIGHT ? DARK : LIGHT;
-    const base = '/config?/mode=';
     const getSchemaIcon = (/** @type {string} */ m) => (m === DARK ? 'dark_mode' : 'light_mode');
     const getSchemaLabel = (/** @type {string} */ m) =>
       m === DARK ? $_('text.dark_mode') : $_('light_mode');
