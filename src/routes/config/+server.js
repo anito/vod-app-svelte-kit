@@ -6,7 +6,7 @@ export async function GET({ locals }) {
   const { locale } = locals.session.data;
 
   return json(
-    await api.get(`settings?locale=${locale}`, { fetch }).then((res) => {
+    await api.get(`settings?locale=${locale}`).then((res) => {
       if (res?.success) {
         return res.data;
       }

@@ -23,14 +23,7 @@ export const handle = handleSession(
 );
 
 /** @type {import('@sveltejs/kit').HandleFetch} */
-export async function handleFetch({ request, fetch, event }) {
-  const oldUrl = new URL(request.url);
-  const { origin, pathname, search } = oldUrl;
-  const searchParams = new URLSearchParams(search);
-  searchParams.set('locale', event.locals.session.data.locale);
-  const newUrl = new URL(`${origin}${pathname}?${searchParams.toString()}`);
-
-  request = new Request(newUrl.href, request);
+export async function handleFetch({ request, fetch }) {
   return fetch(request);
 }
 
