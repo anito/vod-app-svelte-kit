@@ -15,15 +15,15 @@ $height: var(--height, 50px);
   .mdc-text-field__input {
     padding-left: 16px;
   }
-  .mdc-text-field__icon {
-    padding: 10px;
-  }
   &.search-user {
     @include shape-radius(0);
     @include fill-color(var(--back-grid-item));
     height: $height;
     width: 100%;
     display: flex;
+    .mdc-text-field__icon[class*='--trailing'] {
+      padding: 10px;
+    }
     .mdc-floating-label {
       transform: translateY(-50%) translateX(16px);
     }
