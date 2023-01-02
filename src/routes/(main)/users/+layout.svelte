@@ -729,7 +729,7 @@
         <a href={magicLink}>{@html $_('text.continue-anyways', { values: { name: username } })}</a>
       </p>
     {:else}
-      <p>{@html $_('messages.you-will-be-logged-out', { values: { name: username } })}</p>
+      <p>{@html $_('text.you-will-be-logged-out', { values: { name: username } })}</p>
     {/if}
     <div class="absolute" style="z-index: 1; top: -11px; right: 3px;">
       <UserGraphic

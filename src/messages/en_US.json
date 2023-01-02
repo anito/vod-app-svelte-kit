@@ -244,7 +244,8 @@
     "posters": "Posters",
     "your-videos": "Your <span class=\"selected-bg-color\">videos</span>",
     "dark_mode": "Lights Off",
-    "type-min-char-count": "Please type {count} or more characters for max. results"
+    "type-min-char-count": "Please type {count} or more characters for max. results",
+    "you-will-be-logged-out": "Terminate current session and sign in as <strong>{name}</strong>?"
   },
   "summary": {
     "copy-link": {
@@ -303,7 +304,6 @@
     "permanently-remove-user": "{name} will be permanently removed. Confirm pressing OK",
     "video-available-until": "valid until",
     "transfer-token-reminder": "Remember to send the new token to the user <strong> {name} </strong>.",
-    "you-will-be-logged-out": "Terminate current session and sign in as <strong>{name}</strong>?",
     "login-will-fail": "Logging in as <strong> {name} </strong> will fail for the following reason:",
     "class-has-active-time-slot": "This course has an active time slot. <br /> Remove <strong> {title} </strong> anyway?",
     "content-inaccessible": "<p> The user <strong> {name} </strong> can currently not access the content he has booked. </p> <p> To make the content available, the following actions must be taken: </p>",
