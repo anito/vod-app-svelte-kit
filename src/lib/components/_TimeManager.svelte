@@ -171,7 +171,7 @@
         .sort(sortByEndDate) || [];
   $: userVideos =
     displayedVideos.map((/** @type {{ id: any; }} */ video) => {
-      const _video = $videos.find((vid) => vid.id === video.id);
+      const _video = $videos?.find((vid) => vid.id === video.id);
       if (_video) {
         const { image_id, title } = _video;
         return { ...video, image_id, title };
@@ -180,7 +180,7 @@
       }
     }) || [];
   $: noneUserVideos = hasPrivileges
-    ? $videos.sortBy('title')
+    ? $videos?.sortBy('title')
     : $videosAll
         ?.filter(
           (v) =>
@@ -465,7 +465,7 @@
     class:no-user-selected={!currentUser}
     class:no-videos={!userVideos.length || hasCurrentPrivileges}
   >
-    <Component variant="sm">
+    <Component density="sm" variant="primary">
       <div slot="header">
         <Header mdc h="5">
           <div class="flex">
@@ -560,7 +560,7 @@
     </Component>
   </div>
   <div class="grid-item videos" class:no-videos={!noneUserVideos?.length}>
-    <Component variant="sm">
+    <Component density="sm" variant="primary">
       <div slot="header">
         <Header mdc h="5">
           <div class="uppercase" style="font-weight: 400; text-align: right;">
@@ -626,7 +626,7 @@
   </div>
   {#if isopen}
     <div in:fly={{ opacity: 0 }} out:fly={{ opacity: 0 }} class="grid-item time">
-      <Component variant="sm">
+      <Component density="sm">
         <div slot="header">
           <div>
             <Header mdc h="5">{readout}</Header>

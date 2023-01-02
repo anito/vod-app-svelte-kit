@@ -1,7 +1,6 @@
 <script>
-  import { onMount, createEventDispatcher } from 'svelte';
-
-  export let muted = true;
+  import { createEventDispatcher } from 'svelte';
+  import { mute } from '.';
 
   let dispatch = createEventDispatcher();
   let pipButton;
@@ -45,8 +44,6 @@
   $: percentageTime = (time * 100) / duration;
   $: percentageBuffer =
     (buffered?.length && (buffered[buffered.length - 1].end * 100) / duration) || 0;
-
-  onMount(() => {});
 
   /**
    *
@@ -264,9 +261,9 @@
           <div class="tint" />
         </div>
         <div class="buttons-container ">
-          <button class="mute bar" aria-label="Stumm" on:click={(e) => dispatch('mute', e)}>
+          <button class="mute bar" aria-label="Stumm" on:click={() => ($mute = !$mute)}>
             <picture
-              style="width: 22px; height: 22px; -webkit-mask-image: url({muted
+              style="width: 22px; height: 22px; -webkit-mask-image: url({$mute
                 ? data_muted
                 : data_unmuted});"
             />

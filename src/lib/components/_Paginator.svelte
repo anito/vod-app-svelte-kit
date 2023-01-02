@@ -125,7 +125,7 @@
       };
     }}
   >
-    <input type="hidden" name="page" value={page_data.next_page} />
+    <input type="hidden" name="page" value={page_data?.next_page} />
     {#if paginator?.has_next_page}
       {#if label}
         <Button

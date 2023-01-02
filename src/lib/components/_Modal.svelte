@@ -1,15 +1,11 @@
-<script>
-  // @ts-nocheck
-
-  // Version 0.4.1
+<script lang="typescript">
   import { onMount, setContext } from 'svelte';
   import { fade } from 'svelte/transition';
   import { Component, Header } from '$lib/components';
   import { _ } from 'svelte-i18n';
 
   export let key = 'default-modal';
-  /** @type {any} */
-  export let header;
+  export let header: any;
   export let closeButton = true;
   export let closeOnEsc = true;
   export let closeOnOuterClick = true;
@@ -35,16 +31,16 @@
   };
   let state = { ...defaultState };
 
-  let _Component = null;
-  let props = null;
-  let layoutProps = null;
+  let _Component: any = null;
+  let props: any = null;
+  let layoutProps: any = null;
 
-  let background;
-  let wrap;
+  let background: Element | null | undefined;
+  let wrap: Element;
 
-  const camelCaseToDash = (str) => str.replace(/([a-zA-Z])(?=[A-Z])/g, '$1-').toLowerCase();
+  const camelCaseToDash = (str: string) => str.replace(/([a-zA-Z])(?=[A-Z])/g, '$1-').toLowerCase();
 
-  const toCssString = (props) =>
+  const toCssString = (props: { [x: string]: any; top?: number; left?: number }) =>
     Object.keys(props).reduce((str, key) => `${str}; ${camelCaseToDash(key)}: ${props[key]}`, '');
 
   $: cssBg = toCssString(state.styleBg);
@@ -60,7 +56,12 @@
   let onOpened = toVoid;
   let onClosed = toVoid;
 
-  const open = (NewComponent, newProps = {}, options = {}, callback = {}) => {
+  const open = (
+    NewComponent: any,
+    newProps = { layoutProps },
+    options = {},
+    callback = { onOpen, onOpened, onClose, onClosed }
+  ) => {
     _Component = NewComponent;
     layoutProps = { ...newProps.layoutProps } || {};
     props = { ...newProps };
@@ -71,23 +72,26 @@
     onClosed = callback.onClosed || toVoid;
   };
 
-  const close = (callback = {}) => {
-    onClose = callback.onClose || onClose;
-    onClosed = callback.onClosed || onClosed;
+  const close = (callback?: { onClose: () => void; onClosed: () => void } | undefined) => {
+    onClose = callback?.onClose || onClose;
+    onClosed = callback?.onClosed || onClosed;
     _Component = null;
     props = null;
   };
 
-  const handleKeyup = (event) => {
+  const handleKeyup = (event: { key: string; preventDefault: () => void }) => {
     if (state.closeOnEsc && _Component && event.key === 'Escape') {
       event.preventDefault();
       close();
     }
   };
 
-  const handleOuterClick = (event) => {
-    if (state.closeOnOuterClick && (event.target === background || event.target === wrap)) {
-      event.preventDefault();
+  const handleOuterClick = (event?: {
+    target: Element | null | undefined;
+    preventDefault: () => void;
+  }) => {
+    if (state.closeOnOuterClick && (event?.target === background || event?.target === wrap)) {
+      event?.preventDefault();
       close();
     }
   };
@@ -132,7 +136,7 @@
         style={cssWindow}
       >
         {#if state.closeButton}<button on:click={close} class="button-close" />{/if}
-        <Component variant="sm">
+        <Component density="sm">
           <div slot="header">
             <Header mdc h="5" style="text-transform: uppercase">
               {typeof header === 'string' ? header : translateHeader()}

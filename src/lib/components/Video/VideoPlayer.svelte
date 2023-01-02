@@ -1,6 +1,4 @@
 <script context="module">
-  // @ts-nocheck
-
   const MAXSTREAMS = 5;
 
   let players = new Set();
@@ -9,7 +7,7 @@
 
 <script>
   import { page } from '$app/stores';
-  import Video from './Video.svelte';
+  import { Video, mute } from '.';
   import { onMount } from 'svelte';
   import { getExt } from '$lib/utils';
   import { _ } from 'svelte-i18n';
@@ -124,7 +122,6 @@
   on:player:loadstart
   on:player:fwd
   on:player:rwd
-  muted
   allowScrubbing
   {autoplay}
   {controls}

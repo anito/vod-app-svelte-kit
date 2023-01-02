@@ -1,4 +1,4 @@
-<script>
+<script lang="typescript">
   const regex = /[1-6]/g;
   const DEFAULT_LEVEL = '1';
 
@@ -8,6 +8,7 @@
   export { wrapperClassName as wrapperClass };
   export let style = '';
   export let wrapperStyle = '';
+  export let inkColor = '' as 'on-primary' | 'on-secondary' | '';
 
   let className = '';
   let wrapperClassName = '';
@@ -17,16 +18,18 @@
   $: mdcClassName = (mdc && `mdc-typography--headline${h}`) || '';
 </script>
 
-<div class="svelte-header" class:wrapperClassName style={wrapperStyle}>
+<div
+  class="svelte-header"
+  class:wrapperClassName
+  style={wrapperStyle}
+  style:--inkColor={`var(--${inkColor})`}
+>
   <svelte:element this={tag} class="{mdcClassName} {className}" {style}>
     <slot />
   </svelte:element>
 </div>
 
 <style lang="scss">
-  :global([class*='mdc-typography--headline']) {
-    color: inherit;
-  }
   .svelte-header {
     :global {
       h1,
@@ -41,5 +44,6 @@
         line-height: initial;
       }
     }
+    color: var(--inkColor);
   }
 </style>

@@ -1,8 +1,8 @@
 <script>
   import { log } from '$lib/utils';
-  import { tick, createEventDispatcher, onMount } from 'svelte';
+  import { tick, createEventDispatcher } from 'svelte';
   import { _ } from 'svelte-i18n';
-  import Ui from './Ui.svelte';
+  import { Ui, mute } from '.';
 
   const dispatch = createEventDispatcher();
   const scrubStart = { x: 0, y: 0, playhead: 0 };
@@ -69,7 +69,6 @@
    * @type {string | undefined}
    */
   export let type;
-  export let muted = true;
   export let controls = false; // use native controls if true
   export let paused = false;
   export let preload = 'none';
@@ -88,8 +87,6 @@
       reload();
     }
   })(poster);
-
-  onMount(() => {});
 
   function setSourceAndLoad() {
     const curSrc = videoElement.getAttribute('src');
@@ -274,10 +271,6 @@
     else videoElement && videoElement.requestPictureInPicture().catch((e) => {});
   }
 
-  function handleMute() {
-    muted = !muted;
-  }
-
   function handleFullscreen() {
     if (document.fullscreenElement) document.exitFullscreen().catch((e) => {});
     else if (videoElement?.requestFullscreen) videoElement.requestFullscreen();
@@ -295,12 +288,12 @@
 <div class="player {className}" class:hydrated>
   <video
     class="flex-1"
+    muted={$mute}
     bind:this={videoElement}
     bind:currentTime={playhead}
     bind:duration
     bind:paused
     bind:buffered
-    bind:muted
     {poster}
     {preload}
     {controls}
@@ -333,9 +326,7 @@
       on:rwd={handleRewind}
       on:fwd={handleForeward}
       on:pip={handlePictureInPicture}
-      on:mute={handleMute}
       bind:time={playhead}
-      {muted}
       {duration}
       {showControls}
       {paused}

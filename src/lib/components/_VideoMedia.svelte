@@ -2,7 +2,7 @@
   import { onDestroy, onMount } from 'svelte';
   import { Media, MediaContent } from '@smui/card';
   import Textfield, { Textarea } from '@smui/textfield';
-  import { VideoPlayer } from '$lib/components/Video';
+  import VideoPlayer, { mute } from '$lib/components/Video';
   import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, info, proxyEvent } from '$lib/utils';
   import { session, users } from '$lib/stores';
   import { _ } from 'svelte-i18n';
@@ -170,7 +170,7 @@
     {#if hasPrivileges}
       <div class="editor-wrapper" class:is-edit-mode={isEditMode}>
         <div class="editor p-2">
-          <Textfield class="mb-3" variant="outlined" dense bind:value={title} label="Title" />
+          <Textfield class="mb-3" variant="outlined" bind:value={title} label="Title" />
           <Textfield
             class="flex-1"
             textarea

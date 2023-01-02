@@ -1,6 +1,8 @@
-<script>
+<script lang="typescript">
   export let extended = false;
-  export let variant = '';
+  export let density = '' as 'sm' | 'md' | ' lg' | '';
+  export let type = 'one' as 'one' | 'two' | 'three';
+  export let variant = 'primary' as 'primary' | 'secondary';
   export { className as class };
   export let transparent = false;
   export let headerHeight = '50px';
@@ -8,8 +10,13 @@
   let className = '';
 </script>
 
-<div style={`display: contents;}`} style:--height={headerHeight}>
-  <div class="component flex flex-1 flex-col {variant}" class:extended class:transparent>
+<div style={`display: contents;}`} style:--height={headerHeight} {type}>
+  <div
+    class="component flex flex-1 flex-col {density} {variant}"
+    class:density
+    class:extended
+    class:transparent
+  >
     <div class="header">
       <slot name="header">You must provide a header</slot>
     </div>
@@ -19,7 +26,7 @@
   </div>
 </div>
 
-<style>
+<style lang="scss">
   .component {
     position: relative;
     height: 100%;
@@ -35,20 +42,28 @@
     white-space: nowrap;
     overflow: hidden;
   }
-  .component .header {
-    display: flex;
-    position: absolute;
-    z-index: auto;
-    justify-content: center;
-    flex-direction: column;
-    width: 100%;
-    color: var(--on-primary);
+  .component {
+    .header {
+      display: flex;
+      position: absolute;
+      z-index: auto;
+      justify-content: center;
+      flex-direction: column;
+      width: 100%;
+    }
+    &.primary .header {
+      background-color: var(--mdc-theme-primary, rgb(179, 116, 1));
+      color: var(--mdc-theme-on-primary);
+    }
+    &.secondary .header {
+      background-color: var(--mdc-theme-secondary, rgb(179, 116, 1));
+      color: var(--mdc-theme-on-secondary);
+    }
   }
   .component::before {
     content: '';
     display: flex;
     margin-top: 0px;
-    background-color: var(--primary, rgb(179, 116, 1));
     position: relative;
     z-index: auto;
   }

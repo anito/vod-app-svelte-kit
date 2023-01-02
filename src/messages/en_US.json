@@ -184,7 +184,7 @@
     "empty-description": "Description",
     "max-files": "{maxFiles} max.",
     "file-queue": "Queue {count}",
-    "no-videos": "No Videos available",
+    "no-videos": "No Videos found",
     "title": "Title",
     "empty-video-selection": "No Video Selected",
     "watch": "Watch",

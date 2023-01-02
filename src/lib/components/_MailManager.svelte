@@ -813,7 +813,7 @@
       </div>
     </div>
   {:else}
-    <FlexContainer style="grid-area: one;">
+    <FlexContainer>
       {$_('text.empty-user-selection')}
     </FlexContainer>
   {/if}

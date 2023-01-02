@@ -15,7 +15,7 @@ $height: var(--height, 50px);
   .mdc-text-field__input {
     padding-left: 16px;
   }
-  &.search-user {
+  &.search-for-item {
     @include shape-radius(0);
     @include fill-color(var(--back-grid-item));
     height: $height;
@@ -23,6 +23,7 @@ $height: var(--height, 50px);
     display: flex;
     .mdc-text-field__icon[class*='--trailing'] {
       padding: 10px;
+      font-size: 1em;
     }
     .mdc-floating-label {
       transform: translateY(-50%) translateX(16px);

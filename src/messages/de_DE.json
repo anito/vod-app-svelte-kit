@@ -184,7 +184,7 @@
     "upload-type": "{type} hochladen",
     "max-files": "max. {maxFiles}",
     "file-queue": "Warteschlange {count}",
-    "no-videos": "Keine Videos verfügbar",
+    "no-videos": "Keine passenden Videos gefunden",
     "title": "Titel",
     "empty-video-selection": "Kein Video ausgewählt",
     "watch": "Ansehen",

@@ -400,7 +400,7 @@
 <div class="main-grid">
   {#if $session.user}
     <div class="grid-item user" style="height: 100%;">
-      <Component variant="sm" extended>
+      <Component density="sm" extended variant="primary">
         <div slot="header">
           <Header mdc h="5" style="padding-right: 12rem;">
             {#if selectedMode === ADD}

@@ -3,7 +3,7 @@
   import { fly } from 'svelte/transition';
   import { session, sitename, videos, users } from '$lib/stores';
   import { FlexContainer } from '$lib/components';
-  import { VideoPlayer } from '$lib/components/Video';
+  import VideoPlayer, { mute } from '$lib/components/Video';
   import {
     ADMIN,
     SUPERUSER,

@@ -31,15 +31,15 @@
    * @param {string} key
    * @param {string} val
    */
-  async function searchUsersBy(key, val) {
+  async function searchBy(key, val) {
     return await api
       .get(`users?${key}=${val}`, { token: $session.user?.jwt })
       .then((res) => res)
       .catch((reason) => log(reason));
   }
 
-  setContext('searchUsers', {
-    findUsersBy: searchUsersBy
+  setContext('search', {
+    findBy: searchBy
   });
 
   const minSearchChars = 2;
@@ -47,7 +47,7 @@
   const { open: open$default, close: close$default } = getContext('default-modal');
   const { getSnackbar, configSnackbar } = getContext('snackbar');
   const { getSegment } = getContext('segment');
-  const { findUsersBy } = getContext('searchUsers');
+  const { findBy } = getContext('search');
 
   /**
    * @type {SvelteStore<string>}
@@ -155,7 +155,7 @@
   $: isDeepSearch = search.length >= minSearchChars;
   $: if (isDeepSearch) {
     (async (s) => {
-      const { success, data } = await findUsersBy('name', s);
+      const { success, data } = await findBy('name', s);
       if (success) users.add(data);
     })(search);
   }
@@ -474,10 +474,9 @@
   <div class="sidebar flex-1" slot="side" class:deep-search={isDeepSearch}>
     <Component transparent headerHeight="76px">
       <div slot="header">
-        <Textfield class="search-user" bind:value={search} label={$_('text.search-user')}>
+        <Textfield class="search-for-item" bind:value={search} label={$_('text.search-user')}>
           <Icon
             role="button"
-            style="font-size: 1em;"
             class="material-icons-outlined cancel-search"
             slot="trailingIcon"
             on:click={() => (search = '')}>{search.length && 'cancel'}</Icon

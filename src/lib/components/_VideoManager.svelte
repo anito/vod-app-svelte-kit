@@ -13,6 +13,7 @@
     Paginator,
     FlexContainer
   } from '$lib/components';
+  import { mute } from '$lib/components/Video';
   import { session, videos, fabs } from '$lib/stores';
   import {
     ADMIN,
@@ -165,7 +166,7 @@
       action="/videos?/more_videos"
     />
   {:else}
-    <FlexContainer style="grid-area: one;">
+    <FlexContainer>
       {$_('text.no-content-available')}
     </FlexContainer>
   {/if}

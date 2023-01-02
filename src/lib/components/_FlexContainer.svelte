@@ -2,11 +2,18 @@
   export let style = '';
 </script>
 
-<div class="container" {style}>
-  <span style="text-align: center;"><slot /></span>
+<div class="wrapper">
+  <div class="container" {style}>
+    <span style="text-align: center;"><slot /></span>
+  </div>
 </div>
 
 <style>
+  .wrapper {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+  }
   .container {
     display: flex;
     justify-content: center;
