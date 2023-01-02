@@ -244,7 +244,7 @@
     "posters": "Poster",
     "your-videos": "Deine <span class=\"selected-bg-color\">Videos</span>",
     "dark_mode": "Lichter aus",
-    "type-min-char-count": "Bitte mind. {count} Zeichen eingeben"
+    "type-min-char-count": "Für vollständige Suche mind. {count} Zeichen eingeben "
   },
   "summary": {
     "copy-link": {

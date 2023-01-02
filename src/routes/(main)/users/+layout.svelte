@@ -42,7 +42,7 @@
     findUsersBy: searchUsersBy
   });
 
-  const minSearchChars = 3;
+  const minSearchChars = 2;
   const { open: open$editor, close: close$editor } = getContext('editor-modal');
   const { open: open$default, close: close$default } = getContext('default-modal');
   const { getSnackbar, configSnackbar } = getContext('snackbar');
@@ -152,18 +152,18 @@
     hasExpired = (tokenExpires && tokenExpires * 1000 < +new Date().getTime()) || false;
     magicLink = token ? `${$page.url.origin}/login?token=${token}` : '';
   })(currentUser);
-  $: (async (s) => {
-    if (s.length >= minSearchChars) {
+  $: isDeepSearch = search.length >= minSearchChars;
+  $: if (isDeepSearch) {
+    (async (s) => {
       const { success, data } = await findUsersBy('name', s);
       if (success) users.add(data);
-    }
-  })(search);
+    })(search);
+  }
   $: filteredUsers =
-    $users.filter((user) =>
-      search.length >= minSearchChars
-        ? user.name.toLowerCase().indexOf(search.toLowerCase()) !== -1 &&
-          user.id !== $session.user?.id
-        : user.id !== $session.user?.id
+    $users.filter(
+      (user) =>
+        user.name.toLowerCase().indexOf(search.toLowerCase()) !== -1 &&
+        user.id !== $session.user?.id
     ) || [];
   $: filteredUsers.sortBy('name');
   $: userInfos = ($infos?.has(selectionUserId) && $infos.get(selectionUserId).params) || [];
@@ -471,7 +471,7 @@
     <PageBar />
   </div>
   <slot />
-  <div class="sidebar flex-1" slot="side">
+  <div class="sidebar flex-1" slot="side" class:deep-search={isDeepSearch}>
     <Component transparent headerHeight="76px">
       <div slot="header">
         <Textfield class="search-user" bind:value={search} label={$_('text.search-user')}>
@@ -507,7 +507,9 @@
           {#each filteredUsers as user (user.id)}
             <SimpleUserCard id={user.id} class="flex" {selectionUserId} {user} />
           {/each}
-          <Paginator {pagination} store={users} id="users-paginator" action="/users?/more" />
+          {#if !isDeepSearch}
+            <Paginator {pagination} store={users} id="users-paginator" action="/users?/more" />
+          {/if}
         {/if}
       </List>
     </Component>
