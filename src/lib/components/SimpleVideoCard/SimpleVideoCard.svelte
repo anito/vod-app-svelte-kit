@@ -1,5 +1,6 @@
 <script>
   import './_user-video.scss';
+  import fallbackPoster from './dummy-poster.jpg';
   import { createEventDispatcher } from 'svelte';
   import { Icon } from '@smui/button';
   import { Item, Graphic, Text, PrimaryText, SecondaryText } from '@smui/list';
@@ -30,7 +31,7 @@
   export let threeLine = false;
   export let selected = false;
   export let isUserVideo = false;
-  export let emptyPoster = '';
+  export let emptyPoster = fallbackPoster;
 
   const placeholderDotCom = 'https://via.placeholder.com/40x40.png?text=';
 
@@ -39,7 +40,7 @@
   /**
    * @type {string | void}
    */
-  let src = fromTitle();
+  let src = emptyPoster;
   let _video;
   /**
    * @type {any}
