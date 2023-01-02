@@ -244,7 +244,7 @@
           <Menu
             bind:this={cardMenu}
             on:MDCMenuSurface:opened={cardMenuOpenedHandler}
-            anchorCorner="TOP_LEFT"
+            anchorCorner="TOP_END"
           >
             <List class="menu-list">
               <Item on:click={() => createPoster()}>
