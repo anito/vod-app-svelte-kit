@@ -303,6 +303,8 @@
           <Paginator
             {pagination}
             store={images}
+            label={false}
+            icon="rotate_right"
             action="/videos?/more_images"
             id="images-paginator"
             style="--fontSize: 0.6em;"

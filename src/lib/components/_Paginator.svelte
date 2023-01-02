@@ -7,9 +7,10 @@
   import './_button.scss';
   import { enhance } from '$app/forms';
   import { writable } from 'svelte/store';
-  import { createEventDispatcher, onMount, tick } from 'svelte';
+  import { createEventDispatcher, tick } from 'svelte';
   import Button, { Label, Icon } from '@smui/button';
   import { _ } from 'svelte-i18n';
+  import IconButton from '@smui/icon-button';
 
   /**
    * @type {any}
@@ -24,6 +25,7 @@
   export let store = createStore();
   export let icon = '';
   export let indicator = false;
+  export let label = true;
 
   if (!id) {
     throw 'No Paginator ID specified';
@@ -39,10 +41,6 @@
 
   $: paginator = (pagination || store) && sync();
   $: page_data = paginator && pageData();
-
-  onMount(() => {
-    paginator?.has_next_page && setTimeout(() => scrollIntoView(), 200);
-  });
 
   function pageData() {
     paginator = { ...paginator, has_next_page: !($store.length === paginator.count) };
@@ -127,28 +125,39 @@
       };
     }}
   >
+    <input type="hidden" name="page" value={page_data.next_page} />
     {#if paginator?.has_next_page}
-      <Button variant="unelevated" color="secondary" class="button-shaped-round load-more" {style}>
-        <input type="hidden" name="page" value={page_data.next_page} />
-        <Label class="label" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
-          >{$_('text.more')}</Label
+      {#if label}
+        <Button
+          variant="unelevated"
+          color="secondary"
+          class="button-shaped-round load-more"
+          {style}
         >
-        {#if icon}
-          <Icon class="material-icons">{icon}</Icon>
-        {/if}
-        {#if indicator}
-          <small class="paginator-indicator"
-            >{$_('text.paginator-indicator', {
-              values: {
-                next_count: page_data.next_count,
-                current_page: page_data.current_page,
-                count: page_data.count,
-                loaded_count: page_data.loaded_count
-              }
-            })}</small
+          <Label
+            class="label"
+            style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+            >{$_('text.more')}</Label
           >
-        {/if}
-      </Button>
+          {#if indicator}
+            <small class="paginator-indicator"
+              >{$_('text.paginator-indicator', {
+                values: {
+                  next_count: page_data.next_count,
+                  current_page: page_data.current_page,
+                  count: page_data.count,
+                  loaded_count: page_data.loaded_count
+                }
+              })}</small
+            >
+          {/if}
+        </Button>
+      {/if}
+      {#if icon}
+        <IconButton class="material-icons">
+          {icon}</IconButton
+        >
+      {/if}
     {/if}
   </form>
 </li>

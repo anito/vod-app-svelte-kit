@@ -104,7 +104,14 @@
         </li>
       {/each}
     </ul>
-    <Paginator {pagination} store={images} id="images-paginator" action="/videos?/more_images" />
+    <Paginator
+      {pagination}
+      store={images}
+      id="images-paginator"
+      action="/videos?/more_images"
+      label={false}
+      icon="rotate_right"
+    />
   {:else}
     <FlexContainer>
       {$_('text.no-content-available')}

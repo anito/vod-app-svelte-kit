@@ -508,7 +508,14 @@
             <SimpleUserCard id={user.id} class="flex" {selectionUserId} {user} />
           {/each}
           {#if !isDeepSearch}
-            <Paginator {pagination} store={users} id="users-paginator" action="/users?/more" />
+            <Paginator
+              {pagination}
+              store={users}
+              icon="rotate_right"
+              label={false}
+              id="users-paginator"
+              action="/users?/more"
+            />
           {/if}
         {/if}
       </List>

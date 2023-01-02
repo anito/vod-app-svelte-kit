@@ -156,7 +156,14 @@
         </li>
       {/each}
     </ul>
-    <Paginator {pagination} store={videos} id="videos-paginator" action="/videos?/more_videos" />
+    <Paginator
+      label={false}
+      icon="rotate_right"
+      {pagination}
+      store={videos}
+      id="videos-paginator"
+      action="/videos?/more_videos"
+    />
   {:else}
     <FlexContainer style="grid-area: one;">
       {$_('text.no-content-available')}

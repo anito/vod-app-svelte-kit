@@ -74,6 +74,8 @@
           <Paginator
             {pagination}
             store={videos}
+            label={false}
+            icon="rotate_right"
             id="videos-paginator"
             action="/videos?/more_videos"
           />

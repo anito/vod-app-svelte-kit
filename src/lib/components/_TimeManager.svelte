@@ -615,7 +615,7 @@
               {/if}
             </SimpleVideoCard>
           {/each}
-          <Paginator {id} {pagination} {store} {action} />
+          <Paginator {id} {pagination} {store} {action} label={false} icon="rotate_right" />
         {:else}
           <li class="flex flex-1 flex-col self-center text-center">
             <div class="m-5">{$_('text.no-videos-available')}</div>
