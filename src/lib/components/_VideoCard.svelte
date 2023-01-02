@@ -233,7 +233,7 @@
           <Label>{rightButton.label}</Label>
           <Icon class="material-icons">{rightButton.icon}</Icon>
         </Button>
-        <ActionIcons style="position: relative;">
+        <ActionIcons style="position: relative; flex: 1 0 auto;">
           <IconButton
             class="material-icons"
             on:click={() => cardMenu?.setOpen(true)}
