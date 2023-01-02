@@ -215,7 +215,7 @@
   </PrimaryAction>
   {#if hasPrivileges}
     <Actions class="card-actions">
-      <ActionButtons class="action-buttons">
+      <ActionButtons class="action-buttons" style="flex: 1 0 auto;">
         <Button
           color="primary"
           class="action-button"
@@ -233,7 +233,7 @@
           <Label>{rightButton.label}</Label>
           <Icon class="material-icons">{rightButton.icon}</Icon>
         </Button>
-        <ActionIcons style="position: relative; flex: 1 0 auto;">
+        <ActionIcons style="position: relative;">
           <IconButton
             class="material-icons"
             on:click={() => cardMenu?.setOpen(true)}
