@@ -1,8 +1,13 @@
 import { USER } from '$lib/utils';
 
 /** @type {import('./$types').LayoutServerLoad} */
-export async function load({ fetch, depends, locals }) {
+export async function load({ fetch, depends, locals, setHeaders }) {
   const { role, user: sessionUser } = locals.session.data;
+
+  // setHeaders({
+  //   age: '1000000',
+  //   'cache-control': '10000000'
+  // });
 
   const videos = await fetch('/repos/videos')
     .then(async (res) => {

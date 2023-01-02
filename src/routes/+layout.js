@@ -19,7 +19,7 @@ function getInitialLocale() {
 }
 
 /** @type {import('./$types').LayoutLoad} */
-export async function load({ data, fetch }) {
+export async function load({ data, fetch, setHeaders }) {
   const { session } = data;
   const initialLocale = session.locale || getInitialLocale();
   init({
@@ -34,6 +34,9 @@ export async function load({ data, fetch }) {
       locale: locale || initialLocale || fallbackLocale
     })
   }).then(async (res) => {
+    setHeaders({
+      'cache-control': '10000000'
+    });
     const json = await res.json();
     locale = json.locale;
   });

@@ -3,7 +3,7 @@ import { users } from '$lib/stores';
 import { ADMIN, SUPERUSER } from '$lib/utils';
 
 /** @type {import('./$types').PageLoad} */
-export async function load({ params, fetch, parent }) {
+export async function load({ params, fetch, parent, setHeaders }) {
   const parentData = await parent();
   const { role } = parentData.session;
   const hasPrivileges = role === SUPERUSER || role === ADMIN;
@@ -21,6 +21,10 @@ export async function load({ params, fetch, parent }) {
     );
     if (!dataExists) {
       return await fetch(`/users/${id}`).then(async (res) => {
+        setHeaders({
+          age: '1000000',
+          'cache-control': '10000000'
+        });
         const { success, data } = await res.json();
         if (success) {
           return { user: data };

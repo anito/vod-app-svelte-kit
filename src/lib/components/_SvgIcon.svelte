@@ -5,10 +5,8 @@
 	- https://feathericons.com/
 -----------------------------------------------
 -->
-<script>
-  // @ts-nocheck
-
-  export let name;
+<script lang="typescript">
+  export let name: string = '';
   export let fillColor = 'none';
   export let size = 20;
   export let style = '';
@@ -17,9 +15,11 @@
   let className = '';
 </script>
 
-<svg class={className} width={size} height={size} style={`fill: ${fillColor}; ${style}`}>
-  <use xlink:href="#{name}" />
-</svg>
+{#if name}
+  <svg class={className} width={size} height={size} style={`fill: ${fillColor}; ${style}`}>
+    <use xlink:href="#{name}" />
+  </svg>
+{/if}
 
 <style>
   svg {

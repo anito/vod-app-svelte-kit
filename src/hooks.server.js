@@ -17,8 +17,11 @@ export const handle = handleSession(
     event.locals.videosAllRepo = VideosAllRepo.getInstance();
     event.locals.userAgent = event.request.headers.get('user-agent');
 
-    return resolve(event);
-    // response.headers.set('x-custom-header', 'potato');
+    const response = await resolve(event);
+    response.headers.set('age', '1000000');
+    response.headers.set('cache-control', '10000000');
+    response.headers.set('x-custom-header', 'vod-manager');
+    return response;
   }
 );
 
