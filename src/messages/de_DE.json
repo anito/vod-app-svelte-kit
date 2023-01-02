@@ -61,7 +61,7 @@
     "save": "Speichern",
     "reset": "Zurücksetzen",
     "got-it": "Ok, verstanden",
-    "time-slot-updated": "Zeitrahmen aktualisiert",
+    "time-slot-updated": "Zeitfenster aktualisiert",
     "not-scheduled": "Nicht geplant",
     "uploaded-on": "{date}",
     "no-poster": "Kein Poster",
@@ -243,7 +243,8 @@
     "paginator-indicator": "nächste {next_count} ({loaded_count}/{count})",
     "posters": "Poster",
     "your-videos": "Deine <span class=\"selected-bg-color\">Videos</span>",
-    "dark_mode": "Lichter aus"
+    "dark_mode": "Lichter aus",
+    "type-min-char-count": "Bitte mind. {count} Zeichen eingeben"
   },
   "summary": {
     "copy-link": {

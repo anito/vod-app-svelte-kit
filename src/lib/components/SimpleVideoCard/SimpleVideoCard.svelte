@@ -37,9 +37,9 @@
   let dispatch = createEventDispatcher();
   let className = '';
   /**
-   * @type {string | undefined}
+   * @type {string | void}
    */
-  let src;
+  let src = fromTitle();
   let _video;
   /**
    * @type {any}
@@ -73,8 +73,7 @@
   let item;
 
   $: user = $session.user;
-  $: dateFormat = $locale?.indexOf('de') != -1 ? 'dd. MMM yyyy' : 'yyyy-MM-dd';
-  $: video && fetchBackgroundImage(video);
+  $: video && (async (vid) => (src = await fetchBackgroundImage(vid)))(video);
   $: unmanagable = disabled;
   $: currentUser =
     (filtered = ((id) => $users.filter((usr) => usr.id === id))(selectionUserId)) &&
@@ -134,11 +133,11 @@
    */
   async function fetchBackgroundImage(video) {
     if (video.image_id) {
-      await getPosterUrl(video.image_id)
-        .then((res) => (src = res))
-        .catch(() => (src = fromTitle()));
+      return await getPosterUrl(video.image_id)
+        .then((res) => res)
+        .catch(() => {});
     } else {
-      src = emptyPoster;
+      return emptyPoster;
     }
   }
 

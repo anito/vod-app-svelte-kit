@@ -2,7 +2,7 @@
   import * as api from '$lib/api';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { onMount, getContext, tick } from 'svelte';
+  import { onMount, getContext, setContext } from 'svelte';
   import { fly } from 'svelte/transition';
   import { infos, fabs, session, users, videos, usersFoundation } from '$lib/stores';
   import Layout from './layout.svelte';
@@ -18,7 +18,7 @@
     UserGraphic,
     VideoEditorList
   } from '$lib/components';
-  import { proxyEvent } from '$lib/utils';
+  import { log, proxyEvent } from '$lib/utils';
   import Button, { Icon as ButtonIcon } from '@smui/button';
   import Fab, { Label } from '@smui/fab';
   import Textfield from '@smui/textfield';
@@ -27,10 +27,28 @@
   import Dialog, { Title as DialogTitle, Content, Actions, InitialFocus } from '@smui/dialog';
   import { _ } from 'svelte-i18n';
 
+  /**
+   * @param {string} key
+   * @param {string} val
+   */
+  async function searchUsersBy(key, val) {
+    return await api
+      .get(`users?${key}=${val}`, { token: $session.user?.jwt })
+      .then((res) => res)
+      .catch((reason) => log(reason));
+  }
+
+  setContext('searchUsers', {
+    findUsersBy: searchUsersBy
+  });
+
+  const minSearchChars = 3;
   const { open: open$editor, close: close$editor } = getContext('editor-modal');
   const { open: open$default, close: close$default } = getContext('default-modal');
   const { getSnackbar, configSnackbar } = getContext('snackbar');
   const { getSegment } = getContext('segment');
+  const { findUsersBy } = getContext('searchUsers');
+
   /**
    * @type {SvelteStore<string>}
    */
@@ -124,7 +142,7 @@
 
   $: pagination = data.pagination?.users;
   $: selectionUserId = $page.params.slug || $session.user?.id;
-  $: currentUser = ((id) => $users.find((usr) => usr.id === id))(selectionUserId);
+  $: currentUser = ((id) => $users?.find((usr) => usr.id === id))(selectionUserId);
   $: ((usr) => {
     username = usr?.name;
     active = usr?.active || false;
@@ -134,11 +152,18 @@
     hasExpired = (tokenExpires && tokenExpires * 1000 < +new Date().getTime()) || false;
     magicLink = token ? `${$page.url.origin}/login?token=${token}` : '';
   })(currentUser);
+  $: (async (s) => {
+    if (s.length >= minSearchChars) {
+      const { success, data } = await findUsersBy('name', s);
+      if (success) users.add(data);
+    }
+  })(search);
   $: filteredUsers =
-    $users.filter(
-      (user) =>
-        user.name.toLowerCase().indexOf(search.toLowerCase()) !== -1 &&
-        user.id !== $session.user?.id
+    $users.filter((user) =>
+      search.length >= minSearchChars
+        ? user.name.toLowerCase().indexOf(search.toLowerCase()) !== -1 &&
+          user.id !== $session.user?.id
+        : user.id !== $session.user?.id
     ) || [];
   $: filteredUsers.sortBy('name');
   $: userInfos = ($infos?.has(selectionUserId) && $infos.get(selectionUserId).params) || [];
@@ -160,7 +185,6 @@
       renewedTokenDialog?.setOpen(true);
     }
 
-    // window.addEventListener('MDCChip:interaction', chipInteractionHandler);
     window.addEventListener('info:open:resolve-all-dialog', resolveAllHandler);
     window.addEventListener('info:open:help-dialog', infoDialogHandler);
     // @ts-ignore
@@ -171,7 +195,6 @@
     window.addEventListener('info:token:redirect', tokenRedirectHandler);
 
     return () => {
-      // window.removeEventListener('MDCChip:interaction', chipInteractionHandler);
       window.removeEventListener('info:open:resolve-all-dialog', resolveAllHandler);
       window.removeEventListener('info:open:help-dialog', infoDialogHandler);
       // @ts-ignore
@@ -449,20 +472,18 @@
   </div>
   <slot />
   <div class="sidebar flex-1" slot="side">
-    <Component transparent headerHeight="57px">
+    <Component transparent headerHeight="76px">
       <div slot="header">
-        <Textfield
-          class="search"
-          style={`width: 100%; height: var(--height); border-radius: 0;`}
-          variant="filled"
-          bind:value={search}
-          label={$_('text.search-user')}
-        >
+        <Textfield class="search-user" bind:value={search} label={$_('text.search-user')}>
           <Icon
             role="button"
+            style="font-size: 1em;"
             class="material-icons-outlined cancel-search"
             slot="trailingIcon"
             on:click={() => (search = '')}>{search.length && 'cancel'}</Icon
+          >
+          <span class="info-label"
+            >{$_('text.type-min-char-count', { values: { count: minSearchChars } })}</span
           >
         </Textfield>
       </div>

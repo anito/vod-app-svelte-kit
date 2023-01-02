@@ -127,7 +127,7 @@
    */
   let itemsList = {};
 
-  $: (1 || selectionUserId) && (selectionVideoId = null);
+  $: selectionUserId && (selectionVideoId = null);
   $: currentUser = $users.find((usr) => usr.id === selectionUserId);
   $: name = currentUser?.name || '';
   $: role = currentUser?.role;
@@ -338,7 +338,7 @@
 
   async function removeVideo() {
     if (!schedulingVideoId) {
-      throw 'You must indicate an ID to remove a video';
+      throw 'No id specified when trying to remove a video';
     }
     const idx = userVideos.findIndex(
       (/** @type {{ id: string | null; }} */ itm) => itm.id === schedulingVideoId

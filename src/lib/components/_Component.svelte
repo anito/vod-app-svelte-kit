@@ -8,10 +8,10 @@
   let className = '';
 </script>
 
-<div style={`display: contents; --height: ${headerHeight}`}>
+<div style={`display: contents;}`} style:--height={headerHeight}>
   <div class="component flex flex-1 flex-col {variant}" class:extended class:transparent>
     <div class="header">
-      <slot name="header" height={headerHeight}>You must provide a header</slot>
+      <slot name="header">You must provide a header</slot>
     </div>
     <div class="content {className}">
       <slot />

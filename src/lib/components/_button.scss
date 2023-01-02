@@ -1,13 +1,14 @@
 @import '@material/button/mixins';
+@import '@material/button/button-theme';
 @import '@material/shape/variables';
 
 .mdc-button {
+  $horizontal-padding: 8px;
+  $contained-horizontal-padding: 16px;
+  $maximum-height: 20px;
   &.button-shaped-round {
     @include mdc-button-shape-radius(999px);
   }
-}
-
-.mdc-button {
   &.button-shaped-notch {
     --notchSize: #{$mdc-shape-small-component-radius * 2};
 
@@ -33,11 +34,15 @@
       0% calc(100% - var(--notchSize))
     );
   }
-}
-.mdc-button {
   &.error {
     @include mdc-button-container-fill-color(error);
-    @include mdc-button-ink-color(on-surface);
+    @include mdc-button-ink-color(on-error);
+  }
+  &.load-more {
+    @include height(24px);
+    font-size: 0.6em;
+    letter-spacing: 0em;
+    padding: 0 10px;
   }
 }
 .card-actions {
@@ -45,8 +50,7 @@
   --fontSize: 0.7em;
   .mdc-button {
     @include mdc-button-label-overflow-ellipsis();
-    @include mdc-button-density(-2);
-    font-size: var(--fontSize);
+    @include mdc-button-density(-3);
   }
 }
 
@@ -55,13 +59,6 @@
     &.mdc-button {
       transform: translateY(-65px);
     }
-  }
-}
-.signing-in .sign-in-out {
-  &.mdc-button {
-    pointer-events: none;
-    cursor: not-allowed;
-    opacity: 0.5;
   }
 }
 .link-button {
@@ -115,5 +112,12 @@
   }
   &:hover {
     transform: translateY(4px);
+  }
+}
+.signing-in .sign-in-out {
+  &.mdc-button {
+    pointer-events: none;
+    cursor: not-allowed;
+    opacity: 0.5;
   }
 }

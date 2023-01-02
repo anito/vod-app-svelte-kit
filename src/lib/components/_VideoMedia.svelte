@@ -209,7 +209,7 @@
     width: 100%;
     height: 100%;
     z-index: 3;
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--background);
   }
   .editor {
     display: flex;

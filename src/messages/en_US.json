@@ -61,7 +61,7 @@
     "save": "Save",
     "reset": "Reset",
     "got-it": "Got it",
-    "time-slot-updated": "Time slot updated",
+    "time-slot-updated": "Timeframe updated",
     "not-scheduled": "not scheduled",
     "uploaded-on": "{date}",
     "no-poster": "No poster",
@@ -243,7 +243,8 @@
     "paginator-indicator": "next {next_count} ({loaded_count}/{count})",
     "posters": "Posters",
     "your-videos": "Your <span class=\"selected-bg-color\">videos</span>",
-    "dark_mode": "Lights Off"
+    "dark_mode": "Lights Off",
+    "type-min-char-count": "Please type {count} or more characters"
   },
   "summary": {
     "copy-link": {

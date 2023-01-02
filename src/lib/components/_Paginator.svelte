@@ -128,7 +128,7 @@
     }}
   >
     {#if paginator?.has_next_page}
-      <Button variant="raised" color="secondary" class="button-shaped-round" {style}>
+      <Button variant="unelevated" color="secondary" class="button-shaped-round load-more" {style}>
         <input type="hidden" name="page" value={page_data.next_page} />
         <Label class="label" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
           >{$_('text.more')}</Label

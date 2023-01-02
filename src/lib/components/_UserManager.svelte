@@ -306,7 +306,10 @@
 
   async function activateUser() {
     await api
-      .put(`users/${selectionUserId}?locale=${$session.locale}`, { data: { active }, token })
+      .put(`users/${selectionUserId}?locale=${$session.locale}`, {
+        data: { active },
+        token
+      })
       .then((res) => {
         if (res) {
           message = res.message || res.data.message || res.statusText;
@@ -688,13 +691,11 @@
                 {/if}
                 {#if selectedMode === DEL}
                   <div class="item">
-                    <div class="alert mt-3" role="alert">
-                      <div class="mdc-theme-error-bg rounded-t px-4 py-2">
+                    <div class="alert-box mt-3" role="alert">
+                      <div class="alert-head rounded-t px-4 py-2">
                         {$_('text.caution')}
                       </div>
-                      <div
-                        class="border border-t-0 rounded-b bg-warning-100 px-4 py-3 mdc-theme-error-color"
-                      >
+                      <div class="alert-body border border-t-0 rounded-b bg-warning-100 px-4 py-3">
                         <p>{$_('text.you-cant-revert-deletion-of-user')}</p>
                         <Button class="error mt-5" variant="unelevated">
                           <Label>{$_('text.delete-user')}</Label>
@@ -750,7 +751,9 @@
                   </div>
                   <div class="item">
                     {#if jwt}
-                      <div class="button-group magic-link-group token-action-buttons flex mb-3">
+                      <div
+                        class="button-group magic-link-button-group token-action-buttons flex mb-3"
+                      >
                         <Group style="max-width: 100%;">
                           <Button
                             disabled={isProtected || hidden}
@@ -852,7 +855,7 @@
   {/if}
 </div>
 
-<style>
+<style lang="scss">
   .main-grid {
     grid-area: main;
     display: grid;
@@ -893,10 +896,6 @@
     flex: 1 0 0%;
     justify-content: center;
   }
-  .alert {
-    display: table;
-    margin-bottom: 1em;
-  }
   .avatar-container {
     display: flex;
     justify-content: flex-end;
@@ -905,9 +904,10 @@
     top: 20px;
     cursor: pointer;
     z-index: 1;
-  }
-  .avatar-container :global(img) {
-    cursor: pointer;
+
+    :global(img) {
+      cursor: pointer;
+    }
   }
   .table-wrapper {
     flex: 1;
@@ -916,52 +916,58 @@
     border-radius: 2px;
     padding: 30px;
   }
-  .token-factory > *:nth-child(1) {
-    padding-bottom: 0;
-  }
-  .token-factory > *:nth-child(2) {
-    padding-top: 0;
-  }
-  .token-factory .item:last-child {
-    margin-bottom: 2em;
-  }
-  .token-factory.no-token :global(button.magic-link) {
-    background-color: var(--error);
-  }
-  .token-factory .additional-info {
-    overflow: auto;
+  .token-factory {
+    > *:nth-child(1) {
+      padding-bottom: 0;
+    }
+    > *:nth-child(2) {
+      padding-top: 0;
+    }
+    .item:last-child {
+      margin-bottom: 2em;
+    }
+    &.no-token :global(button.magic-link) {
+      background-color: var(--error);
+    }
+    .additional-info {
+      overflow: auto;
+    }
+    .item {
+      font-size: 0.8rem;
+    }
   }
   .item :global(.material-icons.mdc-button__icon) {
     vertical-align: middle;
-  }
-  .token-factory .item {
-    font-size: 0.8rem;
   }
   .token-action-buttons :global(.token-button-label) {
     font-size: 0.6rem;
     max-width: 130px;
   }
-  .button-group :global(.smui-button__group) {
-    flex: 1;
+  .button-group {
+    :global(.smui-button__group) {
+      flex: 1;
+    }
+    :global(button) {
+      flex: 1;
+    }
   }
-  .button-group :global(button) {
-    flex: 1;
-  }
-  .magic-link-group > :global(.smui-button__group > button.action-magic-link) {
-    flex: 0 1 33.3333%;
-  }
-  .magic-link-group > :global(.smui-button__group > button.action-email) {
-    flex: 0 1 33.3333%;
-  }
-  .magic-link-group > :global(.smui-button__group > button.input) {
-    position: absolute;
-    right: 9999999px;
-    font-size: 0.1em;
-    width: 1px;
-    height: 1px;
-  }
-  .magic-link-group > :global(.smui-button__group > button.action-copy) {
-    flex: 0 1 33.3333%;
+  .magic-link-button-group {
+    > :global(.smui-button__group > button.action-magic-link) {
+      flex: 0 1 33.3333%;
+    }
+    > :global(.smui-button__group > button.action-email) {
+      flex: 0 1 33.3333%;
+    }
+    > :global(.smui-button__group > button.input) {
+      position: absolute;
+      right: 9999999px;
+      font-size: 0.1em;
+      width: 1px;
+      height: 1px;
+    }
+    > :global(.smui-button__group > button.action-copy) {
+      flex: 0 1 33.3333%;
+    }
   }
   .button-close {
     display: none;
@@ -989,12 +995,15 @@
     top: 50%;
     transform: translate(50%, -50%);
   }
-  .mdc-theme-error-bg {
-    background-color: var(--mdc-theme-error);
-    color: var(--mdc-theme-surface);
-  }
-  .mdc-theme-error-color {
-    color: var(--mdc-theme-error);
-    border-color: var(--mdc-theme-error);
+  .alert-box {
+    display: table;
+    margin-bottom: 1em;
+    .alert-head {
+      background-color: var(--mdc-theme-error);
+      color: var(--mdc-theme-on-error);
+    }
+    .alert-body {
+      border-color: var(--mdc-theme-error);
+    }
   }
 </style>

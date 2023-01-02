@@ -2,6 +2,7 @@
   import 'assets/base.css';
   import 'assets/app.css';
   import '$lib/components/_button.scss';
+  import '$lib/components/_input.scss';
   import '$lib/components/_notched_outline.scss';
   import '$lib/components/_colored_snackbar.scss';
   import '$lib/components/_dialog.scss';
@@ -674,15 +675,13 @@
     color = color || '#ad1457';
     -1 < navigator.userAgent.toLowerCase().indexOf('chrome')
       ? window.console.log.apply(console, [
-          '%c %c  Axel Nitzschner - Immersive Studio  %c %c  https://vod-app.vercel.app %c ',
+          '%c %c Axel Nitzschner - Immersive Studio %c https://vod-app.vercel.app ',
           'background: #ad1457; padding:5px 0; margin:3px 0 10px 0;',
-          'background: #eee; color: #e2370f; padding:5px 0; margin:3px 0 10px 0;',
-          'background: #ad1457; padding:5px 0; margin:3px 0 10px 0;',
-          'background: #eee; color: #ad1457; padding:5px 0; margin:3px 0 10px 0;',
-          'background: #ad1457; padding:5px 0; margin:3px 0 10px 0;'
+          'background: #eeeeee; color: #e2370f; padding:5px; margin:3px 0 10px 0;',
+          'background: #ad1457; color: #fff; padding:5px; margin:3px 0 10px 0;'
         ])
       : window.console &&
-        window.console.log('Axel Nitzschner - Immersive Studio - https://vod-app.vercel.app');
+        window.console.log(' Axel Nitzschner - Immersive Studio - https://vod-app.vercel.app ');
   }
 </script>
 
@@ -833,7 +832,7 @@
             {/if}
 
             <NavItem title={$_('text.more-dots')} class="hide-if-mobile">
-              <MoreMenu labelSize="1em" iconSize="18px">
+              <MoreMenu labelSize="1em">
                 <FrameworkSwitcher />
                 <Separator />
                 <Item class="justify-start">
