@@ -220,7 +220,7 @@
         excludes
       );
     } else {
-      proxyEvent('session:extend');
+      // proxyEvent('session:extend');
     }
   };
 
