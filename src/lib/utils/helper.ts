@@ -289,7 +289,7 @@ export function buildSearchParams(
   return (search && `?${search}`) || '';
 }
 
-export function log() {
+export function log(...args: any[]) {
   const { log } = get(settings).Console;
   if (log) console.log(...arguments);
 }
