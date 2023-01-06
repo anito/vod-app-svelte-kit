@@ -1,5 +1,5 @@
 import { get } from 'svelte/store';
-import { streamProgress, settings } from '$lib/stores';
+import { settings } from '$lib/stores';
 import { ADMIN, SUPERUSER, INBOX, DIFFSTORES } from './const';
 import type { Session } from '$lib/types';
 
@@ -122,9 +122,19 @@ export let convert = (() => {
 
 export const proxyEvent = function (
   eventType: string,
-  detail:
+  detail?:
     | {
-        data?: any;
+        data?:
+          | { id: string; image_id: null; image: null }
+          | { id: string; image_id: string; image: null }
+          | { id: any; videos: any[] }
+          | { id: any; videos: { _ids: any[] } }
+          | { id: any; title: any; description: any }
+          | { id: any }
+          | { id: any; playhead: any }
+          | { id: any; videos: any[] }
+          | { id: any; playhead: any }
+          | { id: any; videos: any[] };
         show?: boolean;
         session?: any;
         onsuccess?: ((res: any) => void) | ((res: any) => void);
@@ -180,7 +190,7 @@ export function placeholderDotComAvatar(name = '?') {
     .join('')}`;
 }
 
-export function svg(fn: { (c: any): string; (): string; apply?: any }, colors: string[]) {
+export function svg(fn: { (c: any): string; (): string; apply?: any }, colors: string | string[]) {
   colors = (!Array.isArray(colors) && [colors]) || colors;
   return (
     'data:image/svg+xml;utf8,' +
@@ -223,7 +233,10 @@ export function searchParams(url: URL) {
   return params;
 }
 
-export function printDiff(data: object | null, { prefix, store } = { prefix: '', store: '' }) {
+export function printDiff(
+  data: object | null,
+  { prefix, store } = { prefix: '', store: '' } as { prefix?: string; store: string }
+) {
   if (data instanceof Object && DIFFSTORES.has(store)) {
     Object.entries(data).forEach((val) => {
       const diffStore = DIFFSTORES.get(store);
@@ -273,7 +286,7 @@ export function dynamicUrl(id: any, url: URL) {
 
 export function buildSearchParams(
   searchParams: string | URLSearchParams | string[][] | Record<string, string> | undefined,
-  options = { removableKeys: [] as string[] | never[], addableKeys: [] as string[] | never[] }
+  options = { removableKeys: [] as string[] | never[], addableKeys: [] as string[][] | never[] }
 ) {
   const { removableKeys, addableKeys } = { ...options };
   const searchParam = new URLSearchParams(searchParams);
