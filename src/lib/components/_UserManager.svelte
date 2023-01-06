@@ -1,4 +1,4 @@
-<script>
+<script lang="typescript">
   import './_switch.scss';
   import './_button.scss';
   import './_icon-button.scss';
@@ -46,78 +46,30 @@
   const privilegedActions = [EDIT, PASS, DEL];
   const userActions = [EDIT, PASS];
 
-  /**
-   * @type{string | null}
-   */
   export let selectionUserId;
-  /**
-   * @type{string | null}
-   */
   export let selectedMode = EDIT;
 
-  /**
-   * @type{number}
-   */
   let code;
-  /**
-   * @type {Element}
-   */
   let root;
-  /**
-   * @type{boolean}
-   */
   let invalidEmail = false;
-  /**
-   * @type{string}
-   */
   let password = '';
-  /**
-   * @type{string}
-   */
   let repeatedPassword = '';
-  /**
-   * @type {import("@smui/snackbar")}
-   */
   let snackbar;
-  /**
-   * @type{string}
-   */
   let message;
-  /**
-   * @type {Menu}
-   */
   let avatarMenu;
   let avatarMenuAnchor;
   let jwt = '';
   let activeLabel = '';
   let protectedLabel = '';
-  /**
-   * @type {HTMLInputElement}
-   */
   let inputElementMagicLink;
-  /**
-   * @type {ReturnType <typeof setTimeout>}
-   */
   let copyTimeoutId;
-  /**
-   * @type {HTMLButtonElement}
-   */
   let copyButton;
-  /**
-   * @param {HTMLButtonElement | any} node
-   */
   let setCopyButton = (node) => (copyButton = node);
-  /**
-   * @type {string}
-   */
   let group_id;
   let name = '';
   let email = '';
   let active = false;
   let __protected = false;
-  /**
-   * @type {string}
-   */
   let mode = EDIT;
 
   $: token = $session.user?.jwt;
@@ -214,9 +166,6 @@
     };
   });
 
-  /**
-   * @param {CustomEvent} event
-   */
   let openUploader = (event) => {
     event.stopPropagation();
     avatarMenu?.setOpen(false);
@@ -244,9 +193,6 @@
     );
   };
 
-  /**
-   * @param {string | any} m
-   */
   function redirectMode(m = EDIT) {
     if (browser) {
       mode = m;
@@ -255,11 +201,7 @@
     }
   }
 
-  /**
-   * @param {CustomEvent} param0
-   */
   async function uploadSuccessHandler({ detail }) {
-    /** @type {any} */
     const { success, message, data } = { ...detail.responseText };
 
     if (success) {

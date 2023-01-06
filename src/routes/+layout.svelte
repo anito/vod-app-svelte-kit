@@ -1,4 +1,4 @@
-<script>
+<script lang="typescript">
   import 'assets/base.css';
   import 'assets/app.css';
   import '$lib/components/_button.scss';
@@ -65,83 +65,30 @@
     Actions as DialogActions,
     InitialFocus
   } from '@smui/dialog';
+  import type { User } from '$lib/types';
 
   const snackbarLifetime = 4000;
   const redirectDelay = 300;
   const LIGHT = 'light';
   const DARK = 'dark';
 
-  /**
-   * @type {HTMLElement}
-   */
-  let root;
-  /**
-   * @type {HTMLDivElement}
-   */
-  let base;
-  /**
-   * @type {string}
-   */
+  let root: Element;
+  let base: HTMLDivElement;
   let snackbarMessage = '';
-  /**
-   * @type {string | any}
-   */
-  let actionLink;
-  /**
-   * @type {string | any}
-   */
-  let actionLabel;
-  /**
-   * @type {ReturnType<typeof setTimeout>}
-   */
-  let timeoutId;
-  /**
-   * @type {ReturnType<typeof setInterval>}
-   */
+  let actionLink: string;
+  let actionLabel: string;
+  let timeoutId: string | number | NodeJS.Timeout | undefined;
   let pollId;
-  /**
-   * @type {string}
-   */
-  let loggedInButtonTextSecondLine;
-  /**
-   * @type {string}
-   */
-  let emphasize;
-  /**
-   * @type {Snackbar}
-   */
-  let snackbar;
-  /**
-   * @type {Dialog}
-   */
-  let settingsDialog;
-  /**
-   * @type {number}
-   */
+  let loggedInButtonTextSecondLine: string;
+  let emphasize: string;
+  let snackbar: Snackbar;
+  let settingsDialog: Dialog;
   let loaderBackgroundOpacity = 1;
-  /**
-   * @type {string}
-   */
   let loaderColor = 'var(--primary)';
-  /**
-   * @type {string}
-   */
-  let loaderBackgroundColor;
-  /**
-   * @type {{requested: any, current: any}}
-   */
-  let colorSchema;
-  /**
-   * @type {string | undefined}
-   */
-  let mediaMode;
-  /**
-   * @type {boolean}
-   */
+  let loaderBackgroundColor: string;
+  let colorSchema: { current: any; requested: any };
+  let mediaMode: string | undefined;
   let isMounted = false;
-  /**
-   * @type {boolean}
-   */
   let isPreferredDarkMode;
 
   settings.subscribe((val) => {
@@ -149,7 +96,7 @@
   });
 
   setContext('fab', {
-    setFab: (/** @type {any} */ name) => fabs.update(name),
+    setFab: (name: any) => fabs.update(name),
     restoreFab: () => fabs.restore()
   });
 
@@ -176,7 +123,7 @@
     ['Console', ['infoLevel']],
     ['Session', ['foo', 'bar']]
   ]);
-  const { getSnackbar } = getContext('snackbar');
+  const { getSnackbar }: any = getContext('snackbar');
   const mounted = writable(isMounted);
 
   ticker.subscribe((val) => {
@@ -196,17 +143,12 @@
     mounted
   });
 
-  const { getSegment } = getContext('segment');
+  const { getSegment }: any = getContext('segment');
   const segment = getSegment();
 
   // salutation.update(randomItem(data.config?.Site?.salutations) || 'Hi');
 
-  /**
-   *
-   * @param {Map<string, any>} excludes
-   * @param {import('@sveltejs/kit').AfterNavigate} param0
-   */
-  const afterNavigationCallback = async (excludes, { from, to }) => {
+  const afterNavigationCallback = async (excludes: { size: any }, { from, to }: any) => {
     if (excludes.size) {
       info(
         2,
@@ -215,7 +157,7 @@
         excludes
       );
     } else {
-      // proxyEvent('session:extend');
+      proxyEvent('session:extend');
     }
   };
 
@@ -325,10 +267,7 @@
     });
   }
 
-  /**
-   * @param {string} mode
-   */
-  function setMode(mode) {
+  function setMode(mode: string | undefined) {
     colorSchema = setColorSchema(mode);
     root?.classList.toggle(DARK, mode === DARK);
     mediaMode = mode;
@@ -339,9 +278,8 @@
    */
   function setColorSchema(m = LIGHT) {
     const mode = m === LIGHT ? DARK : LIGHT;
-    const getSchemaIcon = (/** @type {string} */ m) => (m === DARK ? 'dark_mode' : 'light_mode');
-    const getSchemaLabel = (/** @type {string} */ m) =>
-      m === DARK ? $_('text.dark_mode') : $_('light_mode');
+    const getSchemaIcon = (m: string) => (m === DARK ? 'dark_mode' : 'light_mode');
+    const getSchemaLabel = (m: string) => (m === DARK ? $_('text.dark_mode') : $_('light_mode'));
     return {
       current: {
         mode: m,
@@ -358,15 +296,9 @@
 
   function startPolling() {}
 
-  /**
-   *
-   * @param {number} timestamp
-   */
-  function displayRemainingTime(timestamp) {
+  function displayRemainingTime(timestamp: number) {
     const now = Date.now();
-    // @ts-ignore
     const sec = Math.floor(((timestamp - now) / 1000) % 60).minDigits(2);
-    // @ts-ignore
     const min = Math.floor((timestamp - now) / (1000 * 60)).minDigits(2);
     return `${min}:${sec}`;
   }
@@ -402,19 +334,12 @@
     mediaQuery.addEventListener('change', mediaChangedHandler);
   }
 
-  /**
-   * @param {MediaQueryListEvent} event
-   */
-  async function mediaChangedHandler(event) {
-    const mode = event.matches ? LIGHT : DARK;
+  async function mediaChangedHandler({ matches }: any) {
+    const mode = matches ? LIGHT : DARK;
     setMode(mode);
   }
 
-  /**
-   * Saves video changes
-   * @param {CustomEvent} param0
-   */
-  async function videoSaveHandler({ detail }) {
+  async function videoSaveHandler({ detail }: CustomEvent) {
     const { data, show, onsuccess, onerror } = detail;
     const res = await fetch(`/videos/${data.id}`, {
       method: 'PUT',
@@ -437,11 +362,7 @@
     }
   }
 
-  /**
-   * Deletes a video
-   * @param {CustomEvent} param0
-   */
-  async function videoDeleteHandler({ detail }) {
+  async function videoDeleteHandler({ detail }: CustomEvent) {
     const { data, show, onsuccess, onerror } = detail;
     const res = await fetch(`/videos/${data.id}`, { method: 'DELETE' }).then(async (res) => {
       if (res.ok) return await res.json();
@@ -462,11 +383,7 @@
     }
   }
 
-  /**
-   * Saves changes to user data
-   * @param {CustomEvent} param0
-   */
-  async function userSaveHandler({ detail }) {
+  async function userSaveHandler({ detail }: CustomEvent) {
     const { data, onsuccess, onerror } = detail;
     const res = await fetch(`/users/${data.id}`, {
       method: 'PUT',
@@ -483,11 +400,7 @@
     }
   }
 
-  /**
-   * Deletes a user
-   * @param {CustomEvent} param0
-   */
-  async function userDeleteHandler({ detail }) {
+  async function userDeleteHandler({ detail }: CustomEvent) {
     const { id, onsuccess, onerror } = detail;
     const res = await fetch(`/users/${id}`, {
       method: 'DELETE'
@@ -502,31 +415,21 @@
       onerror?.(res);
     }
   }
-  /**
-   *
-   * @param {string} msg
-   * @param {any=} link
-   */
-  function configSnackbar(msg, link) {
+  function configSnackbar(msg: string | undefined, link?: undefined) {
     try {
       snackbar?.close();
     } catch (e) {}
     configureAction(msg, link);
   }
 
-  /**
-   *
-   * @param {string} msg
-   * @param {({actionLink: string, actionLabel: string} | string)} link
-   */
-  function configureAction(msg = '', link) {
-    actionLabel = void 0;
-    actionLink = void 0;
+  function configureAction(msg = '', link?: string | { actionLabel: string; actionLink: string }) {
+    actionLabel = '';
+    actionLink = '';
     snackbarMessage = msg;
     if (typeof link === 'object') {
-      actionLabel = link.actionLabel;
+      actionLabel = link?.actionLabel;
       actionLink = link.actionLink;
-    } else {
+    } else if (link) {
       actionLink = link;
     }
   }
@@ -534,26 +437,21 @@
   function handleSnackbarOpened() {
     if (!actionLabel && actionLink) {
       clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => goto(actionLink), redirectDelay);
+      timeoutId = setTimeout(() => actionLink && goto(actionLink), redirectDelay);
     }
   }
 
   function handleSnackbarClosed() {}
 
-  /**
-   *
-   * @param {CustomEvent} event
-   */
-  async function sessionSuccessHandler({ detail }) {
+  async function sessionSuccessHandler({ detail }: CustomEvent) {
     const { session, callback } = detail;
-    /**
-     * @type {{user: import('$lib/types').User, renewed: string, message: string}}
-     */
-    const { user, renewed, message } = { ...session };
+    const { user, renewed, message }: { user: User; renewed: boolean; message: string } = {
+      ...session
+    };
     proxyEvent('session:extend', { start: true });
     flash.update({ message, type: 'success', timeout: 2000 });
 
-    renewed && localStorage.setItem('renewed', renewed);
+    renewed && localStorage.setItem('renewed', 'true');
     configSnackbar(
       $_('text.external-login-welcome-message', {
         values: { name: user.name }
@@ -566,11 +464,7 @@
     }
   }
 
-  /**
-   *
-   * @param {CustomEvent} event
-   */
-  async function sessionExtendHandler({ detail }) {
+  async function sessionExtendHandler({ detail }: CustomEvent) {
     if (!$session.user && !detail.start) return;
     await tick();
     const { lifetime } = $settings.Session;
@@ -584,11 +478,7 @@
     detail.callback?.();
   }
 
-  /**
-   *
-   * @param {CustomEvent} event
-   */
-  function sessionErrorHandler({ detail }) {
+  function sessionErrorHandler({ detail }: CustomEvent) {
     const data = { ...detail };
     invalidate('app:session');
     flash.update({ ...data, type: 'error', timeout: 3500 });
@@ -597,11 +487,7 @@
     }
   }
 
-  /**
-   *
-   * @param {CustomEvent} event
-   */
-  async function sessionStopHandler({ detail }) {
+  async function sessionStopHandler({ detail }: CustomEvent) {
     await killSession();
     const { redirect, callback } = detail;
     const path = redirect || '/';
@@ -629,19 +515,15 @@
     });
   }
 
-  function changedLocaleHandler({ detail }) {
+  function changedLocaleHandler({ detail }: CustomEvent) {
     proxyEvent('session:extend');
 
-    /** @type {any} */
-    const { locale } = { ...detail };
+    const { locale }: { locale: string } = { ...detail };
     configSnackbar($_('text.language_is_now', { values: { locale } }));
     snackbar?.open();
   }
 
-  /**
-   * @param {{ section: string; key: string; }} setting
-   */
-  function isEditable({ section, key }) {
+  function isEditable({ section, key }: { section: any; key: string }) {
     let editableSection = editableSettings.get(section);
     if (Array.isArray(editableSection)) {
       return !!editableSection.find((item) => item === key);
@@ -650,19 +532,11 @@
     }
   }
 
-  /**
-   * @param {MouseEvent} event
-   * @param {any} id
-   */
-  function makeEditable(event, id) {
+  function makeEditable(event: MouseEvent, id: string) {
     // Todo
   }
 
-  /**
-   *
-   * @param {string | void} color
-   */
-  function printCopyright(color) {
+  function printCopyright(color?: string) {
     color = color || '#ad1457';
     -1 < navigator.userAgent.toLowerCase().indexOf('chrome')
       ? window.console.log.apply(console, [
@@ -699,7 +573,7 @@
               if (actionParam === 'reload') {
                 if (result.type === 'success') {
                   settings.update(parseConfigData(result.data));
-                  // invalidate('app:session');
+                  invalidate('app:session');
                 }
               }
               if (actionParam === 'logout') {
