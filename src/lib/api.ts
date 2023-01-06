@@ -1,14 +1,11 @@
 import { dev } from '$app/environment';
-import { bodyReader } from '$lib/utils';
 
-export const base = dev ? `https://vod.mbp/v1` : `https://vod.webpremiere.de/v1`;
+export const base = dev ? `https://vod.mbp` : `https://vod.webpremiere.de`;
+const version = 'v1';
 
 async function send(atts = {}) {
-  /**
-   * @type {any}
-   */
-  const { method, path, token, data } = { ...atts };
-  let url = path.startsWith('http') ? path : `${base}/${path}`;
+  const { method, path, token, data }: any = { ...atts };
+  let url = path.startsWith('http') ? path : `${base}/${version}/${path}`;
 
   /**
    * @type {any}
@@ -17,8 +14,17 @@ async function send(atts = {}) {
     method,
     headers: {
       Accept: 'application/json'
+    } as {
+      Accept: string;
+      'Content-Type': string;
+      Authorization: string;
     },
     credentials: 'include'
+  } as {
+    method: string;
+    body: string;
+    headers: any;
+    credentials: RequestCredentials | undefined;
   };
 
   if (data) {
@@ -32,11 +38,7 @@ async function send(atts = {}) {
 
   return fetch(`${url}`, opts)
     .then(async (res) => {
-      if (opts.useReader) {
-        return bodyReader(res);
-      } else {
-        return res.text();
-      }
+      return res.text();
     })
     .then((res) => {
       try {
@@ -50,34 +52,18 @@ async function send(atts = {}) {
     });
 }
 
-/**
- * @param {string} path
- * @param {{} | undefined} [options]
- */
-export function get(path, options = {}) {
+export function get(path: string, options = {}) {
   return send({ method: 'GET', path, ...options });
 }
 
-/**
- * @param {string} path
- * @param {{} | undefined} [options]
- */
-export function del(path, options = {}) {
+export function del(path: string, options = {}) {
   return send({ method: 'DELETE', path, ...options });
 }
 
-/**
- * @param {string} path
- * @param {{} | undefined} options
- */
-export function post(path, options = {}) {
+export function post(path: string, options = {}) {
   return send({ method: 'POST', path, ...options });
 }
 
-/**
- * @param {string} path
- * @param {{} | undefined} options
- */
-export function put(path, options = {}) {
+export function put(path: string, options = {}) {
   return send({ method: 'PUT', path, ...options });
 }

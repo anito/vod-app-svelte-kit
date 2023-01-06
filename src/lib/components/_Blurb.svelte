@@ -41,10 +41,12 @@
 
       &.primary {
         background: var(--primary);
+        color: var(--on-primary);
         grid-area: one;
       }
       &.flash {
         background: var(--flash);
+        color: white;
         grid-area: two / two;
       }
 
@@ -114,7 +116,7 @@
           padding: 0.5em 1.8em 0.5em 1em;
           border-radius: var(--border-r);
           border: none;
-          color: white;
+          color: var(--on-primary);
           position: relative;
 
           &:gloabl(::after) {

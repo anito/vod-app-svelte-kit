@@ -1,4 +1,3 @@
-// @ts-nocheck
 export { default as Avatar } from './_Avatar.svelte';
 export { default as Breadcrumb } from './_Breadcrumb.svelte';
 export { default as Badge } from './_Badge.svelte';

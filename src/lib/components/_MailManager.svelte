@@ -1,4 +1,4 @@
-<script>
+<script lang="typescript">
   import './_drawer.scss';
   import './_list.scss';
   import './_icon-button.scss';
@@ -50,11 +50,10 @@
     InitialFocus
   } from '@smui/dialog';
   import { INBOX, SENT, ADMIN, SUPERUSER, log, DESC, ASC } from '$lib/utils';
+  import type { User, Mail } from '$lib/types';
+  import type Snackbar from '@smui/snackbar';
 
-  const sortAZProtected = (
-    /** @type {{ [x: string]: string; }} */ a,
-    /** @type {{ [x: string]: string; }} */ b
-  ) => {
+  const sortAZProtected = (a: { [x: string]: string }, b: { [x: string]: string }) => {
     let ap = (a['protected'] && a['name'].toLowerCase()) || 'z';
     let bp = (b['protected'] && b['name'].toLowerCase()) || 'z';
     let an = a['name'].toLowerCase();
@@ -69,7 +68,7 @@
     {
       'magic-link': () => {
         return {
-          validate: () => currentUser.active && isValidToken() && { href: getMagicLink() },
+          validate: () => currentUser?.active && isValidToken() && { href: getMagicLink() },
           label: $_('text.magic-link')
         };
       }
@@ -77,15 +76,15 @@
     {
       welcome: () => {
         return {
-          validate: () => currentUser.active && isValidToken() && { href: getMagicLink() },
+          validate: () => currentUser?.active && isValidToken() && { href: getMagicLink() },
           label: $_('text.welcome-link-label')
         };
       }
     }
   ];
-  const { setFab } = getContext('fab');
-  const { getSIUX } = getContext('siux');
-  const { getSnackbar, configSnackbar } = getContext('snackbar');
+  const { setFab } = getContext('fab') as any;
+  const { getSIUX } = getContext('siux') as any;
+  const { getSnackbar, configSnackbar } = getContext('snackbar') as any;
   const defaultActive = INBOX;
   const mailboxes = [INBOX, SENT];
   const currentStore = writable();
@@ -93,68 +92,31 @@
   let sort = 'DESC';
   let drawer;
 
-  /**
-   * @type {import("@smui/snackbar")}
-   */
-  let snackbar;
-  /**
-   * @type {boolean | undefined}
-   */
-  let drawerOpen;
+  let snackbar: Snackbar;
+  let drawerOpen: boolean;
   let drawerOpenOnMount = true;
-  /**
-   * @type {import('$lib/types').Mail | null | undefined}
-   */
-  let selection;
+  let selection: Mail;
   let unreadInboxes = 0;
-  /**
-   * @type {string}
-   */
-  let activeTemplate = '';
-  /**
-   * @type {boolean}
-   */
-  let canSave;
-  /**
-   * @type {{ [x: string]: any; } | undefined}
-   */
-  let working;
-  /**
-   * @type {MailTemplate}
-   */
-  let mailTemplate;
-  /**
-   * @type {Dialog}
-   */
-  let unsavedChangesDialog;
-  /**
-   * @type {HTMLElement}
-   */
-  let root;
-  /**
-   * @type {string | null | undefined}
-   */
-  let pendingActiveTemplate;
-  /**
-   * @type {string | null}
-   */
-  let activeListItem;
-  /**
-   * @type {number}
-   */
-  let selectionIndex;
+  let activeTemplate: string | boolean;
+  let canSave: boolean;
+  let working: { [x: string]: any } | undefined;
+  let mailTemplate: MailTemplate;
+  let unsavedChangesDialog: Dialog;
+  let root: HTMLElement;
+  let pendingActiveTemplate: string | null;
+  let activeListItem: string;
+  let selectionIndex: number;
   let totalInboxes = 0;
   let totalSents = 0;
   let currentSlug = $page.params.slug;
 
-  /** @type {string} */
-  export let selectionUserId;
+  export let selectionUserId: string;
 
   setContext('mail-store', {
     getMailStore: () => currentStore
   });
 
-  $: currentUser = ((id) => $users.find((usr) => usr.id === id))(selectionUserId);
+  $: currentUser = ((id) => $users.find((usr) => usr.id === id))(selectionUserId) as any;
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: selectionUserId && (selectionIndex = -1);
   $: username = currentUser?.name || $_('text.empty-user-selection');
@@ -166,9 +128,9 @@
   $: setActiveListItem(activeItem);
   $: activeTemplate = matchesTemplate(activeListItem);
   $: dynamicTemplateData = currentUser && getTemplateData(activeTemplate);
-  $: currentTemplate = $templates.find((tmpl) => tmpl.slug === activeTemplate) || null;
+  $: currentTemplate = $templates.find((tmpl) => tmpl.slug === activeTemplate);
   $: currentTemplate && hasPrivileges ? setFab('send-mail') : setFab('');
-  $: dynamicTemplatePath = (/** @type {any} */ slug) => {
+  $: dynamicTemplatePath = (slug: any) => {
     currentUser;
     return createTemplatePath(slug);
   };
@@ -186,14 +148,12 @@
   $: waitForData =
     currentSlug &&
     getSIUX()
-      .then(
-        /** @param {{ success: any; data: never[]; }} res */ (res) => {
-          if (res?.success) {
-            usersFoundation.update(res.data);
-            $usersFoundation; // subscribe to take effect
-          }
+      .then((res: { success: any; data: never[] }) => {
+        if (res?.success) {
+          usersFoundation.update(res.data);
+          $usersFoundation; // subscribe to take effect
         }
-      )
+      })
       .then(async () => {
         // fetching INBOXES
         const mailbox = mailboxes[0];
@@ -242,30 +202,23 @@
     };
   });
 
-  /**
-   *
-   * @param {string | null} endpoint
-   */
-  function getStoreByEndpoint(endpoint) {
+  function getStoreByEndpoint(endpoint: string | null) {
     if (endpoint === INBOX) return inboxes;
     if (endpoint === SENT) return sents;
     return writable();
   }
 
-  /**
-   * @param {string} name
-   */
-  async function getMail(name) {
+  async function getMail(name: string | undefined) {
     const endpoint = validateMailboxName(name);
     if (!endpoint)
       return new Promise((res, rej) => rej(`The mailbox "${endpoint}" doesn't exist`)).catch(
-        (reason) => log(reason)
+        (reason) => log(1, reason)
       );
 
     const validUser = validateUser();
     if (!validUser)
       return new Promise((res, rej) => rej(`This user doesn't exist`)).catch((reason) =>
-        log(reason)
+        log(1, reason)
       );
 
     return await api
@@ -282,11 +235,11 @@
     await api
       .post('sents/add/', {
         data: {
-          user: { email: currentUser.email },
+          user: { email: currentUser?.email },
           salutation: $salutation,
           ...working,
           template: {
-            slug: currentTemplate.slug,
+            slug: currentTemplate?.slug,
             themeVars: [{ '--primary': '#ad1457' }],
             data
           }
@@ -311,18 +264,12 @@
     return !!user && currentUser.id === user.id;
   }
 
-  /**
-   * @param {string | null} name
-   */
   function validateMailboxName(name = '') {
     const stripped = name?.replace('template:', '');
     return mailboxes.find((box) => box === stripped);
   }
 
-  /**
-   * @param {string} slug
-   */
-  function createTemplatePath(slug) {
+  function createTemplatePath(slug: string) {
     // don't operate directly on $page since its reactive
     let params = new URLSearchParams($page.url.search);
     params.set('active', slug);
@@ -330,19 +277,13 @@
     return `${$page.url.pathname}?${params.toString()}`;
   }
 
-  /**
-   * @param {string} active
-   */
-  async function gotoActiveBox(active) {
+  async function gotoActiveBox(active: string) {
     if (!active) active = defaultActive;
     // fix non-existing page slug and append mailbox path to url
     return await goto(createTemplatePath(active));
   }
 
-  /**
-   * @param {string | null} value
-   */
-  function setActiveListItem(value) {
+  function setActiveListItem(value: string | null) {
     if (activeListItem != matchesTemplate(value) && canSave) {
       pendingActiveTemplate = value;
       unsavedChangesDialog?.setOpen(true);
@@ -351,11 +292,7 @@
     }
   }
 
-  /**
-   * @param {CustomEvent} event
-   */
-  async function toggleRead({ detail }) {
-    /** @type {any} */
+  async function toggleRead({ detail }: CustomEvent) {
     const { selection } = { ...detail };
     const _read = !selection._read;
     await api
@@ -371,10 +308,7 @@
       });
   }
 
-  /**
-   * @param {CustomEvent} event
-   */
-  async function deleteMail({ detail }) {
+  async function deleteMail({ detail }: CustomEvent) {
     const id = detail.selection?.id;
     if (!id) return;
     await api.del(`${activeListItem}/${id}`, { token: $session.user?.jwt }).then((res) => {
@@ -407,12 +341,9 @@
   async function addTemplate() {
     if (!$templates.length) return;
     const { name, slug } = generateName();
-    /**
-     * @type {{ content: string; field_id: any; field: any; }[]}
-     */
     const items = [];
     let template = $templates[0];
-    template.items.map((/** @type {{ field: { id: any; }; }} */ item) => {
+    template.items.map((item: { field: { id: any } }) => {
       items.push({
         content: '',
         field_id: item.field.id,
@@ -433,20 +364,16 @@
   }
 
   async function saveTemplate() {
-    /**
-     * @type {{ id: any; content: any; }[]}
-     */
-    let items = [];
-    currentTemplate.items.map(
-      (/** @type {{ field: { name: string | number; }; content: any; id: any; }} */ item) => {
-        // @ts-ignore
-        let content = working[item.field.name];
+    let items: { id: any; content: any }[] = [];
+    currentTemplate?.items.map(
+      (item: { field: { name: string | number }; content: any; id: any }) => {
+        let content = working?.[item.field.name];
         item.content = content;
         items.push({ id: item.id, content });
       }
     );
     const res = await api.put(
-      `templates/${currentTemplate.id}?locale=${$page.data.session.locale}`,
+      `templates/${currentTemplate?.id}?locale=${$page.data.session.locale}`,
       {
         data: { items },
         token: $session.user?.jwt
@@ -461,20 +388,15 @@
   }
 
   async function duplicateTemplate() {
-    let { name, slug } = generateName(currentTemplate.name);
-    /**
-     * @type {{ content: any; field_id: any; field: any; }[]}
-     */
+    let { name, slug } = generateName(currentTemplate?.name);
     let items = [];
-    currentTemplate.items.map(
-      (/** @type {{ field: { name: string | number; id: any; }; }} */ item) => {
-        items.push({
-          content: working?.[item.field.name],
-          field_id: item.field.id,
-          field: item.field
-        });
-      }
-    );
+    currentTemplate.items.map((item) => {
+      items.push({
+        content: working?.[item.field.name],
+        field_id: item.field.id,
+        field: item.field
+      });
+    });
 
     let newTemplate = { name, slug, items };
     const res = await api.post(`templates?locale=${$page.data.session.locale}`, {
@@ -500,13 +422,7 @@
     snackbar?.open();
   }
 
-  /**
-   * @param {string} slug
-   */
-  function getTemplateData(slug) {
-    /**
-     * @type {any}
-     */
+  function getTemplateData(slug: string) {
     let data;
     if (
       (data = templateSlugData.find((item) => slug in item)) &&
@@ -517,10 +433,7 @@
     return false;
   }
 
-  /**
-   * @param {{ detail: { action: string; }; }} event
-   */
-  async function unsavedChangesDialogCloseHandler(event) {
+  async function unsavedChangesDialogCloseHandler(event: CustomEvent) {
     if (event.detail.action === 'discard') {
       pendingActiveTemplate && (activeListItem = pendingActiveTemplate);
       pendingActiveTemplate = null;
@@ -533,10 +446,7 @@
     }
   }
 
-  /**
-   * @param {CustomEvent} event
-   */
-  async function saveEditableHandler({ detail }) {
+  async function saveEditableHandler({ detail }: CustomEvent) {
     const { editable, onFailCallback, onSuccessCallback } = detail;
     const success = await saveTemplateName(editable.id, editable.innerHTML);
     if (success) {
@@ -546,11 +456,7 @@
     }
   }
 
-  /**
-   * @param {string | null | undefined} [id]
-   * @param {string | undefined} [name]
-   */
-  async function saveTemplateName(id, name) {
+  async function saveTemplateName(id: any, name: any) {
     let template = $templates.find((tmpl) => tmpl.id === id);
 
     if (!template) return;
@@ -575,11 +481,7 @@
     return false;
   }
 
-  /**
-   * @param {string | any[] | undefined} [name]
-   * @return {any}
-   */
-  function generateName(name) {
+  function generateName(name?: string | any[]) {
     let slug,
       newName = (name && name.concat($_('text.new-copy-label'))) || $_('text.new');
     if ($templates.find((tmpl) => tmpl.name === newName)) {
@@ -589,9 +491,6 @@
     return { name: newName, slug };
   }
 
-  /**
-   * @return {any}
-   */
   function generateSlug() {
     let slug = crypto.randomUUID();
     if ($templates.find((tmpl) => tmpl.slug === slug)) {
@@ -600,11 +499,7 @@
     return slug;
   }
 
-  /**
-   * @param {string | null} [value]
-   * @return {any}
-   */
-  function matchesTemplate(value) {
+  function matchesTemplate(value: string | null) {
     if (!value) return false;
     let matches = value.match(/(template):([\w-:\d]+)/);
     if (matches?.length === 3) {
@@ -615,19 +510,11 @@
     }
   }
 
-  /**
-   * @param {string} [slug]
-   * @return {any}
-   */
-  function templateStringFromSlug(slug) {
+  function templateStringFromSlug(slug: any) {
     return `template:${slug}`;
   }
 
-  /**
-   * @param {string} slug
-   * @return {any}
-   */
-  function validateData(slug) {
+  function validateData(slug: string) {
     let data = getTemplateData(slug);
     if (data) {
       return data.validate();

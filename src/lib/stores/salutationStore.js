@@ -6,7 +6,9 @@ function createStore() {
   return derived(
     [settings],
     ([$settings], set) => {
-      set(randomItem($settings.Site?.salutations));
+      if ($settings.Site?.salutations?.length) {
+        set(randomItem($settings.Site?.salutations));
+      }
     },
     'Hi'
   );

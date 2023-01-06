@@ -1,6 +1,5 @@
 import {
   buildSearchParams,
-  bodyReader,
   convert,
   createRedirectSlug,
   createTabSearch,
@@ -53,10 +52,10 @@ import { localeFormat } from './locale-format';
 import { get, post, put, del } from './http';
 import { getAuxSession } from './auxSession';
 import { posterCreatedHandler, posterSelectedHandler, posterRemoveHandler } from './video';
+import read from './reader';
 
 export {
   afterOrBeforeNavigation,
-  bodyReader,
   buildSearchParams,
   convert,
   createRedirectSlug,
@@ -93,6 +92,7 @@ export {
   put,
   processRedirect,
   randomItem,
+  read,
   searchParams,
   slugify,
   sortByEndDate,

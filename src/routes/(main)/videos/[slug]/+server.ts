@@ -1,10 +1,8 @@
 import * as api from '$lib/api';
 import { json } from '@sveltejs/kit';
+import type { RequestEvent } from '../$types';
 
-/**
- * @type {import('@sveltejs/kit').RequestHandler}
- */
-export async function GET({ params, locals }) {
+export async function GET({ request, params, locals }: RequestEvent) {
   const id = params.slug;
   const { locale, user } = locals.session.data;
   const token = user?.jwt;
@@ -14,10 +12,7 @@ export async function GET({ params, locals }) {
   });
 }
 
-/**
- * @type {import('@sveltejs/kit').RequestHandler}
- */
-export async function PUT({ request, params, locals }) {
+export async function PUT({ request, params, locals }: RequestEvent) {
   const data = await request.json();
   const id = params.slug;
   const { locale, user } = locals.session.data;
@@ -30,10 +25,7 @@ export async function PUT({ request, params, locals }) {
     });
 }
 
-/**
- * @type {import('@sveltejs/kit').RequestHandler}
- */
-export async function DELETE({ params, locals }) {
+export async function DELETE({ params, locals }: RequestEvent) {
   const id = params.slug;
   const { locale, user } = locals.session.data;
   const token = user?.jwt;

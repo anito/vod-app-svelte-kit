@@ -1,6 +1,4 @@
 <script>
-  // @ts-nocheck
-
   import { GridItem, LayoutGrid } from '$lib/components';
   import { page } from '$app/stores';
 

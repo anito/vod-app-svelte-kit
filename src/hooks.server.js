@@ -5,8 +5,7 @@ import { UsersRepo, VideosRepo, ImagesRepo, VideosAllRepo } from '$lib/classes';
 export const handle = handleSession(
   {
     secret: 'ALKDSFH§%&24LKFDJSD/&$§&ÖLDKFJSDL§&%$&=&=SLKAF',
-    key: 'VOD__SESSION',
-    rolling: true
+    key: 'VOD__SESSION'
   },
   async ({ event, resolve }) => {
     dev && (process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0');
@@ -18,9 +17,6 @@ export const handle = handleSession(
     event.locals.userAgent = event.request.headers.get('user-agent');
 
     const response = await resolve(event);
-    response.headers.set('age', '1000000');
-    response.headers.set('cache-control', '10000000');
-    response.headers.set('x-custom-header', 'vod-manager');
     return response;
   }
 );

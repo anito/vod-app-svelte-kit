@@ -1,4 +1,4 @@
-import * as api from '$lib/api.js';
+import * as api from '$lib/api';
 import { error, json } from '@sveltejs/kit';
 
 /** @type {import('./$types').RequestHandler} */

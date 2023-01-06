@@ -1,16 +1,20 @@
 <script lang="typescript">
   export let extended = false;
   export let density = '' as 'sm' | 'md' | ' lg' | '';
-  export let type = 'one' as 'one' | 'two' | 'three';
   export let variant = 'primary' as 'primary' | 'secondary';
   export { className as class };
   export let transparent = false;
   export let headerHeight = '50px';
+  export let contentBackgroundColor = 'inherit';
 
   let className = '';
 </script>
 
-<div style={`display: contents;}`} style:--height={headerHeight} {type}>
+<div
+  style={`display: contents;}`}
+  style:--height={headerHeight}
+  style:--content-background-color={contentBackgroundColor}
+>
   <div
     class="component flex flex-1 flex-col {density} {variant}"
     class:density
@@ -112,6 +116,7 @@
     font-size: 3em;
   }
   .component .content {
+    background-color: var(--content-background-color);
     height: 100%;
     z-index: auto;
     flex-shrink: 1;

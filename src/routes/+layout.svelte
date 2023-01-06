@@ -72,11 +72,6 @@
   const DARK = 'dark';
 
   /**
-   * @type {import('./$types').LayoutData}
-   */
-  export let data;
-
-  /**
    * @type {HTMLElement}
    */
   let root;
@@ -634,10 +629,6 @@
     });
   }
 
-  /**
-   *
-   * @param {CustomEvent} param0
-   */
   function changedLocaleHandler({ detail }) {
     proxyEvent('session:extend');
 
@@ -708,7 +699,7 @@
               if (actionParam === 'reload') {
                 if (result.type === 'success') {
                   settings.update(parseConfigData(result.data));
-                  invalidate('app:session');
+                  // invalidate('app:session');
                 }
               }
               if (actionParam === 'logout') {
@@ -874,13 +865,21 @@
                 <Item class="justify-start">
                   <Button
                     href={`${$page.url.pathname}${buildSearchParams($page.url.searchParams, {
-                      addableKeys: [['modal', 'settings']]
+                      addableKeys: [['modal', 'settings']],
+                      removableKeys: []
                     })}`}
                     class="link-button"
                     ripple={false}
                   >
                     <SvgIcon name="settings" class="mr-2" fillColor="none" />
                     <Label style="">Settings</Label>
+                  </Button>
+                </Item>
+                <Separator />
+                <Item class="justify-start">
+                  <Button href="/readable-stream" class="link-button" ripple={false}>
+                    <SvgIcon name="dynamic-feed" class="mr-2" fillColor="none" />
+                    <Label style="">ReadableStream</Label>
                   </Button>
                 </Item>
               </MoreMenu>
@@ -902,7 +901,8 @@
   on:SMUIDialog:closed={async () =>
     await goto(
       `${$page.url.pathname}${buildSearchParams($page.url.searchParams, {
-        removableKeys: ['modal', 'edit']
+        removableKeys: ['modal', 'edit'],
+        addableKeys: []
       })}`
     )}
 >
@@ -936,6 +936,7 @@
                             href={`${$page.url.pathname}${buildSearchParams(
                               $page.url.searchParams,
                               {
+                                removableKeys: [],
                                 addableKeys: [['edit', `${setting[0]}:${item[0]}`]]
                               }
                             )}`}>edit</a

@@ -1,38 +1,24 @@
 import { get } from 'svelte/store';
-import { settings } from '$lib/stores';
+import { streamProgress, settings } from '$lib/stores';
 import { ADMIN, SUPERUSER, INBOX, DIFFSTORES } from './const';
+import type { Session } from '$lib/types';
 
-/**
- *
- * @param {*} a
- * @param {*} b
- * @returns {number}
- */
-export function sortByStartDate(a, b) {
+export function sortByStartDate(
+  a: { _joinData: { start: Date } },
+  b: { _joinData: { start: Date } }
+) {
   let aStart = a._joinData.start || new Date('3000');
   let bStart = b._joinData.start || new Date('3000');
   return new Date(bStart).getTime() - new Date(aStart).getTime();
 }
 
-/**
- *
- * @param {*} a
- * @param {*} b
- * @returns {number}
- */
-export function sortByEndDate(a, b) {
+export function sortByEndDate(a: { _joinData: { end: Date } }, b: { _joinData: { end: Date } }) {
   let aEnd = a._joinData.end || new Date('3000');
   let bEnd = b._joinData.end || new Date('3000');
   return new Date(bEnd).getTime() - new Date(aEnd).getTime();
 }
 
-/**
- *
- * @param {Object} obj_1
- * @param {Object} obj_2
- * @returns {boolean}
- */
-export function equals(obj_1, obj_2) {
+export function equals(obj_1: any, obj_2: any) {
   let json_1 = typeof obj_1 === 'object' && JSON.stringify(obj_1);
   let json_2 = typeof obj_2 === 'object' && JSON.stringify(obj_2);
   if (!!json_1 && !!json_2) {
@@ -41,27 +27,15 @@ export function equals(obj_1, obj_2) {
   return false;
 }
 
-/**
- *
- * @param {*} d
- * @returns {string}
- */
-export function formatter(d) {
+export function formatter(d: number) {
   let hrs = d / 1000 / 60 / 60;
   let min = (!isNaN(hrs) && ((hrs % Math.floor(hrs)) * 60) % 60) || 0;
   let sec = (!isNaN(min) && ((min % Math.floor(min)) * 60) % 60) || 0;
   return `${Math.floor(hrs)}:${Math.floor(min)}:${Math.floor(sec)}`;
 }
 
-/**
- *
- * @param {URL} url
- * @param {Map<string, any>} searchMap
- * @returns {string}
- */
-export function createRedirectSlug(url, searchMap = new Map([])) {
-  /** @type {URLSearchParams} */
-  let searchParams;
+export function createRedirectSlug(url: URL, searchMap = new Map()) {
+  let searchParams: URLSearchParams;
   let path;
   const ignored = ['login'];
 
@@ -84,13 +58,7 @@ export function createRedirectSlug(url, searchMap = new Map([])) {
   return `redirect=${path}${encodeURIComponent(parseRedirect(searchParams))}`;
 }
 
-/**
- *
- * @param {URL} url
- * @param {import('$lib/types').Session} session
- * @returns
- */
-export function processRedirect(url, session) {
+export function processRedirect(url: URL, session: Session) {
   let redirect = url.searchParams.get('redirect');
   if (redirect) {
     return redirect;
@@ -101,14 +69,9 @@ export function processRedirect(url, session) {
   }
 }
 
-/**
- *
- * @param {URLSearchParams | string} search
- * @returns {string}
- */
-export function parseRedirect(search) {
+export function parseRedirect(search: URLSearchParams) {
   const removableKeys = ['token', 'redirect', 'sessionend'];
-  return buildSearchParams(search, { removableKeys });
+  return buildSearchParams(search, { removableKeys, addableKeys: [] });
 }
 
 export function windowSize() {
@@ -137,15 +100,12 @@ export function windowSize() {
 
 // https://gist.github.com/faisalman/4213592
 export let convert = (() => {
-  /** @param {any} num */
-  const convertBase = (num) => {
+  const convertBase = (num: string | number) => {
     return {
-      /** @param {number} baseFrom */
-      from: (baseFrom) => {
+      from: (baseFrom: number | undefined) => {
         return {
-          /** @param {number} baseTo */
-          to: (baseTo) => {
-            return parseInt(num, baseFrom).toString(baseTo);
+          to: (baseTo: number | undefined) => {
+            return parseInt(num as string, baseFrom).toString(baseTo);
           }
         };
       }
@@ -153,33 +113,38 @@ export let convert = (() => {
   };
 
   return {
-    /**
-     *
-     * @param {number} num
-     * @param {boolean} rel
-     * @returns
-     */
-    dec2Hex: (num, rel) => {
+    dec2Hex: (num: number, rel: any) => {
       rel && (num *= 255);
       return convertBase(num).from(10).to(16);
     }
   };
 })();
 
-/**
- * @param {string} eventType
- * @param {*} detail
- */
-export const proxyEvent = function (eventType, detail = {}) {
-  eventType = typeof eventType === 'string' ? eventType : detail.eventType;
+export const proxyEvent = function (
+  eventType: string,
+  detail:
+    | {
+        data?: any;
+        show?: boolean;
+        session?: any;
+        onsuccess?: ((res: any) => void) | ((res: any) => void);
+        onerror?: ((res: any) => void) | ((res: any) => void);
+        silent?: boolean;
+        id?: any;
+        open?: boolean;
+        callback?: () => void;
+        redirect?: string;
+        start?: boolean;
+        eventType?: any;
+      }
+    | undefined
+) {
+  eventType = typeof eventType === 'string' ? eventType : detail?.eventType;
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent(eventType, { detail }));
   }
 };
 
-/**
- * @param {Array<string>} arr
- */
 export function randomItem(arr = []) {
   const index = Math.floor(Math.random() * arr.length);
   return arr[index];
@@ -187,10 +152,8 @@ export function randomItem(arr = []) {
 
 /**
  * see https://gist.github.com/codeguy/6684588
- * @param {string} str
- * @returns {string}
  */
-export function slugify(str) {
+export function slugify(str: string) {
   str = str.replace(/^\s+|\s+$/g, ''); // trim
   str = str.toLowerCase();
 
@@ -217,13 +180,7 @@ export function placeholderDotComAvatar(name = '?') {
     .join('')}`;
 }
 
-/**
- *
- * @param {Function} fn
- * @param {string | string[]} colors
- * @returns {string}
- */
-export function svg(fn, colors) {
+export function svg(fn: { (c: any): string; (): string; apply?: any }, colors: string[]) {
   colors = (!Array.isArray(colors) && [colors]) || colors;
   return (
     'data:image/svg+xml;utf8,' +
@@ -241,11 +198,7 @@ export function svg(fn, colors) {
   );
 }
 
-/**
- * @param {string} tab
- * @returns {string}
- */
-export function createTabSearch(tab) {
+export function createTabSearch(tab: string) {
   const search =
     tab === 'time'
       ? `?tab=${tab}`
@@ -257,78 +210,20 @@ export function createTabSearch(tab) {
   return search;
 }
 
-/**
- * @param {string | boolean} lifetime
- * @returns {number}
- */
-export function parseLifetime(lifetime) {
+export function parseLifetime(lifetime: string) {
   const minToMs = 60 * 1000;
   return parseFloat(typeof lifetime === 'boolean' ? (lifetime ? '1' : '0') : lifetime) * minToMs;
 }
 
-/**
- * @param {URL} url
- */
-export function searchParams(url) {
-  /**
-   * @type {Object<string, any>}
-   */
-  const params = {};
+export function searchParams(url: URL) {
+  const params = Object.create({});
   for (const [key, val] of url.searchParams) {
     params[key] = val === 'true' ? true : val === 'false' ? false : val;
   }
   return params;
 }
 
-/**
- * @param {Response} res
- */
-export async function bodyReader(res) {
-  const reader = res.body?.getReader();
-  const contentLength = res.headers.get('content-length') || 0;
-
-  let chunks = [];
-  let receivedLength = 0;
-  let percent;
-  while (true) {
-    /**
-     * @type {any}
-     */
-    const { done, value } = await reader?.read();
-
-    if (done) break;
-
-    chunks.push(value);
-    receivedLength += value?.length;
-    if (contentLength !== 0) (receivedLength * 100) / parseInt(contentLength);
-    console.log('Progress', percent, '% of', contentLength);
-  }
-
-  /**
-   * concatenate chunks into single Uint8Array
-   * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
-   */
-  let chunksAll = new Uint8Array(receivedLength);
-  let position = 0;
-  for (let chunk of chunks) {
-    chunksAll.set(chunk, position);
-    position += chunk.length;
-  }
-
-  /**
-   * decode into a utf-8 string
-   * https://nodejs.org/api/util.html#class-utiltextdecoder
-   */
-  let result = new TextDecoder('utf-8').decode(chunksAll);
-  return result;
-}
-
-/**
- * @param {{[s: string]: any;}} data
- * @param {{prefix?: string | undefined, store: string}} options - prefix: The key of object values (automatically set)
- * @returns {void}
- */
-export function printDiff(data, { prefix, store } = { prefix: '', store: '' }) {
+export function printDiff(data: object | null, { prefix, store } = { prefix: '', store: '' }) {
   if (data instanceof Object && DIFFSTORES.has(store)) {
     Object.entries(data).forEach((val) => {
       const diffStore = DIFFSTORES.get(store);
@@ -366,24 +261,20 @@ export function printDiff(data, { prefix, store } = { prefix: '', store: '' }) {
   }
 }
 
-/**
- * @param {string | undefined} id
- * @param {{ pathname: any; search: any; searchParams?: URLSearchParams } | undefined} [url]
- */
-export function dynamicUrl(id, url) {
+export function dynamicUrl(id: any, url: URL) {
   const pathname = url?.pathname;
   const dynamicPathname = pathname.replace(/\/[0-9a-zA-Z_-]+$/, `/${id}`);
-  const searchParams = buildSearchParams(url?.searchParams, { removableKeys: ['mail_id'] });
+  const searchParams = buildSearchParams(url?.searchParams, {
+    removableKeys: ['mail_id'],
+    addableKeys: []
+  });
   return `${dynamicPathname}${searchParams}`;
 }
 
-/**
- * Helper function for dynamicUrl
- * @param {URLSearchParams | string | undefined} searchParams
- * @param {{ removableKeys?: Array<string>, addableKeys?: Array<[string, string]>}} [options]
- * @returns {string}
- */
-export function buildSearchParams(searchParams, options = { removableKeys: [], addableKeys: [] }) {
+export function buildSearchParams(
+  searchParams: string | URLSearchParams | string[][] | Record<string, string> | undefined,
+  options = { removableKeys: [] as string[] | never[], addableKeys: [] as string[] | never[] }
+) {
   const { removableKeys, addableKeys } = { ...options };
   const searchParam = new URLSearchParams(searchParams);
   addableKeys?.forEach((key) => {
@@ -403,27 +294,17 @@ export function log() {
   if (log) console.log(...arguments);
 }
 
-/**
- * Accepts 1 or more arguments
- * First argument: Level
- * Rest: parameter printed to console
- * @returns
- */
-export function info() {
+export function info(...args: any[]) {
   if (arguments.length < 2) return;
   const { infoLevel } = get(settings).Console;
-  const args = Array.from(arguments);
+  args = Array.from(arguments);
   const level = args.splice(0, 1)[0];
   if (level <= infoLevel) console.log(...args);
 }
 
-/**
- * @param {any} data
- */
-export function parseConfigData(data) {
+export function parseConfigData(data: object | null | undefined) {
   if (data instanceof Object) {
-    /** @type {any} */
-    const ret = {};
+    const ret = Object.create({});
     Object.entries(data).forEach((val) => {
       let k = val[0];
       let v = val[1];
@@ -448,20 +329,12 @@ Array.prototype.unique = function () {
   return this.filter((val, index, self) => self.indexOf(index) != val);
 };
 
-/**
- * @param {number} minimumIntegerDigits
- * @returns {string}
- */
 Number.prototype.minDigits = function (minimumIntegerDigits = 2) {
   return this.toLocaleString('en-US', {
     minimumIntegerDigits
   });
 };
 
-/**
- * @param {string} val
- * @returns {string}
- */
 String.prototype.remove = function (val) {
   const arr = this.split(/\s+/);
   return arr
@@ -471,10 +344,6 @@ String.prototype.remove = function (val) {
     .trim();
 };
 
-/**
- * @param {string} val
- * @returns {string}
- */
 String.prototype.add = function (val) {
   let arr = this.split(' ');
   return arr.concat(val).unique().join(' ').trim();
