@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
+import type { RequestEvent } from './$types';
 
-/** @type {import('./$types').RequestHandler} */
-export async function POST({ locals, request }) {
+export async function POST({ locals, request }: RequestEvent) {
   const _expires = await request.json();
 
   await locals.session.update(() => ({ _expires }));

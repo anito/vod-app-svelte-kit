@@ -1,9 +1,10 @@
 import { get } from 'svelte/store';
 import { users } from '$lib/stores';
 import { ADMIN, SUPERUSER } from '$lib/utils';
+import type { PageLoadEvent } from './$types';
+import type { User } from '$lib/types';
 
-/** @type {import('./$types').PageLoad} */
-export async function load({ params, fetch, parent, setHeaders }) {
+export async function load({ params, fetch, parent, setHeaders }: PageLoadEvent) {
   const parentData = await parent();
   const { role } = parentData.session;
   const hasPrivileges = role === SUPERUSER || role === ADMIN;
@@ -11,14 +12,9 @@ export async function load({ params, fetch, parent, setHeaders }) {
   // load the user in question (from url)
   // if user rights permit
   if (hasPrivileges) {
-    /**
-     * @type {never[]}
-     */
     const $users = get(users);
     const id = params.slug;
-    const dataExists = !!$users.find(
-      /** @param {import('$lib/types').User} user */ (user) => user.id === id
-    );
+    const dataExists = !!$users.find((user: User) => user.id === id);
     if (!dataExists) {
       return await fetch(`/users/${id}`).then(async (res) => {
         setHeaders({

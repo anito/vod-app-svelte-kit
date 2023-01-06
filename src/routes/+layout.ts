@@ -1,6 +1,7 @@
 import { LOCALESTORE } from '$lib/utils';
 import { register, waitLocale, init, getLocaleFromNavigator } from 'svelte-i18n';
 import UAParser from 'ua-parser-js';
+import type { LayoutLoadEvent } from './$types';
 
 LOCALESTORE.forEach((val, key) => {
   register(key, () => import(`../messages/${val.filename}.json`));
@@ -18,8 +19,7 @@ function getInitialLocale() {
   return locale;
 }
 
-/** @type {import('./$types').LayoutLoad} */
-export async function load({ data, fetch }) {
+export async function load({ data, fetch }: LayoutLoadEvent) {
   const { session } = data;
   const initialLocale = session.locale || getInitialLocale();
   init({

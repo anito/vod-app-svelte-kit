@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
+import type { RequestEvent } from './$types';
 
-/** @type {import('./$types').RequestHandler} */
-export const GET = async ({ locals: { videosRepo, session }, url }) => {
+export const GET = async ({ locals: { videosRepo, session }, url }: RequestEvent) => {
   const { locale, user } = session.data;
   const token = user?.jwt;
   const page = url.searchParams.get('page') || 1;

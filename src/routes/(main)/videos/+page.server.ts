@@ -1,6 +1,5 @@
-/**
- * @type {import("@sveltejs/kit").Actions}
- */
+import type { Actions } from '@sveltejs/kit';
+
 export const actions = {
   more_videos: async ({ request, fetch }) => {
     const data = await request.formData();
@@ -27,4 +26,4 @@ export const actions = {
       })
       .catch((reason) => console.error(reason));
   }
-};
+} as Actions;

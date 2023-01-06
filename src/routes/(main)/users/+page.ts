@@ -2,9 +2,9 @@ import { redirect } from '@sveltejs/kit';
 import { get } from 'svelte/store';
 import { settings } from '$lib/stores';
 import { createTabSearch } from '$lib/utils';
+import type { PageLoadEvent } from './$types';
 
-/** @type {import('./$types').PageLoad} */
-export async function load({ parent }) {
+export async function load({ parent }: PageLoadEvent) {
   const { session } = await parent();
   if (session.user) {
     const $settings = get(settings);

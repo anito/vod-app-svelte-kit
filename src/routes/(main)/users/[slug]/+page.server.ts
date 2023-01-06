@@ -1,25 +1,18 @@
-import { redirect } from '@sveltejs/kit';
+import { redirect, type Actions, type ServerLoadEvent } from '@sveltejs/kit';
 import { locale } from 'svelte-i18n';
 import { get } from 'svelte/store';
 
-/**
- * @type {import('./$types').PageServerLoad}
- */
-export async function load({ locals }) {
+export async function load({ locals }: ServerLoadEvent) {
   if (!locals.session.data.user) {
     throw redirect(301, `/`);
   }
   return {};
 }
 
-/**
- * @type {import("@sveltejs/kit").Actions}
- */
 export const actions = {
   add: async ({ request, fetch, locals }) => {
     return await request.formData().then(async (res) => {
-      /** @type {any} */
-      const formData = {};
+      const formData = {} as any;
       res.forEach((value, key) => (formData[key] = value));
       return await fetch(`/users`, {
         method: 'POST',
@@ -32,8 +25,7 @@ export const actions = {
   edit: async ({ request, params, fetch, locals }) => {
     const id = params.slug;
     return await request.formData().then(async (res) => {
-      /**@type {any} */
-      const formData = {};
+      const formData = {} as any;
       res.forEach((value, key) => (formData[key] = value));
       return await fetch(`/users/${id}`, {
         method: 'PUT',
@@ -51,4 +43,4 @@ export const actions = {
       .then(async (res) => await res.json())
       .catch((err) => console.error(err));
   }
-};
+} as Actions;

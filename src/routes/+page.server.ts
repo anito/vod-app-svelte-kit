@@ -1,8 +1,6 @@
 import * as api from '$lib/api';
+import type { Actions } from '@sveltejs/kit';
 
-/**
- * @type {import("@sveltejs/kit").Actions}
- */
 export const actions = {
   send: async ({ request }) => {
     const formData = await request.formData();
@@ -17,4 +15,4 @@ export const actions = {
       .then(async (res) => res)
       .catch((reason) => console.error(reason));
   }
-};
+} as Actions;

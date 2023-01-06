@@ -1,4 +1,5 @@
-/** @type {import("@sveltejs/kit").Actions} */
+import type { Actions } from '@sveltejs/kit';
+
 export const actions = {
   reload: async ({ request, fetch }) => {
     return await request.formData().then(async (res) => {
@@ -15,4 +16,4 @@ export const actions = {
     await locals.session.set({ ...locals.session.data, mode });
     return { mode };
   }
-};
+} as Actions;

@@ -3,11 +3,12 @@ import { error, json } from '@sveltejs/kit';
 import { get } from 'svelte/store';
 import { settings } from '$lib/stores';
 import { parseLifetime } from '$lib/utils';
+import type { User } from '$lib/types';
+import type { RequestEvent } from './$types';
 
-const parseData = (/** @type {any} */ { success, data }) => {
+const parseData = ({ success, data }: any) => {
   if (success) {
-    /** @type {import('$lib/types').User} */
-    const { id, name, email, avatar, jwt, role, groups } = { ...data.user, ...data };
+    const { id, name, email, avatar, jwt, role, groups }: User = { ...data.user, ...data };
     const lifetime = parseLifetime(get(settings).Session.lifetime);
     const _expires = new Date(Date.now() + lifetime).toISOString();
     return {
@@ -21,8 +22,7 @@ const parseData = (/** @type {any} */ { success, data }) => {
   }
 };
 
-/** @type {import('./$types').RequestHandler} */
-export async function GET({ locals, url }) {
+export async function GET({ locals, url }: RequestEvent) {
   const token = url.searchParams.get('token');
   const type = url.searchParams.get('type') || 'login';
   const { locale } = locals.session.data;
@@ -37,8 +37,7 @@ export async function GET({ locals, url }) {
   throw error(401, 'This method is only allowed for token logins');
 }
 
-/** @type {import('./$types').RequestHandler} */
-export async function POST({ locals, request, url }) {
+export async function POST({ locals, request, url }: RequestEvent) {
   const data = await request.json();
   const type = url.searchParams.get('type') || 'login';
   const { locale } = locals.session.data;

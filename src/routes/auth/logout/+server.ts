@@ -1,8 +1,8 @@
 import * as api from '$lib/api';
 import { error, json } from '@sveltejs/kit';
+import type { RequestEvent } from './$types';
 
-/** @type {import('./$types').RequestHandler} */
-export async function POST({ locals }) {
+export async function POST({ locals }: RequestEvent) {
   const { locale } = locals.session.data;
   await locals.session.destroy();
   // re-save locale to session

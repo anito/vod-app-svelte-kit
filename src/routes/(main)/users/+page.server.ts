@@ -1,6 +1,7 @@
-/** @type {import("@sveltejs/kit").Actions} */
+import type { Actions } from '@sveltejs/kit';
+
 export const actions = {
-  more: async ({ request, fetch, locals }) => {
+  more: async ({ request, fetch }) => {
     const data = await request.formData();
     return await fetch(`/repos/users?page=${data.get('page')}`)
       .then(async (res) => {
@@ -8,4 +9,4 @@ export const actions = {
       })
       .catch((reason) => console.error(reason));
   }
-};
+} as Actions;

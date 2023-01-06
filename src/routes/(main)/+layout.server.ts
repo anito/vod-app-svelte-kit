@@ -1,7 +1,7 @@
 import { USER } from '$lib/utils';
+import type { LayoutServerLoadEvent } from './$types';
 
-/** @type {import('./$types').LayoutServerLoad} */
-export async function load({ fetch, depends, locals }) {
+export async function load({ fetch, depends, locals }: LayoutServerLoadEvent) {
   const { role, user: sessionUser } = locals.session.data;
 
   const videos = await fetch('/repos/videos')
