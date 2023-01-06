@@ -135,7 +135,7 @@
       `${(!isNaN(val) && val / 1000 + 's') || '--'}`
     );
     if (val === 0) {
-      proxyEvent('session:stop');
+      proxyEvent('session:stop', { redirect: '/' });
     }
   });
 
@@ -167,8 +167,8 @@
       to_searches: [],
       from_pathnames: [],
       to_pathnames: ['/auth?/logout', '/auth?/login', '/login', '/logout', '/config']
-    },
-    afterNavigationCallback
+    }
+    // afterNavigationCallback
   );
 
   beforeNavigate(({ cancel }) => {
@@ -567,9 +567,7 @@
               .next()
               .value?.replace(/\//, '');
             if (!actionParam) cancel();
-            return /** @param {{result: import('@sveltejs/kit').ActionResult | any}} param */ async ({
-              result
-            }) => {
+            return async ({ result }) => {
               if (actionParam === 'reload') {
                 if (result.type === 'success') {
                   settings.update(parseConfigData(result.data));
@@ -579,7 +577,7 @@
               if (actionParam === 'logout') {
                 loggedInButtonTextSecondLine = $_('text.one-moment');
                 if ((result.type = 'success')) {
-                  proxyEvent('session:stop', { ...result.data, redirect: '/login' });
+                  proxyEvent('session:stop', { redirect: '/login' });
                 }
               }
             };
