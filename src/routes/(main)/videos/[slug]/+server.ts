@@ -1,8 +1,8 @@
 import * as api from '$lib/api';
 import { json } from '@sveltejs/kit';
-import type { RequestEvent } from '../$types';
+import type { RequestEvent } from './$types';
 
-export async function GET({ request, params, locals }: RequestEvent) {
+export async function GET({ params, locals }: RequestEvent) {
   const id = params.slug;
   const { locale, user } = locals.session.data;
   const token = user?.jwt;

@@ -1,7 +1,6 @@
 <script lang="typescript">
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
-  import { base } from '$lib/api';
   import { register } from '$lib/utils/reader';
   import Layout from './Layout.svelte';
   import Blurb from './Blurb.svelte';
@@ -18,7 +17,7 @@
    * <button on:click={() => myStreamPromise = myStart().stream()}>start</button>
    */
   const autostart = false;
-  const url = base;
+  const url = 'https://anito.de';
 
   let imagePercentage: number;
   let textPercentage: number;
@@ -40,11 +39,11 @@
    */
   const { start: imageStart, store: imageStore } = register({
     filename: 'pic.jpg',
-    url: base
+    url
   });
   const { start: textStart, store: textStore } = register({
     filename: 'sample.txt',
-    url: base
+    url
   });
 
   // Configure button labels

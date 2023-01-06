@@ -1,4 +1,4 @@
-<script>
+<script lang="typescript">
   import * as api from '$lib/api';
   import { page } from '$app/stores';
   import { setContext, getContext, onMount } from 'svelte';
@@ -19,17 +19,11 @@
   import { session, videos } from '$lib/stores';
   import emptyPoster from '/src/assets/images/empty-poster.jpg';
   import { _ } from 'svelte-i18n';
+  import type { LayoutData } from './$types';
 
-  /**
-   * @type {import('./$types').LayoutData}
-   */
-  export let data;
+  export let data: LayoutData;
 
-  /**
-   * @param {string} key
-   * @param {string} val
-   */
-  async function searchBy(key, val) {
+  async function searchBy(key: any, val: any) {
     return await api
       .get(`videos?${key}=${val}`, { token: $session.user?.jwt })
       .then((res) => res)
@@ -41,15 +35,9 @@
   });
 
   const minSearchChars = 2;
-  const { findBy } = getContext('search');
+  const { findBy }: any = getContext('search');
 
-  /**
-   * @type {number}
-   */
-  let selectedIndex;
-  /**
-   * @type {string}
-   */
+  let selectedIndex: any;
   let search = '';
 
   $: pagination = data.pagination?.videos;
