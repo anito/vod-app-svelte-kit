@@ -10,7 +10,7 @@
     </div>
     <a
       style="font-size: .8em; margin: 0 15px; line-height: 1em;"
-      href="https://stackblitz.com/edit/sveltejs-kit-template-default-sqxlez?file=src/routes/+page.svelte"
+      href="https://stackblitz.com/edit/readablestream?file=src/routes/+page.svelte"
       target="_blank"
       rel="noreferrer">For more details see source on Stackblitz</a
     >
