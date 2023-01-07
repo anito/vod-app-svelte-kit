@@ -6,7 +6,7 @@
 <Section>
   <Component density="sm" variant="primary" contentBackgroundColor="var(--surface)">
     <div slot="header">
-      <Header mdc h="5">ReadableStream - Loading Ressources w/o blocking</Header>
+      <Header mdc h="5">ReadableStream - Loading Ressources w/o Blocking</Header>
     </div>
     <a
       style="font-size: .8em; margin: 0 15px; line-height: 1em;"
