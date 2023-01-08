@@ -47,7 +47,7 @@
    * - percentage, current, total, chunks, controller (to controller.close() the pipe)
    */
   const { start: imageStart, store: imageStore } = register({
-    filename: 'pic.jpg',
+    filename: 'sample.jpg',
     url
   });
   const { start: textStart, store: textStore } = register({
