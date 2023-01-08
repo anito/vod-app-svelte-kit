@@ -19,12 +19,21 @@
   const autostart = false;
   const url = 'https://anito.de';
 
+  let imageStream: Promise<string | void | undefined>;
   let imagePercentage: number;
+  let imageLabel: string;
+
+  let textStream: Promise<string | void | undefined>;
   let textPercentage: number;
   let textLabel: string;
-  let imageLabel: string;
-  let imageStream: Promise<string | void | undefined>;
-  let textStream: Promise<string | void | undefined>;
+
+  let zipStream: Promise<string | void | undefined>;
+  let zipPercentage: number;
+  let zipLabel: string;
+
+  let docStream: Promise<string | void | undefined>;
+  let docPercentage: number;
+  let docLabel: string;
 
   /**
    * Register files to be read from external source
@@ -45,29 +54,55 @@
     filename: 'sample.txt',
     url
   });
+  const { start: zipStart, store: zipStore } = register({
+    filename: 'sample.zip',
+    url
+  });
+  const { start: docStart, store: docStore } = register({
+    filename: 'sample.docx',
+    url
+  });
 
-  // Configure button labels
-  $: imageLabel = imagePercentage > 0 && imagePercentage < 100 ? 'cancel' : 'start';
-  $: textLabel = textPercentage > 0 && textPercentage < 100 ? 'cancel' : 'start';
+  // Do something with the stream(s)
   $: imageStream && imageStream.then((res) => console.log(res));
+  $: textStream && textStream.then((res) => console.log(res));
+  $: zipStream && zipStream.then((res) => console.log(res));
+  $: docStream && docStream.then((res) => console.log(res));
+  // Configure button labels depending on percentage
+  $: imageLabel = getLabel(imagePercentage);
+  $: textLabel = getLabel(textPercentage);
+  $: zipLabel = getLabel(zipPercentage);
+  $: docLabel = getLabel(docPercentage);
 
   /**
    * Subscribe to registered stores for actual streaming data
    * store values: percent, current, total, chunks, controller
    */
-  imageStore.subscribe(({ percent }: {percent: any}) => {
+  imageStore.subscribe(({ percent }: { percent: number }) => {
     imagePercentage = percent;
   });
-  textStore.subscribe(({ percent }: {percent: any}) => {
+  textStore.subscribe(({ percent }: { percent: number }) => {
     textPercentage = percent;
+  });
+  zipStore.subscribe(({ percent }: { percent: number }) => {
+    zipPercentage = percent;
+  });
+  docStore.subscribe(({ percent }: { percent: number }) => {
+    docPercentage = percent;
   });
 
   onMount(() => {
     if (autostart) {
       imageStream = imageStart().stream();
       textStream = textStart().stream();
+      zipStream = zipStart().stream();
+      docStream = docStart().stream();
     }
   });
+
+  function getLabel(percentage: number) {
+    return percentage > 0 && percentage < 100 ? 'cancel' : 'start';
+  }
 </script>
 
 <Layout>
@@ -88,11 +123,13 @@
         {/if}
       </div>
       <div class="controls">
+        <div class="filename">sample.jpg</div>
         <button on:click={() => (imageStream = imageStart().stream())} class="start-button"
           >{imageLabel}</button
         >
       </div>
     </div>
+
     <div class="outer" slot="two">
       <div class="read-box" style="">
         {#if textStream}
@@ -108,8 +145,53 @@
         {/if}
       </div>
       <div class="controls">
+        <div class="filename">sample.txt</div>
         <button on:click={() => (textStream = textStart().stream())} class="start-button"
           >{textLabel}</button
+        >
+      </div>
+    </div>
+
+    <div class="outer" slot="three">
+      <div class="read-box" style="">
+        {#if zipStream}
+          {#await zipStream}
+            <div class="wait">
+              <h5 class="inner">{zipPercentage}</h5>
+            </div>
+          {:then file}
+            <div in:fade={{ duration: 500 }} style="font-size: 0.4em;">
+              {file}
+            </div>
+          {/await}
+        {/if}
+      </div>
+      <div class="controls">
+        <div class="filename">sample.zip</div>
+        <button on:click={() => (zipStream = zipStart().stream())} class="start-button"
+          >{zipLabel}</button
+        >
+      </div>
+    </div>
+
+    <div class="outer" slot="fore">
+      <div class="read-box" style="">
+        {#if docStream}
+          {#await docStream}
+            <div class="wait">
+              <h5 class="inner">{docPercentage}</h5>
+            </div>
+          {:then file}
+            <div in:fade={{ duration: 500 }} style="font-size: 0.4em;">
+              {file}
+            </div>
+          {/await}
+        {/if}
+      </div>
+      <div class="controls">
+        <div class="filename">sample.docx</div>
+        <button on:click={() => (docStream = docStart().stream())} class="start-button"
+          >{docLabel}</button
         >
       </div>
     </div>

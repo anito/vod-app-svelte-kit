@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 
-export function createStore() {
+function createStore() {
   const defaults = {
     current: 0,
     total: 0,

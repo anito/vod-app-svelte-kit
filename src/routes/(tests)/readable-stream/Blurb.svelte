@@ -15,12 +15,20 @@
       rel="noreferrer">For more details see source on Stackblitz</a
     >
     <div class="blurb">
-      <div class="box">
+      <div class="box one">
         <slot name="one" />
       </div>
 
-      <div class="box">
+      <div class="box two">
         <slot name="two" />
+      </div>
+
+      <div class="box three">
+        <slot name="three" />
+      </div>
+
+      <div class="box fore">
+        <slot name="fore" />
       </div>
     </div>
   </Component>
@@ -32,7 +40,9 @@
     grid-row-gap: 1em;
     grid-template-areas:
       'one'
-      'two';
+      'two'
+      'three'
+      'fore';
   }
   .box {
     padding: 1em;
@@ -95,7 +105,9 @@
       grid-column-gap: 1em;
       grid-row-gap: 1em;
       grid-template-columns: repeat(2, 1fr);
-      grid-template-areas: 'one two';
+      grid-template-areas:
+        'one two'
+        'three fore';
     }
     .blurb .box {
       padding: 2em;
@@ -110,7 +122,9 @@
       grid-column-gap: 1em;
       grid-row-gap: 5em;
       grid-template-columns: repeat(2, 1fr);
-      grid-template-areas: 'one two';
+      grid-template-areas:
+        'one two'
+        'three fore';
     }
 
     .blurb .box :gloabl(.cta) {
