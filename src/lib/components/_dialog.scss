@@ -1,6 +1,7 @@
 @import '@material/dialog';
 
 .mdc-dialog {
+  $scrim-color: rgb(0, 0, 0, 0);
   @include scrim-color($scrim-color);
   .mdc-dialog__actions {
     .mdc-button {
