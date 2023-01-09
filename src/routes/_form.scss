@@ -44,53 +44,31 @@
   }
 }
 
-.flash {
-  .user-info-form {
-    .mdc-button {
-      &.submit {
-        @include container-fill-color(transparent);
-        @include ink-color(white);
-        @include icon-color(white);
-        @include disabled-icon-color(white);
-      }
+.user-info-form {
+  .mdc-button {
+    &.submit {
+      @include container-fill-color(transparent);
+      @include ink-color(white);
+      @include icon-color(white);
+      @include disabled-icon-color(white);
     }
+  }
+  .user-info-controls {
     .mdc-text-field {
-      &.user-message {
-        @include ink-color(white);
-        @include bottom-line-color(white);
-        @include label-color(white);
-        @include caret-color(white);
+      @include ink-color(white);
+      @include label-color(white);
+      @include disabled-ink-color(rgba(255, 255, 255, 0.38));
+      @include disabled-label-color(rgba(255, 255, 255, 0.38));
+      @include bottom-line-color(white);
+      @include hover-bottom-line-color(white);
+      @include caret-color(white);
+      @include line-ripple-color(white);
+      &.message {
         @include hover-bottom-line-color(white);
         @include outline-color(white);
         @include hover-outline-color(white);
         @include focused-outline-color(white);
       }
     }
-  }
-}
-
-.mdc-text-field {
-  &.user-message {
-    @include ink-color(surface);
-    @include bottom-line-color(surface);
-    @include label-color(surface);
-    @include caret-color(surface);
-    @include hover-bottom-line-color(surface);
-    @include outline-color(surface);
-    @include hover-outline-color(surface);
-    @include focused-outline-color(surface);
-  }
-}
-
-.user-info {
-  .mdc-text-field {
-    @include ink-color(on-surface);
-    @include label-color(on-surface);
-    @include disabled-ink-color(rgba(theme-color.$surface, 0.38));
-    @include disabled-label-color(rgba(theme-color.$surface, 0.38));
-    @include bottom-line-color(on-surface);
-    @include hover-bottom-line-color(on-surface);
-    @include caret-color(on-surface);
-    @include line-ripple-color(surface);
   }
 }

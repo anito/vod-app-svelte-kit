@@ -129,51 +129,54 @@
             <input type="hidden" name="name" value={name} />
             <input type="hidden" name="email" value={email} />
           {/if}
-          {#if selected === 'message'}
-            <Textfield
-              class="user-message"
-              textarea
-              bind:value={message}
-              style="width:100%;"
-              input$name="message"
-            />
-          {/if}
-          <div class="user-info flex justify-between" style="width: 100%;">
-            <Textfield
-              bind:value={name}
-              name="name"
-              disabled={!!$session.user}
-              label=""
-              style="flex: 0.49"
-              input$name="name"
-            >
-              <span slot="label">
-                <Icon
-                  class="material-icons"
-                  style="font-size: 1em; line-height: normal; vertical-align: middle;">person</Icon
-                >
-                {$_('text.name')}
-              </span>
-            </Textfield>
-            <Textfield
-              bind:value={email}
-              bind:invalid={invalidEmail}
-              input$name="email"
-              disabled={!!$session.user}
-              type="email"
-              label=""
-              updateInvalid
-              input$autocomplete="email"
-              style="flex: 0.49"
-            >
-              <span slot="label">
-                <Icon
-                  class="material-icons"
-                  style="font-size: 1em; line-height: normal; vertical-align: middle;">email</Icon
-                >
-                {$_('text.email')}
-              </span>
-            </Textfield>
+          <div class="user-info-controls">
+            {#if selected === 'message'}
+              <Textfield
+                class="message"
+                textarea
+                bind:value={message}
+                style="width:100%;"
+                input$name="message"
+              />
+            {/if}
+            <div class="flex justify-between" style="width: 100%;">
+              <Textfield
+                bind:value={name}
+                name="name"
+                disabled={!!$session.user}
+                label=""
+                style="flex: 0.49"
+                input$name="name"
+              >
+                <span slot="label">
+                  <Icon
+                    class="material-icons"
+                    style="font-size: 1em; line-height: normal; vertical-align: middle;"
+                    >person</Icon
+                  >
+                  {$_('text.name')}
+                </span>
+              </Textfield>
+              <Textfield
+                bind:value={email}
+                bind:invalid={invalidEmail}
+                input$name="email"
+                disabled={!!$session.user}
+                type="email"
+                label=""
+                updateInvalid
+                input$autocomplete="email"
+                style="flex: 0.49"
+              >
+                <span slot="label">
+                  <Icon
+                    class="material-icons"
+                    style="font-size: 1em; line-height: normal; vertical-align: middle;">email</Icon
+                  >
+                  {$_('text.email')}
+                </span>
+              </Textfield>
+            </div>
           </div>
         {/if}
         <div class="" style="width: 100%;">
