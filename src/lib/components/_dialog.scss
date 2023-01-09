@@ -1,36 +1,37 @@
 @import '@material/dialog';
 
-.mdc-dialog {
-  $scrim-color: rgb(0, 0, 0, 0);
-  @include scrim-color($scrim-color);
-  .mdc-dialog__actions {
-    .mdc-button {
-      .mdc-button__label {
-        font-size: 0.8em;
+.theme-default {
+  .mdc-dialog {
+    @include scrim-color($scrim-color);
+    .mdc-dialog__actions {
+      .mdc-button {
+        .mdc-button__label {
+          font-size: 0.8em;
+        }
       }
     }
-  }
-  .mdc-dialog__actions {
-    &.button-overflow-ellipsis {
-      .mdc-button {
-        &[class^='max-w'] {
-          .mdc-button__label {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+    .mdc-dialog__actions {
+      &.button-overflow-ellipsis {
+        .mdc-button {
+          &[class^='max-w'] {
+            .mdc-button__label {
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
           }
-        }
-        &.max-w-10 {
-          max-width: 10%;
-        }
-        &.max-w-20 {
-          max-width: 20%;
-        }
-        &.max-w-25 {
-          max-width: 25%;
-        }
-        &.max-w-33 {
-          max-width: 33%;
+          &.max-w-10 {
+            max-width: 10%;
+          }
+          &.max-w-20 {
+            max-width: 20%;
+          }
+          &.max-w-25 {
+            max-width: 25%;
+          }
+          &.max-w-33 {
+            max-width: 33%;
+          }
         }
       }
     }
