@@ -53,7 +53,7 @@
     const { data, message, success }: any = { ...detail.responseText };
 
     configSnackbar(message);
-    snackbar.forceOpen();
+    snackbar?.forceOpen();
 
     if (success) {
       images.add(data);
@@ -72,7 +72,7 @@
         images.del(id);
       }
       configSnackbar(message);
-      snackbar.forceOpen();
+      snackbar?.forceOpen();
     });
   }
 </script>

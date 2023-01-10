@@ -220,7 +220,7 @@
     }
     close();
     configSnackbar(message);
-    snackbar.forceOpen();
+    snackbar?.forceOpen();
   }
 
   async function deleteAvatar() {
@@ -245,7 +245,7 @@
       });
 
     configSnackbar(msg);
-    snackbar.forceOpen();
+    snackbar?.forceOpen();
   }
 
   async function activateUser() {
@@ -267,7 +267,7 @@
           }
 
           configSnackbar(message);
-          snackbar.forceOpen();
+          snackbar?.forceOpen();
         }
       });
   }
@@ -291,7 +291,7 @@
           }
 
           configSnackbar(message);
-          snackbar.forceOpen();
+          snackbar?.forceOpen();
         }
       });
   }
@@ -457,7 +457,7 @@
                     }
                     reset();
                     configSnackbar(message$1 || message$2);
-                    snackbar.forceOpen();
+                    snackbar?.forceOpen();
                   }
                 };
               }}

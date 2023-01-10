@@ -370,7 +370,7 @@
 
     message = msg || res.message || res.data.message;
     configSnackbar(message);
-    snackbar.forceOpen();
+    snackbar?.forceOpen();
   }
 
   /**
@@ -382,12 +382,12 @@
 
     if (400 <= code && code < 500) {
       configSnackbar(message);
-      snackbar.forceOpen();
+      snackbar?.forceOpen();
     } else {
       flash.update({ type: 'error', message });
       const url = `login?${createRedirectSlug($page.url)}`;
       configSnackbar(message, url);
-      snackbar.forceOpen();
+      snackbar?.forceOpen();
     }
   }
 

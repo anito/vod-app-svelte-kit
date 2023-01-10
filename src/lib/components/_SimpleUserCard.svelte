@@ -1,23 +1,15 @@
-<script>
+<script lang="typescript">
   import './_meta.scss';
   import { page } from '$app/stores';
   import { infos } from '$lib/stores';
   import { UserGraphic, Dot } from '$lib/components';
   import { Meta, Item, Text, PrimaryText, SecondaryText } from '@smui/list';
   import { ADMIN, dynamicUrl, SUPERUSER } from '$lib/utils';
+  import type { User } from '$lib/types';
 
-  /**
-   * @type {any}
-   */
-  export let selectionUserId;
-  /**
-   * @type {import('$lib/types').User}
-   */
-  export let user;
-  /**
-   * @type {any}
-   */
-  export let id;
+  export let selectionUserId: string;
+  export let user: User | undefined;
+  export let id: string;
   export { className as class };
 
   let className = '';

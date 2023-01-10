@@ -1,4 +1,4 @@
-<script>
+<script lang="typescript">
   import * as api from '$lib/api';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
@@ -26,12 +26,11 @@
   import List from '@smui/list';
   import Dialog, { Title as DialogTitle, Content, Actions, InitialFocus } from '@smui/dialog';
   import { _ } from 'svelte-i18n';
+  import type { LayoutData } from './$types';
+  import type { User } from '$lib/types';
+  import type Snackbar from '@smui/snackbar';
 
-  /**
-   * @param {string} key
-   * @param {string} val
-   */
-  async function searchBy(key, val) {
+  async function searchBy(key: any, val: any) {
     return await api
       .get(`users?${key}=${val}`, { token: $session.user?.jwt })
       .then((res) => res)
@@ -43,112 +42,46 @@
   });
 
   const minSearchChars = 2;
-  const { open: open$editor, close: close$editor } = getContext('editor-modal');
-  const { open: open$default, close: close$default } = getContext('default-modal');
-  const { getSnackbar, configSnackbar } = getContext('snackbar');
-  const { getSegment } = getContext('segment');
-  const { findBy } = getContext('search');
+  const { open: open$editor, close: close$editor }: any = getContext('editor-modal');
+  const { open: open$default, close: close$default }: any = getContext('default-modal');
+  const { getSnackbar, configSnackbar }: any = getContext('snackbar');
+  const { getSegment }: any = getContext('segment');
+  const { findBy }: any = getContext('search');
 
-  /**
-   * @type {SvelteStore<string>}
-   */
   const segment = getSegment();
-  /**
-   * @type {import('./$types').LayoutData}
-   */
-  export let data;
+  export let data: LayoutData;
 
-  /**
-   * @type {import('$lib/types').User}
-   */
-  let currentUser;
-  /**
-   * @type {string}
-   */
-  let username;
+  let currentUser: User | undefined;
+  let username: string | undefined;
   let tokenExpires;
-  /**
-   * @type {boolean}
-   */
-  let hasExpired;
-  /**
-   * @type {string}
-   */
-  let token;
-  /**
-   * @type {string | null}
-   */
-  let tokenId;
-  /**
-   * @type {string}
-   */
-  let magicLink;
-  /**
-   * @type {string}
-   */
+  let hasExpired: boolean;
+  let token: string;
+  let tokenId: string | null;
+  let magicLink: string;
   let search = '';
-  /**
-   * @type {import('@smui/snackbar')}
-   */
-  let snackbar;
-  /**
-   * @type {string}
-   */
+  let snackbar: Snackbar;
   let message;
-  /**
-   * @type {Dialog}
-   */
-  let infoDialog;
-  /**
-   * @type {Dialog}
-   */
-  let generateTokenDialog;
-  /**
-   * @type {Dialog}
-   */
-  let activateUserDialog;
-  /**
-   * @type {Dialog}
-   */
-  let resolveAllDialog;
-  /**
-   * @type {Dialog}
-   */
-  let renewedTokenDialog;
-  /**
-   * @type {Dialog}
-   */
-  let removeTokenDialog;
-  /**
-   * @type {Dialog}
-   */
-  let redirectDialog;
-  /**
-   * @type {number}
-   */
-  let selectionIndex;
-  /**
-   * @type {any}
-   */
-  let uploadedData;
-  /**
-   * @type {any}
-   */
-  let listMethods;
-  /**
-   * @type {boolean}
-   */
-  let active;
+  let infoDialog: Dialog;
+  let generateTokenDialog: Dialog;
+  let activateUserDialog: Dialog;
+  let resolveAllDialog: Dialog;
+  let renewedTokenDialog: Dialog;
+  let removeTokenDialog: Dialog;
+  let redirectDialog: Dialog;
+  let selectionIndex: number;
+  let uploadedData: any;
+  let listMethods: any;
+  let active: boolean;
 
   $: pagination = data.pagination?.users;
   $: selectionUserId = $page.params.slug || $session.user?.id;
   $: currentUser = ((id) => $users?.find((usr) => usr.id === id))(selectionUserId);
-  $: ((usr) => {
-    username = usr?.name;
-    active = usr?.active || false;
-    tokenId = usr?.token_id || null;
-    token = usr?.jwt || '';
-    tokenExpires = usr?.expires;
+  $: ((user) => {
+    username = user?.name;
+    active = user?.active || false;
+    tokenId = user?.token_id || null;
+    token = user?.jwt || '';
+    tokenExpires = user?.expires;
     hasExpired = (tokenExpires && tokenExpires * 1000 < +new Date().getTime()) || false;
     magicLink = token ? `${$page.url.origin}/login?token=${token}` : '';
   })(currentUser);
@@ -167,13 +100,7 @@
     ) || [];
   $: filteredUsers.sortBy('name');
   $: userInfos = ($infos?.has(selectionUserId) && $infos.get(selectionUserId).params) || [];
-  $: userIssues = userInfos.filter(
-    /**
-     *
-     * @param {any} info
-     */
-    (info) => info.type === 'issue'
-  );
+  $: userIssues = userInfos.filter((info: { type: string }) => info.type === 'issue');
 
   onMount(() => {
     snackbar = getSnackbar();
@@ -187,20 +114,16 @@
 
     window.addEventListener('info:open:resolve-all-dialog', resolveAllHandler);
     window.addEventListener('info:open:help-dialog', infoDialogHandler);
-    // @ts-ignore
     window.addEventListener('info:user:activate', activateUserHandler);
     window.addEventListener('info:token:remove', removeTokenHandler);
-    // @ts-ignore
     window.addEventListener('info:token:generate', generateTokenHandler);
     window.addEventListener('info:token:redirect', tokenRedirectHandler);
 
     return () => {
       window.removeEventListener('info:open:resolve-all-dialog', resolveAllHandler);
       window.removeEventListener('info:open:help-dialog', infoDialogHandler);
-      // @ts-ignore
       window.removeEventListener('info:user:activate', activateUserHandler);
       window.removeEventListener('info:token:remove', removeTokenHandler);
-      // @ts-ignore
       window.removeEventListener('info:token:generate', generateTokenHandler);
       window.removeEventListener('info:token:redirect', tokenRedirectHandler);
     };
@@ -213,14 +136,9 @@
     proxyEvent('user:add');
   }
 
-  /**
-   *
-   * @param {{constrained: any }} config
-   */
-  async function generateToken(config) {
-    const { constrained } = { ...config };
+  async function generateToken(constrained?: boolean) {
     const res = await api.post('tokens', {
-      data: { user_id: currentUser.id, constrained },
+      data: { user_id: currentUser?.id, constrained },
       token: $session.user?.jwt
     });
 
@@ -229,7 +147,7 @@
       users.put({ ...res.data });
       message = res.message;
       configSnackbar(message);
-      snackbar.forceOpen();
+      snackbar?.forceOpen();
       return res;
     } else {
       try {
@@ -237,7 +155,7 @@
         let message = res.data.errors.token._isUnique || res.data.massage || 'Error';
         configSnackbar(message);
       } catch (e) {}
-      snackbar.forceOpen();
+      snackbar?.forceOpen();
     }
   }
 
@@ -249,7 +167,7 @@
           users.put({ ...currentUser, ...res.data });
         }
         configSnackbar(res.message);
-        snackbar.forceOpen();
+        snackbar?.forceOpen();
       });
   }
 
@@ -264,13 +182,12 @@
         message = res.message || res.data.message || res.statusText;
 
         if (res?.success) {
-          // @ts-ignore
           users.put({ ...currentUser, ...data });
         } else {
           active = !active;
         }
         configSnackbar(message);
-        snackbar.forceOpen();
+        snackbar?.forceOpen();
       });
   }
 
@@ -284,21 +201,12 @@
     resolveAllDialog?.setOpen(true);
   }
 
-  /**
-   *
-   * @param {CustomEvent} event
-   */
-  function activateUserHandler(event) {
-    (event.detail.silent && activateUser({ active: true })) || activateUserDialog?.setOpen(true);
+  function activateUserHandler({ detail }: CustomEvent) {
+    (detail.silent && activateUser({ active: true })) || activateUserDialog?.setOpen(true);
   }
 
-  /**
-   *
-   * @param {CustomEvent} event
-   */
-  function generateTokenHandler(event) {
-    (event.detail.silent && generateToken({ constrained: false })) ||
-      generateTokenDialog?.setOpen(true);
+  function generateTokenHandler({ detail }: CustomEvent) {
+    (detail.silent && generateToken(false)) || generateTokenDialog?.setOpen(true);
   }
 
   function removeTokenHandler() {
@@ -313,82 +221,50 @@
     infoDialog?.setOpen(true);
   }
 
-  /**
-   *
-   * @param {CustomEvent} event
-   */
-  function resolveAllDialogCloseHandler(event) {
-    if (event.detail.action === 'approved') {
+  function resolveAllDialogCloseHandler({ detail }: CustomEvent) {
+    if (detail.action === 'approved') {
       resolveAll();
     }
   }
 
-  /**
-   *
-   * @param {CustomEvent} event
-   */
-  function activateUserDialogCloseHandler(event) {
-    if (event.detail.action === 'approved') {
+  function activateUserDialogCloseHandler({ detail }: CustomEvent) {
+    if (detail.action === 'approved') {
       activateUser({ active: true });
     }
   }
 
-  /**
-   *
-   * @param {CustomEvent} event
-   */
-  function generateTokenDialogCloseHandler(event) {
-    if (event.detail.action === 'approved') {
-      generateToken({ constrained: false });
+  function generateTokenDialogCloseHandler({ detail }: CustomEvent) {
+    if (detail.action === 'approved') {
+      generateToken(false);
     }
   }
 
-  /**
-   *
-   * @param {CustomEvent} event
-   */
-  function removeTokenDialogCloseHandler(event) {
-    if (event.detail.action === 'approved') {
+  function removeTokenDialogCloseHandler({ detail }: CustomEvent) {
+    if (detail.action === 'approved') {
       removeToken();
     }
   }
 
-  /**
-   *
-   * @param {CustomEvent} event
-   */
-  function renewTokenDialogCloseHandler(event) {
-    if (event.detail.action === 'approved') {
+  function renewTokenDialogCloseHandler({ detail }: CustomEvent) {
+    if (detail.action === 'approved') {
       localStorage.removeItem('renewed');
     }
   }
 
-  /**
-   *
-   * @param {CustomEvent} event
-   */
-  function tokenRedirectDialogCloseHandler(event) {
+  function tokenRedirectDialogCloseHandler({ detail }: CustomEvent) {
     if (
-      'redirect' === event.detail.action &&
+      'redirect' === detail.action &&
       /^(https?|ftp|torrent|image|irc):\/\/(-\.)?([^\s\/?\.#-&]+\.?)+(\/[^\s]*)?$/i.test(magicLink)
     ) {
       goto(`/login?token=${token}`);
     }
   }
 
-  /**
-   *
-   * @param {CustomEvent} event
-   */
-  function chipInteractionHandler({ detail }) {
+  function chipInteractionHandler({ detail }: CustomEvent) {
     console.log(detail);
   }
 
-  /**
-   *
-   * @param {any} type
-   */
-  let openUploader = (type) => {
+  let openUploader = () => {
     open$default(
       MediaUploader,
       {
@@ -415,22 +291,15 @@
     );
   };
 
-  /**
-   *
-   * @param {CustomEvent} param0
-   */
-  function uploadSuccessHandler({ detail }) {
-    /**
-     * @type {any}
-     */
-    const { data, message, success } = { ...detail.responseText };
+  function uploadSuccessHandler({ detail }: CustomEvent) {
+    const { data, message, success }: any = { ...detail.responseText };
 
     configSnackbar(message);
-    snackbar.forceOpen();
+    snackbar?.forceOpen();
 
     if (success) {
       uploadedData = data;
-      videos.add([data]);
+      videos.add(data);
       close$default();
     }
   }
@@ -450,17 +319,14 @@
     uploadedData = null;
   }
 
-  /**
-   * @param {CustomEvent} event
-   */
-  function receiveListMethods({ detail }) {
+  function receiveListMethods({ detail }: CustomEvent) {
     listMethods = detail;
   }
 
   function scrollSelectedIntoView() {
     const { items } = listMethods;
     setTimeout(() => {
-      const item = items.find((/** @type {{ selected: any; }} */ item) => item.selected);
+      const item = items.find((item: { selected: any }) => item.selected);
       item?.element.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }, 100);
   }
@@ -497,7 +363,7 @@
         <SimpleUserCard
           id={$session.user?.id}
           {selectionUserId}
-          user={$users.find((user) => user.id === $session.user?.id)}
+          user={$users.find((user) => user.id === $session.user?.id) || undefined}
           ><div class="my-badge">
             <Icon class="material-icons">contact_page</Icon>
           </div>
@@ -804,7 +670,7 @@
   </div>
 {:else if $fabs === 'add-video'}
   <div class="fab">
-    <Fab class="floating-fab" color="primary" on:click={() => openUploader('video')} extended>
+    <Fab class="floating-fab" color="primary" on:click={() => openUploader()} extended>
       <Label>{$_('text.add-video')}</Label>
       <Icon class="material-icons">add</Icon>
     </Fab>

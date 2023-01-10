@@ -1,4 +1,4 @@
-<script>
+<script lang="typescript">
   import './_button.scss';
   import { createEventDispatcher } from 'svelte';
   import MediaImagePreview from './_MediaImagePreview.svelte';
@@ -8,20 +8,15 @@
   import Menu from '@smui/menu';
   import List, { Item, Separator, Text, PrimaryText, SecondaryText, Graphic } from '@smui/list';
   import { _ } from 'svelte-i18n';
+  import type { Image } from '$lib/types';
 
-  /**
-   * @type {import('$lib/types').Image}
-   */
-  export let image;
+  export let image: Image;
   export { className as class };
 
   const dispatch = createEventDispatcher();
 
   let className = '';
-  /**
-   * @type {Menu}
-   */
-  let posterMenu;
+  let posterMenu: Menu;
 </script>
 
 <Card class="card {className}">
@@ -29,8 +24,8 @@
     <MediaImagePreview media={image} />
   </PrimaryAction>
   <Actions class="card-actions">
-    <ActionButtons class="justify-between">
-      <Button color="primary" on:click={() => posterMenu?.setOpen(true)}>
+    <ActionButtons class="action-buttons" style="flex: 1 0 auto;">
+      <Button class="action-button" color="primary" on:click={() => posterMenu?.setOpen(true)}>
         <Label>{$_('text.delete')}</Label>
         <Icon class="material-icons">delete</Icon>
       </Button>

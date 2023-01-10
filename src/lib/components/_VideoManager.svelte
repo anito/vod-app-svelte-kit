@@ -1,4 +1,4 @@
-<script>
+<script lang="typescript">
   import './_icon-button.scss';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
@@ -13,7 +13,6 @@
     Paginator,
     FlexContainer
   } from '$lib/components';
-  import { mute } from '$lib/components/Video';
   import { session, videos, fabs } from '$lib/stores';
   import {
     ADMIN,
@@ -23,42 +22,29 @@
     posterSelectedHandler
   } from '$lib/utils';
   import { _ } from 'svelte-i18n';
+  import type Snackbar from '@smui/snackbar';
+  import type { Video } from '$lib/types';
 
-  const { open: open$editor, close: close$editor } = getContext('editor-modal');
-  const { open: open$uploader, close: close$uploader } = getContext('default-modal');
-  const { getSnackbar, configSnackbar } = getContext('snackbar');
-  const { setFab } = getContext('fab');
+  const { open: open$editor, close: close$editor }: any = getContext('editor-modal');
+  const { open: open$uploader, close: close$uploader }: any = getContext('default-modal');
+  const { getSnackbar, configSnackbar }: any = getContext('snackbar');
+  const { setFab }: any = getContext('fab');
   const transitionParams = {
     delay: 0,
     duration: 200
   };
   const flyTransitionParams = { ...transitionParams, x: -80 };
-  const sortAZ =
-    /**
-     * @param {any} a
-     * @param {any} b
-     *
-     */
-    (a, b) => {
-      let _a, _b;
-      a = (_a = a.title || a.src) && _a.toLowerCase();
-      b = (_b = b.title || b.src) && _b.toLowerCase();
-      if (a < b) return -1;
-      if (a > b) return 1;
-      return 0;
-    };
+  const sortAZ = (a: Video, b: Video) => {
+    let _a, _b;
+    a = (_a = a.title || a.src) && _a.toLowerCase();
+    b = (_b = b.title || b.src) && _b.toLowerCase();
+    if (a < b) return -1;
+    if (a > b) return 1;
+    return 0;
+  };
 
-  /**
-   * @type {import("@smui/snackbar")}
-   */
-  let snackbar;
-  /**
-   * @type {any}
-   */
-  let uploadedData;
-  /**
-   * @type {HTMLUListElement}
-   */
+  let snackbar: Snackbar;
+  let uploadedData: any;
   let videoList;
 
   $: pagination = $page.data.pagination?.videos;
@@ -74,53 +60,45 @@
     }
   });
 
-  let openUploader =
-    /**
-     * @param {any} type
-     */
-    (type) => {
-      open$uploader(
-        MediaUploader,
-        {
-          layoutProps: { type: $_('text.videos') },
-          type: 'video',
-          options: {
-            // acceptedFiles: '.mov .mp4 .m4a .m4v .3gp .3g2 .webm',
-            parallelUploads: 1,
-            maxFiles: 1,
-            timeout: 3600 * 1000, // 60min
-            maxFilesize: 1024 // Megabyte
-          },
-          events: { 'upload:success': uploadSuccessHandler }
+  let openUploader = () => {
+    open$uploader(
+      MediaUploader,
+      {
+        layoutProps: { type: $_('text.videos') },
+        type: 'video',
+        options: {
+          // acceptedFiles: '.mov .mp4 .m4a .m4v .3gp .3g2 .webm',
+          parallelUploads: 1,
+          maxFiles: 1,
+          timeout: 3600 * 1000, // 60min
+          maxFilesize: 1024 // Megabyte
         },
-        {
-          closeOnOuterClick: false,
-          transitionWindow: fly,
-          transitionWindowProps: {
-            y: -200,
-            duration: 500
-          }
-        },
-        {
-          onClosed: openEditor
+        events: { 'upload:success': uploadSuccessHandler }
+      },
+      {
+        closeOnOuterClick: false,
+        transitionWindow: fly,
+        transitionWindowProps: {
+          y: -200,
+          duration: 500
         }
-      );
-    };
+      },
+      {
+        onClosed: openEditor
+      }
+    );
+  };
 
-  /**
-   *
-   * @param {CustomEvent} param0
-   */
-  function uploadSuccessHandler({ detail }) {
-    /** @type {any} */
-    const { data, message, success } = { ...detail.responseText };
+  function uploadSuccessHandler({ detail }: CustomEvent) {
+    const { data, message, success }: any = detail.responseText;
+    console.log('uploadSuccess', data);
 
     configSnackbar(message);
-    snackbar.forceOpen();
+    snackbar?.forceOpen();
 
     if (success) {
       uploadedData = data;
-      videos.add([data]);
+      videos.add(data);
       close$uploader();
     }
   }

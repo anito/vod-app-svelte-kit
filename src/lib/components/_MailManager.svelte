@@ -254,7 +254,7 @@
           configSnackbar($_('text.message-sent-failed'));
         }
       });
-    snackbar.forceOpen();
+    snackbar?.forceOpen();
   }
 
   function validateUser() {
@@ -360,7 +360,7 @@
       templates.add({ ...newTemplate, id: res.data.id, items: res.data.items });
       gotoActiveBox(templateStringFromSlug(slug));
     }
-    snackbar.forceOpen();
+    snackbar?.forceOpen();
   }
 
   async function saveTemplate() {
@@ -384,7 +384,7 @@
       templates.put({ ...currentTemplate });
       mailTemplate.createWorkingCopy?.();
     }
-    snackbar.forceOpen();
+    snackbar?.forceOpen();
   }
 
   async function duplicateTemplate() {
@@ -408,7 +408,7 @@
       templates.add({ ...newTemplate, id: res.data.id, items: res.data.items });
       gotoActiveBox(templateStringFromSlug(slug));
     }
-    snackbar.forceOpen();
+    snackbar?.forceOpen();
   }
 
   async function removeTemplate() {
@@ -419,7 +419,7 @@
     if (res?.success) {
       templates.del(currentTemplate.id);
     }
-    snackbar.forceOpen();
+    snackbar?.forceOpen();
   }
 
   function getTemplateData(slug: string) {
@@ -471,7 +471,7 @@
     } else {
       configSnackbar($_('text.template-could-not-be-renamed'));
     }
-    snackbar.forceOpen();
+    snackbar?.forceOpen();
     return res.success;
   }
 

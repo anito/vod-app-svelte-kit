@@ -1,4 +1,4 @@
-<script>
+<script lang="typescript">
   import './_button.scss';
   import './_menu-surface.scss';
   import { page } from '$app/stores';
@@ -17,47 +17,23 @@
   import List, { Item, Separator, Text } from '@smui/list';
   import emptyPoster from '/src/assets/images/empty-poster.jpg';
   import { _, locale } from 'svelte-i18n';
+  import type { Video } from '$lib/types';
 
-  /** @type {import('$lib/types').Video} */
-  export let video;
+  export let video: Video;
   export { className as class };
   export let key = 'default-modal';
 
-  const { open, close } = getContext(key);
+  const { open, close }: any = getContext(key);
   const dispatch = createEventDispatcher();
 
   let className = '';
-  /**
-   * @type {Menu}
-   */
-  let cardMenu;
-  /**
-   * @type {Menu}
-   */
-  let deleteMenu;
-  /**
-   * @type {MenuSurface}
-   */
-  let imageList;
-  /**
-   * @type {HTMLDivElement}
-   */
-  let imageListAnchor;
-  /**
-   * @type {boolean}
-   */
+  let cardMenu: Menu;
+  let deleteMenu: Menu;
+  let imageList: MenuSurface;
+  let imageListAnchor: HTMLDivElement;
   let isEditMode = false;
-  /**
-   * @type {string}
-   */
-  let title;
-  /**
-   * @type {string}
-   */
-  let description;
-  /**
-   * @type {boolean}
-   */
+  let title: string;
+  let description: string;
   let isImageListOpen = false;
 
   $: pagination = $page.data.pagination?.images;
@@ -86,10 +62,7 @@
     return true;
   }
 
-  /**
-   * @param {boolean} open
-   */
-  function setDeleteMenuOpen(open) {
+  function setDeleteMenuOpen(open: boolean) {
     deleteMenu?.setOpen(open);
     return false;
   }
@@ -125,10 +98,7 @@
     );
   }
 
-  /**
-   * @param {string} id
-   */
-  function getCachedImage(id) {
+  function getCachedImage(id: string) {
     let res = getMedia('IMAGE', id, $session.user?.jwt, {
       width: 100,
       height: 100,
@@ -137,10 +107,7 @@
     return res;
   }
 
-  /**
-   * @param {CustomEvent} param0
-   */
-  function uploadSuccessHandler({ detail }) {
+  function uploadSuccessHandler({ detail }: CustomEvent) {
     dispatch('video:posterCreated', detail);
     close();
   }

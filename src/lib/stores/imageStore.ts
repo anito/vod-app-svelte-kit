@@ -1,8 +1,8 @@
-import type { Video } from '$lib/types';
+import type { Image } from '$lib/types';
 import { writable } from 'svelte/store';
 
 function createStore() {
-  const { subscribe, update, set } = writable([] as Video[], () => {});
+  const { subscribe, update, set } = writable([] as Image[], () => {});
 
   let findIndexById = (id: any, items: any[]) => {
     return items.findIndex((itm) => itm.id == id);
@@ -10,20 +10,20 @@ function createStore() {
 
   return {
     subscribe,
-    add: (values: Video[]) =>
+    add: (values: any) =>
       update((items) => {
         for (const value of values) {
-          if (!items.find((item: Video) => value.id === item.id)) items = [...items, value];
+          if (!items.find((item) => value.id === item.id)) items = [...items, value];
         }
         return items;
       }),
-    put: (val: { id: any }) =>
+    put: (val: Image) =>
       update((items) => {
         const index = findIndexById(val.id, items);
         return [...items.slice(0, index), { ...items[index], ...val }, ...items.slice(index + 1)];
       }),
-    del: (id: any) => update((items) => items.filter((itm: { id: any }) => itm.id !== id)),
-    update: (val: any) => update((items) => val),
+    del: (id: string) => update((items) => items.filter((itm) => itm.id !== id)),
+    update: (val: Image[]) => update((items) => val),
     set
   };
 }

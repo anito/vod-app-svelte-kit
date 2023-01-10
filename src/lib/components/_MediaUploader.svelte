@@ -63,7 +63,7 @@
   function onError({ detail }: CustomEvent) {
     const message = detail.message;
     configSnackbar(message);
-    snackbar.forceOpen();
+    snackbar?.forceOpen();
   }
 </script>
 

@@ -12,7 +12,7 @@ function createStore() {
 
   return {
     subscribe,
-    add: (values: any) =>
+    add: (values: User[]) =>
       update((items) => {
         for (const value of values) {
           if (!items.find((item) => value.id === item.id)) items = [...items, value];

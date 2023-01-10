@@ -273,9 +273,6 @@
     mediaMode = mode;
   }
 
-  /**
-   * @param {string} m
-   */
   function setColorSchema(m = LIGHT) {
     const mode = m === LIGHT ? DARK : LIGHT;
     const getSchemaIcon = (m: string) => (m === DARK ? 'dark_mode' : 'light_mode');
@@ -358,7 +355,7 @@
     if (show) {
       let message = res.message || res.data.message;
       configSnackbar(message);
-      snackbar.forceOpen();
+      snackbar?.forceOpen();
     }
   }
 
@@ -379,7 +376,7 @@
     if (show) {
       let message = res.message || res.data.message;
       configSnackbar(message);
-      snackbar.forceOpen();
+      snackbar?.forceOpen();
     }
   }
 
@@ -457,7 +454,7 @@
         values: { name: user.name }
       })
     );
-    snackbar.forceOpen();
+    snackbar?.forceOpen();
 
     if (typeof callback === 'function') {
       callback();
@@ -510,7 +507,7 @@
       snackbarMessage = res.message || res.data?.message;
 
       configSnackbar(snackbarMessage);
-      snackbar.forceOpen();
+      snackbar?.forceOpen();
       return res;
     });
   }
@@ -520,7 +517,7 @@
 
     const { locale }: { locale: string } = { ...detail };
     configSnackbar($_('text.language_is_now', { values: { locale } }));
-    snackbar.forceOpen();
+    snackbar?.forceOpen();
   }
 
   function isEditable({ section, key }: { section: any; key: string }) {

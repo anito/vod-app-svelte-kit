@@ -17,6 +17,8 @@ declare global {
     'ui:mousemove': CustomEvent;
     'ui:touchstart': CustomEvent;
     'ui:pip': CustomEvent;
+    'info:user:activate': CustomEvent;
+    'info:token:generate': CustomEvent;
   }
 
   interface Number {
