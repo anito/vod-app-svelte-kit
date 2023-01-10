@@ -42,7 +42,7 @@
     background-color: #ff0000;
   }
   :global(.dz-button) {
-    position: absolute;
+    position: absolute !important;
     top: -12px;
     right: -12px;
     display: flex;
