@@ -1,11 +1,13 @@
-<script>
-  // @ts-nocheck
-
+<script lang="typescript">
   import { onMount } from 'svelte';
   import Dropzone from 'dropzone';
 
   export let dropzoneEvents = {};
-  export let options = {};
+  export let options: {
+    previewTemplate?: string;
+    dictDefaultMessage?: string;
+    clickable?: boolean;
+  } = {};
   export let style = '';
   export let dropzoneClass = 'dropzone';
   export let hoveringClass = 'dropzone-hovering';
@@ -28,23 +30,23 @@
       Dropzone.autoDiscover = false;
     }
 
-    svDropzone.on('addedfile', (f) => {
-      dropzoneElement.classList.remove(hoveringClass);
+    svDropzone.on('addedfile', () => {
+      dropzoneElement?.classList.remove(hoveringClass);
     });
-    svDropzone.on('dragenter', (e) => {
-      dropzoneElement.classList.toggle(hoveringClass);
+    svDropzone.on('dragenter', () => {
+      dropzoneElement?.classList.toggle(hoveringClass);
     });
-    svDropzone.on('dragleave', (e) => {
-      dropzoneElement.classList.toggle(hoveringClass);
+    svDropzone.on('dragleave', () => {
+      dropzoneElement?.classList.toggle(hoveringClass);
     });
     Object.entries(dropzoneEvents).map(([eventKey, eventFunc]) =>
       svDropzone.on(eventKey, eventFunc)
     );
 
     if (options.clickable !== false) {
-      dropzoneElement.style.cursor = 'pointer';
+      dropzoneElement && (dropzoneElement.style.cursor = 'pointer');
     }
-    svDropzone.on('error', (file, errorMessage) => {
+    svDropzone.on('error', (file: Blob, errorMessage: any) => {
       console.log('Error:', errorMessage);
     });
   });

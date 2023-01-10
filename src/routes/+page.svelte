@@ -117,7 +117,7 @@
             } else {
               configSnackbar($_('text.message-sent-failed'));
             }
-            snackbar?.open();
+            snackbar.forceOpen();
           };
         }}
       >

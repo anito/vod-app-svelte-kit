@@ -1,11 +1,11 @@
-<script>
-  import { onMount, createEventDispatcher, getContext } from 'svelte';
+<script lang="typescript">
+  import { onMount, createEventDispatcher } from 'svelte';
   import { session } from '$lib/stores';
   import PreviewTemplate from './_PreviewTemplate.svelte';
   import Button, { Label, Icon } from '@smui/button';
   import LinearProgress from '@smui/linear-progress';
   import Dropzone from '$lib/components/Dropzone/index.svelte';
-  import { base } from '$lib/api';
+  import { base, version } from '$lib/api';
   import { _ } from 'svelte-i18n';
 
   export { className as class };
@@ -20,34 +20,37 @@
 
   const dispatch = createEventDispatcher();
 
-  /**
-   * @type {Dropzone}
-   */
-  let dropzone;
+  let dropzone: Dropzone;
   let className = '';
   let progress = 0;
-  /**
-   * @type {any}
-   */
-  let previewTemplate;
-  /** @type {any} */
-  let options;
+  let previewTemplate: any;
+  let options: {
+    url: string;
+    timeout: number;
+    paramName: string;
+    uploadMultiple: boolean;
+    maxFiles: number;
+    autoProcessQueue: boolean;
+    parallelUploads: number;
+    withCredentials: boolean;
+    thumbnailWidth: number;
+    thumbnailHeight: number;
+    clickable: boolean;
+    acceptedFiles: string;
+    maxFilesize: number;
+    previewTemplate: any;
+    init: (this: Dropzone) => void;
+  };
   let count = 0;
 
   $: hasFiles = !!count;
   $: closed = !hasFiles;
   $: if (!hasFiles) progress = 0; // reset progress when removing last file
 
-  /**
-   *
-   * @param {Element} el
-   */
-  const template = (el) => {
-    if (el.childNodes.length) {
-      /** @type {Element | null} */
-      // @ts-ignore
-      const firstChild = el.firstChild;
-      previewTemplate = firstChild?.outerHTML;
+  const template = (el: HTMLDivElement) => {
+    if (el.firstChild) {
+      const firstChild = el.firstChild as HTMLElement;
+      previewTemplate = firstChild.outerHTML;
       el.remove();
     }
   };
@@ -55,78 +58,49 @@
   let submit = function () {
     dropzone.processQueue();
   };
-  let init =
-    /**
-     * @this {Dropzone}
-     */
-    function () {
-      dropzone = this;
+  let init = function () {
+    dropzone = this;
 
-      // Events
-      this.on(
-        'successmultiple',
-        (
-          /** @type {Blob[]} */ files,
-          /** @type {any} */ responseText,
-          /** @type {Event} */ event
-        ) => {
-          dispatch('Uploader:successmultiple', { files, responseText, event });
-        }
-      );
-      this.on(
-        'success',
-        (
-          /** @type {Blob[]} */ files,
-          /** @type {any} */ responseText,
-          /** @type {Event} */ event
-        ) => {
-          dispatch('Uploader:success', { files, responseText, event });
-        }
-      );
-      this.on(
-        'error',
-        (
-          /** @type {Blob} */ file,
-          /** @type {string} */ message,
-          /** @type {XMLHttpRequestResponseType} */ xhr
-        ) => {
-          dispatch('Uploader:error', { file, message, xhr });
-        }
-      );
-      this.on('addedfile', (/** @type {Blob} */ file) => {
-        ++count;
-        dispatch('Uploader:addedfile', { file });
-      });
-      this.on('removedfile', (/** @type {Blob} */ file) => {
-        --count;
-        dispatch('Uploader:removedfile', { file });
-      });
-      this.on(
-        'totaluploadprogress',
-        (
-          /** @type {number} */ totalUploadProgress,
-          /** @type {any} */ totalBytes,
-          /** @type {any} */ totalBytesSent
-        ) => {
-          dispatch('Uploader:totaluploadprogress', {
-            totalUploadProgress,
-            totalBytes,
-            totalBytesSent
-          });
-          progress = totalUploadProgress / 100;
-        }
-      );
-      this.on('complete', (/** @type {Blob} */ file) => {
-        dropzone.removeFile(file);
-      });
-      this.on('maxfilesreached', (/** @type {any} */ files) => {
-        // TODO
-      });
-    };
+    // Events
+    dropzone.on('successmultiple', (files: Blob[], responseText: any, event: any) => {
+      dispatch('Uploader:successmultiple', { files, responseText, event });
+    });
+    dropzone.on('success', (files: Blob[], responseText: any, event: Event) => {
+      dispatch('Uploader:success', { files, responseText, event });
+    });
+    dropzone.on('error', (file: Blob, message: any, xhr: XMLHttpRequest) => {
+      dispatch('Uploader:error', { file, message, xhr });
+    });
+    dropzone.on('addedfile', (file: Blob) => {
+      ++count;
+      dispatch('Uploader:addedfile', { file });
+    });
+    dropzone.on('removedfile', (file: Blob) => {
+      --count;
+      dispatch('Uploader:removedfile', { file });
+    });
+    dropzone.on(
+      'totaluploadprogress',
+      (totalUploadProgress: number, totalBytes: any, totalBytesSent: any) => {
+        dispatch('Uploader:totaluploadprogress', {
+          totalUploadProgress,
+          totalBytes,
+          totalBytesSent
+        });
+        progress = totalUploadProgress / 100;
+      }
+    );
+    dropzone.on('complete', (file: Blob) => {
+      dropzone.removeFile(file);
+    });
+    dropzone.on('maxfilesreached', (files: Blob[]) => {
+      // TODO
+    });
+  };
 
   onMount(async () => {
     options = {
-      url: `${base}/${path}?token=${$session.user?.jwt}`,
+      url: `${base}/${version}/${path}?token=${$session.user?.jwt}`,
       timeout,
       paramName: 'Files',
       uploadMultiple,

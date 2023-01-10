@@ -73,7 +73,7 @@
   const DARK = 'dark';
 
   let root: Element;
-  let base: HTMLDivElement;
+  let outerElement: HTMLDivElement;
   let snackbarMessage = '';
   let actionLink: string;
   let actionLabel: string;
@@ -240,7 +240,7 @@
     setTimeout(() => {
       loaderBackgroundOpacity = 0.45;
       loaderColor = 'var(--flash)';
-      base?.classList.remove('opacity-0');
+      outerElement?.classList.remove('opacity-0');
     }, 400);
   }
 
@@ -358,7 +358,7 @@
     if (show) {
       let message = res.message || res.data.message;
       configSnackbar(message);
-      snackbar?.open();
+      snackbar.forceOpen();
     }
   }
 
@@ -379,7 +379,7 @@
     if (show) {
       let message = res.message || res.data.message;
       configSnackbar(message);
-      snackbar?.open();
+      snackbar.forceOpen();
     }
   }
 
@@ -457,7 +457,7 @@
         values: { name: user.name }
       })
     );
-    snackbar?.open();
+    snackbar.forceOpen();
 
     if (typeof callback === 'function') {
       callback();
@@ -510,7 +510,7 @@
       snackbarMessage = res.message || res.data?.message;
 
       configSnackbar(snackbarMessage);
-      snackbar?.open();
+      snackbar.forceOpen();
       return res;
     });
   }
@@ -520,7 +520,7 @@
 
     const { locale }: { locale: string } = { ...detail };
     configSnackbar($_('text.language_is_now', { values: { locale } }));
-    snackbar?.open();
+    snackbar.forceOpen();
   }
 
   function isEditable({ section, key }: { section: any; key: string }) {
@@ -559,7 +559,7 @@
 {#if $locale}
   <Modal header={{ name: 'text.upload-type' }} key="default-modal">
     <Modal header={{ name: 'text.edit-uploaded-content' }} key="editor-modal">
-      <div bind:this={base} class="transition opacity-0">
+      <div bind:this={outerElement} class="transition opacity-0">
         <form
           use:enhance={({ action, cancel }) => {
             const actionParam = new URLSearchParams(action.searchParams)

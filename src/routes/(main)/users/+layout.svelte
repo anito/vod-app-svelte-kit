@@ -229,7 +229,7 @@
       users.put({ ...res.data });
       message = res.message;
       configSnackbar(message);
-      snackbar?.open();
+      snackbar.forceOpen();
       return res;
     } else {
       try {
@@ -237,7 +237,7 @@
         let message = res.data.errors.token._isUnique || res.data.massage || 'Error';
         configSnackbar(message);
       } catch (e) {}
-      snackbar?.open();
+      snackbar.forceOpen();
     }
   }
 
@@ -249,7 +249,7 @@
           users.put({ ...currentUser, ...res.data });
         }
         configSnackbar(res.message);
-        snackbar?.open();
+        snackbar.forceOpen();
       });
   }
 
@@ -270,7 +270,7 @@
           active = !active;
         }
         configSnackbar(message);
-        snackbar?.open();
+        snackbar.forceOpen();
       });
   }
 
@@ -426,7 +426,7 @@
     const { data, message, success } = { ...detail.responseText };
 
     configSnackbar(message);
-    snackbar?.open();
+    snackbar.forceOpen();
 
     if (success) {
       uploadedData = data;

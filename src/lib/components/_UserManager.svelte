@@ -21,7 +21,6 @@
   import Switch from '@smui/switch';
   import Select, { Option } from '@smui/select';
   import SelectIcon from '@smui/select/icon';
-  import Paper, { Title } from '@smui/paper';
   import Menu from '@smui/menu';
   import { Anchor } from '@smui/menu-surface';
   import List, { Item, Separator, Text } from '@smui/list';
@@ -34,10 +33,13 @@
     FlexContainer
   } from '$lib/components';
   import { _ } from 'svelte-i18n';
+  import type Snackbar from '@smui/snackbar';
+  import type { User } from '$lib/types';
+  import { useActions } from '@smui/common/internal';
 
-  const { setFab } = getContext('fab');
-  const { open, close } = getContext('default-modal');
-  const { getSnackbar, configSnackbar } = getContext('snackbar');
+  const { setFab }: any = getContext('fab');
+  const { open, close }: any = getContext('default-modal');
+  const { getSnackbar, configSnackbar }: any = getContext('snackbar');
 
   const EDIT = 'edit';
   const ADD = 'add';
@@ -46,26 +48,26 @@
   const privilegedActions = [EDIT, PASS, DEL];
   const userActions = [EDIT, PASS];
 
-  export let selectionUserId;
+  export let selectionUserId = '';
   export let selectedMode = EDIT;
 
   let code;
-  let root;
+  let root: HTMLElement;
   let invalidEmail = false;
   let password = '';
   let repeatedPassword = '';
-  let snackbar;
+  let snackbar: Snackbar;
   let message;
-  let avatarMenu;
+  let avatarMenu: Menu;
   let avatarMenuAnchor;
   let jwt = '';
   let activeLabel = '';
   let protectedLabel = '';
-  let inputElementMagicLink;
-  let copyTimeoutId;
-  let copyButton;
-  let setCopyButton = (node) => (copyButton = node);
-  let group_id;
+  let inputElementMagicLink: HTMLInputElement;
+  let copyTimeoutId: string | number | NodeJS.Timeout | undefined;
+  let copyButton: HTMLButtonElement;
+  let setCopyButton = (node: HTMLButtonElement) => (copyButton = node);
+  let group_id: string;
   let name = '';
   let email = '';
   let active = false;
@@ -74,9 +76,8 @@
 
   $: token = $session.user?.jwt;
   $: redirectMode(mode);
-  $: selectedMode = $page.url.searchParams.has('mode')
-    ? $page.url.searchParams.get('mode')
-    : (mode = EDIT);
+  $: selectedMode =
+    ($page.url.searchParams.has('mode') && $page.url.searchParams.get('mode')) || (mode = EDIT);
   $: ((mode) => {
     if (hasPrivileges && mode !== ADD) {
       setFab('add-user');
@@ -91,7 +92,7 @@
   $: root?.classList.toggle('user-delete-view', selectedMode === DEL);
   $: groups = $session.groups || [];
   $: currentUser = ((id) => {
-    const user = $users.find((usr) => usr?.id === id);
+    const user = $users.find((usr) => usr?.id === id) as User | undefined;
     if (user && selectedMode !== ADD) {
       copy(user);
     }
@@ -106,12 +107,14 @@
   $: notFound =
     selectedMode !== ADD &&
     selectionUserId &&
-    undefined === $users.find((u) => u.id === selectionUserId);
-  $: _name = ((usr) => usr?.name || '')(selectedMode !== ADD ? currentUser : false);
-  $: _active = ((usr) => usr?.active || false)(selectedMode !== ADD ? currentUser : false);
-  $: _protected = ((usr) => usr?.protected || false)(selectedMode !== ADD ? currentUser : false);
-  $: _email = ((usr) => usr?.email || '')(selectedMode !== ADD ? currentUser : false);
-  $: _group_id = ((usr) => usr?.group_id || void 0)(selectedMode !== ADD ? currentUser : false);
+    undefined === $users.find((user) => user.id === selectionUserId);
+  $: _name = ((user) => user?.name || '')(selectedMode !== ADD ? currentUser : undefined);
+  $: _active = ((usr) => usr?.active || false)(selectedMode !== ADD ? currentUser : undefined);
+  $: _protected = ((usr) => usr?.protected || false)(
+    selectedMode !== ADD ? currentUser : undefined
+  );
+  $: _email = ((usr) => usr?.email || '')(selectedMode !== ADD ? currentUser : undefined);
+  $: _group_id = ((usr) => usr?.group_id || '')(selectedMode !== ADD ? currentUser : undefined);
   $: invalidPassword = password.length < 8;
   $: invalidRepeatedPassword = password !== repeatedPassword || invalidPassword;
   $: canSave =
@@ -175,7 +178,7 @@
       {
         layoutProps: { type: $_('text.avatar') },
         type: 'avatar',
-        uid: currentUser.id,
+        uid: currentUser?.id,
         options: {
           parallelUploads: 1,
           maxFiles: 1
@@ -201,8 +204,8 @@
     }
   }
 
-  async function uploadSuccessHandler({ detail }) {
-    const { success, message, data } = { ...detail.responseText };
+  async function uploadSuccessHandler({ detail }: CustomEvent) {
+    const { success, message, data }: any = { ...detail.responseText };
 
     if (success) {
       // reflect the change in the session cookie
@@ -217,21 +220,20 @@
     }
     close();
     configSnackbar(message);
-    snackbar?.open();
+    snackbar.forceOpen();
   }
 
   async function deleteAvatar() {
     let msg;
     await api
-      .del(`avatars/${currentUser.avatar.id}?locale=${$session.locale}`, { token })
+      .del(`avatars/${currentUser?.avatar.id}?locale=${$session.locale}`, { token })
       .then(async (res) => {
-        /** @type {any} */
-        const { data, success, message } = { ...res };
+        const { data, success, message }: any = { ...res };
         msg = message || res.data?.message;
 
         if (success) {
           // reflect the change in the session cookie
-          if ($session.user.id === currentUser.id) {
+          if ($session.user.id === currentUser?.id) {
             await post('/session', {
               ...$session,
               user: { ...$session.user, avatar: data.avatar }
@@ -243,7 +245,7 @@
       });
 
     configSnackbar(msg);
-    snackbar?.open();
+    snackbar.forceOpen();
   }
 
   async function activateUser() {
@@ -265,7 +267,7 @@
           }
 
           configSnackbar(message);
-          snackbar?.open();
+          snackbar.forceOpen();
         }
       });
   }
@@ -289,16 +291,12 @@
           }
 
           configSnackbar(message);
-          snackbar?.open();
+          snackbar.forceOpen();
         }
       });
   }
-
-  /**
-   * @param {import('$lib/types').User} user
-   */
-  function copy(user) {
-    ({ name, email, active, group_id, __protected } = { ...user, __protected: !!user.protected });
+  function copy(user: User<Record<any, any>>) {
+    ({ name, email, active, group_id, __protected } = { ...user, __protected: user.protected });
   }
 
   function reset() {
@@ -316,18 +314,15 @@
 
   function copyToClipBoard() {
     if (inputElementMagicLink) {
-      /** @type {boolean} */
       let didCopy;
-      /** @type {HTMLInputElement | null} */
       let inputEl;
-      /** @type {HTMLLabelElement | any} */
-      let label = copyButton.getElementsByClassName('token-button-label').item(0);
+      let label = copyButton.getElementsByClassName('token-button-label').item(0) as HTMLElement;
       inputEl = inputElementMagicLink.getElementsByTagName('input').item(0);
       inputEl?.focus();
       inputEl?.select();
       didCopy = document.execCommand('copy');
       if (didCopy) {
-        label.innerText = $_('text.copied');
+        label && (label.innerText = $_('text.copied'));
         clearTimeout(copyTimeoutId);
         copyTimeoutId = setTimeout(() => (label.innerText = $_('text.copy')), 4000);
       }
@@ -351,7 +346,7 @@
                 <Icon class="material-icons" style="vertical-align: middle;">close</Icon>
               </button>
             {:else if currentUser}
-              {currentUser.name}
+              {currentUser?.name}
             {/if}
           </Header>
         </div>
@@ -395,12 +390,12 @@
                     <List>
                       <Item on:click={openUploader}>
                         <Text
-                          >{currentUser.avatar
+                          >{currentUser?.avatar
                             ? $_('text.change-avatar')
                             : $_('text.add-avatar')}</Text
                         >
                       </Item>
-                      <Item disabled={!currentUser.avatar} on:click={() => deleteAvatar()}>
+                      <Item disabled={!currentUser?.avatar} on:click={() => deleteAvatar()}>
                         <Text>{$_('text.remove-avatar')}</Text>
                       </Item>
                     </List>
@@ -415,7 +410,7 @@
                     if (
                       !confirm(
                         $_('messages.permanently-remove-user', {
-                          values: { name: currentUser.name }
+                          values: { name: currentUser?.name }
                         })
                       )
                     )
@@ -426,9 +421,11 @@
 
                 return async ({ result }) => {
                   if (result.type === 'success') {
-                    /** @type {any | undefined} */
-                    const { success, message: message$1, data: user } = result.data;
-                    /** @type {any | undefined} */
+                    const {
+                      success,
+                      message: message$1,
+                      data: user
+                    } = { success: false, message: '', data: { message: '' }, ...result.data };
                     const { message: message$2 } = { ...user };
                     switch (formAction) {
                       case 'add': {
@@ -451,7 +448,7 @@
                       }
                       case 'del': {
                         if (success) {
-                          users.del(currentUser.id);
+                          users.del(currentUser?.id);
                           // await invalidate('app:main');
                         }
                         mode = EDIT;
@@ -460,7 +457,7 @@
                     }
                     reset();
                     configSnackbar(message$1 || message$2);
-                    snackbar?.open();
+                    snackbar.forceOpen();
                   }
                 };
               }}
@@ -718,10 +715,7 @@
                           </Button>
                           <Button
                             class="input"
-                            use={[
-                              /** @param {HTMLInputElement | any} node */ (node) =>
-                                (inputElementMagicLink = node)
-                            ]}
+                            use={[(node) => (inputElementMagicLink = node)]}
                             disabled={isProtected || !jwt}
                             variant="outlined"
                           >
@@ -753,7 +747,7 @@
                         <p>
                           {@html $_('summary.test-magic-link.text', {
                             values: {
-                              currentUserName: currentUser.name,
+                              currentUserName: currentUser?.name,
                               sessionUserName: $session.user?.name
                             }
                           })}

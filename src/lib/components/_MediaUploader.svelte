@@ -1,6 +1,7 @@
-<script>
+<script lang="typescript">
   import { onMount, getContext } from 'svelte';
   import Uploader from './_Uploader.svelte';
+  import type Snackbar from '@smui/snackbar';
   import { _ } from 'svelte-i18n';
 
   export { className as class };
@@ -16,18 +17,12 @@
   };
   export let events = {};
 
-  const { getSnackbar, configSnackbar } = getContext('snackbar');
+  const { getSnackbar, configSnackbar }: any = getContext('snackbar');
 
   let className = '';
   let count = 0;
-  /**
-   * @type {HTMLDivElement}
-   */
-  let uploader;
-  /**
-   * @type {import("@smui/snackbar")}
-   * */
-  let snackbar;
+  let uploader: HTMLDivElement;
+  let snackbar: Snackbar;
 
   $: fileType = (type === 'avatar' && 'image') || type;
   $: acceptedFiles = `${fileType}/*`;
@@ -47,49 +42,28 @@
       });
   });
 
-  /**
-   *
-   * @param {CustomEvent} param0
-   */
-  function onAddedfile({ detail }) {
+  function onAddedfile({ detail }: CustomEvent) {
     ++count;
   }
 
-  /**
-   *
-   * @param {CustomEvent} param0
-   */
-  function onRemovedfile({ detail }) {
+  function onRemovedfile({ detail }: CustomEvent) {
     --count;
   }
 
-  /**
-   *
-   * @param {CustomEvent} event
-   */
-  function onSuccess(event) {
+  function onSuccess(event: CustomEvent) {
     if (options.uploadMultiple) return;
     uploader.dispatchEvent(new CustomEvent('upload:success', event));
   }
 
-  /**
-   *
-   * @param {CustomEvent} event
-   */
-  function onSuccessmultiple(event) {
+  function onSuccessmultiple(event: CustomEvent) {
     if (!options.uploadMultiple) return;
     uploader.dispatchEvent(new CustomEvent('upload:successmultiple', event));
   }
 
-  /**
-   *
-   * @param {CustomEvent} event
-   */
-  function onError({ detail }) {
-    /** @type {any} */
-    const { message } = { ...detail };
+  function onError({ detail }: CustomEvent) {
+    const message = detail.message;
     configSnackbar(message);
-    snackbar?.open();
+    snackbar.forceOpen();
   }
 </script>
 

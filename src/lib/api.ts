@@ -1,15 +1,12 @@
 import { dev } from '$app/environment';
 
 export const base = dev ? `https://vod.mbp` : `https://vod.webpremiere.de`;
-const version = 'v1';
+export const version = 'v1';
 
 async function send(atts = {}) {
   const { method, path, token, data }: any = { ...atts };
-  let url = path.startsWith('http') ? path : `${base}/${version}/${path}`;
+  const url = path.startsWith('http') ? path : `${base}/${version}/${path}`;
 
-  /**
-   * @type {any}
-   */
   const opts = {
     method,
     headers: {

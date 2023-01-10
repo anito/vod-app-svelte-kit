@@ -1,4 +1,4 @@
-<script>
+<script lang="typescript">
   import * as api from '$lib/api';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
@@ -9,18 +9,13 @@
   import { ImageCard, MediaUploader, Info, Paginator, FlexContainer } from '$lib/components';
   import { fabs, urls, sitename, images, session } from '$lib/stores';
   import { _ } from 'svelte-i18n';
+  import type Snackbar from '@smui/snackbar';
 
-  const { open: open$uploader, close: close$uploader } = getContext('default-modal');
-  const { getSnackbar, configSnackbar } = getContext('snackbar');
-  const { setFab } = getContext('fab');
+  const { open: open$uploader, close: close$uploader }: any = getContext('default-modal');
+  const { getSnackbar, configSnackbar }: any = getContext('snackbar');
+  const { setFab }: any = getContext('fab');
 
-  /**
-   * @type {import("@smui/snackbar")}
-   */
-  let snackbar;
-  /**
-   * @type {HTMLUListElement}
-   */
+  let snackbar: Snackbar;
   let imagesList;
   let openUploader = () => {
     open$uploader(
@@ -53,16 +48,12 @@
     setFab('add-image');
   });
 
-  /**
-   *
-   * @param {CustomEvent} param0
-   */
-  function uploadSuccessHandler({ detail }) {
-    /** @type {any} */
-    const { data, message, success } = { ...detail.responseText };
+  function uploadSuccessHandler({ detail }: CustomEvent) {
+    console.log(detail);
+    const { data, message, success }: any = { ...detail.responseText };
 
     configSnackbar(message);
-    snackbar?.open();
+    snackbar.forceOpen();
 
     if (success) {
       images.add(data);
@@ -71,13 +62,8 @@
     close$uploader();
   }
 
-  /**
-   *
-   * @param {CustomEvent} event
-   */
-  async function deletePoster(event) {
-    /** @type {any} */
-    const { image } = { ...event.detail };
+  async function deletePoster(event: CustomEvent) {
+    const { image }: any = { ...event.detail };
     const id = image.id;
     await api.del(`images/${image.id}`, { token: $session.user?.jwt }).then((res) => {
       let message = res.message || res.data.message || res.statusText;
@@ -86,7 +72,7 @@
         images.del(id);
       }
       configSnackbar(message);
-      snackbar?.open();
+      snackbar.forceOpen();
     });
   }
 </script>

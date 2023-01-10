@@ -116,7 +116,7 @@
     const { data, message, success } = { ...detail.responseText };
 
     configSnackbar(message);
-    snackbar?.open();
+    snackbar.forceOpen();
 
     if (success) {
       uploadedData = data;

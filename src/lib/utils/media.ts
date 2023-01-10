@@ -9,17 +9,8 @@ const MediaTypes = new Map([
   ['AVATAR', { base: 'a' }]
 ]);
 
-/**
- *
- * @param {string} id
- * @param {string} token
- * @param {string} type
- * @param {any} param3
- * @returns {Promise<any>}
- */
-async function uri(id, token, type, { ...options }) {
-  /** @type {{base: string} | any} */
-  const { base } = MediaTypes.get(type);
+async function uri(id: any, token: any, type: string, { ...options }) {
+  const base = MediaTypes.get(type)?.base;
   const searchParam = buildSearchParams(options);
   const url = `u/${base}/${id}${searchParam}`;
 
@@ -32,14 +23,12 @@ async function uri(id, token, type, { ...options }) {
   });
 }
 
-/**
- * @param {string} type
- * @param {string} id
- * @param {string} token
- * @param {{width?: number, height?: number, square?: number, quality?: number}} param3
- * @returns {Promise<string | undefined>}
- */
-export async function getMedia(type, id, token, { ...options }) {
+export async function getMedia(
+  type: string,
+  id: any,
+  token: string,
+  { ...options }: { width?: number; height?: number; square: number }
+) {
   if (token) {
     let defaults = {
       width: 300,
@@ -62,14 +51,7 @@ export async function getMedia(type, id, token, { ...options }) {
   }
 }
 
-/**
- *
- * @param {string} id
- * @param {string} jwt
- * @param {any} options
- * @returns {Promise<string | undefined>}
- */
-export function getMediaAvatar(id, jwt, options = {}) {
+export function getMediaAvatar(id: any, jwt: string, options = {}) {
   const defaults = {
     width: 100,
     height: 100,
@@ -79,14 +61,7 @@ export function getMediaAvatar(id, jwt, options = {}) {
   return getMedia('AVATAR', id, jwt, settings);
 }
 
-/**
- *
- * @param {string} id
- * @param {string} jwt
- * @param {any} options
- * @returns {Promise<string | undefined>}
- */
-export function getMediaImage(id, jwt, options = {}) {
+export function getMediaImage(id: any, jwt: string, options = {}) {
   const defaults = {
     width: 512,
     height: 512,
@@ -96,25 +71,13 @@ export function getMediaImage(id, jwt, options = {}) {
   return getMedia('IMAGE', id, jwt, settings);
 }
 
-/**
- *
- * @param {string} id
- * @param {string} jwt
- * @param {any} options
- * @returns {Promise<string | undefined>}
- */
-export async function getMediaVideo(id, jwt, options = {}) {
+export async function getMediaVideo(id: any, jwt: string, options = {}) {
   const defaults = { square: 2 };
   let settings = { ...defaults, ...options };
   return getMedia('VIDEO', id, jwt, settings);
 }
 
-/**
- *
- * @param {*} fn
- * @returns {string | undefined}
- */
-export function getExt(fn) {
+export function getExt(fn: { match: (arg0: RegExp) => string[] }) {
   let match = fn?.match(/[A-Za-z0-9]+$/) || [];
   return (match.length && match[0].toLowerCase()) || undefined;
 }
