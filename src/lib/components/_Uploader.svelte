@@ -1,4 +1,4 @@
-<script lang="typescript">
+<script lang="ts">
   import { onMount, createEventDispatcher } from 'svelte';
   import { session } from '$lib/stores';
   import PreviewTemplate from './_PreviewTemplate.svelte';

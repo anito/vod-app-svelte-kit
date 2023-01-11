@@ -1,4 +1,4 @@
-<script lang="typescript">
+<script lang="ts">
   import './_switch.scss';
   import './_button.scss';
   import './_icon-button.scss';
@@ -35,7 +35,7 @@
   import { _ } from 'svelte-i18n';
   import type Snackbar from '@smui/snackbar';
   import type { User } from '$lib/types';
-  import { useActions } from '@smui/common/internal';
+  import type { ActionResult } from '@sveltejs/kit';
 
   const { setFab }: any = getContext('fab');
   const { open, close }: any = getContext('default-modal');
@@ -47,6 +47,8 @@
   const PASS = 'pass';
   const privilegedActions = [EDIT, PASS, DEL];
   const userActions = [EDIT, PASS];
+  const setCopyButton = (node: any) => (copyButton = node);
+  const setMagicLinkInput = (node: any) => (inputElementMagicLink = node);
 
   export let selectionUserId = '';
   export let selectedMode = EDIT;
@@ -66,13 +68,13 @@
   let inputElementMagicLink: HTMLInputElement;
   let copyTimeoutId: string | number | NodeJS.Timeout | undefined;
   let copyButton: HTMLButtonElement;
-  let setCopyButton = (node: HTMLButtonElement) => (copyButton = node);
   let group_id: string;
   let name = '';
   let email = '';
   let active = false;
   let __protected = false;
   let mode = EDIT;
+  let user: User;
 
   $: token = $session.user?.jwt;
   $: redirectMode(mode);
@@ -169,8 +171,7 @@
     };
   });
 
-  let openUploader = (event) => {
-    event.stopPropagation();
+  let openUploader = () => {
     avatarMenu?.setOpen(false);
 
     open(
@@ -332,6 +333,64 @@
   async function closeAddUserHandler() {
     redirectMode(EDIT);
   }
+
+  function formHandler({ cancel }: { cancel: any }) {
+    switch (formAction) {
+      case 'del': {
+        if (
+          !confirm(
+            $_('messages.permanently-remove-user', {
+              values: { name: currentUser?.name }
+            })
+          )
+        )
+          cancel();
+        break;
+      }
+    }
+
+    return actionResultHandler;
+  }
+
+  async function actionResultHandler({ result }: { result: ActionResult }) {
+    if (result.type === 'success') {
+      if (result.data) {
+        const { success, message: message$1, data: user }: any = { ...result.data };
+        const { message: message$2 }: any = { ...user };
+        switch (formAction) {
+          case 'add': {
+            if (success) {
+              users.add([user]);
+              // await invalidate('app:main');
+              setTimeout(async () => {
+                await goto(`/users/${user.id}?tab=profile&mode=edit`);
+              }, 200);
+            }
+            mode = EDIT;
+            break;
+          }
+          case 'edit': {
+            if (success) {
+              users.put(user);
+              // await invalidate('app:main');
+            }
+            break;
+          }
+          case 'del': {
+            if (success) {
+              users.del(currentUser?.id);
+              // await invalidate('app:main');
+            }
+            mode = EDIT;
+            break;
+          }
+        }
+        reset();
+        configSnackbar(message$1 || message$2);
+        snackbar?.forceOpen();
+      }
+    }
+  }
 </script>
 
 <div class="main-grid">
@@ -403,67 +462,7 @@
                 </div>
               </div>
             {/if}
-            <form
-              use:enhance={({ cancel }) => {
-                switch (formAction) {
-                  case 'del': {
-                    if (
-                      !confirm(
-                        $_('messages.permanently-remove-user', {
-                          values: { name: currentUser?.name }
-                        })
-                      )
-                    )
-                      cancel();
-                    break;
-                  }
-                }
-
-                return async ({ result }) => {
-                  if (result.type === 'success') {
-                    const {
-                      success,
-                      message: message$1,
-                      data: user
-                    } = { success: false, message: '', data: { message: '' }, ...result.data };
-                    const { message: message$2 } = { ...user };
-                    switch (formAction) {
-                      case 'add': {
-                        if (success) {
-                          users.add([user]);
-                          // await invalidate('app:main');
-                          setTimeout(async () => {
-                            await goto(`/users/${user.id}?tab=profile&mode=edit`);
-                          }, 200);
-                        }
-                        mode = EDIT;
-                        break;
-                      }
-                      case 'edit': {
-                        if (success) {
-                          users.put(user);
-                          // await invalidate('app:main');
-                        }
-                        break;
-                      }
-                      case 'del': {
-                        if (success) {
-                          users.del(currentUser?.id);
-                          // await invalidate('app:main');
-                        }
-                        mode = EDIT;
-                        break;
-                      }
-                    }
-                    reset();
-                    configSnackbar(message$1 || message$2);
-                    snackbar?.forceOpen();
-                  }
-                };
-              }}
-              action={`?/${formAction}`}
-              method="POST"
-            >
+            <form use:enhance={formHandler} action={`?/${formAction}`} method="POST">
               <div class="user-items h-full">
                 {#if selectedMode !== ADD}
                   <div class="flex justify-between flex-wrap">
@@ -715,7 +714,7 @@
                           </Button>
                           <Button
                             class="input"
-                            use={[(node) => (inputElementMagicLink = node)]}
+                            use={[setMagicLinkInput]}
                             disabled={isProtected || !jwt}
                             variant="outlined"
                           >

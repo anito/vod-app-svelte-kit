@@ -1,4 +1,4 @@
-<script lang="typescript">
+<script lang="ts">
   import { onMount, getContext } from 'svelte';
   import Uploader from './_Uploader.svelte';
   import type Snackbar from '@smui/snackbar';
@@ -15,7 +15,7 @@
     timeout: 3600 * 1000, // 60min
     maxFilesize: 2 // Megabyte
   };
-  export let events = {};
+  export let events: Record<string, any> = {};
 
   const { getSnackbar, configSnackbar }: any = getContext('snackbar');
 

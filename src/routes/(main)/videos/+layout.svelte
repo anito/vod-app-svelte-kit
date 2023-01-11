@@ -1,4 +1,4 @@
-<script lang="typescript">
+<script lang="ts">
   import * as api from '$lib/api';
   import { page } from '$app/stores';
   import { setContext, getContext, onMount } from 'svelte';

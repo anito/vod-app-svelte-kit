@@ -1,4 +1,4 @@
-<script lang="typescript">
+<script lang="ts">
   import './_button.scss';
   import './_menu-surface.scss';
   import { page } from '$app/stores';

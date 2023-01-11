@@ -1,4 +1,4 @@
-<script lang="typescript">
+<script lang="ts">
   import './_meta.scss';
   import { page } from '$app/stores';
   import { infos } from '$lib/stores';

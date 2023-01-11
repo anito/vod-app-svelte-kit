@@ -1,4 +1,4 @@
-<script lang="typescript">
+<script lang="ts">
   import { onMount, setContext } from 'svelte';
   import { fade } from 'svelte/transition';
   import { Component, Header } from '$lib/components';

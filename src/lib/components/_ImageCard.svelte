@@ -1,4 +1,4 @@
-<script lang="typescript">
+<script lang="ts">
   import './_button.scss';
   import { createEventDispatcher } from 'svelte';
   import MediaImagePreview from './_MediaImagePreview.svelte';

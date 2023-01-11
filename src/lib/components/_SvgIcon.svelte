@@ -5,7 +5,7 @@
 	- https://feathericons.com/
 -----------------------------------------------
 -->
-<script lang="typescript">
+<script lang="ts">
   export let name: string = '';
   export let fillColor = 'none';
   export let size = 20;

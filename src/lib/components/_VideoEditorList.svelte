@@ -1,4 +1,4 @@
-<script lang="typescript">
+<script lang="ts">
   import { getContext, onMount } from 'svelte';
   import { videos, derivedCurrentVideo } from '$lib/stores';
   import { Modal, VideoCard } from '$lib/components';

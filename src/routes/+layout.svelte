@@ -1,4 +1,4 @@
-<script lang="typescript">
+<script lang="ts">
   import 'assets/base.css';
   import 'assets/app.css';
   import '$lib/components/_button.scss';

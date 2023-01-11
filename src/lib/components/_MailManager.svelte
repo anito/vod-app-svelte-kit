@@ -1,4 +1,4 @@
-<script lang="typescript">
+<script lang="ts">
   import './_drawer.scss';
   import './_list.scss';
   import './_icon-button.scss';

@@ -1,4 +1,4 @@
-<script lang="typescript">
+<script lang="ts">
   const regex = /[1-6]/g;
   const DEFAULT_LEVEL = '1';
 

@@ -1,4 +1,4 @@
-<script lang="typescript">
+<script lang="ts">
   export let extended = false;
   export let density = '' as 'sm' | 'md' | ' lg' | '';
   export let variant = 'primary' as 'primary' | 'secondary';

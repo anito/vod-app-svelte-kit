@@ -1,4 +1,4 @@
-<script lang="typescript">
+<script lang="ts">
   import './_icon-button.scss';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
@@ -91,7 +91,6 @@
 
   function uploadSuccessHandler({ detail }: CustomEvent) {
     const { data, message, success }: any = detail.responseText;
-    console.log('uploadSuccess', data);
 
     configSnackbar(message);
     snackbar?.forceOpen();
@@ -149,7 +148,7 @@
     </FlexContainer>
   {/if}
   {#if $fabs === 'add-video'}
-    <Fab class="floating-fab" color="primary" on:click={() => openUploader('video')} extended>
+    <Fab class="floating-fab" color="primary" on:click={() => openUploader()} extended>
       <Label>{$_('text.add-video')}</Label>
       <Icon class="material-icons">add</Icon>
     </Fab>
