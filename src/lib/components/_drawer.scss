@@ -4,16 +4,19 @@
 @import '@material/drawer';
 @import '@material/list';
 
+.dark .drawer-container {
+  .mdc-drawer {
+    @include item-activated-text-ink-color(on-primary);
+    @include item-icon-ink-color(on-primary);
+  }
+}
 .drawer-container {
   .mdc-drawer {
     @include width(280px);
     @include z-index(6);
-    @include item-activated-text-ink-color(on-primary);
-    @include item-icon-ink-color(on-primary);
     --mdc-typography-caption-font-family: var(--caption-font);
     --mdc-typography-caption-font-size: var(--caption-fs);
   }
-
   .mdc-button {
     &.white {
       @include container-fill-color(surface);

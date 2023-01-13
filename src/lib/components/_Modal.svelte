@@ -140,7 +140,7 @@
         style={cssWindow}
       >
         {#if state.closeButton}<button on:click={handleClose} class="button-close" />{/if}
-        <Component density="sm">
+        <Component density="sm" borderShape="medium">
           <div slot="header">
             <Header mdc h="5" style="text-transform: uppercase">
               {typeof header === 'string' ? header : translateHeader()}
@@ -190,5 +190,7 @@
     max-height: calc(100vh - 16rem);
     background-color: var(--back-grid-item);
     overflow: auto;
+    border-bottom-right-radius: var(--border-radius, 4px);
+    border-bottom-left-radius: var(--border-radius, 4px);
   }
 </style>

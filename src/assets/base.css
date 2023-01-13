@@ -1,4 +1,5 @@
 @import url(./fonts.css);
+@import url(./theme-specials.css);
 /*
 -----------------------------------------------
 	vars – css custom-properties
@@ -157,7 +158,10 @@
   --ripple-press-opacity: 0.5;
 
   --mdc-typography-font-family: var(--font);
+  --mdc-shape-none: 0;
+  --mdc-shape-small: 0.15rem;
   --mdc-shape-medium: 0.25rem;
+  --mdc-shape-large: 0.45rem;
 
   --mdc-theme-primary: var(--primary);
   --mdc-theme-secondary: var(--secondary);
@@ -198,15 +202,6 @@
   --drp-theme-label-color: var(--on-surface);
   --drp-theme-label-background: var(--back-grid-item);
   --drp-theme-font: var(--font);
-}
-.theme-default.dark,
-.theme-default.dark ::before,
-.theme-default.dark ::after {
-  --mdc-theme-text-primary-on-background: rgba(255, 255, 255, 0.87);
-  --mdc-theme-text-secondary-on-background: rgba(255, 255, 255, 0.54);
-  --mdc-theme-text-hint-on-background: rgba(255, 255, 255, 0.38);
-  --mdc-theme-text-disabled-on-background: rgba(255, 255, 255, 0.38);
-  --mdc-theme-text-icon-on-background: rgba(255, 255, 255, 0.38);
 }
 /*	typo vars */
 .typo-default {
@@ -438,9 +433,6 @@ html a {
   user-select: none;
   color: var(--primary);
   transition: color 0.2s, border 0.2s, padding 0.2s;
-}
-html .mdc-list-item--selected a {
-  color: var(--mdc-theme-on-primary);
 }
 html a:hover {
   color: var(--flash);

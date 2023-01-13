@@ -6,6 +6,7 @@
   export let transparent = false;
   export let headerHeight = '50px';
   export let contentBackgroundColor = 'inherit';
+  export let borderShape = 'none';
 
   let className = '';
 </script>
@@ -14,6 +15,7 @@
   style={`display: contents;}`}
   style:--height={headerHeight}
   style:--content-background-color={contentBackgroundColor}
+  style:--border-shape={`var(--mdc-shape-${borderShape})`}
 >
   <div
     class="component flex flex-1 flex-col {density} {variant}"
@@ -79,6 +81,10 @@
   .header {
     height: var(--height, 50px);
     min-height: var(--height, 50px);
+  }
+  .header {
+    border-top-left-radius: var(--border-shape, 4px);
+    border-top-right-radius: var(--border-shape, 4px);
   }
   :global(.xs).component::before,
   :global(.xs) .header {

@@ -1,0 +1,12 @@
+.theme-default.dark,
+.theme-default.dark ::before,
+.theme-default.dark ::after {
+  --mdc-theme-text-primary-on-background: rgba(255, 255, 255, 0.87);
+  --mdc-theme-text-secondary-on-background: rgba(255, 255, 255, 0.54);
+  --mdc-theme-text-hint-on-background: rgba(255, 255, 255, 0.38);
+  --mdc-theme-text-disabled-on-background: rgba(255, 255, 255, 0.38);
+  --mdc-theme-text-icon-on-background: rgba(255, 255, 255, 0.38);
+}
+.dark .mdc-list-item--selected a {
+  color: var(--mdc-theme-on-primary);
+}
