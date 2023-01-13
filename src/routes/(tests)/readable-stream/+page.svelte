@@ -1,9 +1,10 @@
 <script lang="ts">
+  import { dev } from '$app/environment';
   import { onMount } from 'svelte';
-  import { fade } from 'svelte/transition';
   import { register } from '$lib/utils/reader';
-  import Layout from './Layout.svelte';
   import Blurb from './Blurb.svelte';
+  import Viewer from './Viewer.svelte';
+  import Loader from './Loader.svelte';
 
   /**
    * Autostart
@@ -17,33 +18,38 @@
    * <button on:click={() => myStreamPromise = myStart().stream()}>start</button>
    */
   const autostart = false;
-  const url = 'https://anito.de';
+  const url = dev ? 'https://anito.dev' : 'https://anito.de';
+  const promise = () => new Promise(() => void 0);
 
-  let imageStream: Promise<string | void | undefined>;
+  let imageStream: Promise<any>;
   let imagePercentage: number;
   let imageLabel: string;
+  let imageFilesize: Promise<unknown> = promise();
 
-  let textStream: Promise<string | void | undefined>;
+  let textStream: Promise<any>;
   let textPercentage: number;
   let textLabel: string;
+  let textFilesize: Promise<unknown> = promise();
 
-  let zipStream: Promise<string | void | undefined>;
+  let zipStream: Promise<any>;
   let zipPercentage: number;
   let zipLabel: string;
+  let zipFilesize: Promise<unknown> = promise();
 
-  let docStream: Promise<string | void | undefined>;
+  let docStream: Promise<any>;
   let docPercentage: number;
   let docLabel: string;
+  let docFilesize: Promise<unknown> = promise();
 
   /**
-   * Register files to be read from external source
+   * Register external ressources
    *
-   * register - takes an object with two self-explanatory keys: filename and url
-   * the method will returns a start method and a svelte store
-   * @returns {start, store} object
-   * start - method to start the file reading process. 'start' itself will return a stream method
-   * - 'stream' receives a promise you can use for e.g. a loading spinner
-   * store - a svelte store you can subscribe to receive the following props:
+   * register - takes an object with two keys:
+   *  - filename (e.g. sample.zip) and
+   *  - url: e.g. https://example.com
+   * The 'register' method will return an object { start, store }
+   * 'start': a function that returns a function 'stream' which receives a promise you can use for e.g. a loading spinner
+   * 'store' - a svelte store you can subscribe to to receive the following props:
    * - percentage, current, total, chunks, controller (to controller.close() the pipe)
    */
   const { start: imageStart, store: imageStore } = register({
@@ -59,16 +65,17 @@
     url
   });
   const { start: docStart, store: docStore } = register({
-    filename: 'sample.docx',
+    filename: 'sample.pdf',
     url
   });
 
   // Do something with the stream(s)
-  $: imageStream && imageStream.then((res) => console.log(res));
-  $: textStream && textStream.then((res) => console.log(res));
-  $: zipStream && zipStream.then((res) => console.log(res));
-  $: docStream && docStream.then((res) => console.log(res));
-  // Configure button labels depending on percentage
+  $: imageStream?.then((res) => (imageFilesize = getFilesize(res)));
+  $: textStream?.then((res) => (textFilesize = getFilesize(res)));
+  $: zipStream?.then((res) => (zipFilesize = getFilesize(res)));
+  $: docStream?.then((res) => (docFilesize = getFilesize(res)));
+
+  // Configure button labels based on percentage
   $: imageLabel = getLabel(imagePercentage);
   $: textLabel = getLabel(textPercentage);
   $: zipLabel = getLabel(zipPercentage);
@@ -100,103 +107,118 @@
     }
   });
 
+  async function getFilesize(stream: Promise<any>) {
+    const res = await stream;
+    const filesize = res.filesize;
+    if (filesize) {
+      return displayFilesize(filesize);
+    }
+  }
+
+  function displayFilesize(filesize: any) {
+    const byte = filesize;
+    let kilobyte;
+    let megabyte;
+    const kb = (kilobyte = byte / 1024) > 1 && Math.floor(kilobyte);
+    const mb = (megabyte = kilobyte / 1024) > 1 && Math.floor(megabyte);
+    const unit = mb ? 'MByte' : kb ? 'KByte' : 'Byte';
+    return `(${mb || kb || byte} ${unit})`;
+  }
+
   function getLabel(percentage: number) {
     return percentage > 0 && percentage < 100 ? 'cancel' : 'start';
   }
 </script>
 
-<Layout>
-  <Blurb>
-    <div class="outer" slot="one">
-      <div class="read-box">
-        {#if imageStream}
-          {#await imageStream}
-            <div class="wait">
-              <h5 class="inner">{imagePercentage}</h5>
-            </div>
-          {:then src}
-            <div in:fade={{ duration: 500 }}>
-              <img {src} alt="" width="300" />
-            </div>
-            <label for="">{src}</label>
-          {/await}
-        {/if}
-      </div>
-      <div class="controls">
-        <div class="filename">sample.jpg</div>
-        <button on:click={() => (imageStream = imageStart().stream())} class="start-button"
-          >{imageLabel}</button
-        >
+<Blurb>
+  <div class="outer one" slot="one">
+    <div class="read-box">
+      {#if imageStream}
+        {#await imageStream}
+          <Loader store={imageStore} bind:percentage={imagePercentage} />
+        {:then result}
+          <Viewer blob={result.url} title="sample.jpg" />
+        {/await}
+      {/if}
+    </div>
+    <div class="controls">
+      <button on:click={() => (imageStream = imageStart().stream())} class="button"
+        >{imageLabel}</button
+      >
+      <div class="fileinfo">
+        {#await imageFilesize}<span class="waiting">waiting for</span>{:then filesize}<span
+            class="filesize">{filesize}</span
+          >{/await}
+        <span class="filename">sample.jpg</span>
       </div>
     </div>
+  </div>
 
-    <div class="outer" slot="two">
-      <div class="read-box" style="">
-        {#if textStream}
-          {#await textStream}
-            <div class="wait">
-              <h5 class="inner">{textPercentage}</h5>
-            </div>
-          {:then file}
-            <div in:fade={{ duration: 500 }} style="font-size: 0.4em;">
-              {@html file}
-            </div>
-          {/await}
-        {/if}
-      </div>
-      <div class="controls">
-        <div class="filename">sample.txt</div>
-        <button on:click={() => (textStream = textStart().stream())} class="start-button"
-          >{textLabel}</button
-        >
+  <div class="outer two" slot="two">
+    <div class="read-box" style="">
+      {#if textStream}
+        {#await textStream}
+          <Loader store={textStore} bind:percentage={textPercentage} />
+        {:then result}
+          <Viewer blob={result.url} title="sample.txt" />
+        {/await}
+      {/if}
+    </div>
+    <div class="controls">
+      <button on:click={() => (textStream = textStart().stream())} class="button"
+        >{textLabel}</button
+      >
+      <div class="fileinfo">
+        {#await textFilesize}<span class="waiting">waiting for</span>{:then filesize}<span
+            class="filesize">{filesize}</span
+          >{/await}
+        <span class="filename">sample.txt</span>
       </div>
     </div>
+  </div>
 
-    <div class="outer" slot="three">
-      <div class="read-box" style="">
-        {#if zipStream}
-          {#await zipStream}
-            <div class="wait">
-              <h5 class="inner">{zipPercentage}</h5>
-            </div>
-          {:then file}
-            <div in:fade={{ duration: 500 }} style="font-size: 0.4em;">
-              {file}
-            </div>
-          {/await}
-        {/if}
-      </div>
-      <div class="controls">
-        <div class="filename">sample.zip</div>
-        <button on:click={() => (zipStream = zipStart().stream())} class="start-button"
-          >{zipLabel}</button
-        >
+  <div class="outer three" slot="three">
+    <div class="read-box" style="">
+      {#if zipStream}
+        {#await zipStream}
+          <Loader store={zipStore} bind:percentage={zipPercentage} />
+        {:then result}
+          <Viewer blob={result.url} title="sample.zip" />
+        {/await}
+      {/if}
+    </div>
+    <div class="controls">
+      <button on:click={() => (zipStream = zipStart().stream())} class="button">{zipLabel}</button>
+      <div class="fileinfo">
+        {#await zipFilesize}<span class="waiting">waiting for</span>{:then filesize}<span
+            class="filesize">{filesize}</span
+          >{/await}
+        <span class="filename">sample.zip</span>
       </div>
     </div>
+  </div>
 
-    <div class="outer" slot="fore">
-      <div class="read-box" style="">
-        {#if docStream}
-          {#await docStream}
-            <div class="wait">
-              <h5 class="inner">{docPercentage}</h5>
-            </div>
-          {:then file}
-            <div in:fade={{ duration: 500 }} style="font-size: 0.4em;">
-              {file}
-            </div>
-          {/await}
-        {/if}
-      </div>
-      <div class="controls">
-        <div class="filename">sample.docx</div>
-        <button on:click={() => (docStream = docStart().stream())} class="start-button"
-          >{docLabel}</button
-        >
+  <div class="outer fore" slot="fore">
+    <div class="read-box" style="">
+      {#if docStream}
+        {#await docStream}
+          <Loader store={docStore} bind:percentage={docPercentage} />
+        {:then result}
+          <Viewer blob={result?.url} title="sample.pdf" />
+        {/await}
+      {/if}
+    </div>
+    <div class="controls">
+      <button on:click={() => (docStream = docStart().stream())} class="button">{docLabel}</button>
+      <div class="fileinfo">
+        {#await docFilesize}<span class="waiting">waiting for</span>{:then filesize}<span
+            class="filesize">{filesize}</span
+          >{/await}
+        <span class="filename">sample.pdf</span>
       </div>
     </div>
-  </Blurb>
-</Layout>
+  </div>
+</Blurb>
 
 <style>
   .outer {
@@ -205,10 +227,10 @@
   }
   .read-box {
     display: flex;
-    width: 300px;
+    width: 350px;
+    min-width: 350px;
     height: 350px;
-    min-width: 300px;
-    min-height: 330px;
+    min-height: 350px;
     text-align: justify;
     padding: 10px;
     background-color: #69696920;
@@ -216,45 +238,43 @@
     position: relative;
     overflow: auto;
   }
-  .wait {
-    display: flex;
-    justify-content: center;
-    flex: 1 0 auto;
-    height: 100%;
-    font-size: 7em;
-  }
-  .wait .inner {
-    display: flex;
-    align-items: center;
-  }
   .controls {
     position: absolute;
     width: 100%;
     height: var(--height);
     left: 0;
     bottom: 0;
-    background: var(--background-100);
+    background: var(--back-grid-item);
   }
-  .start-button {
+  .button,
+  .button:focus {
     display: inline-block;
+    font-size: 0.9rem;
     position: absolute;
     bottom: 10px;
     width: 100px;
     left: 50%;
     margin-left: -50px;
+    outline: 1px solid #000 !important;
+    border-radius: 0.15rem;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
     text-transform: uppercase;
+    padding: 5px 10px;
   }
-  .read-box label {
+  .fileinfo {
+    display: inline-block;
+    padding: 0 10px;
+    font: var(--h6) var(--font-mono);
     position: absolute;
-    font-size: 0.7em;
-    top: 0;
-    left: 0;
+    bottom: -20px;
     right: 0;
-    bottom: var(--height);
-    padding: 15px;
-    overflow: hidden;
-    background-color: #00000040;
-    color: #000000;
-    z-index: 1;
+    font-size: 0.8rem;
+    font-family: var(--font-mono);
+    opacity: 0.6;
+  }
+  .fileinfo .waiting {
+    font-size: 0.5rem;
+    opacity: 0.6;
   }
 </style>

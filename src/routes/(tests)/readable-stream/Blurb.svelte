@@ -4,7 +4,12 @@
 </script>
 
 <Section>
-  <Component density="sm" variant="primary" contentBackgroundColor="var(--surface)">
+  <Component
+    density="sm"
+    variant="primary"
+    contentBackgroundColor="var(--surface)"
+    borderShape="medium"
+  >
     <div slot="header">
       <Header mdc h="5">ReadableStream - Loading Ressources w/o Blocking</Header>
     </div>

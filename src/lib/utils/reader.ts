@@ -79,14 +79,16 @@ const readerMap = new Map();
 export function register(client: { filename: any; url: any }) {
   const { filename: name, url } = client;
 
-  let _stream: undefined;
+  let _result: Promise<any>;
 
-  const getStream = () => _stream;
-  const setStream = (stream = () => void 0) => (_stream = stream());
+  const init = (fetch: () => Promise<any>) => {
+    _result = fetch();
+  };
+  const getResult = () => _result;
 
   readerMap.set(name, {
-    setStream,
-    getStream,
+    init,
+    getResult,
     store: createStore(),
     controller: null,
     unsubscribe: null
@@ -109,7 +111,7 @@ export function register(client: { filename: any; url: any }) {
           data.store.reset();
         }, 200);
       } else {
-        data.setStream(fetch);
+        data.init(fetch);
         data.store = store;
         data.unsubscribe = store.subscribe((val: { percent: any; controller: any }) => {
           const perc = val.percent;
@@ -121,21 +123,20 @@ export function register(client: { filename: any; url: any }) {
           }
         });
       }
-      return { stream: data.getStream };
+      return { stream: data.getResult };
     }
   };
 }
 
 export default function read(file: RequestInfo | URL, store: any) {
-  let contentType: string | null;
+  let contentType: string;
   const process = async (response: Response) => {
-    if (contentType?.startsWith('text')) {
-      return response.text();
-    } else {
-      return await response.blob().then((blob) => {
-        return URL.createObjectURL(blob);
+    return await response
+      .blob()
+      .then((blob) => new Blob([blob], { type: contentType }))
+      .then((blob) => {
+        return { url: URL.createObjectURL(blob), filesize: blob.size };
       });
-    }
   };
   const { getStream } = bodyReader(store);
 
@@ -146,7 +147,7 @@ export default function read(file: RequestInfo | URL, store: any) {
         credentials: 'include'
       })
         .then(async (res) => {
-          contentType = res.headers.get('content-type');
+          contentType = res.headers.get('content-type') || 'text/plain';
           return await getStream(res);
         })
         .then((stream) => new Response(stream))

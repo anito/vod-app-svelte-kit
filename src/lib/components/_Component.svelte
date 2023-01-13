@@ -6,7 +6,7 @@
   export let transparent = false;
   export let headerHeight = '50px';
   export let contentBackgroundColor = 'inherit';
-  export let borderShape = 'none';
+  export let borderShape = 'none' as 'none' | 'small' | 'medium' | 'large';
 
   let className = '';
 </script>
@@ -127,6 +127,8 @@
     z-index: auto;
     flex-shrink: 1;
     -webkit-overflow-scrolling: touch;
+    border-bottom-right-radius: var(--border-shape, 4px);
+    border-bottom-left-radius: var(--border-shape, 4px);
   }
   .component.extended .content {
     padding: 60px;

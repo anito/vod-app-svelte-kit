@@ -1,7 +1,10 @@
 <script>
+  import Layout from './Layout.svelte';
 </script>
 
-<slot />
+<Layout>
+  <slot />
+</Layout>
 
 <style>
 </style>
