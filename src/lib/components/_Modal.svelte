@@ -86,8 +86,12 @@
     }
   };
 
+  const handleClose = () => {
+    close();
+  };
+
   const handleOuterClick = (event?: {
-    target: Element | null | undefined;
+    target: EventTarget | null | undefined;
     preventDefault: () => void;
   }) => {
     if (state.closeOnOuterClick && (event?.target === background || event?.target === wrap)) {
@@ -135,7 +139,7 @@
         on:outroend={_onClosed}
         style={cssWindow}
       >
-        {#if state.closeButton}<button on:click={close} class="button-close" />{/if}
+        {#if state.closeButton}<button on:click={handleClose} class="button-close" />{/if}
         <Component density="sm">
           <div slot="header">
             <Header mdc h="5" style="text-transform: uppercase">
@@ -179,13 +183,12 @@
     margin: 2rem auto;
     color: inherit;
     border-radius: 0.2rem;
-    background: white;
   }
   .content {
     position: relative;
     padding: 1rem;
-    max-height: calc(100vh - 4rem);
+    max-height: calc(100vh - 16rem);
     background-color: var(--back-grid-item);
-    /* overflow: auto; */
+    overflow: auto;
   }
 </style>

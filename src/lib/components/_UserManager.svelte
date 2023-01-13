@@ -296,8 +296,9 @@
         }
       });
   }
+
   function copy(user: User<Record<any, any>>) {
-    ({ name, email, active, group_id, __protected } = { ...user, __protected: user.protected });
+    ({ name, email, active, group_id, __protected } = { ...user, __protected: !!user.protected });
   }
 
   function reset() {

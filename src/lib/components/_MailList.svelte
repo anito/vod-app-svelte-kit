@@ -1,43 +1,31 @@
-<script>
+<script lang="ts">
   import { page } from '$app/stores';
-  import { getContext, onMount, tick } from 'svelte';
+  import { getContext, onMount, SvelteComponent, tick, type ComponentType } from 'svelte';
   import { usersFoundation } from '$lib/stores';
   import { ASC, DESC, INBOX, SENT } from '$lib/utils';
   import List from '@smui/list';
   import { SimpleMailCard, SvgIcon } from '$lib/components';
   import { _ } from 'svelte-i18n';
   import { goto } from '$app/navigation';
+  import type { Mail, UserFoundation } from '$lib/types';
+  import type { SmuiElementMap } from '@smui/common';
 
-  /** @type {import('$lib/types').Mail | null | undefined} */
-  export let selection;
-  /** @type {string} */
+  export let selection: Mail | undefined;
   export let sort = DESC;
-  /** @type {number | undefined} */
-  export let selectionIndex;
-  /** @type {Promise<any>} */
-  export let waitForData;
+  export let selectionIndex: number;
+  export let waitForData: Promise<any>;
 
-  /**
-   *
-   * @param {import('$lib/types').Mail} a
-   * @param {import('$lib/types').Mail} b
-   */
-  const sortByDate = (a, b) =>
-    sortBit * (new Date(a.created).getTime() - new Date(b.created).getTime());
-  const { getMailStore } = getContext('mail-store');
+  const sortByDate = (
+    a: { created: string | number | Date },
+    b: { created: string | number | Date }
+  ) => sortBit * (new Date(a.created).getTime() - new Date(b.created).getTime());
+  const { getMailStore }: any = getContext('mail-store');
 
   const currentStore = getMailStore();
 
-  /**
-   * @type {List<keyof import("@smui/common").SmuiElementMap, import("svelte").ComponentType<import("svelte").SvelteComponent>>}
-   */
-  let list;
-  /**
-   * @type {(arg0: import("@material/list").MDCListIndex) => void}
-   */
-  let focusItemAtIndex;
-  /** @type {Array<any>} */
-  let items;
+  let list: List<keyof SmuiElementMap, ComponentType<SvelteComponent>>;
+  let focusItemAtIndex: (arg0: number) => void;
+  let items: string | any[];
 
   $: mailStore = $currentStore;
   $: userId = $page.params.slug;
@@ -47,34 +35,22 @@
 
   onMount(() => {});
 
-  /**
-   * Find the user for each email address in the email
-   * @param {string[]} sender
-   */
-  const parseUsernames = (sender) => {
+  const parseUsernames = (sender: string[]) => {
     let item;
-    /**
-     * @type {string[]}
-     */
-    let items = [];
-    sender.forEach((/** @type {string} */ email) => {
-      item = $usersFoundation?.find(
-        /** @param {import('$lib/types').UserFoundation} user */
-        (user) => user.email === email
-      );
+    let items: string[] = [];
+    sender.forEach((email) => {
+      item = $usersFoundation?.find((user: UserFoundation) => user.email === email);
       items.push(item ? { ...item } : { email });
     });
     return items;
   };
 
-  /** @param {import('$lib/types').Mail} mail */
-  function parseMail(mail) {
+  function parseMail(mail: Mail) {
     if (activeItem === INBOX) return parseInbox(mail);
     if (activeItem === SENT) return parseSent(mail);
   }
 
-  /** @param {import('$lib/types').Mail} mail */
-  function parseInbox(mail) {
+  function parseInbox(mail: Mail) {
     let message = JSON.parse(mail.message);
     return {
       id: mail.id,
@@ -87,8 +63,7 @@
     };
   }
 
-  /** @param {import('$lib/types').Mail} mail */
-  function parseSent(mail) {
+  function parseSent(mail: Mail) {
     let message = JSON.parse(mail.message);
     let _to = mail._to.split(';');
     return {
@@ -124,10 +99,7 @@
     }
   }
 
-  /**
-   * @param {CustomEvent} event
-   */
-  function receiveListMethods({ detail }) {
+  function receiveListMethods({ detail }: CustomEvent) {
     ({ focusItemAtIndex, items } = detail);
   }
 </script>

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation';
   import { onMount, getContext } from 'svelte';
   import { fly } from 'svelte/transition';
@@ -9,23 +9,20 @@
   import { Header } from '$lib/components';
   import { fabs, session, sitename, images, currentVideo } from '$lib/stores';
   import { _ } from 'svelte-i18n';
+  import type { PageData } from './$types';
 
-  /** @type {import('./$types').PageData} */
-  export let data;
+  export let data: PageData;
 
   $: images.update(data.images);
 
-  const { open } = getContext('default-modal');
-  const { setFab } = getContext('fab');
+  const { open }: any = getContext('default-modal');
+  const { setFab }: any = getContext('fab');
 
   onMount(() => {
     if ($session.user) setFab('add-image');
   });
 
-  /**
-   * @param {any} type
-   */
-  let openUploader = (type) => {
+  let openUploader = () => {
     open(
       MediaUploader,
       {
@@ -68,7 +65,7 @@
         <Paper color="primary">
           <Title style="color: var(--text-light)">No Images available</Title>
           <Content>
-            <a href="/images" on:click|preventDefault={() => openUploader('image')}>Upload</a>
+            <a href="/images" on:click|preventDefault={() => openUploader()}>Upload</a>
             some images to your content
           </Content>
         </Paper>
@@ -83,7 +80,7 @@
   {/if}
 </div>
 {#if $fabs === 'add-image'}
-  <Fab class="floating-fab" color="primary" on:click={() => openUploader('image')} extended>
+  <Fab class="floating-fab" color="primary" on:click={() => openUploader()} extended>
     <Label>{$_('text.new-poster')}</Label>
     <Icon class="material-icons">add</Icon>
   </Fab>

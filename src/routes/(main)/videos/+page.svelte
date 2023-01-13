@@ -31,7 +31,7 @@
 
 {#if hasPrivileges}
   <div class="media-grid {tab} flex-1 has-privileges" style="margin-top: 10px;">
-    <div class="grid-item one mt-2">
+    <div class="grid-item toolbar mt-2">
       <Group variant="unelevated">
         <Button
           class="focus:outline-none focus:shadow-outline"
@@ -53,7 +53,7 @@
       </Group>
     </div>
 
-    <div class="frame grid-item two">
+    <div class="frame grid-item one">
       {#if tab === TABS[0]}
         <VideoManager />
       {/if}
@@ -79,37 +79,28 @@
     <div class="flex flex-1">
       <div class="grid-inner">
         <div class="media-grid non-admin">
-          <div class="grid-item one pl-8">
+          <div class="grid-item toolbar pl-8">
             <Header
               h="5"
               mdc
               wrapperStyle="
-            padding: 10px 10px 0;
-            --border-color: #d7d7d7;
-            border-left: 1px solid var(--border-color);
-            border-top: 1px solid var(--border-color);
-            border-right: 1px solid var(--border-color);
-            border-top-left-radius: 3px;
-            border-top-right-radius: 3px;
-            background: #f4f4f4;
-            box-shadow: 0px 0px 15.7px rgb(202 202 202 / 44%);"
-              >{@html $_('text.your-videos')}</Header
+            padding: 10px 10px 0;">{@html $_('text.your-videos')}</Header
             >
           </div>
-          <div class="frame grid-item two">
+          <div class="frame grid-item one">
             <VideoManager />
           </div>
         </div>
       </div>
-    </div>
-  </Component>
+    </div></Component
+  >
 {/if}
 
 <style>
+  .media-grid:not(.has-privileges),
   .media-grid:not(.has-privileges) ::after,
-  .media-grid:not(.has-privileges) ::before,
-  .media-grid:not(.has-privileges) {
-    --page-w: 100vw;
+  .media-grid:not(.has-privileges) ::before {
+    --page-w: 80vw;
   }
   .media-grid {
     --toolbar: calc(var(--toolbar-h) * 1.2);
@@ -119,31 +110,30 @@
     grid-gap: 0;
     align-items: initial;
     grid-template-areas:
-      'one'
-      'two';
+      'toolbar'
+      'one';
     max-width: var(--page-w);
     width: var(--page-w);
   }
   .grid-item {
     background: var(--back-grid-item);
   }
-  .one {
-    grid-area: one;
+  .toolbar {
+    grid-area: toolbar;
     display: flex;
     align-items: center;
     height: 100%;
   }
-  .non-admin .one {
-    grid-area: one;
-    display: flex;
+  .non-admin .toolbar {
     align-items: flex-end;
   }
-  .two {
-    grid-area: two;
+  .one {
+    grid-area: one;
+    overflow: auto;
   }
   .frame::before {
-    --scale-x: 1;
-    --translate-x: 0;
+    --scale-x: 1.15;
+    --translate-x: calc(10% / 2 - 10% / 2);
     content: '';
     height: 1px;
     background: rgb(255, 255, 255);
@@ -159,9 +149,5 @@
     width: var(--page-w);
     z-index: 1;
     transform: scaleX(var(--scale-x)) translateX(var(--translate-x));
-  }
-  .has-privileges .frame::before {
-    --scale-x: 1.15;
-    --translate-x: calc(10% / 2 - 10% / 2);
   }
 </style>

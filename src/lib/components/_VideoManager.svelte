@@ -19,7 +19,8 @@
     SUPERUSER,
     posterCreatedHandler,
     posterRemoveHandler,
-    posterSelectedHandler
+    posterSelectedHandler,
+    proxyEvent
   } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import type Snackbar from '@smui/snackbar';
@@ -68,12 +69,13 @@
         type: 'video',
         options: {
           // acceptedFiles: '.mov .mp4 .m4a .m4v .3gp .3g2 .webm',
-          parallelUploads: 1,
-          maxFiles: 1,
+          uploadMultiple: true,
+          parallelUploads: 5,
+          maxFiles: 5,
           timeout: 3600 * 1000, // 60min
           maxFilesize: 1024 // Megabyte
         },
-        events: { 'upload:success': uploadSuccessHandler }
+        events: { 'upload:successmultiple': uploadSuccessHandler }
       },
       {
         closeOnOuterClick: false,
@@ -97,7 +99,7 @@
 
     if (success) {
       uploadedData = data;
-      videos.add(data);
+      proxyEvent('video:add', { data });
       close$uploader();
     }
   }

@@ -1,14 +1,12 @@
-<script>
+<script lang="ts">
   import { session } from '$lib/stores';
   import { Media } from '@smui/card';
   import { getExt, getMediaImage } from '$lib/utils';
+  import type { Avatar, Image, Video } from '$lib/types';
 
   const posterUrl = `https://via.placeholder.com/320x180.png?text=`;
 
-  /**
-   * @type {import('$lib/types').Video | import('$lib/types').Image | import('$lib/types').Avatar}
-   */
-  export let media;
+  export let media: Video | Image | Avatar;
 
   const settings = {
     width: 400,
@@ -16,14 +14,8 @@
     square: 0
   };
 
-  /**
-   * @type {string}
-   */
-  let id;
-  /**
-   * @type {string | undefined}
-   */
-  let poster = (media && `${posterUrl}${getExt(media.src)}`) || posterUrl;
+  let id: string;
+  let poster: string | undefined = (media && `${posterUrl}${getExt(media.src)}`) || posterUrl;
 
   $: media && (id = media.id);
   $: id && ((id) => getMediaImage(id, $session.user?.jwt, settings).then((v) => (poster = v)))(id);

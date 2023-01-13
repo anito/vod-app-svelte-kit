@@ -5,7 +5,7 @@
   import { UserGraphic, Dot } from '$lib/components';
   import { Meta, Item, Text, PrimaryText, SecondaryText } from '@smui/list';
   import { ADMIN, dynamicUrl, SUPERUSER } from '$lib/utils';
-  import type { User } from '$lib/types';
+  import type { Issue, User } from '$lib/types';
 
   export let selectionUserId: string;
   export let user: User | undefined;
@@ -14,7 +14,12 @@
 
   let className = '';
 
-  $: _infos = ($infos?.has(user?.id) && $infos.get(user?.id).params) || [];
+  $: _infos = $infos as Map<string, { issues: Issue[] }>;
+  $: userInfos =
+    ((user) => {
+      const id = user?.id;
+      if (id) return _infos.get(id)?.issues;
+    })(user) || [];
   $: hasPrivileges = user?.role === ADMIN || user?.role === SUPERUSER;
   $: isSuperuser = user?.role === SUPERUSER;
   $: badge = {
@@ -40,8 +45,8 @@
         <Meta class="material-icons locked">lock</Meta>
       {/if}
       <div class="infos">
-        {#each _infos as _info}
-          <Dot size={5} color={_info.flag} />
+        {#each userInfos as info}
+          <Dot size={5} color={info.flag} />
         {/each}
       </div>
     </a>

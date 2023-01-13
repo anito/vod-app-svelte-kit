@@ -31,6 +31,8 @@
   let deleteMenu: Menu;
   let imageList: MenuSurface;
   let imageListAnchor: HTMLDivElement;
+  let menuAnchor: HTMLDivElement;
+  let deleteMenuAnchor: HTMLDivElement;
   let isEditMode = false;
   let title: string;
   let description: string;
@@ -70,7 +72,8 @@
   function remove() {
     proxyEvent('video:delete', {
       data: { id: video.id },
-      show: true
+      show: true,
+      onsuccess: (res: any) => {}
     });
   }
 
@@ -192,53 +195,64 @@
           <Label>{leftButton.label}</Label>
           <Icon class="material-icons">{leftButton.icon}</Icon>
         </Button>
-        <Button
-          color="primary"
-          class="action-button"
-          on:click={() => (isEditMode = !isEditMode && setDeleteMenuOpen(true))}
-        >
-          <Label>{rightButton.label}</Label>
-          <Icon class="material-icons">{rightButton.icon}</Icon>
-        </Button>
-        <ActionIcons style="position: relative;">
-          <IconButton
-            class="material-icons"
-            on:click={() => cardMenu?.setOpen(true)}
-            toggle
-            aria-label={$_('text.more-options')}
-            title={$_('text.more-options')}>more_vert</IconButton
+        <div bind:this={deleteMenuAnchor} use:Anchor>
+          <Button
+            color="primary"
+            class="action-button"
+            on:click={() => (isEditMode = !isEditMode && setDeleteMenuOpen(true))}
           >
+            <Label>{rightButton.label}</Label>
+            <Icon class="material-icons">{rightButton.icon}</Icon>
+          </Button>
           <Menu
-            bind:this={cardMenu}
-            on:MDCMenuSurface:opened={cardMenuOpenedHandler}
-            anchorCorner="TOP_END"
+            bind:this={deleteMenu}
+            anchor={false}
+            bind:anchorElement={deleteMenuAnchor}
+            anchorCorner="TOP_RIGHT"
           >
-            <List class="menu-list">
-              <Item on:click={() => createPoster()}>
-                <Text>{$_('text.new-poster')}</Text>
-              </Item>
-              <Item disabled={!$images.length} on:click={() => imageList?.setOpen(true)}>
-                <Text>{$_('text.select-poster')}</Text>
-              </Item>
-              <Separator />
-              <Item
-                disabled={!video.image_id}
-                on:SMUI:action={() => dispatch('video:removePoster', video.image_id)}
-              >
-                <Text>{$_('text.remove-poster')}</Text>
-              </Item>
-              <Item class="text-red-700" on:SMUI:action={() => remove()}>
-                <Text>{$_('text.delete-video')}</Text>
-              </Item>
-            </List>
-          </Menu>
-          <Menu bind:this={deleteMenu}>
             <List>
               <Item class="text-red-700" on:SMUI:action={() => remove()}>
                 <Text>{$_('text.delete-video')}</Text>
               </Item>
             </List>
           </Menu>
+        </div>
+        <ActionIcons>
+          <div bind:this={menuAnchor} use:Anchor>
+            <IconButton
+              class="material-icons"
+              on:click={() => cardMenu?.setOpen(true)}
+              aria-label={$_('text.more-options')}
+              title={$_('text.more-options')}>more_vert</IconButton
+            >
+            <Menu
+              bind:this={cardMenu}
+              on:MDCMenuSurface:opened={cardMenuOpenedHandler}
+              anchor={false}
+              bind:anchorElement={menuAnchor}
+              anchorCorner="BOTTOM_LEFT"
+              style="left: -112px;"
+            >
+              <List class="menu-list">
+                <Item on:click={() => createPoster()}>
+                  <Text>{$_('text.new-poster')}</Text>
+                </Item>
+                <Item disabled={!$images.length} on:click={() => imageList?.setOpen(true)}>
+                  <Text>{$_('text.select-poster')}</Text>
+                </Item>
+                <Separator />
+                <Item
+                  disabled={!video.image_id}
+                  on:SMUI:action={() => dispatch('video:removePoster', video.image_id)}
+                >
+                  <Text>{$_('text.remove-poster')}</Text>
+                </Item>
+                <Item class="text-red-700" on:SMUI:action={() => remove()}>
+                  <Text>{$_('text.delete-video')}</Text>
+                </Item>
+              </List>
+            </Menu>
+          </div>
         </ActionIcons>
       </ActionButtons>
       <div use:Anchor bind:this={imageListAnchor} style="top: -320px; right: 250px;">

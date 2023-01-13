@@ -1,25 +1,21 @@
-// @ts-nocheck
 import { derived } from 'svelte/store';
 import { users } from '$lib/stores';
 import { isExpired, SUPERUSER } from '$lib/utils';
+import type { Issue, User } from '$lib/types';
+import type { Map } from 'typescript';
 
 function createStore() {
-  /**
-   *
-   * @param {import('$lib/types').User} usr
-   * @returns boolean
-   */
-  function hasActiveVideos(usr) {
+  function hasActiveVideos(user: User) {
     let end,
       active,
       now = new Date();
-    return usr.videos?.reduce((cum, cur) => {
+    return user.videos?.reduce((cum: any, cur: { _joinData: { end: any } }) => {
       active = (end = cur._joinData.end) && new Date(end) > now;
       return cum || active;
     }, false);
   }
   const infos = new Map();
-  const DEFS = [
+  const defs = [
     {
       key: {
         id: 'account-inaccessible',
@@ -29,12 +25,9 @@ function createStore() {
         flag: 'warning',
         type: ''
       },
-      /**
-       *
-       * @param {import('$lib/types').User} usr
-       */
-      value: (usr) =>
-        hasActiveVideos(usr) && (!usr.jwt || !usr.active || (usr.expires && isExpired(usr.expires)))
+      inform: (user: User) =>
+        hasActiveVideos(user) &&
+        (!user.jwt || !user.active || (user.expires && isExpired(user.expires)))
     },
     {
       key: {
@@ -45,11 +38,7 @@ function createStore() {
         flag: 'flash',
         type: 'issue'
       },
-      /**
-       *
-       * @param {import('$lib/types').User} usr
-       */
-      value: (usr) => usr.expires && isExpired(usr.expires)
+      inform: (user: User) => user.expires && isExpired(user.expires)
     },
     {
       key: {
@@ -60,11 +49,7 @@ function createStore() {
         flag: 'flash',
         type: 'issue'
       },
-      /**
-       *
-       * @param {import('$lib/types').User} usr
-       */
-      value: (usr) => !usr.active
+      inform: (user: User) => !user.active
     },
     {
       key: {
@@ -74,11 +59,7 @@ function createStore() {
         flag: 'flash',
         type: 'issue'
       },
-      /**
-       *
-       * @param {import('$lib/types').User} usr
-       */
-      value: (usr) => !usr.jwt && usr.role !== SUPERUSER
+      inform: (user: User) => !user.jwt && user.role !== SUPERUSER
     }
   ];
 
@@ -86,16 +67,13 @@ function createStore() {
     if (!$users) return;
 
     for (let user of $users) {
-      let res = [];
-      for (const def of DEFS) {
-        def.value(user) && res.push(def.key);
+      let issues: Issue[] = [];
+      for (const def of defs) {
+        def.inform(user) && issues.push(def.key);
       }
-      let item = infos.get(user.id);
-      (item && ((res.length && (item.params = [...res])) || infos.delete(user.id))) ||
-        (res.length &&
-          infos.set(user.id, {
-            params: res
-          }));
+      infos.set(user.id, {
+        issues
+      });
     }
     set(infos);
   });

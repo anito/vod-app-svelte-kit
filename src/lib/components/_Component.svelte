@@ -120,7 +120,6 @@
     height: 100%;
     z-index: auto;
     flex-shrink: 1;
-    /* overflow: auto; */
     -webkit-overflow-scrolling: touch;
   }
   .component.extended .content {

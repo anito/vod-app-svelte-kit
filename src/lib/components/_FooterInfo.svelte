@@ -1,21 +1,25 @@
-<script>
-	// @ts-nocheck
+<script lang="ts">
+  import { users, infos } from '$lib/stores';
+  import type { Issue } from '$lib/types';
 
-	import { users, infos } from '$lib/stores';
+  export let selectionUserId: string | null;
 
-	export let selectionUserId;
-
-	$: user = $users.find((usr) => usr.id === selectionUserId);
-	$: userInfos = (user && $infos.has(user.id) && $infos.get(user.id).params) || [];
+  $: user = $users.find((usr) => usr.id === selectionUserId);
+  $: userInfos = ((infos: Map<string, { issues: Issue[] }> = new Map()) => {
+    if (user) {
+      return infos.get(user.id)?.issues || [];
+    }
+    return [];
+  })($infos as Map<string, { issues: Issue[] }>);
 </script>
 
 <div class="info">
-	{#each userInfos as info}
-		<div class="chip warning {info.value}">
-			<i class="material-icons mdc-button__icon mr-1">circle_notifications</i>
-			{info.label}
-		</div>
-	{/each}
+  {#each userInfos as info}
+    <div class="chip warning {info.type}">
+      <i class="material-icons mdc-button__icon mr-1">circle_notifications</i>
+      {info.label}
+    </div>
+  {/each}
 </div>
 
 <style>

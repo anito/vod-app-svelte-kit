@@ -250,6 +250,7 @@
     window.addEventListener('session:stop', sessionStopHandler);
     window.addEventListener('session:extend', sessionExtendHandler);
     window.addEventListener('video:save', videoSaveHandler);
+    window.addEventListener('video:add', videoAddHandler);
     window.addEventListener('video:delete', videoDeleteHandler);
     window.addEventListener('user:save', userSaveHandler);
     window.addEventListener('user:delete', userDeleteHandler);
@@ -306,6 +307,7 @@
     window.removeEventListener('session:stop', sessionStopHandler);
     window.removeEventListener('session:extend', sessionExtendHandler);
     window.removeEventListener('video:save', videoSaveHandler);
+    window.removeEventListener('video:add', videoAddHandler);
     window.removeEventListener('video:delete', videoDeleteHandler);
     window.removeEventListener('user:save', userSaveHandler);
     window.removeEventListener('user:delete', userDeleteHandler);
@@ -357,6 +359,15 @@
       configSnackbar(message);
       snackbar?.forceOpen();
     }
+  }
+
+  async function videoAddHandler({ detail }: CustomEvent) {
+    let data = detail.data;
+    if (!Array.isArray(data)) {
+      data = [data];
+    }
+    videos.add(data);
+    // invalidate('app:pagination');
   }
 
   async function videoDeleteHandler({ detail }: CustomEvent) {

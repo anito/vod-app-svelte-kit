@@ -3,7 +3,7 @@
   export const clear = PAGINATORS.clear();
 </script>
 
-<script>
+<script lang="ts">
   import './_button.scss';
   import { enhance } from '$app/forms';
   import { writable } from 'svelte/store';
@@ -11,18 +11,13 @@
   import Button, { Label, Icon } from '@smui/button';
   import { _ } from 'svelte-i18n';
   import IconButton from '@smui/icon-button';
+  import type { ActionResult } from '@sveltejs/kit';
 
-  /**
-   * @type {any}
-   */
-  export let pagination;
-  /**
-   * @type {string}
-   */
-  export let id;
+  export let pagination: any;
+  export let id: string;
   export let style = '';
   export let action = '';
-  export let store = createStore();
+  export let store: any = createStore();
   export let icon = '';
   export let indicator = false;
   export let label = true;
@@ -59,38 +54,38 @@
     };
   }
 
-  function sync() {
-    if (!PAGINATORS.has(id)) {
-      PAGINATORS.set(id, pagination);
-      return PAGINATORS.get(id);
-    } else {
-      let ok = true;
-      const { count: paginator_count, has_next_page: paginator_has_next_page } = PAGINATORS.get(id);
-      if (!paginator_has_next_page && paginator_count !== $store.length) ok = false;
-
+  function sync(): any {
+    if (PAGINATORS.has(id)) {
+      let outofsync = false;
       // we don't know which fires first, store or pagination
       // so pagination could be still undefined here
       try {
+        const { count: paginator_count, has_next_page: paginator_has_next_page } =
+          PAGINATORS.get(id);
+        if (!paginator_has_next_page && paginator_count !== $store.length) outofsync = true;
         const { count } = pagination;
-        if (count !== paginator_count) ok = false;
+        if (count !== paginator_count) outofsync = true;
       } catch (e) {}
 
-      if (ok === true) {
-        return PAGINATORS.get(id);
+      if (outofsync) {
+        PAGINATORS.delete(id);
+        return sync();
       }
-      PAGINATORS.delete(id);
-      sync();
+      return PAGINATORS.get(id);
+    } else {
+      pagination && PAGINATORS.set(id, pagination);
+      return PAGINATORS.get(id);
     }
   }
 
   function createStore() {
-    const { update, subscribe } = writable();
+    const { update, subscribe } = writable([] as never[]);
     return {
-      add: (/** @type {any} */ values) =>
+      add: (values: any[]) =>
         update((items) => {
           for (const value of values) {
-            if (!items.find((/** @type {{ id: string; }} */ item) => value.id === item.id))
-              items = [...items, value];
+            if (!items.find((item: any) => value.id === item.id))
+              items = [...items, value] as never[];
           }
           return items;
         }),
@@ -103,28 +98,28 @@
     const appendix = document.documentElement.querySelector(`.paginator-appendix-${id}`);
     appendix?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
-</script>
 
-<li class="paginator-appendix paginator-appendix-{id}" class:indicator>
-  <form
-    {action}
-    method="POST"
-    use:enhance={() => {
-      return /** @param {{result: import('@sveltejs/kit').ActionResult | any}} param */ async ({
-        result
-      }) => {
-        if (result.type === 'success') {
-          const { data: resultData } = result;
-          const { success, data } = resultData;
-          success && store.add(data);
-          PAGINATORS.set(id, resultData.pagination);
+  async function formHandler() {
+    return ({ result }: { result: ActionResult }) => {
+      if (result.type === 'success') {
+        const resultData = result.data;
+        const { data, pagination }: any = resultData;
+        if (!pagination) {
+          PAGINATORS.delete(id);
+        } else {
+          data && store.add(data);
+          pagination && PAGINATORS.set(id, pagination);
           paginator = PAGINATORS.get(id);
           setTimeout(() => scrollIntoView(), 200);
           dispatch('paginator:loaded', id);
         }
-      };
-    }}
-  >
+      }
+    };
+  }
+</script>
+
+<li class="paginator-appendix paginator-appendix-{id}" class:indicator>
+  <form {action} method="POST" use:enhance={formHandler}>
     <input type="hidden" name="page" value={page_data?.next_page} />
     {#if paginator?.has_next_page}
       {#if label}

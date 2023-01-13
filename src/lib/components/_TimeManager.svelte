@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import './_icon-button.scss';
   import './_date-range-picker.scss';
   import { page } from '$app/stores';
@@ -31,101 +31,46 @@
   import Dialog, { Title, Content, Actions, InitialFocus } from '@smui/dialog';
   import Radio from '@smui/radio';
   import { _, locale } from 'svelte-i18n';
+  import type Snackbar from '@smui/snackbar';
+  import type { Issue, User, Video } from '$lib/types';
 
-  /** @type {string} */
-  export let selectionUserId;
+  export let selectionUserId: string;
 
   const isUnmanagableNoneUserList = false;
-  const { getSnackbar, configSnackbar } = getContext('snackbar');
-  const { open, close } = getContext('editor-modal');
-  const { setFab } = getContext('fab');
+  const { getSnackbar, configSnackbar }: any = getContext('snackbar');
+  const { open, close }: any = getContext('editor-modal');
+  const { setFab }: any = getContext('fab');
   const timespanSelections = [
     { title: 'text.1-month', value: 30 },
     { title: 'text.2-months', value: 60 },
     { title: 'text.3-months', value: 90 },
     { title: 'text.custom', value: 'custom' }
   ];
-  const lists = new Set();
+  const lists: Set<string> = new Set();
   const USERVIDEOSLIST = 'user-video-list';
   const NONUSERVIDEOSLIST = 'non-user-videos-list';
 
-  /**
-   * @type {Element}
-   */
-  let root;
-  /**
-   * @type {Element}
-   */
-  let main;
-  /**
-   * @type {string | null}
-   */
-  let schedulingVideoId;
-  /**
-   * @type {boolean}
-   */
+  let root: Element;
+  let main: Element;
+  let schedulingVideoId: string | null;
   let isopen = false;
-  /**
-   * @type {Dialog}
-   */
-  let scheduleDialog;
-  /**
-   * @type {Dialog}
-   */
-  let removeDialog;
-  /**
-   * @type {number | string}
-   */
-  let timespanSelection = timespanSelections[0].value;
-  /**
-   * @type {number | string}
-   */
-  let timespanSelected;
+  let scheduleDialog: Dialog;
+  let removeDialog: Dialog;
+  let timespanSelection: number | string = timespanSelections[0].value;
+  let timespanSelected: number | string;
   let firstDayOfWeek = 'monday';
-  /**
-   * @type {import('@smui/snackbar')}
-   */
-  let snackbar;
-  /**
-   * @type {string}
-   */
-  let message;
-  /**
-   * @type {number}
-   */
-  let selectedIndex;
-  /**
-   * @type {number}
-   */
-  let selectedNoneUserIndex;
-  /**
-   * @type {string | null}
-   */
-  let selectionVideoId;
-  /**
-   * @type {import('$lib/types').Video}
-   */
-  let selectedVideo;
-  /**
-   * @type {any}
-   */
-  let readout;
-  /**
-   * @type {import('$lib/types').Video}
-   */
-  let schedulingVideo;
-  /**
-   * @type {number}
-   */
-  let expires;
-  /**
-   * @type {boolean}
-   */
-  let isExpired;
-  /**
-   * @type {any}
-   */
-  let itemsList = {};
+  let snackbar: Snackbar;
+  let message: string;
+  let selectedIndex: number;
+  let selectedNoneUserIndex: number;
+  let selectionVideoId: string | null;
+  let selectedVideo: Video;
+  let readout: any;
+  let schedulingVideo: Video | undefined;
+  let expires: number | undefined;
+  let isExpired: boolean;
+  let itemsList: { [x: string]: { items: any; element: any; focusItemAtIndex: any } } = {};
+  let displayedVideos: Video[];
 
   $: selectionUserId && (selectionVideoId = null);
   $: currentUser = $users.find((usr) => usr.id === selectionUserId);
@@ -134,22 +79,23 @@
   $: jwt = currentUser?.jwt;
   $: active = currentUser?.active;
   $: joinData =
-    (selectedVideo = currentUser?.videos?.find(
-      (/** @type {{ id: string | null; }} */ v) => v.id === selectionVideoId
-    )) && selectedVideo._joinData;
+    (selectedVideo = currentUser?.videos?.find((video: Video) => video.id === selectionVideoId)) &&
+    selectedVideo._joinData;
   $: startDate = (joinData?.start && parseISO(joinData.start)) || endOfWeek(new Date(0));
   $: endDate = (joinData?.end && parseISO(joinData.end)) || endOfWeek(new Date(0));
   $: expires = currentUser?.expires;
   $: isExpired = (expires && expires * 1000 < +new Date().getTime()) || false;
   $: schedulingVideo =
-    schedulingVideoId && $videos?.find((video) => video.id === schedulingVideoId);
+    (schedulingVideoId && $videos?.find((video) => video.id === schedulingVideoId)) || undefined;
   $: schedulingVideoTitle = (schedulingVideo && schedulingVideo.title) || '';
-  $: userIssues =
-    ($infos?.has(selectionUserId) &&
-      $infos
-        .get(selectionUserId)
-        .params.filter((/** @type {{ type: string; }} */ info) => info.type === 'issue')) ||
-    [];
+  $: userInfos = ((infos: Map<string, { issues: Issue[] }> = new Map()) => {
+    const info = infos.get(selectionUserId);
+    if (info) {
+      return info.issues.filter((info) => info.type === 'issue');
+    } else {
+      return [];
+    }
+  })($infos as Map<string, { issues: Issue[] }>);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: pagination = hasPrivileges ? $page.data.pagination?.videos : $page.data.pagination?.videosAll;
   $: store = hasPrivileges ? videos : videosAll;
@@ -159,18 +105,15 @@
   $: displayedVideos = hasPrivileges
     ? currentUser?.videos?.sort(sortByEndDate) || []
     : currentUser?.videos
-        ?.filter(
-          (
-            /** @type {{ _joinData: { start: string | number | Date; end: string | number | Date; }; }} */ v
-          ) => {
-            return (
-              new Date(v._joinData.start) <= new Date() && new Date(v._joinData.end) >= new Date()
-            );
-          }
-        )
+        ?.filter((video: Video) => {
+          return (
+            new Date(video._joinData.start) <= new Date() &&
+            new Date(video._joinData.end) >= new Date()
+          );
+        })
         .sort(sortByEndDate) || [];
   $: userVideos =
-    displayedVideos.map((/** @type {{ id: any; }} */ video) => {
+    displayedVideos.map((video) => {
       const _video = $videos?.find((vid) => vid.id === video.id);
       if (_video) {
         const { image_id, title } = _video;
@@ -183,14 +126,12 @@
     ? $videos?.sortBy('title')
     : $videosAll
         ?.filter(
-          (v) =>
-            !userVideos?.find(
-              (/** @type {{ id: any; _joinData: { end: string | number | Date; }; }} */ uv) => {
-                return (
-                  v.id === uv.id && (!uv._joinData.end || new Date(uv._joinData.end) > new Date())
-                );
-              }
-            )
+          (video) =>
+            !userVideos?.find((uv) => {
+              return (
+                video.id === uv.id && (!uv._joinData.end || new Date(uv._joinData.end) > new Date())
+              );
+            })
         )
         .sortBy('title');
   $: addClass(isopen);
@@ -208,19 +149,12 @@
     }
   });
 
-  /**
-   * @param {import('$lib/types').Video} video
-   */
-  function openScheduleDialog(video) {
+  function openScheduleDialog(video: Video) {
     schedulingVideoId = video.id;
     scheduleDialog?.setOpen(true);
   }
 
-  /**
-   * @param {CustomEvent<any>} event
-   * @param {import('$lib/types').Video} video
-   */
-  function openRemoveDialog(event, video) {
+  function openRemoveDialog(video: Video) {
     schedulingVideoId = video.id;
     if (timeRemaining(video)) {
       removeDialog?.setOpen(true);
@@ -229,21 +163,15 @@
     }
   }
 
-  /**
-   * @param {CustomEvent} event
-   */
-  async function removeDialogCloseHandler({ detail }) {
+  async function removeDialogCloseHandler({ detail }: CustomEvent) {
     if (detail.action === 'approved') {
       removeVideo();
     }
     schedulingVideoId = null;
   }
 
-  /**
-   * @param {CustomEvent} event
-   */
-  async function scheduleDialogCloseHandler(event) {
-    if (event.detail.action === 'accept') {
+  async function scheduleDialogCloseHandler({ detail }: CustomEvent) {
+    if (detail.action === 'accept') {
       let start = null;
       let end = null;
 
@@ -260,21 +188,29 @@
     }
   }
 
-  /**
-   * @param {CustomEvent} event
-   */
-  async function videoSelectedHandler({ detail }) {
+  async function videoSelectedHandler({ detail }: CustomEvent) {
     const { video } = detail;
-    selectionVideoId = video?.id;
+    const id = video?.id;
+    selectionVideoId = id;
+    const videoExists = $videos.find((video) => selectionVideoId === video.id) || false;
+    if (!videoExists) {
+      await fetchVideo(id).then((res) => proxyEvent('video:add', { data: [res] }));
+    }
     scrollIntoView();
   }
 
-  /**
-   * @param {CustomEvent} event
-   */
-  function onApplyHandler({ detail }) {
-    /** @type {any} */
-    const { startDate, endDate } = { ...detail };
+  async function fetchVideo(id: string) {
+    return await fetch(`/videos/${id}`)
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success) {
+          return res.data;
+        }
+      });
+  }
+
+  function onApplyHandler({ detail }: CustomEvent) {
+    const { startDate, endDate }: any = { ...detail };
 
     let isoStart = toISODate(startDate);
     let isoEnd = toISODate(endDate);
@@ -282,16 +218,11 @@
     saveScheduledTime(selectionVideoId, isoStart, isoEnd);
   }
 
-  /**
-   * @param {string | null} id
-   * @param {string | null} start
-   * @param {string | null} end
-   */
-  async function saveScheduledTime(id, start, end) {
+  function saveScheduledTime(id: string | null, start: string | null, end: string | null) {
     const associated = userVideos
-      .filter((/** @type {{ id: string | null; }} */ v) => v.id != id)
-      .map((/** @type {{ id: any; }} */ v) => ({ id: v.id }));
-    const currentVideo = userVideos.find((/** @type {{ id: string | null; }} */ v) => v.id == id);
+      .filter((video) => video.id != id)
+      .map((video) => ({ id: video.id }));
+    const currentVideo = userVideos.find((video) => video.id == id);
     const joinData = currentVideo?._joinData || {};
 
     const data = {
@@ -305,31 +236,22 @@
       ]
     };
 
-    const onsuccess = (
-      /** @type {{ data: import("$lib/types").User<Record<any, any>>; message: any; }} */ res
-    ) => {
+    const onsuccess = (res: any) => {
       let idx;
       handleSuccess(res, $_('text.time-slot-updated'));
       setTimeout(() => {
-        idx = userVideos.findIndex(
-          (/** @type {import('$lib/types').Video} */ v) => v.id == selectionVideoId
-        );
+        idx = userVideos.findIndex((video) => video.id == selectionVideoId);
         idx !== -1 && itemsList[USERVIDEOSLIST].focusItemAtIndex(idx);
       }, 500);
     };
-    const onerror = (
-      /** @type {{ message: any; data: { message: any; code: any; }; statusText: any; status: any; }} */ res
-    ) => {
+    const onerror = (res: any) => {
       startDate = startDate;
       if (res) handleError(res);
     };
     proxyEvent('user:save', { data, onsuccess, onerror });
   }
 
-  /**
-   * @param {import('$lib/types').Video} video
-   */
-  function timeRemaining(video) {
+  function timeRemaining(video: Video) {
     if (!video._joinData?.end) return 0;
     const end = new Date(video._joinData.end).getTime();
     const now = new Date().getTime();
@@ -347,25 +269,17 @@
     const ids = _userVideos.map((v) => v.id);
     const data = { id: currentUser?.id, videos: { _ids: [...ids] } };
 
-    const onsuccess = (
-      /** @type {{ data: import("$lib/types").User<Record<any, any>>; message: any; }} */ res
-    ) => {
+    const onsuccess = (res: any) => {
       selectionVideoId === schedulingVideoId && (selectionVideoId = null);
       if (res) handleSuccess(res, $_('text.video-removed'));
     };
-    const onerror = (
-      /** @type {{ message: any; data: { message: any; code: any; }; statusText: any; status: any; }} */ res
-    ) => {
+    const onerror = (res: any) => {
       if (res) handleError(res);
     };
     proxyEvent('user:save', { data, onsuccess, onerror });
   }
 
-  /**
-   * @param {{ data: import("$lib/types").User<Record<any, any>>; message: any; }} res
-   * @param {string} msg
-   */
-  function handleSuccess(res, msg) {
+  function handleSuccess(res: { data: User; message: any }, msg: string) {
     users.put(res.data);
 
     message = msg || res.message || res.data.message;
@@ -373,10 +287,7 @@
     snackbar?.forceOpen();
   }
 
-  /**
-   * @param {{ message: any; data: { message: any; code: any; }; statusText: any; status: any; }} res
-   */
-  function handleError(res) {
+  function handleError(res: any) {
     message = res?.message || res?.data?.message || res?.statusText;
     const code = res.data?.code || res.status;
 
@@ -391,15 +302,9 @@
     }
   }
 
-  /**
-   * @param {Event} event
-   */
-  function onDateRangeSelected(event) {}
+  function onDateRangeSelected(event: Event) {}
 
-  /**
-   * @param {string | null} id
-   */
-  function toggleDataPicker(id) {
+  function toggleDataPicker(id: string | null) {
     if (selectionVideoId !== id) {
       selectionVideoId = id;
       isopen = true;
@@ -408,20 +313,15 @@
     }
   }
 
-  /**
-   * @param {string} listName
-   * @param {{ focusItemAtIndex: Function; items: Array<any>; element: HTMLUListElement }} methods
-   */
-  function receiveListMethods(listName, methods) {
-    // console.log(methods);
+  function receiveListMethods(
+    listName: string,
+    methods: { items: any; element: any; focusItemAtIndex: any }
+  ) {
     lists.add(listName);
     itemsList[listName] = methods;
   }
 
-  /**
-   * @param {import('$lib/types').Video} video
-   */
-  function editVideo(video) {
+  function editVideo(video: Video) {
     open(
       VideoEditorList,
       {
@@ -436,9 +336,7 @@
   function scrollIntoView() {
     setTimeout(() => {
       lists.forEach((name) => {
-        let item = itemsList[name].items.find(
-          (/** @type {{ selected: any; }} */ item) => item.selected
-        );
+        let item = itemsList[name].items.find((item: { selected: any }) => item.selected);
         item?.element.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
       });
     }, 100);
@@ -451,10 +349,7 @@
     last.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
 
-  /**
-   * @param {boolean} isopen
-   */
-  function addClass(isopen) {
+  function addClass(isopen: boolean) {
     root?.classList.toggle('datapicker--open', isopen);
   }
 </script>
@@ -526,7 +421,7 @@
                     <IconButton
                       color="primary"
                       class="delete-action-button delete ml-2 small"
-                      on:click$preventDefault={(e) => openRemoveDialog(e, video)}
+                      on:click$preventDefault={() => openRemoveDialog(video)}
                     >
                       <Icon class="material-icons">remove_circle</Icon>
                     </IconButton>
@@ -691,7 +586,7 @@
             {$_('text.account-inactive')}
           </p>
           <div class="reasons">
-            {#each userIssues as issue}
+            {#each userInfos as issue}
               <Button
                 variant="raised"
                 on:click={() => proxyEvent(issue.eventType, { silent: true })}

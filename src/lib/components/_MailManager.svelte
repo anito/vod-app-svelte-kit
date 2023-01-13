@@ -3,7 +3,7 @@
   import './_list.scss';
   import './_icon-button.scss';
   import * as api from '$lib/api';
-  import { onMount, tick, getContext, setContext } from 'svelte';
+  import { onMount, getContext, setContext } from 'svelte';
   import { writable } from 'svelte/store';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
@@ -50,10 +50,10 @@
     InitialFocus
   } from '@smui/dialog';
   import { INBOX, SENT, ADMIN, SUPERUSER, log, DESC, ASC } from '$lib/utils';
-  import type { User, Mail } from '$lib/types';
+  import type { Mail } from '$lib/types';
   import type Snackbar from '@smui/snackbar';
 
-  const sortAZProtected = (a: { [x: string]: string }, b: { [x: string]: string }) => {
+  const sortAZProtected = (a: Record<string, any>, b: Record<string, any>) => {
     let ap = (a['protected'] && a['name'].toLowerCase()) || 'z';
     let bp = (b['protected'] && b['name'].toLowerCase()) || 'z';
     let an = a['name'].toLowerCase();
@@ -87,7 +87,7 @@
   const { getSnackbar, configSnackbar } = getContext('snackbar') as any;
   const defaultActive = INBOX;
   const mailboxes = [INBOX, SENT];
-  const currentStore = writable();
+  const currentStore: any = writable();
 
   let sort = 'DESC';
   let drawer;
@@ -97,14 +97,13 @@
   let drawerOpenOnMount = true;
   let selection: Mail;
   let unreadInboxes = 0;
-  let activeTemplate: string | boolean;
   let canSave: boolean;
   let working: { [x: string]: any } | undefined;
   let mailTemplate: MailTemplate;
   let unsavedChangesDialog: Dialog;
   let root: HTMLElement;
   let pendingActiveTemplate: string | null;
-  let activeListItem: string;
+  let activeListItem: string | null;
   let selectionIndex: number;
   let totalInboxes = 0;
   let totalSents = 0;
@@ -205,7 +204,6 @@
   function getStoreByEndpoint(endpoint: string | null) {
     if (endpoint === INBOX) return inboxes;
     if (endpoint === SENT) return sents;
-    return writable();
   }
 
   async function getMail(name: string | undefined) {
@@ -293,7 +291,7 @@
   }
 
   async function toggleRead({ detail }: CustomEvent) {
-    const { selection } = { ...detail };
+    const selection = detail.selection;
     const _read = !selection._read;
     await api
       .put(`${INBOX}/${selection.id}`, {
@@ -303,7 +301,7 @@
       .then((res) => {
         if (res?.success) {
           const inbox = $inboxes.find((item) => item.id === selection.id);
-          inboxes.put({ ...inbox, _read });
+          if (inbox) inboxes.put({ ...inbox, _read });
         }
       });
   }
@@ -340,8 +338,8 @@
 
   async function addTemplate() {
     if (!$templates.length) return;
-    const { name, slug } = generateName();
-    const items = [];
+    const { name, slug }: { name: string; slug: string } = generateName();
+    const items: any[] = [];
     let template = $templates[0];
     template.items.map((item: { field: { id: any } }) => {
       items.push({
@@ -357,7 +355,7 @@
     });
     configSnackbar(res.message);
     if (res?.success) {
-      templates.add({ ...newTemplate, id: res.data.id, items: res.data.items });
+      templates.add({ ...newTemplate, id: res.data.id, items: res.data.items, protected: false });
       gotoActiveBox(templateStringFromSlug(slug));
     }
     snackbar?.forceOpen();
@@ -381,7 +379,7 @@
     );
     configSnackbar(res.message);
     if (res?.success) {
-      templates.put({ ...currentTemplate });
+      if (currentTemplate) templates.put({ ...currentTemplate });
       mailTemplate.createWorkingCopy?.();
     }
     snackbar?.forceOpen();
@@ -389,8 +387,8 @@
 
   async function duplicateTemplate() {
     let { name, slug } = generateName(currentTemplate?.name);
-    let items = [];
-    currentTemplate.items.map((item) => {
+    let items: any[] = [];
+    currentTemplate?.items.map((item) => {
       items.push({
         content: working?.[item.field.name],
         field_id: item.field.id,
@@ -412,25 +410,25 @@
   }
 
   async function removeTemplate() {
-    const res = await api.del(`templates/${currentTemplate.id}?locale=${$session.locale}`, {
+    const res = await api.del(`templates/${currentTemplate?.id}?locale=${$session.locale}`, {
       token: $session.user?.jwt
     });
     configSnackbar(res.message);
     if (res?.success) {
-      templates.del(currentTemplate.id);
+      if (currentTemplate) templates.del(currentTemplate?.id);
     }
     snackbar?.forceOpen();
   }
 
-  function getTemplateData(slug: string) {
-    let data;
-    if (
-      (data = templateSlugData.find((item) => slug in item)) &&
-      typeof data[slug] === 'function'
-    ) {
-      return data[slug]();
+  function getTemplateData(slug?: any) {
+    const data: any = templateSlugData.find((item) => slug in item);
+    if (data) {
+      if (typeof data.slug === 'function') {
+        return data.slug();
+      } else {
+        return data.slug;
+      }
     }
-    return false;
   }
 
   async function unsavedChangesDialogCloseHandler(event: CustomEvent) {
@@ -481,9 +479,9 @@
     return false;
   }
 
-  function generateName(name?: string | any[]) {
-    let slug,
-      newName = (name && name.concat($_('text.new-copy-label'))) || $_('text.new');
+  function generateName(name?: string): { name: string; slug: string } {
+    let slug;
+    let newName = (name && name.concat($_('text.new-copy-label'))) || $_('text.new');
     if ($templates.find((tmpl) => tmpl.name === newName)) {
       return generateName(newName);
     }
@@ -491,7 +489,7 @@
     return { name: newName, slug };
   }
 
-  function generateSlug() {
+  function generateSlug(): string {
     let slug = crypto.randomUUID();
     if ($templates.find((tmpl) => tmpl.slug === slug)) {
       return generateSlug();
@@ -500,13 +498,13 @@
   }
 
   function matchesTemplate(value: string | null) {
-    if (!value) return false;
+    if (!value) return;
     let matches = value.match(/(template):([\w-:\d]+)/);
     if (matches?.length === 3) {
       return matches[2];
     } else {
       working = undefined;
-      return false;
+      return;
     }
   }
 
@@ -514,7 +512,7 @@
     return `template:${slug}`;
   }
 
-  function validateData(slug: string) {
+  function validateData(slug?: string) {
     let data = getTemplateData(slug);
     if (data) {
       return data.validate();

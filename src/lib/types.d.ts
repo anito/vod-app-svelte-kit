@@ -5,6 +5,7 @@ declare global {
     'session:stop': CustomEvent;
     'session:extend': CustomEvent;
     'video:save': CustomEvent;
+    'video:add': CustomEvent;
     'video:delete': CustomEvent;
     'user:save': CustomEvent;
     'user:delete': CustomEvent;
@@ -84,6 +85,15 @@ export interface User<UserRepoType = Record<any, any>> {
   groups: Group[] | any;
 }
 
+export interface Issue<IssuesType = Record<string, any>> {
+  id: string;
+  eventType: string;
+  label: string;
+  flag: string;
+  type: string;
+  reason?: string;
+}
+
 export interface UserFoundation<UserFoundationType = Record<any, any>> {
   id: string;
   name: string;
@@ -148,9 +158,11 @@ export interface Mail<MailType = Record<string, any>> {
 }
 
 export interface MailTemplate<TemplateType = Record<string, any>> {
-  id: string | any;
-  name: string;
-  items: any;
+  id: string;
+  name?: string;
+  slug?: string;
+  protected?: boolean;
+  items: any[];
 }
 
 export interface Framework<FrameworkType = Record<string, any>> {

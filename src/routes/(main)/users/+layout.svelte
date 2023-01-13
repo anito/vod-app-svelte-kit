@@ -27,7 +27,7 @@
   import Dialog, { Title as DialogTitle, Content, Actions, InitialFocus } from '@smui/dialog';
   import { _ } from 'svelte-i18n';
   import type { LayoutData } from './$types';
-  import type { User } from '$lib/types';
+  import type { Issue, User } from '$lib/types';
   import type Snackbar from '@smui/snackbar';
 
   async function searchBy(key: any, val: any) {
@@ -99,7 +99,11 @@
         user.id !== $session.user?.id
     ) || [];
   $: filteredUsers.sortBy('name');
-  $: userInfos = ($infos?.has(selectionUserId) && $infos.get(selectionUserId).params) || [];
+  $: _infos = $infos as Map<string, { issues: Issue[] }>;
+  $: userInfos =
+    ((id) => {
+      if (id) return _infos.get(id)?.issues;
+    })(selectionUserId) || [];
   $: userIssues = userInfos.filter((info: { type: string }) => info.type === 'issue');
 
   onMount(() => {
@@ -272,12 +276,13 @@
         type: 'video',
         options: {
           // acceptedFiles: '.mov .mp4 .m4a .m4v .3gp .3g2 .webm',
-          parallelUploads: 1,
-          maxFiles: 1,
+          uploadMultiple: true,
+          parallelUploads: 5,
+          maxFiles: 5,
           timeout: 3600 * 1000, // 60min
           maxFilesize: 1024 // Megabyte
         },
-        events: { 'upload:success': uploadSuccessHandler }
+        events: { 'upload:successmultiple': uploadSuccessHandler }
       },
       {
         closeOnOuterClick: false,
@@ -299,7 +304,7 @@
 
     if (success) {
       uploadedData = data;
-      videos.add(data);
+      proxyEvent('video:add', { data });
       close$default();
     }
   }

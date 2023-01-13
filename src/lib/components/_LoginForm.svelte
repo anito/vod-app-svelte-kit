@@ -2,7 +2,7 @@
   let loginAttempts = 0;
 </script>
 
-<script>
+<script lang="ts">
   import { browser, dev } from '$app/environment';
   import { onMount, getContext } from 'svelte';
   import { post, proxyEvent } from '$lib/utils';
@@ -17,13 +17,11 @@
   import { FacebookLoginButton, GoogleLoginButton, Header } from '$lib/components';
   import { _ } from 'svelte-i18n';
   import { enhance } from '$app/forms';
+  import type { ActionResult } from '@sveltejs/kit';
 
   const client_id = import.meta.env.VITE_CLIENT_ID; // Ggogle Client ID
   const appId = import.meta.env.VITE_APP_ID; // Facebook App ID
-
-  const { getSnackbar } = getContext('snackbar');
   const toplevel = dev ? 'dev' : 'de';
-
   const ADMIN_EMAIL = `sampleadmin@webpremiere.${toplevel}`;
   const ADMIN_PASS = 'Test@005';
   const USER_EMAIL = `sampleuser@webpremiere.${toplevel}`;
@@ -40,38 +38,22 @@
   ]);
   const tabs = {
     names: () => {
-      /** @type {string[]}*/
-      const names = [];
+      const names: string[] = [];
       tabMap.forEach((val, key) => {
         names.push(key);
       });
       return names;
     },
-    /** @param {string} key */
-    rows: (key) => tabMap.get(key)?.rows,
-    /** @param {string} key */
-    text: (key) => tabMap.get(key)?.text,
-    /** @param {string} key */
-    icon: (key) => tabMap.get(key)?.icon
+    rows: (key: string) => tabMap.get(key)?.rows,
+    text: (key: string) => tabMap.get(key)?.text,
+    icon: (key: string) => tabMap.get(key)?.icon
   };
   const tabNames = tabs.names();
 
-  /**
-   * @type {Element}
-   */
-  let root;
-  /**
-   * @type {Dialog}
-   */
-  let invalidTokenUserDialog;
-  /**
-   * @type {string}
-   */
-  let activeSignIn;
-  /**
-   * @type {string}
-   */
-  let activeTab;
+  let root: Element;
+  let invalidTokenUserDialog: Dialog;
+  let activeSignIn: string;
+  let activeTab: string;
   let password = '';
   let email = '';
 
@@ -92,20 +74,20 @@
   const loginHandler = () => {
     flash.update({ message: $_('text.authenticating'), permanent: true });
     block();
-    return /** @param {{result: import('@sveltejs/kit').ActionResult | any}} param */ ({
-      result
-    }) => {
-      /** @type {{success: boolean, data: any}}*/
-      const { success, data } = { ...result.data };
-      if (success) {
-        proxyEvent('session:success', { session: { ...data } });
-      } else {
-        proxyEvent('session:error', { ...data });
+    return ({ result }: { result: ActionResult }) => {
+      if (result.type === 'success') {
+        const { success, data }: any = { ...result.data };
 
-        /**
-         * Show dialog after 3 fails
-         */
-        if (++loginAttempts > 3) invalidTokenUserDialog?.setOpen(true);
+        if (success) {
+          proxyEvent('session:success', { session: { ...data } });
+        } else {
+          proxyEvent('session:error', { ...data });
+
+          /**
+           * Show dialog after 3 fails
+           */
+          if (++loginAttempts > 3) invalidTokenUserDialog?.setOpen(true);
+        }
       }
       reset();
       unblock();

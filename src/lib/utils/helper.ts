@@ -120,35 +120,7 @@ export let convert = (() => {
   };
 })();
 
-export const proxyEvent = function (
-  eventType: string,
-  detail?:
-    | {
-        data?:
-          | { id: string; image_id: null; image: null }
-          | { id: string; image_id: string; image: null }
-          | { id: any; videos: any[] }
-          | { id: any; videos: { _ids: any[] } }
-          | { id: any; title: any; description: any }
-          | { id: any }
-          | { id: any; playhead: any }
-          | { id: any; videos: any[] }
-          | { id: any; playhead: any }
-          | { id: any; videos: any[] };
-        show?: boolean;
-        session?: any;
-        onsuccess?: ((res: any) => void) | ((res: any) => void);
-        onerror?: ((res: any) => void) | ((res: any) => void);
-        silent?: boolean;
-        id?: any;
-        open?: boolean;
-        callback?: () => void;
-        redirect?: string;
-        start?: boolean;
-        eventType?: any;
-      }
-    | undefined
-) {
+export const proxyEvent = function (eventType: string, detail?: any) {
   eventType = typeof eventType === 'string' ? eventType : detail?.eventType;
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent(eventType, { detail }));

@@ -8,6 +8,8 @@
   .mdc-drawer {
     @include width(280px);
     @include z-index(6);
+    @include item-activated-text-ink-color(on-primary);
+    @include item-icon-ink-color(on-primary);
     --mdc-typography-caption-font-family: var(--caption-font);
     --mdc-typography-caption-font-size: var(--caption-fs);
   }

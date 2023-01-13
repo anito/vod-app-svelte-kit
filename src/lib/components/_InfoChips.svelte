@@ -16,7 +16,7 @@
 
   let className = '';
 
-  $: chips = ($infos?.has(selectionUserId) && $infos.get(selectionUserId).params) || [];
+  $: chips = ($infos?.has(selectionUserId) && $infos.get(selectionUserId).issues) || [];
   $: promise = Promise.resolve(chips);
 
   /**

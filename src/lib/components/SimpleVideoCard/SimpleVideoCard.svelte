@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import './_user-video.scss';
   import fallbackPoster from './dummy-poster.jpg';
   import { createEventDispatcher } from 'svelte';
@@ -12,20 +12,11 @@
   import { differenceInHours } from 'date-fns';
   import { _, locale } from 'svelte-i18n';
   import { page } from '$app/stores';
+  import type { Video } from '$lib/types';
 
-  /**
-   * @type {import('$lib/types').Video}
-   */
-  export let video;
-  /**
-   * @type {string | null}
-   */
-  export let selectionUserId = null;
-  /**
-   * @param {string} [id]
-   * @param {any} [url]
-   */
-  export let anchorFn = (id, url) => $page.url.href;
+  export let video: Video;
+  export let selectionUserId: string | null = '';
+  export let anchorFn = (id: string, url: any) => $page.url.href;
   export { className as class };
   export let disabled = false;
   export let threeLine = false;
@@ -37,39 +28,18 @@
 
   let dispatch = createEventDispatcher();
   let className = '';
-  /**
-   * @type {string | void}
-   */
-  let src = emptyPoster;
+  let src: string | void = emptyPoster;
   let _video;
-  /**
-   * @type {any}
-   */
-  let readoutPeriod;
-  /**
-   * @type {any}
-   */
-  let readoutDuration;
+  let readoutPeriod: any;
+  let readoutDuration: any;
   let startDate;
   let endDate;
-  /**
-   * @type {boolean}
-   */
-  let custom;
+  let custom: boolean;
   let playhead;
   let duration;
-  /**
-   * @type {any}
-   */
-  let pending;
-  /**
-   * @type {boolean}
-   */
-  let expired;
-  /**
-   * @type {boolean}
-   */
-  let timerOff;
+  let pending: any;
+  let expired: boolean;
+  let timerOff: boolean;
   let filtered;
   let item;
 
@@ -82,7 +52,7 @@
     filtered[0];
   $: joinData =
     currentUser &&
-    (_video = currentUser.videos?.find((/** @type {{ id: any; }} */ v) => v.id === video.id)) &&
+    (_video = currentUser.videos?.find((_video: Video) => _video.id === video.id)) &&
     _video._joinData;
   $: ((jData, _locale) => (
     (startDate = jData && jData.start && parseISO(jData.start)),
@@ -105,20 +75,12 @@
     (readoutDuration = (startDate && _readoutDuration(startDate, endDate)) || '--')
   ))(joinData, $locale);
 
-  /**
-   * @param {any} date
-   * @param {number | Date} endDate
-   */
-  function _timespan(date, endDate) {
+  function _timespan(date: any, endDate: number | Date) {
     let start = hasStarted(date) ? new Date() : date;
     return Math.abs(differenceInHours(start, endDate));
   }
 
-  /**
-   * @param {any} date
-   * @param {number | Date} endDate
-   */
-  function _readoutDuration(date, endDate) {
+  function _readoutDuration(date: any, endDate: number | Date) {
     if (endDate && isExpired(endDate)) return $_('text.expired');
 
     let time = _timespan(date, endDate);
@@ -129,10 +91,7 @@
     return `${daysReadout} ${hoursReadout}`;
   }
 
-  /**
-   * @param {import("$lib/types").Video<Record<string, any>>} video
-   */
-  async function fetchBackgroundImage(video) {
+  async function fetchBackgroundImage(video: Video) {
     if (video.image_id) {
       return await getPosterUrl(video.image_id)
         .then((res) => res)
@@ -142,10 +101,7 @@
     }
   }
 
-  /**
-   * @param {string} id
-   */
-  async function getPosterUrl(id) {
+  async function getPosterUrl(id: string) {
     if (id) {
       // options.square: 0 => intelligent resize (keep ratio) | 1 => force resize | 2 => no resize (original)
       const res = await getMedia('IMAGE', id, user?.jwt, {
@@ -171,18 +127,13 @@
 
   function focusHandler() {}
 
-  /**
-   * @param {URL} url
-   */
-  function useAnchorFn(url) {
-    if (anchorFn) {
-      return anchorFn(video?.id, url);
-    }
+  function useAnchorFn(url: URL) {
+    return anchorFn(video?.id, url);
   }
 </script>
 
 <Item
-  on:SMUI:action={() => dispatch('video:selected', { video })}
+  on:SMUI:action={(e) => dispatch('video:selected', { video })}
   class="item {className}"
   disabled={unmanagable}
   bind:this={item}

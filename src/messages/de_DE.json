@@ -242,7 +242,7 @@
     "load-more": "Mehr laden",
     "paginator-indicator": "nächste {next_count} ({loaded_count}/{count})",
     "posters": "Poster",
-    "your-videos": "Deine <span class=\"selected-bg-color\">Videos</span>",
+    "your-videos": "Deine Videos",
     "dark_mode": "Lichter aus",
     "type-min-char-count": "Für vollständige Suche mind. {count} Zeichen eingeben ",
     "you-will-be-logged-out": "Aktuelle Sitzung beenden und als <strong>{name}</strong> anmelden?"

@@ -1,49 +1,24 @@
-<script>
+<script lang="ts">
   import { onDestroy, onMount } from 'svelte';
   import { Media, MediaContent } from '@smui/card';
   import Textfield, { Textarea } from '@smui/textfield';
   import VideoPlayer, { mute } from '$lib/components/Video';
+  import dummyPoster from '/src/assets/images/empty-poster.jpg';
   import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, info, proxyEvent } from '$lib/utils';
   import { session, users } from '$lib/stores';
   import { _ } from 'svelte-i18n';
+  import type { Video } from '$lib/types';
 
-  /**
-   * @type {import('$lib/types').Video}
-   */
-  export let video;
-  /**
-   * @type {string | undefined}
-   */
-  export let emptyPoster = 'test';
-  /**
-   * @type {string}
-   */
-  export let title = '';
-  /**
-   * @type {string}
-   */
-  export let description = '';
-  /**
-   * @type {boolean}
-   */
-  export let isEditMode = false;
+  export let video: Video;
+  export let emptyPoster: string = dummyPoster;
+  export let title: string = '';
+  export let description: string = '';
+  export let isEditMode: boolean = false;
 
-  /**
-   * @type {string | undefined}
-   */
-  let src;
-  /**
-   * @type {number}
-   */
-  let playhead;
-  /**
-   * @type {ReturnType<typeof setTimeout>}
-   */
-  let timeoutId;
-  /**
-   * @type {string | undefined}
-   */
-  let poster;
+  let src: string | undefined;
+  let playhead: number;
+  let timeoutId: ReturnType<typeof setTimeout>;
+  let poster: string | undefined;
   let canplay = false;
   let paused = true;
 
@@ -51,13 +26,11 @@
   $: user && (canplay = false);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: joinData = $users
-    .find((/** @type {import('$lib/types').User} v */ u) => u?.id === user?.id)
-    ?.videos.find(
-      (/** @type {import('$lib/types').Video} v */ v) => v?.id === video?.id
-    )?._joinData;
+    .find((u) => u?.id === user?.id)
+    ?.videos.find((v: Video) => v?.id === video?.id)?._joinData;
   $: associated = user?.videos
-    .filter(/** @param {import('$lib/types').Video} v */ (v) => v?.id != video?.id)
-    .map(/** @param {import('$lib/types').Video} v */ (v) => ({ id: v?.id }));
+    .filter((v: Video) => v?.id != video?.id)
+    .map((v: Video) => ({ id: v?.id }));
   $: (video.image_id &&
     getMediaImage(video.image_id, $session.user?.jwt).then((res) => (poster = res))) ||
     (poster = emptyPoster);
@@ -110,10 +83,7 @@
     }
   }
 
-  /**
-   * @param {CustomEvent} event
-   */
-  function handleEmptied(event) {
+  function handleEmptied(event: CustomEvent) {
     info(
       4,
       '%c EMPTIED   %c %s',
@@ -123,10 +93,7 @@
     );
   }
 
-  /**
-   * @param {CustomEvent} event
-   */
-  function handleLoadStart(event) {
+  function handleLoadStart(event: CustomEvent) {
     info(
       4,
       '%c LOADSTART %c %s',
@@ -136,10 +103,7 @@
     );
   }
 
-  /**
-   * @param {CustomEvent} event
-   */
-  function handleLoadedData(event) {
+  function handleLoadedData(event: CustomEvent) {
     info(
       4,
       '%c LOADEDDATA%c %s',
@@ -149,10 +113,7 @@
     );
   }
 
-  /**
-   * @param {CustomEvent} event
-   */
-  function handleAborted(event) {
+  function handleAborted(event: CustomEvent) {
     info(
       4,
       '%c ABORTED   %c %s',

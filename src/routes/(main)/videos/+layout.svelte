@@ -15,7 +15,7 @@
     Header,
     FlexContainer
   } from '$lib/components';
-  import { dynamicUrl, log } from '$lib/utils';
+  import { dynamicUrl, log, proxyEvent } from '$lib/utils';
   import { session, videos } from '$lib/stores';
   import emptyPoster from '/src/assets/images/empty-poster.jpg';
   import { _ } from 'svelte-i18n';
@@ -47,7 +47,9 @@
   $: if (isDeepSearch) {
     (async (s) => {
       const { success, data } = await findBy('title', s);
-      if (success) videos.add(data);
+      if (success) {
+        proxyEvent('video:add', { data });
+      }
     })(search);
   }
   $: filteredVideos =
