@@ -19,27 +19,26 @@
    */
   const autostart = false;
   const url = dev ? 'https://anito.dev' : 'https://anito.de';
-  const promise = () => new Promise(() => void 0);
 
   let imageStream: Promise<any>;
   let imagePercentage: number;
   let imageLabel: string;
-  let imageFilesize: Promise<unknown> = promise();
+  let imageFile: Promise<{ url: string; filesize: number }>;
 
   let textStream: Promise<any>;
   let textPercentage: number;
   let textLabel: string;
-  let textFilesize: Promise<unknown> = promise();
+  let textFile: Promise<{ url: string; filesize: number }>;
 
   let zipStream: Promise<any>;
   let zipPercentage: number;
   let zipLabel: string;
-  let zipFilesize: Promise<unknown> = promise();
+  let zipFile: Promise<{ url: string; filesize: number }>;
 
   let docStream: Promise<any>;
   let docPercentage: number;
   let docLabel: string;
-  let docFilesize: Promise<unknown> = promise();
+  let docFile: Promise<{ url: string; filesize: number }>;
 
   /**
    * Register external ressources
@@ -70,10 +69,10 @@
   });
 
   // Do something with the stream(s)
-  $: imageStream?.then((res) => (imageFilesize = getFilesize(res)));
-  $: textStream?.then((res) => (textFilesize = getFilesize(res)));
-  $: zipStream?.then((res) => (zipFilesize = getFilesize(res)));
-  $: docStream?.then((res) => (docFilesize = getFilesize(res)));
+  $: imageFile = waitForStream(imageStream);
+  $: textFile = waitForStream(textStream);
+  $: zipFile = waitForStream(zipStream);
+  $: docFile = waitForStream(docStream);
 
   // Configure button labels based on percentage
   $: imageLabel = getLabel(imagePercentage);
@@ -107,15 +106,12 @@
     }
   });
 
-  async function getFilesize(stream: Promise<any>) {
-    const res = await stream;
-    const filesize = res.filesize;
-    if (filesize) {
-      return displayFilesize(filesize);
-    }
+  async function getProps(stream: Promise<any>) {
+    return stream?.then((res) => res);
   }
 
-  function displayFilesize(filesize: any) {
+  function displayFilesize(filesize: number) {
+    if (!filesize) return '(click to start)';
     const byte = filesize;
     let kilobyte;
     let megabyte;
@@ -128,6 +124,9 @@
   function getLabel(percentage: number) {
     return percentage > 0 && percentage < 100 ? 'cancel' : 'start';
   }
+
+  const waitForStream = async (stream: Promise<any>) =>
+    await getProps(stream).then((res: { url: string; filesize: number }) => res);
 </script>
 
 <Blurb>
@@ -146,9 +145,9 @@
         >{imageLabel}</button
       >
       <div class="fileinfo">
-        {#await imageFilesize}<span class="waiting">waiting for</span>{:then filesize}<span
-            class="filesize">{filesize}</span
-          >{/await}
+        {#await imageFile then result}
+          <span class="filesize">{displayFilesize(result?.filesize)}</span>
+        {/await}
         <span class="filename">sample.jpg</span>
       </div>
     </div>
@@ -169,9 +168,9 @@
         >{textLabel}</button
       >
       <div class="fileinfo">
-        {#await textFilesize}<span class="waiting">waiting for</span>{:then filesize}<span
-            class="filesize">{filesize}</span
-          >{/await}
+        {#await textFile then result}
+          <span class="filesize">{displayFilesize(result?.filesize)}</span>
+        {/await}
         <span class="filename">sample.txt</span>
       </div>
     </div>
@@ -190,9 +189,9 @@
     <div class="controls">
       <button on:click={() => (zipStream = zipStart().stream())} class="button">{zipLabel}</button>
       <div class="fileinfo">
-        {#await zipFilesize}<span class="waiting">waiting for</span>{:then filesize}<span
-            class="filesize">{filesize}</span
-          >{/await}
+        {#await zipFile then result}
+          <span class="filesize">{displayFilesize(result?.filesize)}</span>
+        {/await}
         <span class="filename">sample.zip</span>
       </div>
     </div>
@@ -211,9 +210,9 @@
     <div class="controls">
       <button on:click={() => (docStream = docStart().stream())} class="button">{docLabel}</button>
       <div class="fileinfo">
-        {#await docFilesize}<span class="waiting">waiting for</span>{:then filesize}<span
-            class="filesize">{filesize}</span
-          >{/await}
+        {#await docFile then result}
+          <span class="filesize">{displayFilesize(result?.filesize)}</span>
+        {/await}
         <span class="filename">sample.pdf</span>
       </div>
     </div>
