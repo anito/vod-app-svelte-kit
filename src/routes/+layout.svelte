@@ -462,7 +462,12 @@
       ...session
     };
     proxyEvent('session:extend', { start: true });
-    flash.update({ message, type: 'success', timeout: 2000 });
+    flash.update({
+      message,
+      type: 'success',
+      timeout: 2000,
+      permanent: false
+    });
 
     renewed && localStorage.setItem('renewed', 'true');
     configSnackbar(

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { page } from '$app/stores';
   import { dev } from '$app/environment';
   import { goto } from '$app/navigation';
@@ -9,11 +9,9 @@
   import SvgIcon from './_SvgIcon.svelte';
   import { _ } from 'svelte-i18n';
   import { createRedirectSlug } from '$lib/utils';
+  import type { Framework } from '$lib/types';
 
   const defaultFrameworkIndex = 1;
-  /**
-   * @type {import('$lib/types').Framework[]}
-   */
   const db = [
     {
       name: 'Sapper',
@@ -47,11 +45,7 @@
     }
   };
 
-  /**
-   *
-   * @param {import('$lib/types').Framework} value
-   */
-  async function update(value) {
+  async function update(value: Framework) {
     frameworks.update(value);
     await tick();
     await goto(url());
