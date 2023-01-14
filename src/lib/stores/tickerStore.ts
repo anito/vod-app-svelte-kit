@@ -3,27 +3,12 @@ import { session, settings } from '$lib/stores';
 import { info } from '$lib/utils';
 
 function createStore() {
-  /**
-   * @type {number}
-   */
   const INTERVAL = 1;
-  /**
-   * @type {number}
-   */
   let time;
-  /**
-   * @type {ReturnType<typeof setInterval>}
-   */
-  let intervalId;
+  let intervalId: string | number | NodeJS.Timeout | undefined;
 
   return derived(
     [session, settings],
-    /**
-     *
-     * @param {[import('$lib/types').Session, import('$lib/types').Setting]} param0
-     * @param {Function} set
-     * @returns
-     */
     ([$session, $settings], set) => {
       const expires = () => {
         return {
