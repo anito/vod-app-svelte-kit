@@ -8,7 +8,7 @@ export async function load({ parent }: PageLoadEvent) {
   const { session } = await parent();
   if (session.user) {
     const $settings = get(settings);
-    const search = createTabSearch($settings.Site.defaultUserTab);
+    const search = createTabSearch($settings.Site.defaultAdminTab);
     throw redirect(301, `/users/${session.user.id}${search}`);
   }
   return {};

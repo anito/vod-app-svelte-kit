@@ -1,13 +1,12 @@
 import { users } from '$lib/stores';
+import type { User } from '$lib/types';
+import type { LayoutServerLoadEvent } from '../../routes/$types';
 
 export const getAuxSession = () => {
-  /**
-   * @type {import('$lib/types').User[]}
-   */
-  let _users;
+  let _users: User[];
   users.subscribe((val) => (_users = val));
-  return async (/** @type {{ locals: { session: { data: any; }; }; }} */ event) => {
-    const data = event.locals.session.data;
+  return async ({ locals }: LayoutServerLoadEvent) => {
+    const data = locals.session.data;
     const user = _users.find((user) => user.id === data.user?.id);
     if (!user) return data;
     return { ...data, user: { ...data.user, ...user } };

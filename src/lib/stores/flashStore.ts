@@ -1,7 +1,12 @@
 import { writable } from 'svelte/store';
 
 function createStore() {
-  const defaults = {
+  const defaults: {
+    timeout?: number;
+    permanent?: boolean;
+    type?: string;
+    message?: string;
+  } = {
     timeout: 4000,
     permanent: false,
     type: 'success',
@@ -10,15 +15,12 @@ function createStore() {
   const { subscribe, update, set } = writable(defaults, () => {});
 
   let { permanent, timeout } = defaults;
-  /** @type {ReturnType <typeof setTimeout>} */
-  let timeoutId;
-  /** @type {ReturnType<typeof setTimeout>} */
+  let timeoutId: ReturnType<typeof setTimeout>;
 
   return {
     subscribe,
-    update: (/** @type {any} */ value) =>
+    update: (value: { permanent: boolean; timeout: number; type?: string; message?: string }) =>
       update(() => {
-        // @ts-ignore
         ({ permanent, timeout } = { ...defaults, ...value });
         clearTimeout(timeoutId);
         if (!permanent === true) {
@@ -26,8 +28,7 @@ function createStore() {
         }
         return { ...value, permanent };
       }),
-    /** @param {string} message */
-    text: (message) => update((val) => ({ ...val, message }))
+    text: (message: string) => update((val) => ({ ...val, message }))
   };
 }
 

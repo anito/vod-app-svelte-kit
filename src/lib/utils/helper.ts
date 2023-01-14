@@ -192,9 +192,11 @@ export function createTabSearch(tab: string) {
   return search;
 }
 
-export function parseLifetime(lifetime: string) {
+export function parseLifetime(lifetime: boolean | string | number) {
   const minToMs = 60 * 1000;
-  return parseFloat(typeof lifetime === 'boolean' ? (lifetime ? '1' : '0') : lifetime) * minToMs;
+  lifetime = typeof lifetime === 'boolean' ? (lifetime ? 1 : 0) : lifetime;
+  lifetime = typeof lifetime === 'string' ? parseFloat(lifetime) : lifetime;
+  return lifetime * minToMs;
 }
 
 export function searchParams(url: URL) {

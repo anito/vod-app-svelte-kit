@@ -1,9 +1,8 @@
-// @ts-nocheck
 import { browser } from '$app/environment';
 
 const credentials = browser ? 'include' : void 0;
 
-export function get(endpoint) {
+export function get(endpoint: RequestInfo | URL) {
   return fetch(endpoint, {
     method: 'GET'
   })
@@ -11,7 +10,7 @@ export function get(endpoint) {
     .catch((reason) => console.error(reason));
 }
 
-export function post(endpoint, data = {}) {
+export function post(endpoint: RequestInfo | URL, data = {}) {
   return fetch(endpoint, {
     method: 'POST',
     body: JSON.stringify(data),
@@ -23,7 +22,7 @@ export function post(endpoint, data = {}) {
     .catch((reason) => console.error(reason));
 }
 
-export function del(endpoint, id) {
+export function del(endpoint: RequestInfo | URL, id: any) {
   return fetch(endpoint, {
     method: 'DELETE',
     credentials,
@@ -36,7 +35,7 @@ export function del(endpoint, id) {
     .catch((reason) => console.error(reason));
 }
 
-export function put(endpoint, data = {}) {
+export function put(endpoint: RequestInfo | URL, data = {}) {
   return fetch(endpoint, {
     method: 'PUT',
     credentials,

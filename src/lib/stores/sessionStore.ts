@@ -1,11 +1,10 @@
 import { derived } from 'svelte/store';
 import { page } from '$app/stores';
 import { sessionCookie } from '$lib/stores';
+import type { Group, User } from '$lib/types';
 
-/** @type {import('$lib/types').User} */
-let user;
-/** @type {import('$lib/types').Group[]} */
-let groups = [];
+let user: User;
+let groups: Group[] = [];
 
 function createStore() {
   return derived(

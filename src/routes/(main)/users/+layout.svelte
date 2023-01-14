@@ -587,7 +587,6 @@
             <Button
               variant="raised"
               on:click={() => {
-                console.log(issue);
                 proxyEvent(issue.eventType, { silent: true });
               }}
             >
@@ -636,7 +635,7 @@
       <Label>{$_('text.cancel')}</Label>
     </Button>
     <Button
-      disabled={userIssues.length}
+      disabled={!!userIssues.length}
       variant="unelevated"
       action="redirect"
       use={[InitialFocus]}

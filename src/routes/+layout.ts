@@ -1,4 +1,4 @@
-import { LOCALESTORE } from '$lib/utils';
+import { DEFAULT_LOCALE, LOCALESTORE } from '$lib/utils';
 import { register, waitLocale, init, getLocaleFromNavigator } from 'svelte-i18n';
 import UAParser from 'ua-parser-js';
 import type { LayoutLoadEvent } from './$types';
@@ -7,7 +7,7 @@ LOCALESTORE.forEach((val, key) => {
   register(key, () => import(`../messages/${val.filename}.json`));
 });
 
-const fallbackLocale = 'en';
+const fallbackLocale = DEFAULT_LOCALE;
 
 function getInitialLocale() {
   let locale;

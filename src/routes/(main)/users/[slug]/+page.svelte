@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import * as api from '$lib/api';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
@@ -8,36 +8,23 @@
   import { users, usersFoundation, sitename, session } from '$lib/stores';
   import { proxyEvent, INBOX, ADMIN, SUPERUSER, TABS, log } from '$lib/utils';
   import { _ } from 'svelte-i18n';
+  import type { PageData } from './$types';
+  import type { User } from '$lib/types';
 
-  /**
-   * @type {import('./$types').PageData}
-   */
-  export let data;
+  export let data: PageData;
 
-  /**  * @type {string} */
   let selectedMode = 'edit';
-
-  /** * @type {any} */
   let userExpires;
-
-  /** @type {boolean} */
   let hasExpired;
-
-  /**  * @type {string} */
   let jwt;
-
-  /** @type {string} */
-  let magicLink;
-
-  /** @type {import('$lib/types').User} */
-  let currentUser;
-
-  /** @type {any} */
-  let username;
+  let magicLink: string;
+  let currentUser: User | undefined;
+  let username: string;
 
   $: if (data.user) users.add([data.user]);
   $: selectionUserId = $page.params.slug;
-  $: currentUser = ((id) => $users.find((usr) => usr.id === id) || ($users.length && $users[0]))(
+  $: currentUser = ((id) =>
+    $users.find((usr) => usr.id === id) || (!!$users.length && $users[0]) || undefined)(
     selectionUserId
   );
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
@@ -76,8 +63,7 @@
     };
   });
 
-  /** @param {any} e */
-  async function addUserHandler(e) {
+  async function addUserHandler() {
     const searchParams = new URLSearchParams($page.url.searchParams.toString());
     if (!searchParams.has('mode')) {
       searchParams.append('mode', 'add');
@@ -88,7 +74,7 @@
   }
 
   async function getSimpleUserIndex() {
-    if ($usersFoundation) return Promise.resolve($usersFoundation);
+    if ($usersFoundation !== null) return Promise.resolve($usersFoundation);
     return await api
       .get('users/simpleindex', { token: $session.user?.jwt })
       .then((res) => {

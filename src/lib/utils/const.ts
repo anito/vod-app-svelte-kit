@@ -4,16 +4,11 @@ export const DIFFSTORES = new Map([
   ['config', new Map()],
   ['page', new Map()]
 ]);
-/**
- * @type {Map<any, {fns: any; localized: string; filename: string; }>}
- */
+export const DEFAULT_LOCALE = 'en';
 export const LOCALESTORE = new Map([
-  ['de', { fns: de, localized: 'Deutsch', filename: 'de_DE' }],
-  ['en', { fns: enUS, localized: 'English', filename: 'en_US' }]
+  [DEFAULT_LOCALE, { fns: enUS, localized: 'English', filename: 'en_US' }],
+  ['de', { fns: de, localized: 'Deutsch', filename: 'de_DE' }]
 ]);
-/**
- * @type {Intl.DateTimeFormatOptions}
- */
 export const DateTimeFormatOptions = {
   day: '2-digit',
   year: 'numeric',
@@ -27,4 +22,4 @@ export const USER = 'User';
 export const DESC = 'DESC';
 export const ASC = 'ASC';
 export const TABS = ['time', 'profile', 'mail'];
-export const DEFAULT_TAB = 'user';
+export const DEFAULT_ADMIN_TAB = TABS[0];

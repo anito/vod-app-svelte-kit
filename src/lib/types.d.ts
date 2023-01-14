@@ -91,7 +91,7 @@ export interface Issue<IssuesType = Record<string, any>> {
   label: string;
   flag: string;
   type: string;
-  reason?: string;
+  reason: string;
 }
 
 export interface UserFoundation<UserFoundationType = Record<any, any>> {
@@ -203,14 +203,17 @@ export interface Setting<SettingType = Record<string, any>> {
 }
 
 export interface SiteSettings<SiteSettingsType = Record<string, any>> {
-  defaultUserTab: string;
+  defaultAdminTab: string;
   salutation: string;
   salutations: Array;
+  name: string;
+  description: string;
+  logo: string;
 }
 
 export interface ConsoleSettings<ConsoleSettingsType = Record<string, any>> {
   infoLevel: number;
-  log: boolean;
+  log: number;
 }
 
 export interface SessionSettings<SessionSettingsType = Record<string, any>> {

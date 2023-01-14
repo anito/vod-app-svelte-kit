@@ -66,6 +66,8 @@
     InitialFocus
   } from '@smui/dialog';
   import type { User } from '$lib/types';
+  import type { Map } from 'typescript';
+  import type { NavigationTarget } from '@sveltejs/kit';
 
   const snackbarLifetime = 4000;
   const redirectDelay = 300;
@@ -148,7 +150,10 @@
 
   // salutation.update(randomItem(data.config?.Site?.salutations) || 'Hi');
 
-  const afterNavigationCallback = async (excludes: { size: any }, { from, to }: any) => {
+  const afterNavigationCallback = async (
+    excludes: globalThis.Map<any, any>,
+    { from, to }: { from: NavigationTarget | null; to: NavigationTarget | null }
+  ) => {
     if (excludes.size) {
       info(
         2,
@@ -167,8 +172,8 @@
       to_searches: [],
       from_pathnames: [],
       to_pathnames: ['/auth?/logout', '/auth?/login', '/login', '/logout', '/config']
-    }
-    // afterNavigationCallback
+    },
+    afterNavigationCallback
   );
 
   beforeNavigate(({ cancel }) => {
@@ -604,7 +609,7 @@
             {#if hasPrivileges}
               <NavItem
                 href={`/users/${$session.user?.id}${createTabSearch(
-                  $settings.Site.defaultUserTab
+                  $settings.Site.defaultAdminTab
                 )}`}
                 title="Administration"
                 segment="users"

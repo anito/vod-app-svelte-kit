@@ -15,7 +15,7 @@ function createStore() {
     }, false);
   }
   const infos = new Map();
-  const defs = [
+  const defs: any = [
     {
       key: {
         id: 'account-inaccessible',
