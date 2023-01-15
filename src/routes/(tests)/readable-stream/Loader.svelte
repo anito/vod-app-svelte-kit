@@ -1,16 +1,16 @@
 <script lang="ts">
   import { writable } from 'svelte/store';
 
-  export let percentage = 0;
+  export let storeData: any;
   export let store: any = writable();
 
-  store.subscribe(({ percent }: { percent: number }) => {
-    percentage = percent;
+  store.subscribe((data: any) => {
+    storeData = data;
   });
 </script>
 
 <div class="wait">
-  <h5 class="inner">{percentage}<small>%</small></h5>
+  <h5 class="inner">{(!isNaN(storeData.percent) && storeData.percent) || '0'}<small>%</small></h5>
 </div>
 
 <style lang="scss">

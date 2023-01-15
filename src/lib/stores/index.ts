@@ -4,7 +4,7 @@ export { default as currentVideo } from './currentVideoStore';
 export { default as fabs } from './fabStore';
 export { default as flash } from './flashStore';
 export { default as googleUser } from './googleUser';
-export { default as frameworks } from './frameworkStore';
+export { default as framework } from './frameworkStore';
 export { default as images } from './imageStore';
 export { default as inboxes } from './inboxStore';
 export { default as sents } from './sentStore';

@@ -11,8 +11,8 @@ function createStore() {
       defaultAdminTab: DEFAULT_ADMIN_TAB,
       salutation: 'Hi',
       salutations: [],
-      name: 'My Site',
-      description: 'My description',
+      name: 'Loading...',
+      description: '',
       logo: ''
     },
     Console: { infoLevel: 0, log: 0 }

@@ -21,24 +21,20 @@
   const url = dev ? 'https://anito.dev' : 'https://anito.de';
 
   let imageStream: Promise<any>;
-  let imagePercentage: number;
-  let imageLabel: string;
-  let imageFile: Promise<{ url: string; filesize: number }>;
+  let imageData: Promise<{ url: string; filesize: number }>;
+  let imageStoreData: any;
 
   let textStream: Promise<any>;
-  let textPercentage: number;
-  let textLabel: string;
-  let textFile: Promise<{ url: string; filesize: number }>;
+  let textData: Promise<{ url: string; filesize: number }>;
+  let textStoreData: any;
 
   let zipStream: Promise<any>;
-  let zipPercentage: number;
-  let zipLabel: string;
-  let zipFile: Promise<{ url: string; filesize: number }>;
+  let zipData: Promise<{ url: string; filesize: number }>;
+  let zipStoreData: any;
 
   let docStream: Promise<any>;
-  let docPercentage: number;
-  let docLabel: string;
-  let docFile: Promise<{ url: string; filesize: number }>;
+  let docData: Promise<{ url: string; filesize: number }>;
+  let docStoreData: any;
 
   /**
    * Register external ressources
@@ -69,33 +65,16 @@
   });
 
   // Do something with the stream(s)
-  $: imageFile = waitForStream(imageStream);
-  $: textFile = waitForStream(textStream);
-  $: zipFile = waitForStream(zipStream);
-  $: docFile = waitForStream(docStream);
+  $: imageData = imageStream?.then((res: { url: string; filesize: number }) => res);
+  $: textData = textStream?.then((res: { url: string; filesize: number }) => res);
+  $: zipData = zipStream?.then((res: { url: string; filesize: number }) => res);
+  $: docData = docStream?.then((res: { url: string; filesize: number }) => res);
 
   // Configure button labels based on percentage
-  $: imageLabel = getLabel(imagePercentage);
-  $: textLabel = getLabel(textPercentage);
-  $: zipLabel = getLabel(zipPercentage);
-  $: docLabel = getLabel(docPercentage);
-
-  /**
-   * Subscribe to registered stores for actual streaming data
-   * store values: percent, current, total, chunks, controller
-   */
-  imageStore.subscribe(({ percent }: { percent: number }) => {
-    imagePercentage = percent;
-  });
-  textStore.subscribe(({ percent }: { percent: number }) => {
-    textPercentage = percent;
-  });
-  zipStore.subscribe(({ percent }: { percent: number }) => {
-    zipPercentage = percent;
-  });
-  docStore.subscribe(({ percent }: { percent: number }) => {
-    docPercentage = percent;
-  });
+  $: imageButtonLabel = getLabel(imageStoreData);
+  $: textButtonLabel = getLabel(textStoreData);
+  $: zipButtonLabel = getLabel(zipStoreData);
+  $: docButtonLabel = getLabel(docStoreData);
 
   onMount(() => {
     if (autostart) {
@@ -106,27 +85,28 @@
     }
   });
 
-  async function getProps(stream: Promise<any>) {
-    return stream?.then((res) => res);
-  }
-
   function displayFilesize(filesize: number) {
     if (!filesize) return '(click to start)';
-    const byte = filesize;
     let kilobyte;
     let megabyte;
+    const byte = filesize;
     const kb = (kilobyte = byte / 1024) > 1 && Math.floor(kilobyte);
     const mb = (megabyte = kilobyte / 1024) > 1 && Math.floor(megabyte);
     const unit = mb ? 'MByte' : kb ? 'KByte' : 'Byte';
     return `(${mb || kb || byte} ${unit})`;
   }
 
-  function getLabel(percentage: number) {
-    return percentage > 0 && percentage < 100 ? 'cancel' : 'start';
+  function getLabel(data: any) {
+    if (!data?.controller || data?.percent === 100) {
+      return 'start';
+    }
+    if (data?.percent === 0) {
+      return 'starting...';
+    }
+    if (data?.percent > 0 && data?.percent < 100) {
+      return 'cancel';
+    }
   }
-
-  const waitForStream = async (stream: Promise<any>) =>
-    await getProps(stream).then((res: { url: string; filesize: number }) => res);
 </script>
 
 <Blurb>
@@ -134,18 +114,18 @@
     <div class="read-box">
       {#if imageStream}
         {#await imageStream}
-          <Loader store={imageStore} bind:percentage={imagePercentage} />
+          <Loader store={imageStore} bind:storeData={imageStoreData} />
         {:then result}
-          <Viewer blob={result.url} title="sample.jpg" />
+          <Viewer src={result.url} title="sample.jpg" />
         {/await}
       {/if}
     </div>
     <div class="controls">
       <button on:click={() => (imageStream = imageStart().stream())} class="button"
-        >{imageLabel}</button
+        >{imageButtonLabel}</button
       >
       <div class="fileinfo">
-        {#await imageFile then result}
+        {#await imageData then result}
           <span class="filesize">{displayFilesize(result?.filesize)}</span>
         {/await}
         <span class="filename">sample.jpg</span>
@@ -157,18 +137,18 @@
     <div class="read-box" style="">
       {#if textStream}
         {#await textStream}
-          <Loader store={textStore} bind:percentage={textPercentage} />
+          <Loader store={textStore} bind:storeData={textStoreData} />
         {:then result}
-          <Viewer blob={result.url} title="sample.txt" />
+          <Viewer src={result.url} title="sample.txt" />
         {/await}
       {/if}
     </div>
     <div class="controls">
       <button on:click={() => (textStream = textStart().stream())} class="button"
-        >{textLabel}</button
+        >{textButtonLabel}</button
       >
       <div class="fileinfo">
-        {#await textFile then result}
+        {#await textData then result}
           <span class="filesize">{displayFilesize(result?.filesize)}</span>
         {/await}
         <span class="filename">sample.txt</span>
@@ -180,16 +160,18 @@
     <div class="read-box" style="">
       {#if zipStream}
         {#await zipStream}
-          <Loader store={zipStore} bind:percentage={zipPercentage} />
+          <Loader store={zipStore} bind:storeData={zipStoreData} />
         {:then result}
-          <Viewer blob={result.url} title="sample.zip" />
+          <Viewer src={result.url} title="sample.zip" />
         {/await}
       {/if}
     </div>
     <div class="controls">
-      <button on:click={() => (zipStream = zipStart().stream())} class="button">{zipLabel}</button>
+      <button on:click={() => (zipStream = zipStart().stream())} class="button"
+        >{zipButtonLabel}</button
+      >
       <div class="fileinfo">
-        {#await zipFile then result}
+        {#await zipData then result}
           <span class="filesize">{displayFilesize(result?.filesize)}</span>
         {/await}
         <span class="filename">sample.zip</span>
@@ -201,16 +183,18 @@
     <div class="read-box" style="">
       {#if docStream}
         {#await docStream}
-          <Loader store={docStore} bind:percentage={docPercentage} />
+          <Loader store={docStore} bind:storeData={docStoreData} />
         {:then result}
-          <Viewer blob={result?.url} title="sample.pdf" />
+          <Viewer src={result?.url} title="sample.pdf" />
         {/await}
       {/if}
     </div>
     <div class="controls">
-      <button on:click={() => (docStream = docStart().stream())} class="button">{docLabel}</button>
+      <button on:click={() => (docStream = docStart().stream())} class="button"
+        >{docButtonLabel}</button
+      >
       <div class="fileinfo">
-        {#await docFile then result}
+        {#await docData then result}
           <span class="filesize">{displayFilesize(result?.filesize)}</span>
         {/await}
         <span class="filename">sample.pdf</span>
@@ -270,10 +254,6 @@
     right: 0;
     font-size: 0.8rem;
     font-family: var(--font-mono);
-    opacity: 0.6;
-  }
-  .fileinfo .waiting {
-    font-size: 0.5rem;
     opacity: 0.6;
   }
 </style>

@@ -2,11 +2,11 @@ import { writable } from 'svelte/store';
 
 function createStore() {
   const defaults = {
-    current: 0,
-    total: 0,
-    percent: 0,
-    controller: null,
-    reader: null
+    current: undefined,
+    total: undefined,
+    percent: undefined,
+    controller: undefined,
+    reader: undefined
   } as unknown as {
     current: number;
     total: number;
@@ -14,21 +14,27 @@ function createStore() {
     chunks?: Uint8Array[];
     controller?: ReadableStreamDefaultController<any>;
   };
-  const { subscribe, update } = writable(defaults);
+  const { subscribe, update, set } = writable(defaults);
 
   return {
     subscribe,
     update,
-    reset: () => update(() => defaults)
+    reset: () => update(() => defaults),
+    set
   };
 }
 
-function bodyReader(store: { update: (arg0: (items: any) => any) => void }) {
-  const chunks: Uint8Array[] = [];
-  const percent = (received: number, total: number) => {
-    return Math.floor((received * 100) / total);
-  };
+function bodyReader(store: {
+  update: (arg0: (items: any) => any) => void;
+  set: (value: any) => void;
+}) {
   let receivedLength = 0;
+  let previousPercent = 0;
+  const percent = (received: number, total: number) => {
+    const res = Math.floor((received * 100) / total);
+    return (!isNaN(res) && (previousPercent = res)) || previousPercent;
+  };
+  const chunks: Uint8Array[] = [];
 
   return {
     getStream: (res: Response) =>
@@ -36,6 +42,8 @@ function bodyReader(store: { update: (arg0: (items: any) => any) => void }) {
         start(controller) {
           const reader = res.body?.getReader();
           const contentLength = parseInt(res.headers.get('content-length') || '0');
+
+          store.set({ total: contentLength });
 
           return pump();
 
@@ -55,7 +63,6 @@ function bodyReader(store: { update: (arg0: (items: any) => any) => void }) {
                 return {
                   ...items,
                   current: receivedLength,
-                  total: contentLength,
                   percent: percent(receivedLength, contentLength),
                   chunks,
                   controller
@@ -99,7 +106,19 @@ export function register(client: { filename: any; url: any }) {
     store: data.store,
     start: () => {
       const { fetch, store } = read(`${url}/${name}`, data.store);
-      if (data.controller) {
+      if (!data.controller) {
+        data.init(fetch);
+        data.store = store;
+        data.store.reset();
+        data.unsubscribe = store.subscribe(async (val: { percent: any; controller: any }) => {
+          const perc = val.percent;
+          !data.controller && (data.controller = val.controller);
+          if (perc === 100) {
+            data.controller = null;
+            data.unsubscribe();
+          }
+        });
+      } else {
         try {
           data.controller.close();
         } catch (err) {
@@ -110,25 +129,16 @@ export function register(client: { filename: any; url: any }) {
         setTimeout(() => {
           data.store.reset();
         }, 200);
-      } else {
-        data.init(fetch);
-        data.store = store;
-        data.unsubscribe = store.subscribe((val: { percent: any; controller: any }) => {
-          const perc = val.percent;
-          !data.controller && (data.controller = val.controller);
-          if (perc === 100) {
-            data.controller = null;
-            data.store.reset();
-            data.unsubscribe();
-          }
-        });
       }
       return { stream: data.getResult };
     }
   };
 }
 
-export default function read(file: RequestInfo | URL, store: any) {
+export default function read(
+  file: RequestInfo | URL,
+  store: { update: (arg0: (items: any) => any) => void; set: (value: any) => void; subscribe: any }
+) {
   let contentType: string;
   const process = async (response: Response) => {
     return await response

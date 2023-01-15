@@ -19,8 +19,8 @@
   let stringified;
   let _template = {};
 
-  $: logo = ($settings.Site && $settings.Site['logo']) || '';
-  $: sitename = ($settings.Site && $settings.Site['name']) || 'Sitename';
+  $: logo = $settings.Site?.['logo'];
+  $: sitename = $settings.Site?.['name'];
   $: template.id !== id && createWorkingCopy();
   $: canSave = JSON.stringify(working) !== stringified;
 

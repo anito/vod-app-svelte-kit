@@ -3,7 +3,7 @@
   import { dev } from '$app/environment';
   import { goto } from '$app/navigation';
   import { tick } from 'svelte';
-  import { frameworks, session } from '$lib/stores';
+  import { framework, session } from '$lib/stores';
   import { SelectionGroup, SelectionGroupIcon } from '@smui/menu';
   import { Item, Label } from '@smui/list';
   import SvgIcon from './_SvgIcon.svelte';
@@ -34,42 +34,42 @@
 
   let selected;
 
-  frameworks.update(db[defaultFrameworkIndex]);
+  framework.update(db[defaultFrameworkIndex]);
 
   $: token = $session.user?.jwt;
   $: url = () => {
     if (token) {
-      return `${$frameworks.host}/login?token=${token}&${createRedirectSlug($page.url)}`;
+      return `${$framework.host}/login?token=${token}&${createRedirectSlug($page.url)}`;
     } else {
-      return `${$frameworks.host}${$page.url.pathname}${$page.url.search}`;
+      return `${$framework.host}${$page.url.pathname}${$page.url.search}`;
     }
   };
 
   async function update(value: Framework) {
-    frameworks.update(value);
+    framework.update(value);
     await tick();
     await goto(url());
   }
 </script>
 
 <SelectionGroup>
-  {#each db as framework}
+  {#each db as fw}
     <Item
-      on:SMUI:action={() => update(framework)}
-      selected={$frameworks.name === framework.name}
-      disabled={framework.disabled || $frameworks.name === framework.name}
+      on:SMUI:action={() => update(fw)}
+      selected={$framework.name === fw.name}
+      disabled={fw.disabled || $framework.name === fw.name}
     >
-      {#if framework.icontype === 'svg'}
-        <SvgIcon name={framework.icon} class="mr-2" />
+      {#if fw.icontype === 'svg'}
+        <SvgIcon name={fw.icon} class="mr-2" />
       {/if}
-      {#if framework.icontype === 'material'}
+      {#if fw.icontype === 'material'}
         <SelectionGroupIcon>
-          <i class="material-icons">{framework.icon}</i>
+          <i class="material-icons">{fw.icon}</i>
         </SelectionGroupIcon>
       {/if}
 
-      <Label class="label">{framework.name}</Label>
-      {#if $frameworks.name === framework.name}
+      <Label class="label">{fw.name}</Label>
+      {#if $framework.name === fw.name}
         <SelectionGroupIcon>
           <i class="material-icons">check</i>
         </SelectionGroupIcon>

@@ -36,7 +36,7 @@
   import {
     fabs,
     flash,
-    frameworks,
+    framework,
     salutation,
     settings,
     session,
@@ -558,13 +558,15 @@
     color = color || '#ad1457';
     -1 < navigator.userAgent.toLowerCase().indexOf('chrome')
       ? window.console.log.apply(console, [
-          '%c %c Axel Nitzschner - Immersive Studio %c https://vod-app.vercel.app ',
+          '%c %c Axel Nitzschner - Immersive Studio %c https://vod-app-svelte-kit.vercel.app/ ',
           'background: #ad1457; padding:5px 0; margin:3px 0 10px 0;',
           'background: #eeeeee; color: #e2370f; padding:5px; margin:3px 0 10px 0;',
           'background: #ad1457; color: #fff; padding:5px; margin:3px 0 10px 0;'
         ])
       : window.console &&
-        window.console.log(' Axel Nitzschner - Immersive Studio - https://vod-app.vercel.app ');
+        window.console.log(
+          ' Axel Nitzschner - Immersive Studio - https://vod-app-svelte-kit.vercel.app/ '
+        );
   }
 </script>
 
@@ -717,12 +719,7 @@
                 <FrameworkSwitcher />
                 <Separator />
                 <Item class="justify-start">
-                  <Button
-                    href={$frameworks.href}
-                    target="_blank"
-                    class="link-button"
-                    ripple={false}
-                  >
+                  <Button href={$framework.href} target="_blank" class="link-button" ripple={false}>
                     <span style="display: flex; flex: 1 0 100%; align-items: center">
                       <SvgIcon name="github" class="mr-2" />
                       <Label>GitHub</Label>

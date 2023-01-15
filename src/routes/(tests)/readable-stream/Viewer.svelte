@@ -2,24 +2,21 @@
   import { onMount, tick } from 'svelte/internal';
   import { fade } from 'svelte/transition';
 
-  export let blob: any;
+  export let src: string;
   export let title: string = 'Viewer';
 
   let mounted = false;
 
-  onMount(() => {
+  onMount(async () => {
     mounted = true;
+    await tick();
+    URL.revokeObjectURL(src);
   });
-
-  function setSource(node: HTMLIFrameElement) {
-    node.src = blob;
-    URL.revokeObjectURL(blob);
-  }
 </script>
 
 {#if mounted}
   <div in:fade={{ duration: 500 }} class="object-container">
-    <iframe use:setSource {title} frameborder="0" />
+    <iframe {src} {title} frameborder="0" />
   </div>
 {/if}
 
