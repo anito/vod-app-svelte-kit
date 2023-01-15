@@ -483,17 +483,17 @@
   }
 
   async function sessionExtendHandler({ detail }: CustomEvent) {
-    if (!$session.user && !detail.start) return;
+    if (!$session.user && !detail?.start) return;
     await tick();
     const { lifetime } = $settings.Session;
     const time = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
     await post('/session/extend', time);
-    if (detail.start) {
+    if (detail?.start) {
       if (!$navigating) await invalidateAll();
     } else {
       if (!$navigating) await invalidate('app:session');
     }
-    detail.callback?.();
+    detail?.callback?.();
   }
 
   function sessionErrorHandler({ detail }: CustomEvent) {
