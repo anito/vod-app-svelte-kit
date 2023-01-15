@@ -8,5 +8,5 @@
   --mdc-theme-text-icon-on-background: rgba(255, 255, 255, 0.38);
 }
 .dark .mdc-list-item--selected a {
-  color: var(--mdc-theme-on-primary);
+  color: var(--mdc-theme-text-primary-on-background);
 }
