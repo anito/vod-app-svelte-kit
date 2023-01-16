@@ -21,19 +21,35 @@
   const url = dev ? 'https://anito.dev' : 'https://anito.de';
 
   let imageStream: Promise<any>;
-  let imageData: Promise<{ url: string; filesize: number }>;
+  let imageData: Promise<{
+    url: string;
+    filesize: number;
+    reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
+  }>;
   let imageStoreData: any;
 
   let textStream: Promise<any>;
-  let textData: Promise<{ url: string; filesize: number }>;
+  let textData: Promise<{
+    url: string;
+    filesize: number;
+    reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
+  }>;
   let textStoreData: any;
 
   let zipStream: Promise<any>;
-  let zipData: Promise<{ url: string; filesize: number }>;
+  let zipData: Promise<{
+    url: string;
+    filesize: number;
+    reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
+  }>;
   let zipStoreData: any;
 
   let docStream: Promise<any>;
-  let docData: Promise<{ url: string; filesize: number }>;
+  let docData: Promise<{
+    url: string;
+    filesize: number;
+    reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
+  }>;
   let docStoreData: any;
 
   /**
@@ -65,12 +81,12 @@
   });
 
   // Do something with the stream(s)
-  $: imageData = imageStream?.then((res: { url: string; filesize: number }) => res);
-  $: textData = textStream?.then((res: { url: string; filesize: number }) => res);
-  $: zipData = zipStream?.then((res: { url: string; filesize: number }) => res);
-  $: docData = docStream?.then((res: { url: string; filesize: number }) => res);
+  $: imageData = imageStream?.then((res) => res);
+  $: textData = textStream?.then((res) => res);
+  $: zipData = zipStream?.then((res) => res);
+  $: docData = docStream?.then((res) => res);
 
-  // Configure button labels based on percentage
+  // Configure button labels based on bound percentage property in Loader.svelte
   $: imageButtonLabel = getLabel(imageStoreData);
   $: textButtonLabel = getLabel(textStoreData);
   $: zipButtonLabel = getLabel(zipStoreData);
@@ -78,34 +94,29 @@
 
   onMount(() => {
     if (autostart) {
-      imageStream = imageStart().stream();
-      textStream = textStart().stream();
-      zipStream = zipStart().stream();
-      docStream = docStart().stream();
+      imageStream = imageStart().stream?.();
+      textStream = textStart().stream?.();
+      zipStream = zipStart().stream?.();
+      docStream = docStart().stream?.();
     }
   });
 
-  function displayFilesize(filesize: number) {
+  function displayFilesize(filesize: number, decimals: 1 | 2 | 3 | 4 = 2) {
     if (!filesize) return '(click to start)';
     let kilobyte;
     let megabyte;
     const byte = filesize;
-    const kb = (kilobyte = byte / 1024) > 1 && Math.floor(kilobyte);
-    const mb = (megabyte = kilobyte / 1024) > 1 && Math.floor(megabyte);
+    const kb = (kilobyte = byte / 1024) > 1 && kilobyte;
+    const mb = (megabyte = kilobyte / 1024) > 1 && megabyte;
     const unit = mb ? 'MByte' : kb ? 'KByte' : 'Byte';
-    return `(${mb || kb || byte} ${unit})`;
+    const to2Decimals = (mb || kb || byte).toFixed(decimals);
+    return `(${to2Decimals} ${unit})`;
   }
 
   function getLabel(data: any) {
-    if (!data?.controller || data?.percent === 100) {
-      return 'start';
-    }
-    if (data?.percent === 0) {
-      return 'starting...';
-    }
-    if (data?.percent > 0 && data?.percent < 100) {
-      return 'cancel';
-    }
+    if (data?.status === undefined || data?.status === 'done') return 'Start';
+    if (data?.status === 'starting') return 'Starting';
+    if (data?.status === 'reading') return 'Cancel';
   }
 </script>
 
@@ -144,7 +155,7 @@
       {/if}
     </div>
     <div class="controls">
-      <button on:click={() => (textStream = textStart().stream())} class="button"
+      <button on:click={() => (textStream = textStart().stream?.())} class="button"
         >{textButtonLabel}</button
       >
       <div class="fileinfo">

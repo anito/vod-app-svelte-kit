@@ -6,6 +6,9 @@
 
   store.subscribe((data: any) => {
     storeData = data;
+    if (storeData.willCancel) {
+      console.log(storeData.reader.cancel());
+    }
   });
 </script>
 

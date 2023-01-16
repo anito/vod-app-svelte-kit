@@ -10,9 +10,10 @@ function createStore() {
   } as unknown as {
     current: number;
     total: number;
-    percent: number;
+    percent: number | undefined;
     chunks?: Uint8Array[];
     controller?: ReadableStreamDefaultController<any>;
+    reader?: ReadableStreamDefaultReader<Uint8Array> | undefined;
   };
   const { subscribe, update, set } = writable(defaults);
 
@@ -28,11 +29,25 @@ function bodyReader(store: {
   update: (arg0: (items: any) => any) => void;
   set: (value: any) => void;
 }) {
-  let receivedLength = 0;
-  let previousPercent = 0;
-  const percent = (received: number, total: number) => {
-    const res = Math.floor((received * 100) / total);
-    return (!isNaN(res) && (previousPercent = res)) || previousPercent;
+  let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
+  let received = 0;
+  let contentLength = 0;
+  const getPercent = () => {
+    if (contentLength) return Math.floor((received * 100) / contentLength);
+  };
+  const getStatus = (percent: number | undefined) => {
+    if (percent === undefined) {
+      return undefined;
+    }
+    if (percent === 0) {
+      return 'starting';
+    }
+    if (percent > 0 && percent < 100) {
+      return 'reading';
+    }
+    if (percent === 100) {
+      return 'done';
+    }
   };
   const chunks: Uint8Array[] = [];
 
@@ -40,32 +55,37 @@ function bodyReader(store: {
     getStream: (res: Response) =>
       new ReadableStream({
         start(controller) {
-          const reader = res.body?.getReader();
-          const contentLength = parseInt(res.headers.get('content-length') || '0');
+          reader = res.body?.getReader();
+          contentLength = parseInt(res.headers.get('content-length') || '0');
 
-          store.set({ total: contentLength });
+          store.set({ total: contentLength, reader });
 
           return pump();
 
           function pump(): any {
-            return reader?.read().then(({ done, value }) => {
+            return reader?.read().then(({ done, value }: ReadableStreamReadResult<any>) => {
               // When no more data needs to be consumed, close the stream
               if (done) {
                 controller.close();
                 return;
               }
 
-              receivedLength += value.length;
+              received += value.length;
+              const percent = getPercent();
+              const status = getStatus(percent);
               chunks.push(value);
+
+              // percent && percent >= 50 && reader.cancel();
 
               // Update store
               store.update((items: any) => {
                 return {
                   ...items,
-                  current: receivedLength,
-                  percent: percent(receivedLength, contentLength),
+                  received,
+                  percent,
                   chunks,
-                  controller
+                  controller,
+                  status
                 };
               });
 
@@ -82,10 +102,19 @@ function bodyReader(store: {
   };
 }
 
-const readerMap = new Map();
-export function register(client: { filename: any; url: any }) {
-  const { filename: name, url } = client;
+const readerMap: Map<
+  string,
+  {
+    init: (fetch: () => Promise<any>) => void;
+    getResult: () => any;
+    store: any;
+    reader?: ReadableStreamDefaultReader<Uint8Array>;
+    controller?: ReadableStreamDefaultController<any>;
+    unsubscribe?: () => void;
+  }
+> = new Map();
 
+export function register({ filename, url }: { filename: any; url: any }) {
   let _result: Promise<any>;
 
   const init = (fetch: () => Promise<any>) => {
@@ -93,42 +122,55 @@ export function register(client: { filename: any; url: any }) {
   };
   const getResult = () => _result;
 
-  readerMap.set(name, {
+  const initializer = {
     init,
     getResult,
     store: createStore(),
-    controller: null,
-    unsubscribe: null
-  });
+    reader: undefined,
+    controller: undefined,
+    unsubscribe: undefined
+  };
 
-  const data = readerMap.get(name);
+  const data = readerMap.set(filename, initializer).get(filename) || initializer;
+
   return {
     store: data.store,
     start: () => {
-      const { fetch, store } = read(`${url}/${name}`, data.store);
+      const { fetch, store } = read(`${url}/${filename}`, data.store);
       if (!data.controller) {
         data.init(fetch);
         data.store = store;
-        data.store.reset();
-        data.unsubscribe = store.subscribe(async (val: { percent: any; controller: any }) => {
-          const perc = val.percent;
-          !data.controller && (data.controller = val.controller);
-          if (perc === 100) {
-            data.controller = null;
-            data.unsubscribe();
+        store.reset();
+        data.unsubscribe = store.subscribe(
+          async (val: {
+            percent: number | undefined;
+            controller: ReadableStreamDefaultController<any>;
+            reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
+          }) => {
+            if (!data.controller) {
+              data.controller = val.controller;
+              data.reader = val.reader;
+            }
+            const perc = val.percent;
+            if (perc === 100) {
+              data.controller = undefined;
+              data.unsubscribe?.();
+            }
           }
-        });
+        );
       } else {
         try {
           data.controller.close();
+          data.reader?.cancel();
+          data.unsubscribe?.();
+          data.controller = undefined;
+          data.reader = undefined;
+          setTimeout(() => {
+            data.store.reset();
+          }, 200);
         } catch (err) {
           console.log(err);
         }
-        data.unsubscribe();
-        data.controller = null;
-        setTimeout(() => {
-          data.store.reset();
-        }, 200);
       }
       return { stream: data.getResult };
     }
@@ -137,7 +179,12 @@ export function register(client: { filename: any; url: any }) {
 
 export default function read(
   file: RequestInfo | URL,
-  store: { update: (arg0: (items: any) => any) => void; set: (value: any) => void; subscribe: any }
+  store: {
+    update: (arg0: (items: any) => any) => void;
+    set: (value: any) => void;
+    subscribe: any;
+    reset: any;
+  }
 ) {
   let contentType: string;
   const process = async (response: Response) => {
