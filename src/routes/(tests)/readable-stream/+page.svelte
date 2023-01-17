@@ -3,6 +3,7 @@
   import { onMount } from 'svelte';
   import { register } from '$lib/utils/reader';
   import Blurb from './Blurb.svelte';
+  import Container from './Container.svelte';
   import Viewer from './Viewer.svelte';
   import Loader from './Loader.svelte';
 
@@ -18,39 +19,19 @@
    * <button on:click={() => myStreamPromise = myStart().stream()}>start</button>
    */
   const autostart = false;
-  const url = dev ? 'https://anito.dev' : 'https://anito.de';
+  const url = dev ? 'https://anito.mbp' : 'https://anito.de';
 
   let imageStream: Promise<any>;
-  let imageData: Promise<{
-    url: string;
-    filesize: number;
-    reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
-  }>;
-  let imageStoreData: any;
+  let imageData: any;
 
   let textStream: Promise<any>;
-  let textData: Promise<{
-    url: string;
-    filesize: number;
-    reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
-  }>;
-  let textStoreData: any;
+  let textData: any;
 
   let zipStream: Promise<any>;
-  let zipData: Promise<{
-    url: string;
-    filesize: number;
-    reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
-  }>;
-  let zipStoreData: any;
+  let zipData: any;
 
-  let docStream: Promise<any>;
-  let docData: Promise<{
-    url: string;
-    filesize: number;
-    reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
-  }>;
-  let docStoreData: any;
+  let pdfStream: Promise<any>;
+  let pdfData: any;
 
   /**
    * Register external ressources
@@ -75,57 +56,74 @@
     filename: 'sample.zip',
     url
   });
-  const { start: docStart, store: docStore } = register({
+  const { start: pdfStart, store: pdfStore } = register({
     filename: 'sample.pdf',
     url
   });
 
-  // Do something with the stream(s)
-  $: imageData = imageStream?.then((res) => res);
-  $: textData = textStream?.then((res) => res);
-  $: zipData = zipStream?.then((res) => res);
-  $: docData = docStream?.then((res) => res);
+  /**
+   * Configure display information based on image|text|zip|pdf Data
+   * dispatched by the Loader Components
+   */
+  $: imageButtonLabel = getLabel(imageData);
+  $: textButtonLabel = getLabel(textData);
+  $: zipButtonLabel = getLabel(zipData);
+  $: pdfButtonLabel = getLabel(pdfData);
 
-  // Configure button labels based on bound percentage property in Loader.svelte
-  $: imageButtonLabel = getLabel(imageStoreData);
-  $: textButtonLabel = getLabel(textStoreData);
-  $: zipButtonLabel = getLabel(zipStoreData);
-  $: docButtonLabel = getLabel(docStoreData);
+  $: imageProgress = getProgress(imageData);
+  $: textProgress = getProgress(textData);
+  $: zipProgress = getProgress(zipData);
+  $: pdfProgress = getProgress(pdfData);
 
   onMount(() => {
     if (autostart) {
       imageStream = imageStart().stream?.();
       textStream = textStart().stream?.();
       zipStream = zipStart().stream?.();
-      docStream = docStart().stream?.();
+      pdfStream = pdfStart().stream?.();
     }
   });
 
-  function displayFilesize(filesize: number, decimals: 1 | 2 | 3 | 4 = 2) {
-    if (!filesize) return '(click to start)';
+  function getProgress(
+    data: { received: any; total: any; status: any } = {
+      received: undefined,
+      total: undefined,
+      status: undefined
+    }
+  ) {
+    const { received, total, status } = data;
+    if (isNaN(received) || isNaN(total)) return '(click button to start)';
+    const totals = getFilesize(total);
+    const info = status ? ` (${status})` : '';
+    return `${getFilesize(received).value} von ${totals.value} ${totals.unit}${info}`;
+  }
+
+  function getFilesize(filesize: number, opts: { decimals: 1 | 2 | 3 | 4 } = { decimals: 2 }) {
     let kilobyte;
     let megabyte;
     const byte = filesize;
     const kb = (kilobyte = byte / 1024) > 1 && kilobyte;
     const mb = (megabyte = kilobyte / 1024) > 1 && megabyte;
     const unit = mb ? 'MByte' : kb ? 'KByte' : 'Byte';
-    const to2Decimals = (mb || kb || byte).toFixed(decimals);
-    return `(${to2Decimals} ${unit})`;
+    const toDecimals = (mb || kb || byte).toFixed(opts.decimals);
+    return { value: toDecimals, unit };
   }
 
-  function getLabel(data: any) {
-    if (data?.status === undefined || data?.status === 'done') return 'Start';
-    if (data?.status === 'starting') return 'Starting';
-    if (data?.status === 'reading') return 'Cancel';
+  function getLabel({ status }: { status?: string } = { status: undefined }) {
+    if (status === undefined || status === 'done' || status === 'closed') return 'Start';
+    if (status === 'starting') return 'Starting';
+    if (status === 'reading') return 'Cancel';
   }
 </script>
 
 <Blurb>
-  <div class="outer one" slot="one">
+  <Container class="one" slot="one">
     <div class="read-box">
       {#if imageStream}
         {#await imageStream}
-          <Loader store={imageStore} bind:storeData={imageStoreData} />
+          <Loader store={imageStore} on:stream:status={(e) => (imageData = e.detail)} let:progress>
+            <h5 class="inner">{(!isNaN(progress) && progress) || '0'}<small>%</small></h5>
+          </Loader>
         {:then result}
           <Viewer src={result.url} title="sample.jpg" />
         {/await}
@@ -136,19 +134,17 @@
         >{imageButtonLabel}</button
       >
       <div class="fileinfo">
-        {#await imageData then result}
-          <span class="filesize">{displayFilesize(result?.filesize)}</span>
-        {/await}
+        <span class="filesize">{imageProgress}</span>
         <span class="filename">sample.jpg</span>
       </div>
     </div>
-  </div>
+  </Container>
 
-  <div class="outer two" slot="two">
+  <Container class="two" slot="two">
     <div class="read-box" style="">
       {#if textStream}
         {#await textStream}
-          <Loader store={textStore} bind:storeData={textStoreData} />
+          <Loader store={textStore} on:stream:status={(e) => (textData = e.detail)} />
         {:then result}
           <Viewer src={result.url} title="sample.txt" />
         {/await}
@@ -159,19 +155,17 @@
         >{textButtonLabel}</button
       >
       <div class="fileinfo">
-        {#await textData then result}
-          <span class="filesize">{displayFilesize(result?.filesize)}</span>
-        {/await}
+        <span class="filesize">{textProgress}</span>
         <span class="filename">sample.txt</span>
       </div>
     </div>
-  </div>
+  </Container>
 
-  <div class="outer three" slot="three">
+  <Container class="three" slot="three">
     <div class="read-box" style="">
       {#if zipStream}
         {#await zipStream}
-          <Loader store={zipStore} bind:storeData={zipStoreData} />
+          <Loader store={zipStore} on:stream:status={(e) => (zipData = e.detail)} />
         {:then result}
           <Viewer src={result.url} title="sample.zip" />
         {/await}
@@ -182,43 +176,35 @@
         >{zipButtonLabel}</button
       >
       <div class="fileinfo">
-        {#await zipData then result}
-          <span class="filesize">{displayFilesize(result?.filesize)}</span>
-        {/await}
+        <span class="filesize">{zipProgress}</span>
         <span class="filename">sample.zip</span>
       </div>
     </div>
-  </div>
+  </Container>
 
-  <div class="outer fore" slot="fore">
+  <Container class="fore" slot="fore">
     <div class="read-box" style="">
-      {#if docStream}
-        {#await docStream}
-          <Loader store={docStore} bind:storeData={docStoreData} />
+      {#if pdfStream}
+        {#await pdfStream}
+          <Loader store={pdfStore} on:stream:status={(e) => (pdfData = e.detail)} />
         {:then result}
           <Viewer src={result?.url} title="sample.pdf" />
         {/await}
       {/if}
     </div>
     <div class="controls">
-      <button on:click={() => (docStream = docStart().stream())} class="button"
-        >{docButtonLabel}</button
+      <button on:click={() => (pdfStream = pdfStart().stream())} class="button"
+        >{pdfButtonLabel}</button
       >
       <div class="fileinfo">
-        {#await docData then result}
-          <span class="filesize">{displayFilesize(result?.filesize)}</span>
-        {/await}
+        <span class="filesize">{pdfProgress}</span>
         <span class="filename">sample.pdf</span>
       </div>
     </div>
-  </div>
+  </Container>
 </Blurb>
 
-<style>
-  .outer {
-    --height: 50px;
-    position: relative;
-  }
+<style lang="scss">
   .read-box {
     display: flex;
     width: 350px;
@@ -257,14 +243,23 @@
     padding: 5px 10px;
   }
   .fileinfo {
-    display: inline-block;
+    display: flex;
+    justify-content: space-between;
     padding: 0 10px;
     font: var(--h6) var(--font-mono);
     position: absolute;
     bottom: -20px;
     right: 0;
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     font-family: var(--font-mono);
     opacity: 0.6;
+    width: 100%;
+  }
+  :global(.loader) .inner {
+    display: flex;
+    align-items: center;
+    small {
+      font-size: 1.5rem;
+    }
   }
 </style>

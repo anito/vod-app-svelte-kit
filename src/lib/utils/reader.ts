@@ -1,3 +1,4 @@
+import { tick } from 'svelte';
 import { writable } from 'svelte/store';
 
 function createStore() {
@@ -15,12 +16,17 @@ function createStore() {
     controller?: ReadableStreamDefaultController<any>;
     reader?: ReadableStreamDefaultReader<Uint8Array> | undefined;
   };
-  const { subscribe, update, set } = writable(defaults);
+  const { subscribe, update, set } = writable(defaults, (set) => {
+    console.log('first subscriber');
+    return () => {
+      set(defaults);
+      console.log('no more subscribers');
+    };
+  });
 
   return {
     subscribe,
     update,
-    reset: () => update(() => defaults),
     set
   };
 }
@@ -30,24 +36,40 @@ function bodyReader(store: {
   set: (value: any) => void;
 }) {
   let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
+  let closed = false;
   let received = 0;
   let contentLength = 0;
   const getPercent = () => {
     if (contentLength) return Math.floor((received * 100) / contentLength);
   };
-  const getStatus = (percent: number | undefined) => {
-    if (percent === undefined) {
-      return undefined;
+  const getStatus = () => {
+    const percent = getPercent();
+    if (closed) {
+      return 'closed';
     }
     if (percent === 0) {
       return 'starting';
     }
-    if (percent > 0 && percent < 100) {
+    if (percent && percent > 0 && percent < 100) {
       return 'reading';
     }
-    if (percent === 100) {
+    if (percent && percent === 100) {
       return 'done';
     }
+    return 'unknown';
+  };
+  const updateStore = () => {
+    const percent = getPercent();
+    const status = getStatus();
+    store.update((items: any) => {
+      return {
+        ...items,
+        received,
+        percent,
+        chunks,
+        status
+      };
+    });
   };
   const chunks: Uint8Array[] = [];
 
@@ -56,38 +78,28 @@ function bodyReader(store: {
       new ReadableStream({
         start(controller) {
           reader = res.body?.getReader();
+          reader?.closed.then(() => (closed = true));
+
           contentLength = parseInt(res.headers.get('content-length') || '0');
 
-          store.set({ total: contentLength, reader });
+          store.set({ total: contentLength, controller, reader });
 
           return pump();
 
           function pump(): any {
-            return reader?.read().then(({ done, value }: ReadableStreamReadResult<any>) => {
+            return reader?.read().then(({ done, value }) => {
               // When no more data needs to be consumed, close the stream
+
               if (done) {
+                updateStore();
                 controller.close();
                 return;
               }
 
               received += value.length;
-              const percent = getPercent();
-              const status = getStatus(percent);
               chunks.push(value);
 
-              // percent && percent >= 50 && reader.cancel();
-
-              // Update store
-              store.update((items: any) => {
-                return {
-                  ...items,
-                  received,
-                  percent,
-                  chunks,
-                  controller,
-                  status
-                };
-              });
+              updateStore();
 
               // Enqueue the next data chunk into our target stream
               controller.enqueue(value);
@@ -140,9 +152,8 @@ export function register({ filename, url }: { filename: any; url: any }) {
       if (!data.controller) {
         data.init(fetch);
         data.store = store;
-        store.reset();
         data.unsubscribe = store.subscribe(
-          async (val: {
+          (val: {
             percent: number | undefined;
             controller: ReadableStreamDefaultController<any>;
             reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
@@ -151,25 +162,23 @@ export function register({ filename, url }: { filename: any; url: any }) {
               data.controller = val.controller;
               data.reader = val.reader;
             }
-            const perc = val.percent;
-            if (perc === 100) {
+            if (val.percent === 100) {
               data.controller = undefined;
+              data.reader = undefined;
               data.unsubscribe?.();
             }
           }
         );
       } else {
         try {
-          data.controller.close();
+          data.controller?.close();
           data.reader?.cancel();
           data.unsubscribe?.();
-          data.controller = undefined;
           data.reader = undefined;
-          setTimeout(() => {
-            data.store.reset();
-          }, 200);
+          data.controller = undefined;
         } catch (err) {
-          console.log(err);
+          console.log('ERROR in ReadableStream', err);
+          data.controller = undefined;
         }
       }
       return { stream: data.getResult };
@@ -183,7 +192,6 @@ export default function read(
     update: (arg0: (items: any) => any) => void;
     set: (value: any) => void;
     subscribe: any;
-    reset: any;
   }
 ) {
   let contentType: string;
@@ -209,7 +217,7 @@ export default function read(
         })
         .then((stream) => new Response(stream))
         .then(process)
-        .catch((err) => console.error(err));
+        .catch((err) => console.error('ERROR in Fetch', err));
     },
     store
   };

@@ -1,4 +1,5 @@
 import {
+  addClass,
   buildSearchParams,
   convert,
   createRedirectSlug,
@@ -56,6 +57,7 @@ import { posterCreatedHandler, posterSelectedHandler, posterRemoveHandler } from
 import read from './reader';
 
 export {
+  addClass,
   afterOrBeforeNavigation,
   buildSearchParams,
   convert,

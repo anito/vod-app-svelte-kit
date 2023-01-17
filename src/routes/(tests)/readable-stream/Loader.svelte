@@ -1,35 +1,40 @@
 <script lang="ts">
-  import { writable } from 'svelte/store';
+  import { createEventDispatcher } from 'svelte';
+  import { onMount } from 'svelte';
+  import { addClass } from '$lib/utils';
 
-  export let storeData: any;
-  export let store: any = writable();
+  import type { Writable } from 'svelte/store';
 
-  store.subscribe((data: any) => {
+  export { className as class };
+  export let store: Writable<any>;
+
+  let storeData: any;
+  let className = '';
+
+  const dispatch = createEventDispatcher();
+  const unsubscribe = store.subscribe((data: any) => {
     storeData = data;
-    if (storeData.willCancel) {
-      console.log(storeData.reader.cancel());
-    }
+  });
+
+  $: storeData?.status && dispatch('stream:status', { ...storeData });
+  $: progress = storeData.percent;
+
+  onMount(() => {
+    return () => unsubscribe();
   });
 </script>
 
-<div class="wait">
-  <h5 class="inner">{(!isNaN(storeData.percent) && storeData.percent) || '0'}<small>%</small></h5>
+<div use:addClass={className} class="loader">
+  <slot {progress} />
 </div>
 
-<style lang="scss">
-  .wait {
+<style>
+  .loader {
     display: flex;
     justify-content: center;
     flex: 1 0 auto;
     height: 100%;
     font-size: 7em;
     text-shadow: 3px 10px 35px rgba(0, 0, 0, 0.5);
-    small {
-      font-size: 1.5rem;
-    }
-  }
-  .wait .inner {
-    display: flex;
-    align-items: center;
   }
 </style>

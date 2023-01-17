@@ -658,11 +658,6 @@ figcaption,
   padding: 1rem 0 0 0.5rem;
   font: 0.75rem/1.6 var(--font-mono);
 }
-.filename {
-  display: inline-block;
-  padding: 1rem 0 0 0.625rem;
-  font: var(--h6) var(--font-mono);
-}
 .box {
   padding: 1.5rem 2rem;
   border-radius: var(--border-r);
