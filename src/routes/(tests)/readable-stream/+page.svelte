@@ -144,7 +144,9 @@
     <div class="read-box" style="">
       {#if textStream}
         {#await textStream}
-          <Loader store={textStore} on:stream:status={(e) => (textData = e.detail)} />
+          <Loader store={textStore} on:stream:status={(e) => (textData = e.detail)} let:progress>
+            <h5 class="inner">{(!isNaN(progress) && progress) || '0'}<small>%</small></h5>
+          </Loader>
         {:then result}
           <Viewer src={result.url} title="sample.txt" />
         {/await}
@@ -165,7 +167,9 @@
     <div class="read-box" style="">
       {#if zipStream}
         {#await zipStream}
-          <Loader store={zipStore} on:stream:status={(e) => (zipData = e.detail)} />
+          <Loader store={zipStore} on:stream:status={(e) => (zipData = e.detail)} let:progress>
+            <h5 class="inner">{(!isNaN(progress) && progress) || '0'}<small>%</small></h5>
+          </Loader>
         {:then result}
           <Viewer src={result.url} title="sample.zip" />
         {/await}
@@ -186,7 +190,9 @@
     <div class="read-box" style="">
       {#if pdfStream}
         {#await pdfStream}
-          <Loader store={pdfStore} on:stream:status={(e) => (pdfData = e.detail)} />
+          <Loader store={pdfStore} on:stream:status={(e) => (pdfData = e.detail)} let:progress>
+            <h5 class="inner">{(!isNaN(progress) && progress) || '0'}<small>%</small></h5>
+          </Loader>
         {:then result}
           <Viewer src={result?.url} title="sample.pdf" />
         {/await}
