@@ -1,20 +1,18 @@
-import { stringify } from '$lib/utils';
 import { writable } from 'svelte/store';
 
 function createStore() {
   const { subscribe, update, set } = writable(new Map(), () => {});
 
-  const param = (items: Map<any, any>, item: { id: any; params: string | number; url: any }) => {
+  const cache = (items: Map<any, any>, item: { id: any; params: string | number; url: any }) => {
     const value =
-      (items.has(item.id) && items.get(item.id)) ||
-      Object.create({ [stringify(item.params)]: item.url });
+      (items.has(item.id) && items.get(item.id)) || Object.create({ [item.params]: item.url });
     !value[item.params] && (value[item.params] = item.url);
     items.set(item.id, value);
     return items;
   };
   return {
     subscribe,
-    add: (item: any) => update((items) => param(items, item)),
+    add: (item: any) => update((items) => cache(items, item)),
     del: (id: string) => update((items) => (items.delete(id) && items) || items),
     put: (item: { id: any }) =>
       update((items) => (items.has(item.id) && items.set(item.id, item) && items) || items),

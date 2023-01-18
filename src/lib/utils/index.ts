@@ -21,7 +21,6 @@ import {
   slugify,
   sortByEndDate,
   sortByStartDate,
-  stringify,
   svg,
   windowSize
 } from './helper';
@@ -100,7 +99,6 @@ export {
   slugify,
   sortByEndDate,
   sortByStartDate,
-  stringify,
   svg,
   toISODate,
   toLocalDate,

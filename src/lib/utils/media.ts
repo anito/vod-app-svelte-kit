@@ -1,7 +1,7 @@
 import { get } from 'svelte/store';
 import * as api from '$lib/api';
 import { urls } from '$lib/stores';
-import { buildSearchParams, log, stringify } from '$lib/utils';
+import { buildSearchParams, log } from '$lib/utils';
 
 const MediaTypes = new Map([
   ['VIDEO', { base: 'v' }],
@@ -33,13 +33,12 @@ async function getMedia(
     let cached;
     let url;
     let _urls;
-    let stringified;
+    const stringified = JSON.stringify(params).replace(/["'\s]/g, '');
 
-    stringified = stringify(params);
     url = cached = ((_urls = get(urls)) && _urls.has(id) && _urls.get(id)[stringified]) || false;
 
     if (!cached) {
-      console.log('CACHING', id, _urls.get(id), 'params', params, stringified);
+      console.log('CACHING MEDIA URL', id, _urls.get(id), 'params', params);
       url = await uri(id, token, type, params)
         .then((res) => {
           urls.add(res);
