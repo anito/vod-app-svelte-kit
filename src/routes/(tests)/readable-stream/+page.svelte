@@ -4,7 +4,7 @@
   import { register } from '$lib/utils/reader';
   import Blurb from './Blurb.svelte';
   import Container from './Container.svelte';
-  import Viewer from './Viewer.svelte';
+  import IFrameViewer from './IFrameViewer.svelte';
   import Loader from './Loader.svelte';
 
   /**
@@ -125,7 +125,7 @@
             <h5 class="inner">{(!isNaN(progress) && progress) || '0'}<small>%</small></h5>
           </Loader>
         {:then result}
-          <Viewer src={result.url} title="sample.jpg" />
+          <IFrameViewer blob={result.blob} title="sample.jpg" />
         {/await}
       {/if}
     </div>
@@ -148,7 +148,7 @@
             <h5 class="inner">{(!isNaN(progress) && progress) || '0'}<small>%</small></h5>
           </Loader>
         {:then result}
-          <Viewer src={result.url} title="sample.txt" />
+          <IFrameViewer blob={result.blob} title="sample.txt" />
         {/await}
       {/if}
     </div>
@@ -171,7 +171,7 @@
             <h5 class="inner">{(!isNaN(progress) && progress) || '0'}<small>%</small></h5>
           </Loader>
         {:then result}
-          <Viewer src={result.url} title="sample.zip" />
+          <IFrameViewer blob={result.blob} title="sample.zip" />
         {/await}
       {/if}
     </div>
@@ -194,7 +194,7 @@
             <h5 class="inner">{(!isNaN(progress) && progress) || '0'}<small>%</small></h5>
           </Loader>
         {:then result}
-          <Viewer src={result?.url} title="sample.pdf" />
+          <IFrameViewer blob={result?.blob} title="sample.pdf" />
         {/await}
       {/if}
     </div>

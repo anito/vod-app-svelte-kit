@@ -1,7 +1,7 @@
 import { get } from 'svelte/store';
 import * as api from '$lib/api';
 import { urls } from '$lib/stores';
-import { buildSearchParams, log } from '$lib/utils';
+import { buildSearchParams, log, stringify } from '$lib/utils';
 
 const MediaTypes = new Map([
   ['VIDEO', { base: 'v' }],
@@ -23,28 +23,28 @@ async function uri(id: any, token: any, type: string, { ...options }) {
   });
 }
 
-export async function getMedia(
+async function getMedia(
   type: string,
-  id: any,
+  id: string,
   token: string,
-  { ...options }: { width?: number; height?: number; square: number }
+  params: { width?: number; height?: number; square?: number; video?: boolean }
 ) {
   if (token) {
-    let defaults = {
-      width: 300,
-      height: 300,
-      square: 0,
-      quality: -1
-    };
-    const params = { ...defaults, ...options };
-    let cached, url, _urls, stringified;
-    stringified = JSON.stringify(params).replace(/["'\s]/g, '');
+    let cached;
+    let url;
+    let _urls;
+    let stringified;
 
+    stringified = stringify(params);
     url = cached = ((_urls = get(urls)) && _urls.has(id) && _urls.get(id)[stringified]) || false;
 
     if (!cached) {
-      await uri(id, token, type, params)
-        .then((res) => (url = res['url']) && urls.add(res))
+      console.log('CACHING', id, _urls.get(id), 'params', params, stringified);
+      url = await uri(id, token, type, params)
+        .then((res) => {
+          urls.add(res);
+          return res['url'];
+        })
         .catch((err) => log(err));
     }
     if (url) return `${url}/?token=${token}`;
@@ -71,10 +71,8 @@ export function getMediaImage(id: any, jwt: string, options = {}) {
   return getMedia('IMAGE', id, jwt, settings);
 }
 
-export async function getMediaVideo(id: any, jwt: string, options = {}) {
-  const defaults = { square: 2 };
-  let settings = { ...defaults, ...options };
-  return getMedia('VIDEO', id, jwt, settings);
+export async function getMediaVideo(id: any, jwt: string) {
+  return getMedia('VIDEO', id, jwt, { video: true });
 }
 
 export function getExt(fn: { match: (arg0: RegExp) => string[] }) {

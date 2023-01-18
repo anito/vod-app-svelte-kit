@@ -29,7 +29,7 @@ export function toLocalTime(date: string | number | Date, locale = 'de-DE', opti
   options = { ...defaults, ...options };
   return new Date(date).toLocaleDateString('de-DE', options);
 }
-export function toISODate(date: Date, tillMidnight: boolean | undefined) {
+export function toISODate(date: Date, tillMidnight?: boolean) {
   return formatISO9075(
     new Date(
       date.getFullYear(),

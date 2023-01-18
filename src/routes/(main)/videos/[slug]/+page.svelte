@@ -122,20 +122,20 @@
   async function savePlayhead() {
     if (!canplay) return;
     if (hasPrivileges) {
-      if (Math.round(video.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
+      if (Math.round(video?.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
       proxyEvent('video:save', {
-        data: { id: video.id, playhead }
+        data: { id: video?.id, playhead }
       });
     } else if ($session.role === USER) {
       if (Math.round(joinData.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
-      const associated = user.videos
-        .filter(/** @param {import('$lib/types').Video} v */ (v) => v.id != video.id)
+      const associated = user?.videos
+        .filter(/** @param {import('$lib/types').Video} v */ (v) => v.id != video?.id)
         .map(/** @param {import('$lib/types').Video} v */ (v) => ({ id: v.id }));
       const data = {
         id: user?.id,
         videos: [
           {
-            id: video.id,
+            id: video?.id,
             _joinData: { ...joinData, playhead }
           },
           ...associated

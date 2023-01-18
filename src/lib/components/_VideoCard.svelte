@@ -5,8 +5,16 @@
   import { getContext, createEventDispatcher } from 'svelte';
   import { fly } from 'svelte/transition';
   import { currentVideo, images, session } from '$lib/stores';
-  import { getMedia } from '$lib/utils/media';
-  import { ADMIN, DateTimeFormatOptions, LOCALESTORE, proxyEvent, SUPERUSER } from '$lib/utils';
+  import { getMediaImage } from '$lib/utils/media';
+  import {
+    addClass,
+    ADMIN,
+    DateTimeFormatOptions,
+    DEFAULT_LOCALE,
+    LOCALESTORE,
+    proxyEvent,
+    SUPERUSER
+  } from '$lib/utils';
   import { VideoMedia, MediaUploader, Paginator } from '$lib/components';
   import Card, { Content, PrimaryAction, Actions, ActionButtons, ActionIcons } from '@smui/card';
   import Button, { Label } from '@smui/button';
@@ -102,7 +110,7 @@
   }
 
   function getCachedImage(id: string) {
-    let res = getMedia('IMAGE', id, $session.user?.jwt, {
+    const res = getMediaImage(id, $session.user?.jwt, {
       width: 100,
       height: 100,
       square: 1
@@ -129,7 +137,7 @@
 </script>
 
 <Card class="card {className}">
-  <PrimaryAction onclick={() => $currentVideo.set(video)}>
+  <PrimaryAction onclick={() => currentVideo.set(video)}>
     <VideoMedia {video} bind:title bind:description {isEditMode} {emptyPoster} />
     <Content class="mdc-typography--body2">
       <div class="wrapper flex flex-row justify-between">
@@ -145,7 +153,7 @@
                 >{$_('text.uploaded-on', {
                   values: {
                     date: new Date(video.created).toLocaleDateString(
-                      LOCALESTORE.get($locale)?.fns?.code,
+                      LOCALESTORE.get($locale || DEFAULT_LOCALE)?.fns?.code,
                       DateTimeFormatOptions
                     )
                   }
@@ -161,7 +169,7 @@
                     date:
                       (matchingData &&
                         new Date(matchingData.end).toLocaleDateString(
-                          LOCALESTORE.get($locale)?.fns?.code,
+                          LOCALESTORE.get($locale || DEFAULT_LOCALE)?.fns?.code,
                           DateTimeFormatOptions
                         )) ||
                       'date invalid'

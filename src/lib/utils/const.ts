@@ -10,6 +10,14 @@ export const LOCALESTORE = new Map([
   ['de', { fns: de, localized: 'Deutsch', filename: 'de_DE' }]
 ]);
 export const DateTimeFormatOptions = {
+  weekday: 'long',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+} as {
+  weekday: 'long' | 'short' | 'narrow' | undefined;
+};
+export const DateTimeFormatOptions_ = {
   day: '2-digit',
   year: 'numeric',
   month: '2-digit'

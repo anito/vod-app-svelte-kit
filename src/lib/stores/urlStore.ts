@@ -1,10 +1,13 @@
+import { stringify } from '$lib/utils';
 import { writable } from 'svelte/store';
 
 function createStore() {
   const { subscribe, update, set } = writable(new Map(), () => {});
 
   const param = (items: Map<any, any>, item: { id: any; params: string | number; url: any }) => {
-    const value = (items.has(item.id) && items.get(item.id)) || { [item.params]: item.url };
+    const value =
+      (items.has(item.id) && items.get(item.id)) ||
+      Object.create({ [stringify(item.params)]: item.url });
     !value[item.params] && (value[item.params] = item.url);
     items.set(item.id, value);
     return items;

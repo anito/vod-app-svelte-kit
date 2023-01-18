@@ -2,10 +2,11 @@
   import { onMount, tick } from 'svelte/internal';
   import { fade } from 'svelte/transition';
 
-  export let src: string;
+  export let blob: Blob | MediaSource;
   export let title: string = 'Viewer';
 
   let mounted = false;
+  let src = URL.createObjectURL(blob);
 
   onMount(async () => {
     mounted = true;

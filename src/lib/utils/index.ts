@@ -21,6 +21,7 @@ import {
   slugify,
   sortByEndDate,
   sortByStartDate,
+  stringify,
   svg,
   windowSize
 } from './helper';
@@ -49,7 +50,7 @@ import {
   toLocalTime
 } from './time-functions';
 import { getFragment, afterOrBeforeNavigation } from './navigation';
-import { getMedia, getExt, getMediaAvatar, getMediaImage, getMediaVideo } from './media';
+import { getExt, getMediaAvatar, getMediaImage, getMediaVideo } from './media';
 import { localeFormat } from './locale-format';
 import { get, post, put, del } from './http';
 import { getAuxSession } from './auxSession';
@@ -72,7 +73,6 @@ export {
   getExt,
   getAuxSession,
   getFragment,
-  getMedia,
   getMediaAvatar,
   getMediaImage,
   getMediaVideo,
@@ -100,6 +100,7 @@ export {
   slugify,
   sortByEndDate,
   sortByStartDate,
+  stringify,
   svg,
   toISODate,
   toLocalDate,

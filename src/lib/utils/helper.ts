@@ -293,6 +293,10 @@ export function info(...args: any[]) {
   if (level <= infoLevel) console.log(...args);
 }
 
+export function stringify(params: any) {
+  return JSON.stringify(params).replace(/["'\s]/g, '');
+}
+
 export function parseConfigData(data: object | null | undefined) {
   if (data instanceof Object) {
     const ret = Object.create({});

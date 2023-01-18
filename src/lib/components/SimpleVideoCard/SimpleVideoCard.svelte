@@ -5,8 +5,14 @@
   import { Icon } from '@smui/button';
   import { Item, Graphic, Text, PrimaryText, SecondaryText } from '@smui/list';
   import Chip, { Set, LeadingIcon } from '@smui/chips';
-  import { hasStarted, isExpired, LOCALESTORE, DateTimeFormatOptions } from '$lib/utils';
-  import { getMedia } from '$lib/utils/media';
+  import {
+    hasStarted,
+    isExpired,
+    LOCALESTORE,
+    DateTimeFormatOptions,
+    DEFAULT_LOCALE
+  } from '$lib/utils';
+  import { getMediaImage } from '$lib/utils/media';
   import { parseISO } from 'date-fns';
   import { session, users } from '$lib/stores';
   import { differenceInHours } from 'date-fns';
@@ -65,10 +71,10 @@
     (readoutPeriod =
       (startDate &&
         `${new Date(startDate).toLocaleDateString(
-          LOCALESTORE.get($locale)?.fns?.code,
+          LOCALESTORE.get($locale || DEFAULT_LOCALE)?.fns?.code,
           DateTimeFormatOptions
         )} - ${new Date(endDate).toLocaleDateString(
-          LOCALESTORE.get($locale)?.fns?.code,
+          LOCALESTORE.get($locale || DEFAULT_LOCALE)?.fns?.code,
           DateTimeFormatOptions
         )}`) ||
       $_('text.not-scheduled')),
@@ -104,7 +110,7 @@
   async function getPosterUrl(id: string) {
     if (id) {
       // options.square: 0 => intelligent resize (keep ratio) | 1 => force resize | 2 => no resize (original)
-      const res = await getMedia('IMAGE', id, user?.jwt, {
+      const res = await getMediaImage(id, user?.jwt, {
         width: 40,
         height: 40,
         square: 1

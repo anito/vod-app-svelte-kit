@@ -1,11 +1,27 @@
-import { dev } from '$app/environment';
+import { browser, dev } from '$app/environment';
+import { register } from './utils/reader';
 
 export const base = dev ? `https://vod.mbp` : `https://vod.webpremiere.de`;
 export const version = 'v1';
 
-async function send(atts = {}) {
-  const { method, path, token, data }: any = { ...atts };
-  const url = path.startsWith('http') ? path : `${base}/${version}/${path}`;
+async function send(atts: {
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  path: string;
+  token?: string;
+  data?: any;
+}) {
+  const { method, path, token, data } = { ...atts };
+  let url = path.startsWith('http') ? path : `${base}/${version}/${path}`;
+
+  if (browser && method === 'GET') {
+    const { start, store } = register({ url });
+    return start(token)
+      .stream()
+      .then(async (res: any) => {
+        const text = await res.blob.text();
+        return JSON.parse(text);
+      });
+  }
 
   const opts = {
     method,
@@ -14,7 +30,7 @@ async function send(atts = {}) {
     } as {
       Accept: string;
       'Content-Type': string;
-      Authorization: string;
+      Authorization?: string;
     },
     credentials: 'include'
   } as {

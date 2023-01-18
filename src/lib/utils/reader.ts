@@ -1,4 +1,3 @@
-import { tick } from 'svelte';
 import { writable } from 'svelte/store';
 
 function createStore() {
@@ -117,7 +116,7 @@ function bodyReader(store: {
 const readerMap: Map<
   string,
   {
-    init: (fetch: () => Promise<any>) => void;
+    init: (fetch: () => Promise<any>, token?: string) => void;
     getResult: () => any;
     store: any;
     reader?: ReadableStreamDefaultReader<Uint8Array>;
@@ -126,13 +125,19 @@ const readerMap: Map<
   }
 > = new Map();
 
-export function register({ filename, url }: { filename: any; url: any }) {
-  let _result: Promise<any>;
+export function register(
+  { filename, url }: { filename?: string; url: string } = { filename: '', url: '' }
+) {
+  const path = url.concat(filename ? `/${filename}` : '');
+  filename = filename ?? path;
+  let result: Promise<any>;
 
-  const init = (fetch: () => Promise<any>) => {
-    _result = fetch();
+  const init = (fetch: (token?: string) => Promise<any>, token?: string) => {
+    result = fetch(token);
   };
-  const getResult = () => _result;
+  const getResult = () => {
+    return result;
+  };
 
   const initializer = {
     init,
@@ -147,10 +152,10 @@ export function register({ filename, url }: { filename: any; url: any }) {
 
   return {
     store: data.store,
-    start: () => {
-      const { fetch, store } = read(`${url}/${filename}`, data.store);
+    start: (token?: string) => {
+      const { fetch, store } = read(path, data.store);
       if (!data.controller) {
-        data.init(fetch);
+        data.init(fetch, token);
         data.store = store;
         data.unsubscribe = store.subscribe(
           (val: {
@@ -200,16 +205,26 @@ export default function read(
       .blob()
       .then((blob) => new Blob([blob], { type: contentType }))
       .then((blob) => {
-        return { url: URL.createObjectURL(blob), filesize: blob.size };
+        return { blob, filesize: blob.size };
       });
   };
   const { getStream } = bodyReader(store);
 
   return {
-    fetch: async () => {
+    fetch: async (token?: string) => {
+      const headers = {
+        Accept: 'application/json'
+      } as {
+        Accept: string;
+        Authorization?: string;
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
       return await fetch(file, {
         method: 'GET',
-        credentials: 'include'
+        credentials: 'include',
+        headers
       })
         .then(async (res) => {
           contentType = res.headers.get('content-type') || 'text/plain';

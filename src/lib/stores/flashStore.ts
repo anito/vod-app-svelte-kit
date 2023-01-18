@@ -19,7 +19,7 @@ function createStore() {
 
   return {
     subscribe,
-    update: (value: { permanent: boolean; timeout: number; type?: string; message?: string }) =>
+    update: (value = defaults) =>
       update(() => {
         ({ permanent, timeout } = { ...defaults, ...value });
         clearTimeout(timeoutId);

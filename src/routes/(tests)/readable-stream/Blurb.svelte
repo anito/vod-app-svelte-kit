@@ -11,7 +11,7 @@
     borderShape="medium"
   >
     <div slot="header">
-      <Header mdc h="5">ReadableStream - Loading Ressources w/o Blocking</Header>
+      <Header mdc h="5">ReadableStream - Loading Ressources as Blobs</Header>
     </div>
     <a
       style="font-size: .8em; margin: 0 15px; line-height: 1em;"

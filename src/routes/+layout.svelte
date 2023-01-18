@@ -59,14 +59,8 @@
   } from '$lib/components';
   import { svg_manifest } from '$lib/svg_manifest';
   import { _, locale } from 'svelte-i18n';
-  import Dialog, {
-    Title as DialogTitle,
-    Content,
-    Actions as DialogActions,
-    InitialFocus
-  } from '@smui/dialog';
+  import Dialog, { Title as DialogTitle, Content, Actions as DialogActions } from '@smui/dialog';
   import type { User } from '$lib/types';
-  import type { Map } from 'typescript';
   import type { NavigationTarget } from '@sveltejs/kit';
 
   const snackbarLifetime = 4000;
