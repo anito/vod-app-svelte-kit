@@ -5,7 +5,7 @@ import { sveltekit } from '@sveltejs/kit/vite';
 const config = {
   plugins: [sveltekit(), basicSsl()],
   server: {
-    port: process.env.PORT
+    port: process.env.PORT || 3000
   }
 };
 

@@ -1,38 +1,24 @@
-<script context="module">
-  const editors = new Set();
+<script lang="ts" context="module">
+  const editors: Set<Span> = new Set();
 </script>
 
-<script>
+<script lang="ts">
   import { createEventDispatcher, onMount } from 'svelte/internal';
   import Span from './_Span.svelte';
-  import { Graphic, Meta } from '@smui/list';
+  import { Meta } from '@smui/list';
 
-  /**
-   * @type {string}
-   */
-  export let id;
+  export let id: string | null | undefined;
   export let multiple = false;
   export { className as class };
   export let locked = false;
 
   const dispatch = createEventDispatcher();
-  /**
-   * @type {null | Span}
-   */
-  let selected;
-  /**
-   * @type {string}
-   */
+  let selected: any;
   let className = '';
-  /**
-   * @type {HTMLSpanElement}
-   */
-  let editable;
-  /**
-   * @type {Span}
-   */
-  let span;
+  let editable: HTMLSpanElement;
+  let span: Span;
   let active = false;
+  let dataValue: string;
 
   $: if (active) {
     selected = span;
@@ -56,26 +42,26 @@
   function cancelEditable() {
     active = false;
     if (selected === span) {
-      editable.isContentEditable && (editable.innerHTML = editable.dataset.value || '');
+      editable.isContentEditable && (editable.innerText = dataValue);
     }
   }
 
   function saveEditable() {
-    const innerHtml = stripHTMLTags(editable);
-    editable.innerHTML = innerHtml;
+    const value = stripHTMLTags(editable);
     active = false;
-    if (editable.dataset.value === innerHtml) return;
+    if (dataValue === value) return;
     dispatch('save:editable', {
-      editable,
+      id,
+      value,
       onFailCallback: () => cancelEditable(),
-      onSuccessCallback: () => (editable.dataset.value = innerHtml)
+      onSuccessCallback: () => (dataValue = value)
     });
   }
 
   function createEditable() {
     active = true;
     editable.focus();
-    editable.dataset.value = editable.innerHTML;
+    dataValue = editable.innerText;
     const range = document.createRange();
     const selection = window.getSelection();
     range.selectNodeContents(editable);
@@ -83,27 +69,18 @@
     selection?.addRange(range);
   }
 
-  /**
-   * @param {MouseEvent} event
-   */
-  function cancelEvent(event) {
+  function cancelEvent(event: MouseEvent) {
     event.stopPropagation?.();
     event.preventDefault?.();
   }
 
-  /**
-   * @param {HTMLElement} node
-   */
-  function stripHTMLTags(node) {
-    return node.innerHTML
+  function stripHTMLTags(node: HTMLSpanElement) {
+    return node.innerText
       .replace(/<(script|title|style).*?<\/(script|title|style) *?>/gi, '')
       .replace(/<br[ ]*\/?>/gi, ' ');
   }
 
-  /**
-   * @param {KeyboardEvent} event
-   */
-  function keyListener(event) {
+  function keyListener(event: KeyboardEvent) {
     event.stopPropagation();
 
     if (event.key === 'Enter') {
@@ -124,6 +101,7 @@
     class:active
     class:className
     tabindex="-1"
+    data-value={dataValue}
   >
     <slot />
   </span>

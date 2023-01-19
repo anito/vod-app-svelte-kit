@@ -1,6 +1,5 @@
 <script lang="ts">
   import './_drawer.scss';
-  import './_list.scss';
   import './_icon-button.scss';
   import * as api from '$lib/api';
   import { onMount, getContext, setContext } from 'svelte';
@@ -445,8 +444,8 @@
   }
 
   async function saveEditableHandler({ detail }: CustomEvent) {
-    const { editable, onFailCallback, onSuccessCallback } = detail;
-    const success = await saveTemplateName(editable.id, editable.innerHTML);
+    const { id, value, onFailCallback, onSuccessCallback } = detail;
+    const success = await saveTemplateName(id, value);
     if (success) {
       onSuccessCallback?.();
     } else {

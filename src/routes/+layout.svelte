@@ -6,6 +6,7 @@
   import '$lib/components/_notched_outline.scss';
   import '$lib/components/_colored_snackbar.scss';
   import '$lib/components/_dialog.scss';
+  import '$lib/components/_list.scss';
   import { derived, writable } from 'svelte/store';
   import { afterNavigate, beforeNavigate, goto, invalidate, invalidateAll } from '$app/navigation';
   import { navigating, page } from '$app/stores';
@@ -44,7 +45,8 @@
     ticker,
     urls,
     videos,
-    users
+    users,
+    streams
   } from '$lib/stores';
   import { Modal, SvgIcon } from '$lib/components';
   import { DoubleBounce } from 'svelte-loading-spinners';
@@ -60,7 +62,7 @@
   import { svg_manifest } from '$lib/svg_manifest';
   import { _, locale } from 'svelte-i18n';
   import Dialog, { Title as DialogTitle, Content, Actions as DialogActions } from '@smui/dialog';
-  import type { User } from '$lib/types';
+  import type { IndexedStream, User } from '$lib/types';
   import type { NavigationTarget } from '@sveltejs/kit';
 
   const snackbarLifetime = 4000;
@@ -89,6 +91,22 @@
 
   settings.subscribe((val) => {
     printDiff(val, { store: 'config' });
+  });
+
+  setContext('progress', {
+    getProgress: () =>
+      derived(streams, ($streams, set) => {
+        const key = 'percent';
+        const unit = '%';
+        set(
+          $streams.reduce<number>((map, el) => {
+            const { total, received } = el.stream;
+            const percent =
+              received !== undefined && total !== undefined && (received * 100) / total;
+            return percent ? map + percent : map;
+          }, 0)
+        );
+      })
   });
 
   setContext('fab', {

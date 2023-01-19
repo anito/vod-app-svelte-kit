@@ -21,16 +21,16 @@
   const autostart = false;
   const url = dev ? 'https://anito.mbp' : 'https://anito.de';
 
-  let imageStream: Promise<any>;
+  let imageStream: Promise<any> | undefined;
   let imageData: any;
 
-  let textStream: Promise<any>;
+  let textStream: Promise<any> | undefined;
   let textData: any;
 
-  let zipStream: Promise<any>;
+  let zipStream: Promise<any> | undefined;
   let zipData: any;
 
-  let pdfStream: Promise<any>;
+  let pdfStream: Promise<any> | undefined;
   let pdfData: any;
 
   /**
@@ -77,10 +77,10 @@
 
   onMount(() => {
     if (autostart) {
-      imageStream = imageStart().stream?.();
-      textStream = textStart().stream?.();
-      zipStream = zipStart().stream?.();
-      pdfStream = pdfStart().stream?.();
+      imageStream = imageStart();
+      textStream = textStart();
+      zipStream = zipStart();
+      pdfStream = pdfStart();
     }
   });
 
@@ -105,8 +105,8 @@
     const kb = (kilobyte = byte / 1024) > 1 && kilobyte;
     const mb = (megabyte = kilobyte / 1024) > 1 && megabyte;
     const unit = mb ? 'MByte' : kb ? 'KByte' : 'Byte';
-    const toDecimals = (mb || kb || byte).toFixed(opts.decimals);
-    return { value: toDecimals, unit };
+    const value = (mb || kb || byte).toFixed(opts.decimals);
+    return { value, unit };
   }
 
   function getLabel({ status }: { status?: string } = { status: undefined }) {
@@ -130,7 +130,7 @@
       {/if}
     </div>
     <div class="controls">
-      <button on:click={() => (imageStream = imageStart().stream())} class="button"
+      <button on:click={() => (imageStream = imageStart())} class="button"
         >{imageButtonLabel}</button
       >
       <div class="fileinfo">
@@ -153,9 +153,7 @@
       {/if}
     </div>
     <div class="controls">
-      <button on:click={() => (textStream = textStart().stream?.())} class="button"
-        >{textButtonLabel}</button
-      >
+      <button on:click={() => (textStream = textStart())} class="button">{textButtonLabel}</button>
       <div class="fileinfo">
         <span class="filesize">{textProgress}</span>
         <span class="filename">sample.txt</span>
@@ -176,9 +174,7 @@
       {/if}
     </div>
     <div class="controls">
-      <button on:click={() => (zipStream = zipStart().stream())} class="button"
-        >{zipButtonLabel}</button
-      >
+      <button on:click={() => (zipStream = zipStart())} class="button">{zipButtonLabel}</button>
       <div class="fileinfo">
         <span class="filesize">{zipProgress}</span>
         <span class="filename">sample.zip</span>
@@ -199,9 +195,7 @@
       {/if}
     </div>
     <div class="controls">
-      <button on:click={() => (pdfStream = pdfStart().stream())} class="button"
-        >{pdfButtonLabel}</button
-      >
+      <button on:click={() => (pdfStream = pdfStart())} class="button">{pdfButtonLabel}</button>
       <div class="fileinfo">
         <span class="filesize">{pdfProgress}</span>
         <span class="filename">sample.pdf</span>

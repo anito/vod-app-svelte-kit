@@ -1,16 +1,11 @@
-<script>
-  import { setContext } from 'svelte';
+<script lang="ts">
+  import { getContext, setContext } from 'svelte';
   import { writable } from 'svelte/store';
+  import { streams } from '$lib/stores';
 
-  /**
-   * @type {string}
-   */
-  export let segment;
+  export let segment: string;
   export let page;
-  /**
-   * @type {any}
-   */
-  export let logo;
+  export let logo: string;
   export let home = 'Home';
   export let home_title = 'Homepage';
 
@@ -18,6 +13,9 @@
   const current = writable();
   setContext('nav', current);
 
+  const { getProgress }: any = getContext('progress');
+  const progress = getProgress();
+  $: progrssbarWidth = $progress;
   $: $current = segment;
 
   let open = false;
@@ -28,10 +26,7 @@
     open = false;
   });
 
-  /**
-   * @param {TouchEvent} event
-   */
-  function intercept_touchstart(event) {
+  function intercept_touchstart(event: TouchEvent) {
     if (!open) {
       event.preventDefault();
       event.stopPropagation();
@@ -59,7 +54,7 @@
 
 <svelte:window on:hashchange={handle_hashchange} on:scroll={handle_scroll} />
 
-<header class:visible={visible || open}>
+<header class:visible={visible || open} style:--progressbar-w="{progrssbarWidth}vw">
   <nav>
     <a href="/" class="home" title={home_title} style="background-image: url('{logo}')">{home}</a>
 
@@ -106,15 +101,30 @@
     color: inherit;
   }
 
+  header::before,
+  header::after {
+    --progressbar-h: 3px;
+  }
   header::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     width: 100vw;
-    height: 3px;
+    height: var(--progressbar-h);
     background: var(--primary);
     z-index: 1;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--progressbar-w, 100vw);
+    height: var(--progressbar-h);
+    background: var(--secondary);
+    transition: all ease-out 1s;
+    z-index: 2;
   }
 
   header.visible {

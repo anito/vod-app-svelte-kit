@@ -1,40 +1,33 @@
 import { writable } from 'svelte/store';
+import { streams } from '$lib/stores';
+import { Blob as Buffer } from 'buffer';
+import type { Stream } from '$lib/types';
+import { browser } from '$app/environment';
+import type { BinaryLike } from 'svelte-kit-cookie-session/types';
 
-function createStore() {
-  const defaults = {
-    current: undefined,
-    total: undefined,
+function createStore(id: string) {
+  const defaults: Stream = {
+    received: undefined,
+    total: 0,
     percent: undefined,
     controller: undefined,
     reader: undefined
-  } as unknown as {
-    current: number;
-    total: number;
-    percent: number | undefined;
-    chunks?: Uint8Array[];
-    controller?: ReadableStreamDefaultController<any>;
-    reader?: ReadableStreamDefaultReader<Uint8Array> | undefined;
   };
-  const { subscribe, update, set } = writable(defaults, (set) => {
-    console.log('first subscriber');
+  let stream = writable(defaults, (set) => {
     return () => {
       set(defaults);
-      console.log('no more subscribers');
+      streams.del(id);
     };
   });
 
-  return {
-    subscribe,
-    update,
-    set
-  };
+  return stream;
 }
 
 function bodyReader(store: {
   update: (arg0: (items: any) => any) => void;
   set: (value: any) => void;
 }) {
-  let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
+  let reader: ReadableStreamDefaultReader<any> | undefined;
   let closed = false;
   let received = 0;
   let contentLength = 0;
@@ -116,10 +109,9 @@ function bodyReader(store: {
 const readerMap: Map<
   string,
   {
-    init: (fetch: () => Promise<any>, token?: string) => void;
-    getResult: () => any;
+    stream?: Promise<any>;
     store: any;
-    reader?: ReadableStreamDefaultReader<Uint8Array>;
+    reader?: ReadableStreamDefaultReader<any>;
     controller?: ReadableStreamDefaultController<any>;
     unsubscribe?: () => void;
   }
@@ -130,19 +122,10 @@ export function register(
 ) {
   const path = url.concat(filename ? `/${filename}` : '');
   filename = filename ?? path;
-  let result: Promise<any>;
-
-  const init = (fetch: (token?: string) => Promise<any>, token?: string) => {
-    result = fetch(token);
-  };
-  const getResult = () => {
-    return result;
-  };
 
   const initializer = {
-    init,
-    getResult,
-    store: createStore(),
+    stream: undefined,
+    store: createStore(path),
     reader: undefined,
     controller: undefined,
     unsubscribe: undefined
@@ -153,40 +136,44 @@ export function register(
   return {
     store: data.store,
     start: (token?: string) => {
-      const { fetch, store } = read(path, data.store);
+      const { fetch } = read(path, data.store);
       if (!data.controller) {
-        data.init(fetch, token);
-        data.store = store;
-        data.unsubscribe = store.subscribe(
-          (val: {
+        data.stream = fetch(token);
+        data.unsubscribe = data.store.subscribe(
+          (stream: {
             percent: number | undefined;
             controller: ReadableStreamDefaultController<any>;
-            reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
+            reader: ReadableStreamDefaultReader<any> | undefined;
           }) => {
             if (!data.controller) {
-              data.controller = val.controller;
-              data.reader = val.reader;
+              data.controller = stream.controller;
+              data.reader = stream.reader;
             }
-            if (val.percent === 100) {
+            streams.put({ id: path, stream });
+            if (stream.percent === 100) {
               data.controller = undefined;
               data.reader = undefined;
+              data.stream = undefined;
               data.unsubscribe?.();
             }
           }
         );
       } else {
         try {
+          /**
+           * If start has been called again before controller was done:
+           */
           data.controller?.close();
           data.reader?.cancel();
-          data.unsubscribe?.();
           data.reader = undefined;
           data.controller = undefined;
+          data.stream = undefined;
+          data.unsubscribe?.();
         } catch (err) {
           console.log('ERROR in ReadableStream', err);
-          data.controller = undefined;
         }
       }
-      return { stream: data.getResult };
+      return data.stream;
     }
   };
 }
@@ -203,7 +190,11 @@ export default function read(
   const process = async (response: Response) => {
     return await response
       .blob()
-      .then((blob) => new Blob([blob], { type: contentType }))
+      .then((blob) =>
+        browser
+          ? new Blob([blob], { type: contentType })
+          : new Buffer([blob] as any[], { type: contentType })
+      )
       .then((blob) => {
         return { blob, filesize: blob.size };
       });
@@ -233,7 +224,6 @@ export default function read(
         .then((stream) => new Response(stream))
         .then(process)
         .catch((err) => console.error('ERROR in Fetch', err));
-    },
-    store
+    }
   };
 }

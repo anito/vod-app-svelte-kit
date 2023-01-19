@@ -136,6 +136,20 @@ export interface VideoAll<VideoAllRepoType = Record<string, any>> {
   created?: string | number | Date;
 }
 
+export interface Stream {
+  received?: number;
+  total?: number;
+  percent?: number;
+  chunks?: Uint8Array[];
+  controller?: ReadableStreamDefaultController<any>;
+  reader?: ReadableStreamDefaultReader<Uint8Array>;
+}
+
+export interface IndexedStream<IndexedStreamType = Record<string, any>> {
+  id: string;
+  stream: Stream;
+}
+
 export interface GoogleUser<GoogleUserType = Record<string, any>> {
   id: string;
   name: string;

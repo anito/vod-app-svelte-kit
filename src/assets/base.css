@@ -1,5 +1,4 @@
 @import url(./fonts.css);
-@import url(./dark-theme-specials.css);
 /*
 -----------------------------------------------
 	vars – css custom-properties
@@ -146,6 +145,12 @@
   --text-grey: #a5a5a5;
   --text-light-grey: #c7c7c7;
   --sidebar-text: rgba(255, 255, 255, 0.75);
+
+  --mdc-theme-text-primary-on-background: rgba(255, 255, 255, 0.87);
+  --mdc-theme-text-secondary-on-background: rgba(255, 255, 255, 0.54);
+  --mdc-theme-text-hint-on-background: rgba(255, 255, 255, 0.38);
+  --mdc-theme-text-disabled-on-background: rgba(255, 255, 255, 0.38);
+  --mdc-theme-text-icon-on-background: rgba(255, 255, 255, 0.38);
 }
 .theme-default,
 .theme-default ::before,

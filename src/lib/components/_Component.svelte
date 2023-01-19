@@ -1,14 +1,18 @@
 <script lang="ts">
+  import { addClass } from '$lib/utils';
+
   export let extended = false;
   export let density = '' as 'sm' | 'md' | ' lg' | '';
   export let variant = 'primary' as 'primary' | 'secondary';
   export { className as class };
+  export { headerClassName as headerClass };
   export let transparent = false;
   export let headerHeight = '50px';
   export let contentBackgroundColor = 'inherit';
   export let borderShape = 'none' as 'none' | 'small' | 'medium' | 'large';
 
   let className = '';
+  let headerClassName = '';
 </script>
 
 <div
@@ -23,7 +27,7 @@
     class:extended
     class:transparent
   >
-    <div class="header">
+    <div use:addClass={'header'} class={headerClassName}>
       <slot name="header">You must provide a header</slot>
     </div>
     <div class="content {className}">

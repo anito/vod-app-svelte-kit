@@ -1,42 +1,54 @@
-<script>
+<script lang="ts">
+  import { getContext } from 'svelte';
   import Section from './Section.svelte';
   import { Component, Header } from '$lib/components';
+
+  const { getProgress }: any = getContext('progress');
+  const progress = getProgress();
+  $: progressbarWidth = $progress;
 </script>
 
 <Section>
-  <Component
-    density="sm"
-    variant="primary"
-    contentBackgroundColor="var(--surface)"
-    borderShape="medium"
-  >
-    <div slot="header">
-      <Header mdc h="5">ReadableStream - Loading Ressources as Blobs</Header>
-    </div>
-    <a
-      style="font-size: .8em; margin: 0 15px; line-height: 1em;"
-      href="https://stackblitz.com/edit/readablestream?file=src%2Froutes%2F%2Bpage.svelte"
-      target="_blank"
-      rel="noreferrer">For more details see source on Stackblitz</a
+  <div class="" style:--progressbar-w="{progressbarWidth}%">
+    <Component
+      density="sm"
+      variant="primary"
+      contentBackgroundColor="var(--surface)"
+      borderShape="medium"
+      headerClass="progressbar-anchor"
     >
-    <div class="blurb">
-      <div class="box one">
-        <slot name="one" />
+      <header class="header" slot="header">
+        <Header mdc h="5">ReadableStream - Loading Ressources as Blobs</Header>
+      </header>
+      <div class="subheader" style="font-size: .8em; margin: 20px 15px; line-height: 1em;">
+        <a
+          href="https://stackblitz.com/edit/readablestream?file=src%2Froutes%2F%2Bpage.svelte"
+          target="_blank"
+          rel="noreferrer">See also live example on Stackblitz</a
+        >
+        or view on
+        <a target="_blank" rel="noreferrer" href="https://github.com/anito/readablestream">GitHub</a
+        >
       </div>
+      <div class="blurb">
+        <div class="box one">
+          <slot name="one" />
+        </div>
 
-      <div class="box two">
-        <slot name="two" />
-      </div>
+        <div class="box two">
+          <slot name="two" />
+        </div>
 
-      <div class="box three">
-        <slot name="three" />
-      </div>
+        <div class="box three">
+          <slot name="three" />
+        </div>
 
-      <div class="box fore">
-        <slot name="fore" />
+        <div class="box fore">
+          <slot name="fore" />
+        </div>
       </div>
-    </div>
-  </Component>
+    </Component>
+  </div>
 </Section>
 
 <style>
@@ -103,6 +115,35 @@
   :global(p),
   :gloabl(a) {
     font-size: var(--h5);
+  }
+
+  :global(.progressbar-anchor) {
+    position: relative !important;
+  }
+  :global(.progressbar-anchor)::before,
+  :global(.progressbar-anchor)::after {
+    --progressbar-h: 3px;
+  }
+  :global(.progressbar-anchor)::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: var(--progressbar-h);
+    background: var(--primary);
+    z-index: 1;
+  }
+  :global(.progressbar-anchor)::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: var(--progressbar-w, 100%);
+    height: var(--progressbar-h);
+    background: var(--secondary);
+    transition: all ease-out 1s;
+    z-index: 2;
   }
 
   @media (min-width: 991px) {

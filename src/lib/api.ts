@@ -4,6 +4,8 @@ import { register } from './utils/reader';
 export const base = dev ? `https://vod.mbp` : `https://vod.webpremiere.de`;
 export const version = 'v1';
 
+const useBlob = true;
+
 async function send(atts: {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
   path: string;
@@ -13,14 +15,12 @@ async function send(atts: {
   const { method, path, token, data } = { ...atts };
   let url = path.startsWith('http') ? path : `${base}/${version}/${path}`;
 
-  if (browser && method === 'GET') {
-    const { start, store } = register({ url });
-    return start(token)
-      .stream()
-      .then(async (res: any) => {
-        const text = await res.blob.text();
-        return JSON.parse(text);
-      });
+  if (method === 'GET' && useBlob) {
+    const { start } = register({ url });
+    return start(token)?.then(async (res: any) => {
+      const text = await res.blob.text();
+      return JSON.parse(text);
+    });
   }
 
   const opts = {

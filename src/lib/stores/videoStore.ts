@@ -4,7 +4,7 @@ import { writable } from 'svelte/store';
 function createStore() {
   const { subscribe, update, set } = writable([] as Video[], () => {});
 
-  let findIndexById = (id: any, items: any[]) => {
+  let findIndexById = (id: string, items: Video[]) => {
     return items.findIndex((itm) => itm.id == id);
   };
 
@@ -17,13 +17,13 @@ function createStore() {
         }
         return items;
       }),
-    put: (val: { id: any }) =>
+    put: (val: Video) =>
       update((items) => {
         const index = findIndexById(val.id, items);
         return [...items.slice(0, index), { ...items[index], ...val }, ...items.slice(index + 1)];
       }),
-    del: (id: any) => update((items) => items.filter((itm: { id: any }) => itm.id !== id)),
-    update: (val: any) => update((items) => val),
+    del: (id: string) => update((items) => items.filter((itm: Video) => itm.id !== id)),
+    update: (val: Video[]) => update((items) => val),
     set
   };
 }

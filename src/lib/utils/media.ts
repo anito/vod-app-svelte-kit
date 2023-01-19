@@ -38,13 +38,13 @@ async function getMedia(
     url = cached = ((_urls = get(urls)) && _urls.has(id) && _urls.get(id)[stringified]) || false;
 
     if (!cached) {
-      console.log('CACHING MEDIA URL', id, _urls.get(id), 'params', params);
       url = await uri(id, token, type, params)
         .then((res) => {
           urls.add(res);
           return res['url'];
         })
         .catch((err) => log(err));
+      console.log('CACHING MEDIA URL', url);
     }
     if (url) return `${url}/?token=${token}`;
   }
