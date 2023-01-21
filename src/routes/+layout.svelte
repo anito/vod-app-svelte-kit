@@ -100,6 +100,7 @@
       derived(streams, ($streams, set) => {
         const res = $streams.reduce<number>((map, el) => {
           const { total, received } = el.stream;
+          console.log(total, received);
           const percent = received !== undefined && total !== undefined && (received * 100) / total;
           return percent ? Math.min(100, Math.max(0, map + percent)) : map;
         }, 0);
