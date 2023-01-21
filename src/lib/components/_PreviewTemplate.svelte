@@ -1,6 +1,9 @@
-<script>
+<script lang="ts">
   import IconButton, { Icon } from '@smui/icon-button';
 
+  export let showFileNames = false;
+  export let showFileProgress = false;
+  export let showFileSize = false;
   let poster = `https://via.placeholder.com/80x80.png?text=video`;
 </script>
 
@@ -14,12 +17,14 @@
       </IconButton>
     </span>
   </div>
-  <div class="hidden">
+  <div class="show-if" class:active={showFileNames}>
     <p class="name" data-dz-name />
     <strong class="error text-danger" data-dz-errormessage />
   </div>
-  <div class="hidden">
-    <p class="size" data-dz-size />
+  <div class="size show-if" class:active={showFileSize}>
+    <p class="file-size" data-dz-size />
+  </div>
+  <div class="progress-container show-if" class:active={showFileProgress}>
     <div
       class="progress progress-striped active"
       role="progressbar"
@@ -32,19 +37,70 @@
   </div>
 </div>
 
-<style>
+<style lang="scss">
   .file-row {
-    padding: 10px;
+    margin: 10px;
     position: relative;
     z-index: 1;
-  }
-  :global(.dz-error) {
-    background-color: #ff0000;
-  }
-  :global(.dz-button) {
-    position: absolute !important;
-    top: -12px;
-    right: -12px;
     display: flex;
+    height: var(--thumbnail-h);
+    :global(.dz-error) {
+      background-color: var(--error);
+    }
+    :global(.dz-button) {
+      position: absolute;
+      top: -24px;
+      right: -24px;
+    }
+    .show-if {
+      display: none;
+      &.active {
+        display: inline-block;
+      }
+      &.size {
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        align-self: center;
+        .file-size {
+          border-radius: 999px;
+          font-size: 0.6rem;
+          font-family: 'Fira Mono';
+          display: flex;
+          background-color: #fffd;
+          color: #222;
+          padding: 2px 5px;
+          line-height: 1em;
+          justify-content: center;
+          align-items: center;
+          max-width: 70%;
+          :global(strong) {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
+      }
+    }
+    .progress-container {
+      display: inline-block;
+      position: absolute;
+      z-index: 1;
+      bottom: 1px;
+      padding: 3px;
+      width: 100%;
+
+      .progress {
+        height: 2px;
+        background-color: #dddddd;
+
+        .progress-bar {
+          background-color: var(--primary);
+          height: 100%;
+          width: 0;
+        }
+      }
+    }
   }
 </style>

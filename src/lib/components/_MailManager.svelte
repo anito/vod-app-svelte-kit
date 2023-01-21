@@ -308,11 +308,15 @@
   async function deleteMail({ detail }: CustomEvent) {
     const id = detail.selection?.id;
     if (!id) return;
-    await api.del(`${activeListItem}/${id}`, { token: $session.user?.jwt }).then((res) => {
-      if (res?.success) {
-        $currentStore?.del(id);
-      }
-    });
+    await api
+      .del(`${activeListItem}/${id}?locale=${$session.locale}`, { token: $session.user?.jwt })
+      .then((res) => {
+        if (res?.success) {
+          $currentStore?.del(id);
+        }
+        configSnackbar(res.message);
+        snackbar?.forceOpen();
+      });
   }
 
   function refreshMailData() {
@@ -348,7 +352,7 @@
       });
     });
     let newTemplate = { name, slug, items };
-    const res = await api.post(`templates?locale=${$page.data.session.locale}`, {
+    const res = await api.post(`templates?locale=${$session.locale}`, {
       data: { ...newTemplate },
       token: $session.user?.jwt
     });
@@ -396,7 +400,7 @@
     });
 
     let newTemplate = { name, slug, items };
-    const res = await api.post(`templates?locale=${$page.data.session.locale}`, {
+    const res = await api.post(`templates?locale=${$session.locale}`, {
       data: { ...newTemplate },
       token: $session.user?.jwt
     });

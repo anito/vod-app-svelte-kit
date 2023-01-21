@@ -1,13 +1,17 @@
 <script lang="ts">
-  import { onMount, getContext } from 'svelte';
+  import { onMount, getContext, setContext } from 'svelte';
   import Uploader from './_Uploader.svelte';
   import type Snackbar from '@smui/snackbar';
   import { _ } from 'svelte-i18n';
+  import type { UploaderOptions } from '$lib/types';
+  import type { Dropzone } from '.';
+  import { each } from 'svelte/internal';
 
+  export let layoutProps = {};
   export { className as class };
   export let type = '';
   export let uid = '';
-  export let options = {
+  export let options: UploaderOptions = {
     path: '',
     uploadMultiple: false,
     parallelUploads: 1,
@@ -23,8 +27,9 @@
   let count = 0;
   let uploader: HTMLDivElement;
   let snackbar: Snackbar;
+  let dropzone: Dropzone;
 
-  $: fileType = (type === 'avatar' && 'image') || type;
+  $: fileType = type === 'avatar' ? 'image' : type;
   $: acceptedFiles = `${fileType}/*`;
   $: path = `${type.toLowerCase()}s`;
   $: options = { acceptedFiles, ...options, path };
@@ -46,21 +51,21 @@
     ++count;
   }
 
-  function onRemovedfile({ detail }: CustomEvent) {
+  function onRemovedfileHandler({ detail }: CustomEvent) {
     --count;
   }
 
-  function onSuccess(event: CustomEvent) {
+  function onSuccessHandler(event: CustomEvent) {
     if (options.uploadMultiple) return;
-    uploader.dispatchEvent(new CustomEvent('upload:success', event));
+    uploader?.dispatchEvent(new CustomEvent('upload:success', event));
   }
 
-  function onSuccessmultiple(event: CustomEvent) {
+  function onSuccessmultipleHandler(event: CustomEvent) {
     if (!options.uploadMultiple) return;
-    uploader.dispatchEvent(new CustomEvent('upload:successmultiple', event));
+    uploader?.dispatchEvent(new CustomEvent('upload:successmultiple', event));
   }
 
-  function onError({ detail }: CustomEvent) {
+  function onErrorHandler({ detail }: CustomEvent) {
     const message = detail.message;
     configSnackbar(message);
     snackbar?.forceOpen();
@@ -80,11 +85,13 @@
   </div>
   <div class="content-wrapper">
     <Uploader
-      on:Uploader:successmultiple={onSuccessmultiple}
-      on:Uploader:success={onSuccess}
-      on:Uploader:error={onError}
-      on:Uploader:addedfile={onAddedfile}
-      on:Uploader:removedfile={onRemovedfile}
+      on:uploader:successmultiple={onSuccessmultipleHandler}
+      on:uploader:success={onSuccessHandler}
+      on:uploader:error={onErrorHandler}
+      on:uploader:complete={() => console.log('Complete')}
+      on:uploader:processing={() => console.log('Processing')}
+      on:uploader:addedfile={onAddedfile}
+      on:uploader:removedfile={onRemovedfileHandler}
       {...options}
       {uid}
     />

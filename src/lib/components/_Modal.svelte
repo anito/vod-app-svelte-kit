@@ -50,17 +50,22 @@
   $: currentTransitionWindow = state.transitionWindow;
 
   const toVoid = () => {};
+  const toTrue = () => true;
+  const toFalse = () => false;
+  const doClose = { beforeClose: () => true };
 
   let onOpen = toVoid;
   let onClose = toVoid;
   let onOpened = toVoid;
   let onClosed = toVoid;
+  let beforeClose = toTrue;
+  // let beforeClose = toFalse;
 
   const open = (
     NewComponent: any,
     newProps = { layoutProps },
     options = {},
-    callback = { onOpen, onOpened, onClose, onClosed }
+    callback = { beforeClose, onOpen, onOpened, onClose, onClosed }
   ) => {
     _Component = NewComponent;
     layoutProps = { ...newProps.layoutProps } || {};
@@ -70,13 +75,21 @@
     onClose = callback.onClose || toVoid;
     onOpened = callback.onOpened || toVoid;
     onClosed = callback.onClosed || toVoid;
+    beforeClose = callback.beforeClose || toTrue;
   };
 
-  const close = (callback?: { onClose: () => void; onClosed: () => void } | undefined) => {
-    onClose = callback?.onClose || onClose;
-    onClosed = callback?.onClosed || onClosed;
-    _Component = null;
-    props = null;
+  const close = (
+    callback:
+      | { beforeClose: () => boolean; onClose?: () => void; onClosed?: () => void }
+      | undefined = { beforeClose }
+  ) => {
+    const canClose = typeof callback?.beforeClose === 'function' ? callback?.beforeClose() : true;
+    if (canClose) {
+      onClose = callback?.onClose || onClose;
+      onClosed = callback?.onClosed || onClosed;
+      _Component = null;
+      props = null;
+    }
   };
 
   const handleKeyup = (event: { key: string; preventDefault: () => void }) => {

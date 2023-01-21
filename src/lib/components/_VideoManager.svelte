@@ -25,7 +25,9 @@
   import { _ } from 'svelte-i18n';
   import type Snackbar from '@smui/snackbar';
   import type { Video } from '$lib/types';
+  import type { Dropzone } from '.';
 
+  const { getDropzone }: any = getContext('dropzone');
   const { open: open$editor, close: close$editor }: any = getContext('editor-modal');
   const { open: open$uploader, close: close$uploader }: any = getContext('default-modal');
   const { getSnackbar, configSnackbar }: any = getContext('snackbar');
@@ -61,7 +63,9 @@
     }
   });
 
-  let openUploader = () => {
+  const openUploader = () => {
+    let dropzone: Dropzone;
+    let completed = true;
     open$uploader(
       MediaUploader,
       {
@@ -75,7 +79,10 @@
           timeout: 3600 * 1000, // 60min
           maxFilesize: 1024 // Megabyte
         },
-        events: { 'upload:successmultiple': uploadSuccessHandler }
+        events: {
+          'upload:successmultiple': uploadSuccessHandler,
+          'upload:complete': () => (completed = true)
+        }
       },
       {
         closeOnOuterClick: false,
@@ -86,6 +93,21 @@
         }
       },
       {
+        onOpen: () => {
+          dropzone = getDropzone();
+        },
+        beforeClose: () => {
+          const queuedFiles = dropzone.getQueuedFiles();
+          const uploadingFiles = dropzone.getUploadingFiles();
+          if (queuedFiles.length || uploadingFiles.length) {
+            const confirmed = confirm($_('text.files-in-upload-queue'));
+            if (confirmed) {
+              dropzone.removeAllFiles(true);
+            }
+            return confirmed;
+          }
+          return true;
+        },
         onClosed: openEditor
       }
     );

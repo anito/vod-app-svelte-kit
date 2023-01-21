@@ -62,8 +62,9 @@
   import { svg_manifest } from '$lib/svg_manifest';
   import { _, locale } from 'svelte-i18n';
   import Dialog, { Title as DialogTitle, Content, Actions as DialogActions } from '@smui/dialog';
-  import type { IndexedStream, User } from '$lib/types';
+  import type { User } from '$lib/types';
   import type { NavigationTarget } from '@sveltejs/kit';
+  import type { Dropzone } from '$lib/components/Dropzone/type';
 
   const snackbarLifetime = 4000;
   const redirectDelay = 300;
@@ -88,6 +89,7 @@
   let mediaMode: string | undefined;
   let isMounted = false;
   let isPreferredDarkMode;
+  let dropzone: Dropzone;
 
   settings.subscribe((val) => {
     printDiff(val, { store: 'config' });
@@ -96,17 +98,20 @@
   setContext('progress', {
     getProgress: () =>
       derived(streams, ($streams, set) => {
-        const key = 'percent';
-        const unit = '%';
         set(
           $streams.reduce<number>((map, el) => {
             const { total, received } = el.stream;
-            const percent =
+            const minmax =
               received !== undefined && total !== undefined && (received * 100) / total;
+            const percent = minmax && Math.min(100, Math.max(0, minmax));
             return percent ? map + percent : map;
           }, 0)
         );
       })
+  });
+
+  setContext('dropzone', {
+    getDropzone: () => dropzone
   });
 
   setContext('fab', {
@@ -258,10 +263,11 @@
       loaderBackgroundOpacity = 0.45;
       loaderColor = 'var(--flash)';
       outerElement?.classList.remove('opacity-0');
-    }, 400);
+    });
   }
 
   function initListener() {
+    window.addEventListener('dropzone:initialized', dropzoneInitializedHandler);
     window.addEventListener('session:success', sessionSuccessHandler);
     window.addEventListener('session:error', sessionErrorHandler);
     window.addEventListener('session:stop', sessionStopHandler);
@@ -271,6 +277,10 @@
     window.addEventListener('video:delete', videoDeleteHandler);
     window.addEventListener('user:save', userSaveHandler);
     window.addEventListener('user:delete', userDeleteHandler);
+  }
+
+  function dropzoneInitializedHandler({ detail }: CustomEvent) {
+    dropzone = detail;
   }
 
   function initClasses() {
@@ -319,6 +329,7 @@
   }
 
   function removeListener() {
+    window.removeEventListener('dropzone:initialized', dropzoneInitializedHandler);
     window.removeEventListener('session:success', sessionSuccessHandler);
     window.removeEventListener('session:error', sessionErrorHandler);
     window.removeEventListener('session:stop', sessionStopHandler);
@@ -763,10 +774,7 @@
                 {/if}
                 <Item class="justify-start">
                   <Button
-                    href={`${$page.url.pathname}${buildSearchParams($page.url.searchParams, {
-                      addableKeys: [['modal', 'settings']],
-                      removableKeys: []
-                    })}`}
+                    href={`${$page.url.pathname}${buildSearchParams($page.url.searchParams, {})}`}
                     class="link-button"
                     ripple={false}
                   >
@@ -800,8 +808,7 @@
   on:SMUIDialog:closed={async () =>
     await goto(
       `${$page.url.pathname}${buildSearchParams($page.url.searchParams, {
-        removableKeys: ['modal', 'edit'],
-        addableKeys: []
+        removableKeys: ['modal', 'edit']
       })}`
     )}
 >
@@ -835,7 +842,6 @@
                             href={`${$page.url.pathname}${buildSearchParams(
                               $page.url.searchParams,
                               {
-                                removableKeys: [],
                                 addableKeys: [['edit', `${setting[0]}:${item[0]}`]]
                               }
                             )}`}>edit</a

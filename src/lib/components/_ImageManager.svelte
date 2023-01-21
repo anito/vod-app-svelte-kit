@@ -10,14 +10,18 @@
   import { fabs, urls, sitename, images, session } from '$lib/stores';
   import { _ } from 'svelte-i18n';
   import type Snackbar from '@smui/snackbar';
+  import type { Dropzone } from '.';
 
+  let snackbar: Snackbar;
+  let imagesList;
+
+  const { getDropzone }: any = getContext('dropzone');
   const { open: open$uploader, close: close$uploader }: any = getContext('default-modal');
   const { getSnackbar, configSnackbar }: any = getContext('snackbar');
   const { setFab }: any = getContext('fab');
 
-  let snackbar: Snackbar;
-  let imagesList;
-  let openUploader = () => {
+  const openUploader = () => {
+    let dropzone: Dropzone;
     open$uploader(
       MediaUploader,
       {
@@ -25,10 +29,12 @@
         type: 'image',
         options: {
           uploadMultiple: true,
-          parallelUploads: 12,
-          maxFiles: 12
+          parallelUploads: 20,
+          maxFiles: 20
         },
-        events: { 'upload:successmultiple': uploadSuccessHandler }
+        events: {
+          'upload:successmultiple': uploadSuccessHandler
+        }
       },
       {
         closeOnOuterClick: false,
@@ -36,6 +42,23 @@
         transitionWindowProps: {
           y: -200,
           duration: 500
+        }
+      },
+      {
+        onOpen: () => {
+          dropzone = getDropzone();
+        },
+        beforeClose: () => {
+          const queuedFiles = dropzone.getQueuedFiles();
+          const uploadingFiles = dropzone.getUploadingFiles();
+          if (queuedFiles.length || uploadingFiles.length) {
+            const confirmed = confirm($_('text.files-in-upload-queue'));
+            if (confirmed) {
+              dropzone.removeAllFiles(true);
+            }
+            return confirmed;
+          }
+          return true;
         }
       }
     );
@@ -49,7 +72,6 @@
   });
 
   function uploadSuccessHandler({ detail }: CustomEvent) {
-    console.log(detail);
     const { data, message, success }: any = { ...detail.responseText };
 
     configSnackbar(message);
@@ -58,22 +80,23 @@
     if (success) {
       images.add(data);
     }
-
     close$uploader();
   }
 
   async function deletePoster(event: CustomEvent) {
     const { image }: any = { ...event.detail };
     const id = image.id;
-    await api.del(`images/${image.id}`, { token: $session.user?.jwt }).then((res) => {
-      let message = res.message || res.data.message || res.statusText;
-      if (res?.success) {
-        urls.del(id);
-        images.del(id);
-      }
-      configSnackbar(message);
-      snackbar?.forceOpen();
-    });
+    await api
+      .del(`images/${image.id}?locale=${$page.data.session.locale}`, { token: $session.user?.jwt })
+      .then((res) => {
+        let message = res.message || res.data.message || res.statusText;
+        if (res?.success) {
+          urls.del(id);
+          images.del(id);
+        }
+        configSnackbar(message);
+        snackbar?.forceOpen();
+      });
   }
 </script>
 

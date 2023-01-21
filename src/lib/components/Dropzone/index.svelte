@@ -1,40 +1,72 @@
-<script>
-	// @ts-nocheck
+<script lang="ts">
+  import { onMount } from 'svelte';
+  import Dropzone from 'dropzone';
 
-	import { onMount } from 'svelte';
-	export let dropzoneEvents = {};
-	export let options = { previewTemplate: '<div/>' };
-	export let dropzoneClass = 'dropzone';
-	export let style = '';
-	export let hoveringClass = 'dropzone-hovering';
-	export let id = 'dropId';
-	export let autoDiscover = false;
+  export let dropzoneEvents = {};
+  export let options: {
+    previewTemplate?: string;
+    dictDefaultMessage?: string;
+    clickable?: boolean;
+  } = {};
+  export let style = '';
+  export let dropzoneClass = 'dropzone';
+  export let hoveringClass = 'dropzone-hovering';
+  export let id = 'dropId';
 
-	let DROPZONESSR;
+  onMount(() => {
+    const dropzoneElement = document.getElementById(id);
+    if (!options.previewTemplate) {
+      options.previewTemplate = '<div/>';
+    }
+    if (!options.dictDefaultMessage) {
+      options.dictDefaultMessage = '';
+    }
 
-	onMount(async () => {
-		const dropzone = await import('./dropzone.svelte');
-		DROPZONESSR = dropzone.default;
-	});
+    let svDropzone = new Dropzone(`#${id}`, {
+      ...options
+    });
+
+    svDropzone.emit('dropzone::init');
+    svDropzone.on('addedfile', () => {
+      dropzoneElement?.classList.remove(hoveringClass);
+    });
+    svDropzone.on('dragenter', () => {
+      dropzoneElement?.classList.toggle(hoveringClass);
+    });
+    svDropzone.on('dragleave', () => {
+      dropzoneElement?.classList.toggle(hoveringClass);
+    });
+    svDropzone.on('error', (file: Blob, errorMessage: any) => {
+      console.log('Error:', errorMessage);
+    });
+    Object.entries(dropzoneEvents).map(([eventKey, eventFunc]) => {
+      svDropzone.on(eventKey, eventFunc);
+    });
+
+    if (options.clickable !== false) {
+      dropzoneElement && (dropzoneElement.style.cursor = 'pointer');
+    }
+  });
 </script>
 
-<svelte:component
-	this={DROPZONESSR}
-	{dropzoneEvents}
-	{options}
-	{style}
-	{dropzoneClass}
-	{hoveringClass}
-	{autoDiscover}
-	{id}
->
-	<slot {id}>
-		<p class="dropzoneDefaultSentence">drop your file(s) here or click to add file</p>
-	</slot>
-</svelte:component>
+<div class={dropzoneClass} {style}>
+  <slot {id} />
+  <input hidden name="sites_data" type="file" />
+</div>
 
 <style>
-	p.dropzoneDefaultSentence {
-		font-size: 30px;
-	}
+  .dropzone {
+    position: relative;
+    z-index: 1;
+    height: 200px;
+    min-height: 200px;
+    display: flex;
+    align-items: flex-start;
+    transition: all 300ms ease-out;
+  }
+
+  .dropzone.dropzone-hovering {
+    border: 2px solid var(--primary);
+    background: rgba(255, 62, 0, 0.05);
+  }
 </style>

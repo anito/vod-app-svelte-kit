@@ -4,7 +4,7 @@
   import { goto } from '$app/navigation';
   import { onMount, getContext, setContext } from 'svelte';
   import { fly } from 'svelte/transition';
-  import { infos, fabs, session, users, videos, usersFoundation } from '$lib/stores';
+  import { infos, fabs, session, users, usersFoundation } from '$lib/stores';
   import Layout from './layout.svelte';
   import {
     Component,
@@ -42,7 +42,7 @@
   });
 
   const minSearchChars = 2;
-  const { open: open$editor, close: close$editor }: any = getContext('editor-modal');
+  const { open: open$editor }: any = getContext('editor-modal');
   const { open: open$default, close: close$default }: any = getContext('default-modal');
   const { getSnackbar, configSnackbar }: any = getContext('snackbar');
   const { getSegment }: any = getContext('segment');
@@ -141,7 +141,7 @@
   }
 
   async function generateToken(constrained?: boolean) {
-    const res = await api.post('tokens', {
+    const res = await api.post(`tokens?locale=${$page.data.session.locale}`, {
       data: { user_id: currentUser?.id, constrained },
       token: $session.user?.jwt
     });

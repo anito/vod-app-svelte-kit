@@ -18,7 +18,7 @@
       headerClass="progressbar-anchor"
     >
       <header class="header" slot="header">
-        <Header mdc h="5">ReadableStream - Loading Ressources as Blobs</Header>
+        <Header mdc h="5">Take control over the loading process with ReadableStream</Header>
       </header>
       <div class="subheader" style="font-size: .8em; margin: 20px 15px; line-height: 1em;">
         <a

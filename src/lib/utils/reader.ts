@@ -3,7 +3,6 @@ import { streams } from '$lib/stores';
 import { Blob as Buffer } from 'buffer';
 import type { Stream } from '$lib/types';
 import { browser } from '$app/environment';
-import type { BinaryLike } from 'svelte-kit-cookie-session/types';
 
 function createStore(id: string) {
   const defaults: Stream = {

@@ -1,4 +1,4 @@
-import { browser, dev } from '$app/environment';
+import { dev } from '$app/environment';
 import { register } from './utils/reader';
 
 export const base = dev ? `https://vod.mbp` : `https://vod.webpremiere.de`;

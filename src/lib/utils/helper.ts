@@ -71,7 +71,7 @@ export function processRedirect(url: URL, session: Session) {
 
 export function parseRedirect(search: URLSearchParams) {
   const removableKeys = ['token', 'redirect', 'sessionend'];
-  return buildSearchParams(search, { removableKeys, addableKeys: [] });
+  return buildSearchParams(search, { removableKeys });
 }
 
 export function windowSize() {
@@ -120,10 +120,11 @@ export let convert = (() => {
   };
 })();
 
-export const proxyEvent = function (eventType: string, detail?: any) {
+export const proxyEvent = function (eventType: string, detail?: any, target?: Window) {
   eventType = typeof eventType === 'string' ? eventType : detail?.eventType;
-  if (typeof window !== 'undefined') {
-    window.dispatchEvent(new CustomEvent(eventType, { detail }));
+  target = typeof window !== 'undefined' ? window : target;
+  if (target) {
+    target.dispatchEvent(new CustomEvent(eventType, { detail }));
   }
 };
 
@@ -256,15 +257,17 @@ export function dynamicUrl(id: any, url: URL) {
   const pathname = url?.pathname;
   const dynamicPathname = pathname.replace(/\/[0-9a-zA-Z_-]+$/, `/${id}`);
   const searchParams = buildSearchParams(url?.searchParams, {
-    removableKeys: ['mail_id'],
-    addableKeys: []
+    removableKeys: ['mail_id']
   });
   return `${dynamicPathname}${searchParams}`;
 }
 
 export function buildSearchParams(
   searchParams: string | URLSearchParams | string[][] | Record<string, string> | undefined,
-  options = { removableKeys: [] as string[] | never[], addableKeys: [] as string[][] | never[] }
+  options: {
+    removableKeys?: string[];
+    addableKeys?: string[] | string[][];
+  } = {}
 ) {
   const { removableKeys, addableKeys } = { ...options };
   const searchParam = new URLSearchParams(searchParams);

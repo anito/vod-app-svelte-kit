@@ -245,7 +245,9 @@
     "your-videos": "Deine Videos",
     "dark_mode": "Lichter aus",
     "type-min-char-count": "Für vollständige Suche mind. {count} Zeichen eingeben ",
-    "you-will-be-logged-out": "Aktuelle Sitzung beenden und als <strong>{name}</strong> anmelden?"
+    "you-will-be-logged-out": "Aktuelle Sitzung beenden und als <strong>{name}</strong> anmelden?",
+    "files-in-upload-queue": "Upload-Warteschlange ist nicht leer!",
+    "files-in-queue": "Es befinde{plural} sich noch {count} {files} in der Warteschlange!"
   },
   "summary": {
     "copy-link": {

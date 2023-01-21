@@ -1,25 +1,26 @@
 declare global {
   interface WindowEventMap {
-    'session:success': CustomEvent;
-    'session:error': CustomEvent;
-    'session:stop': CustomEvent;
-    'session:extend': CustomEvent;
-    'video:save': CustomEvent;
-    'video:add': CustomEvent;
-    'video:delete': CustomEvent;
-    'user:save': CustomEvent;
-    'user:delete': CustomEvent;
+    'dropzone:initialized': CustomEvent;
+    'info:user:activate': CustomEvent;
+    'info:token:generate': CustomEvent;
     'player:loadstart': CustomEvent;
     'player:emptied': CustomEvent;
     'player:canplay': CustomEvent;
     'player:aborted': CustomEvent;
     'player:loadeddata': CustomEvent;
     'player:rwd': CustomEvent;
+    'session:extend': CustomEvent;
+    'session:success': CustomEvent;
+    'session:error': CustomEvent;
+    'session:stop': CustomEvent;
+    'user:save': CustomEvent;
+    'user:delete': CustomEvent;
     'ui:mousemove': CustomEvent;
     'ui:touchstart': CustomEvent;
     'ui:pip': CustomEvent;
-    'info:user:activate': CustomEvent;
-    'info:token:generate': CustomEvent;
+    'video:save': CustomEvent;
+    'video:add': CustomEvent;
+    'video:delete': CustomEvent;
   }
 
   interface Number {
@@ -239,7 +240,17 @@ export interface Error<ErrorType = Record<string, any>> {
   message: string;
 }
 
-export interface Dropzone<DropzoneType = Record<string, any>> {
+export interface UploaderOptions<UploaderOptionsType = Recors<string, any>> {
+  path: string;
+  uploadMultiple: boolean;
+  parallelUploads: number;
+  maxFiles: number;
+  timeout: number;
+  maxFilesize: number;
+  acceptedFiles?: string;
+}
+
+export interface DropzoneOptions<DropzoneOptionsType = Record<string, any>> {
   processQueue?: any;
   removeFile?: any;
   url?: string | undefined;
@@ -256,6 +267,7 @@ export interface Dropzone<DropzoneType = Record<string, any>> {
   acceptedFiles?: any;
   maxFilesize?: number | undefined;
   previewTemplate?: any;
+  previewsContainer?: string;
   init?: () => void;
 }
 
