@@ -103,9 +103,9 @@
           if (received !== undefined && total !== undefined && total > 0) {
             let percent = (received * 100) / total;
             total && console.log('=', percent.minDigits(3), total, received);
-            return Math.min(100, Math.max(0, map + percent));
+            return map + percent;
           } else {
-            total && console.log('!', map, total, received);
+            total && console.log('!', map.minDigits(3), total, received);
             return map;
           }
         }, 0);
