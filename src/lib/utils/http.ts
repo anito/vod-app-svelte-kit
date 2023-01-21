@@ -1,4 +1,5 @@
 import { browser } from '$app/environment';
+import { register } from './reader';
 
 const credentials = browser ? 'include' : void 0;
 
@@ -46,4 +47,12 @@ export function put(endpoint: RequestInfo | URL, data = {}) {
   })
     .then(async (r) => await r.json())
     .catch((reason) => console.error(reason));
+}
+
+export function getBlob(url: string, token?: string) {
+  const { start } = register({ url });
+  return start(token)?.then(async (res: any) => {
+    const text = await res.blob.text();
+    return JSON.parse(text);
+  });
 }

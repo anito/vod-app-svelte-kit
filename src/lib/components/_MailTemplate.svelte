@@ -149,7 +149,7 @@
   .grid {
     grid-template-columns: 1fr;
     grid-gap: 0;
-    background-color: var(--back-grid-item);
+    background-color: var(--background-intense);
   }
   .grid-item {
     padding: 15px 0;

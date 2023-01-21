@@ -22,7 +22,7 @@
   style:--border-shape={`var(--mdc-shape-${borderShape})`}
 >
   <div
-    class="component flex flex-1 flex-col {density} {variant}"
+    class="container flex flex-1 flex-col {density} {variant}"
     class:density
     class:extended
     class:transparent
@@ -37,14 +37,14 @@
 </div>
 
 <style lang="scss">
-  .component {
+  .container {
     position: relative;
     height: 100%;
   }
-  .component .header > * {
+  .container .header > * {
     color: inherit;
   }
-  .component .header > * {
+  .container .header > * {
     font-size: inherit;
     line-height: 1em;
     display: block;
@@ -52,7 +52,7 @@
     white-space: nowrap;
     overflow: hidden;
   }
-  .component {
+  .container {
     .header {
       display: flex;
       position: absolute;
@@ -70,18 +70,18 @@
       color: var(--mdc-theme-on-secondary);
     }
   }
-  .component::before {
+  .container::before {
     content: '';
     display: flex;
     margin-top: 0px;
     position: relative;
     z-index: auto;
   }
-  :global(.transparent).component::before {
+  :global(.transparent).container::before {
     color: inherit;
     background-color: transparent;
   }
-  .component::before,
+  .container::before,
   .header {
     height: var(--height, 50px);
     min-height: var(--height, 50px);
@@ -90,13 +90,13 @@
     border-top-left-radius: var(--border-shape, 4px);
     border-top-right-radius: var(--border-shape, 4px);
   }
-  :global(.xs).component::before,
+  :global(.xs).container::before,
   :global(.xs) .header {
     height: var(--xs-h);
     min-height: var(--xs-h);
     font-size: 0.8em;
   }
-  :global(.sm).component::before,
+  :global(.sm).container::before,
   :global(.sm) .header {
     height: var(--sm-h);
     min-height: var(--sm-h);
@@ -104,28 +104,28 @@
     font-size: 1.3em;
     width: 100%;
   }
-  :global(.md).component::before,
+  :global(.md).container::before,
   :global(.md) .header {
     height: var(--md-h);
     min-height: var(--md-h);
     padding: 0 25px;
     font-size: 1.6em;
   }
-  :global(.lg).component::before,
+  :global(.lg).container::before,
   :global(.lg) .header {
     height: var(--lg-h);
     min-height: var(--lg-h);
     padding: 0 25px;
     font-size: 2em;
   }
-  :global(.xl).component::before,
+  :global(.xl).container::before,
   :global(.xl) .header {
     height: var(--xl-h);
     min-height: var(--xl-h);
     padding: 0 25px;
     font-size: 3em;
   }
-  .component .content {
+  .container .content {
     background-color: var(--content-background-color);
     height: 100%;
     z-index: auto;
@@ -134,11 +134,11 @@
     border-bottom-right-radius: var(--border-shape, 4px);
     border-bottom-left-radius: var(--border-shape, 4px);
   }
-  .component.extended .content {
+  .container.extended .content {
     padding: 60px;
   }
   @media (min-width: 640px) {
-    .component .header > :global(*) {
+    .container .header > :global(*) {
       display: inline;
     }
   }

@@ -7,7 +7,7 @@
   import { infos, fabs, session, users, usersFoundation } from '$lib/stores';
   import Layout from './layout.svelte';
   import {
-    Component,
+    Container,
     InfoChips,
     Legal,
     MediaUploader,
@@ -29,6 +29,7 @@
   import type { LayoutData } from './$types';
   import type { Issue, User } from '$lib/types';
   import type Snackbar from '@smui/snackbar';
+  import type Dropzone from '$lib/components/Dropzone/index.svelte';
 
   async function searchBy(key: any, val: any) {
     return await api
@@ -42,6 +43,7 @@
   });
 
   const minSearchChars = 2;
+  const { getDropzone }: any = getContext('dropzone');
   const { open: open$editor }: any = getContext('editor-modal');
   const { open: open$default, close: close$default }: any = getContext('default-modal');
   const { getSnackbar, configSnackbar }: any = getContext('snackbar');
@@ -269,6 +271,8 @@
   }
 
   let openUploader = () => {
+    let dropzone: Dropzone;
+    let completed = true;
     open$default(
       MediaUploader,
       {
@@ -277,12 +281,15 @@
         options: {
           // acceptedFiles: '.mov .mp4 .m4a .m4v .3gp .3g2 .webm',
           uploadMultiple: true,
-          parallelUploads: 5,
-          maxFiles: 5,
+          parallelUploads: 1,
+          maxFiles: 1,
           timeout: 3600 * 1000, // 60min
           maxFilesize: 1024 // Megabyte
         },
-        events: { 'upload:successmultiple': uploadSuccessHandler }
+        events: {
+          'upload:successmultiple': uploadSuccessHandler,
+          'upload:complete': () => (completed = true)
+        }
       },
       {
         closeOnOuterClick: false,
@@ -292,7 +299,24 @@
           duration: 500
         }
       },
-      { onClosed: openEditor }
+      {
+        onOpen: () => {
+          dropzone = getDropzone();
+        },
+        beforeClose: () => {
+          const queuedFiles = dropzone.getQueuedFiles();
+          const uploadingFiles = dropzone.getUploadingFiles();
+          if (queuedFiles.length || uploadingFiles.length) {
+            const confirmed = confirm($_('text.files-in-upload-queue'));
+            if (confirmed) {
+              dropzone.removeAllFiles(true);
+            }
+            return confirmed;
+          }
+          return true;
+        },
+        onClosed: openEditor
+      }
     );
   };
 
@@ -343,7 +367,7 @@
   </div>
   <slot />
   <div class="sidebar flex-1" slot="side" class:deep-search={isDeepSearch}>
-    <Component transparent headerHeight="76px">
+    <Container transparent headerHeight="76px">
       <div slot="header">
         <Textfield class="search-for-item" bind:value={search} label={$_('text.search-user')}>
           <Icon
@@ -389,7 +413,7 @@
           {/if}
         {/if}
       </List>
-    </Component>
+    </Container>
   </div>
   <div slot="ad">
     <div class="m-auto ml-0"><Legal /></div>
@@ -682,6 +706,16 @@
 {/if}
 
 <style>
+  .sidebar {
+    background: var(--background-intense);
+    background: linear-gradient(
+      90deg,
+      var(--background) 0%,
+      var(--background) 25%,
+      var(--background-intense) 25%,
+      var(--background-intense) 100%
+    );
+  }
   .fab {
     position: absolute;
     z-index: 999;
@@ -719,7 +753,14 @@
     z-index: 1;
     width: 100%;
     border-bottom: 1px solid var(--primary);
-    background-color: var(--background);
+    background: var(--background-intense);
+    background: linear-gradient(
+      90deg,
+      var(--background) 0%,
+      var(--background) 25%,
+      var(--background-intense) 25%,
+      var(--background-intense) 100%
+    );
   }
   :global(.users-list > li:nth-child(2)) {
     margin-top: 72px;

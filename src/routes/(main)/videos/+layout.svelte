@@ -10,7 +10,7 @@
     Legal,
     PageBar,
     SimpleVideoCard,
-    Component,
+    Container,
     Paginator,
     Header,
     FlexContainer
@@ -65,7 +65,7 @@
   </div>
   <slot />
   <div class="sidebar flex-1" slot="side">
-    <Component transparent headerHeight="76px">
+    <Container transparent headerHeight="76px">
       <div slot="header">
         <Textfield class="search-for-item" bind:value={search} label={$_('text.search-video')}>
           <Icon
@@ -104,7 +104,7 @@
           {$_('text.no-videos')}
         </FlexContainer>
       {/if}
-    </Component>
+    </Container>
   </div>
   <div slot="ad"><Legal /></div>
   <div slot="footer" class="flex justify-between">

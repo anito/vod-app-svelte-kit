@@ -5,7 +5,7 @@
   import { session, sitename } from '$lib/stores';
   import { ADMIN, SUPERUSER } from '$lib/utils';
   import Button, { Group, Label, Icon } from '@smui/button';
-  import { VideoManager, ImageManager, Component } from '$lib/components';
+  import { VideoManager, ImageManager, Container } from '$lib/components';
   import { Header } from '$lib/components';
   import { _ } from 'svelte-i18n';
 
@@ -63,7 +63,7 @@
     </div>
   </div>
 {:else}
-  <Component density="sm" class="flex">
+  <Container density="sm" class="flex">
     <div slot="header">
       <div class="grid grid-cols-2">
         <span class="ml-2">
@@ -92,7 +92,7 @@
           </div>
         </div>
       </div>
-    </div></Component
+    </div></Container
   >
 {/if}
 
@@ -116,7 +116,7 @@
     width: var(--page-w);
   }
   .grid-item {
-    background: var(--back-grid-item);
+    background: var(--background-intense);
   }
   .toolbar {
     grid-area: toolbar;

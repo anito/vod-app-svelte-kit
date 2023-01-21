@@ -17,7 +17,7 @@ $height: var(--height, 50px);
   }
   &.search-for-item {
     @include shape-radius(0);
-    @include fill-color(var(--back-grid-item));
+    @include fill-color(var(--background-intense));
     height: $height;
     width: 100%;
     display: flex;

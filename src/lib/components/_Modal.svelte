@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount, setContext } from 'svelte';
   import { fade } from 'svelte/transition';
-  import { Component, Header } from '$lib/components';
+  import { Container, Header } from '$lib/components';
   import { _ } from 'svelte-i18n';
 
   export let key = 'default-modal';
@@ -31,7 +31,7 @@
   };
   let state = { ...defaultState };
 
-  let _Component: any = null;
+  let HostedComponent: any = null;
   let props: any = null;
   let layoutProps: any = null;
 
@@ -67,7 +67,7 @@
     options = {},
     callback = { beforeClose, onOpen, onOpened, onClose, onClosed }
   ) => {
-    _Component = NewComponent;
+    HostedComponent = NewComponent;
     layoutProps = { ...newProps.layoutProps } || {};
     props = { ...newProps };
     state = { ...defaultState, ...options };
@@ -87,13 +87,13 @@
     if (canClose) {
       onClose = callback?.onClose || onClose;
       onClosed = callback?.onClosed || onClosed;
-      _Component = null;
+      HostedComponent = null;
       props = null;
     }
   };
 
   const handleKeyup = (event: { key: string; preventDefault: () => void }) => {
-    if (state.closeOnEsc && _Component && event.key === 'Escape') {
+    if (state.closeOnEsc && HostedComponent && event.key === 'Escape') {
       event.preventDefault();
       close();
     }
@@ -133,7 +133,7 @@
 
 <svelte:window on:keyup={handleKeyup} />
 
-{#if _Component}
+{#if HostedComponent}
   <div
     class="bg"
     on:keydown={() => {}}
@@ -153,16 +153,16 @@
         style={cssWindow}
       >
         {#if state.closeButton}<button on:click={handleClose} class="button-close" />{/if}
-        <Component density="sm" borderShape="medium">
+        <Container density="sm" borderShape="medium">
           <div slot="header">
             <Header mdc h="5" style="text-transform: uppercase">
               {typeof header === 'string' ? header : translateHeader()}
             </Header>
           </div>
           <div class="content" style={cssContent}>
-            <svelte:component this={_Component} {...props} />
+            <svelte:component this={HostedComponent} {...props} />
           </div>
-        </Component>
+        </Container>
       </div>
     </div>
   </div>
@@ -201,8 +201,7 @@
     position: relative;
     padding: 1rem;
     max-height: calc(100vh - 16rem);
-    background-color: var(--back-grid-item);
-    overflow: auto;
+    background-color: var(--background-intense);
     border-bottom-right-radius: var(--border-radius, 4px);
     border-bottom-left-radius: var(--border-radius, 4px);
   }

@@ -224,7 +224,7 @@
     height: var(--height);
     left: 0;
     bottom: 0;
-    background: var(--back-grid-item);
+    background: var(--background-intense);
   }
   .button,
   .button:focus {

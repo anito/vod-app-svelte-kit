@@ -102,18 +102,15 @@
           let { total, received } = el.stream;
           if (received !== undefined && total !== undefined && total > 0) {
             let percent = (received * 100) / total;
+            let maxmin = Math.min(100, Math.max(0, map + percent));
             total &&
-              console.log(
-                '=',
-                Number((map + percent).toFixed(2)).minimumIntegerDigits(3),
-                total,
-                received
-              );
-            return Math.min(100, Math.max(0, map + percent));
+              console.log('=', Number(maxmin.toFixed(2)).minimumIntegerDigits(3), total, received);
+            return maxmin;
           } else {
+            let maxmin = Math.min(100, Math.max(0, map));
             total &&
-              console.log('!', Number(map.toFixed(2)).minimumIntegerDigits(3), total, received);
-            return map;
+              console.log('!', Number(maxmin.toFixed(2)).minimumIntegerDigits(3), total, received);
+            return maxmin;
           }
         }, 0);
         set(res);

@@ -25,7 +25,7 @@
   import { _ } from 'svelte-i18n';
   import type Snackbar from '@smui/snackbar';
   import type { Video } from '$lib/types';
-  import type { Dropzone } from '.';
+  import type Dropzone from '$lib/components/Dropzone/index.svelte';
 
   const { getDropzone }: any = getContext('dropzone');
   const { open: open$editor, close: close$editor }: any = getContext('editor-modal');
@@ -74,8 +74,8 @@
         options: {
           // acceptedFiles: '.mov .mp4 .m4a .m4v .3gp .3g2 .webm',
           uploadMultiple: true,
-          parallelUploads: 5,
-          maxFiles: 5,
+          parallelUploads: 1,
+          maxFiles: 1,
           timeout: 3600 * 1000, // 60min
           maxFilesize: 1024 // Megabyte
         },

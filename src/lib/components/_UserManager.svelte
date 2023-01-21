@@ -25,7 +25,7 @@
   import { Anchor } from '@smui/menu-surface';
   import List, { Item, Separator, Text } from '@smui/list';
   import {
-    Component,
+    Container,
     InfoChips,
     TokenInfo,
     MediaUploader,
@@ -397,7 +397,7 @@
 <div class="main-grid">
   {#if $session.user}
     <div class="grid-item user" style="height: 100%;">
-      <Component density="sm" extended variant="primary">
+      <Container density="sm" extended variant="primary">
         <div slot="header">
           <Header mdc h="5" style="padding-right: 12rem;">
             {#if selectedMode === ADD}
@@ -432,7 +432,7 @@
                     user={currentUser}
                     borderSize="4"
                     borderColor="--primary"
-                    extendedBorderColor="--back-grid-item"
+                    extendedBorderColor="--background-intense"
                     extendedBorderSize="6"
                     badge={{
                       icon: hasCurrentPrivileges ? 'admin_panel_settings' : '',
@@ -782,7 +782,7 @@
             </div>
           {/if}
         </div>
-      </Component>
+      </Container>
     </div>
   {:else}
     <FlexContainer style="grid-area: one;">
@@ -810,7 +810,7 @@
     flex: 1;
   }
   .grid-item {
-    background: var(--back-grid-item);
+    background: var(--background-intense);
   }
   .user {
     grid-area: one;

@@ -71,7 +71,7 @@
   --back-white: #fff;
   --back-dark: #868585;
   --back-api: #eff8ff;
-  --back-grid-item: #eeeeee;
+  --background-intense: #eeeeee;
   --second-unused: #676778;
   --alt: #787867;
   --flash: #40b3ff;
@@ -99,7 +99,7 @@
     --back-white: #fff;
     --back-dark: #868585;
     --back-api: #eff8ff;
-    --back-grid-item: #222222;
+    --background-intense: #222222;
     --second-unused: #676778;
     --alt: #787867;
     --flash: #40b3ff;
@@ -127,7 +127,7 @@
   --back-white: #fff;
   --back-dark: #868585;
   --back-api: #eff8ff;
-  --back-grid-item: #222222;
+  --background-intense: #222222;
   --second-unused: #676778;
   --alt: #787867;
   --flash: #40b3ff;
@@ -205,7 +205,7 @@
   --drp-theme-border-color: inherit;
   --drp-theme-border-radius: 0;
   --drp-theme-label-color: var(--on-surface);
-  --drp-theme-label-background: var(--back-grid-item);
+  --drp-theme-label-background: var(--background-intense);
   --drp-theme-font: var(--font);
 }
 /*	typo vars */

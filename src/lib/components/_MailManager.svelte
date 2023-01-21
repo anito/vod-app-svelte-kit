@@ -806,7 +806,7 @@
     overflow: auto;
   }
   .grid-item {
-    background: var(--back-grid-item);
+    background: var(--background-intense);
     height: 100%;
   }
   :global(.mailbox-list:not([class*='non-interactive']) .edit) {

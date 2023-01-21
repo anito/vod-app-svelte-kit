@@ -13,7 +13,7 @@
     SimpleVideoCard,
     DateRangePicker,
     Header,
-    Component,
+    Container,
     VideoEditorList,
     Paginator,
     FlexContainer
@@ -360,7 +360,7 @@
     class:no-user-selected={!currentUser}
     class:no-videos={!userVideos.length || hasCurrentPrivileges}
   >
-    <Component density="sm" variant="primary">
+    <Container density="sm" variant="primary">
       <div slot="header">
         <Header mdc h="5">
           <div class="flex">
@@ -452,10 +452,10 @@
           {$_('text.empty-user-selection')}
         </FlexContainer>
       {/if}
-    </Component>
+    </Container>
   </div>
   <div class="grid-item videos" class:no-videos={!noneUserVideos?.length}>
-    <Component density="sm" variant="primary">
+    <Container density="sm" variant="primary">
       <div slot="header">
         <Header mdc h="5">
           <div class="uppercase" style="font-weight: 400; text-align: right;">
@@ -517,11 +517,11 @@
           </li>
         {/if}
       </List>
-    </Component>
+    </Container>
   </div>
   {#if isopen}
     <div in:fly={{ opacity: 0 }} out:fly={{ opacity: 0 }} class="grid-item time">
-      <Component density="sm">
+      <Container density="sm">
         <div slot="header">
           <div>
             <Header mdc h="5">{readout}</Header>
@@ -558,7 +558,7 @@
             actionBtnClass="picker-btn mdc-button mdc-ripple-upgraded mdc-button--unelevated"
           />
         {/if}
-      </Component>
+      </Container>
     </div>
   {/if}
 </div>
@@ -649,7 +649,7 @@
     overflow: auto;
   }
   .grid-item {
-    background: var(--back-grid-item);
+    background: var(--background-intense);
   }
   .user-videos {
     grid-area: one;

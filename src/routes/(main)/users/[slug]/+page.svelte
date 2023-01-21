@@ -191,7 +191,7 @@
     align-items: initial;
   }
   .grid-item {
-    background: var(--back-grid-item);
+    background: var(--background-intense);
     padding-left: 0.4rem;
   }
   .toolbar {

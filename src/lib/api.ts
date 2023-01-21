@@ -1,4 +1,5 @@
 import { browser, dev } from '$app/environment';
+import { getBlob } from './utils';
 import { register } from './utils/reader';
 
 export const base = dev ? `https://vod.mbp` : `https://vod.webpremiere.de`;
@@ -13,14 +14,10 @@ async function send(atts: {
   const { method, path, token, data } = { ...atts };
   let url = path.startsWith('http') ? path : `${base}/${version}/${path}`;
 
-  const useBlob = method === 'GET' && browser;
+  const useBlob = method === 'GET' && browser && true;
 
   if (useBlob) {
-    const { start } = register({ url });
-    return start(token)?.then(async (res: any) => {
-      const text = await res.blob.text();
-      return JSON.parse(text);
-    });
+    getBlob(url, token);
   }
 
   const opts = {

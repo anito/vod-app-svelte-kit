@@ -3,7 +3,7 @@ export { default as Breadcrumb } from './_Breadcrumb.svelte';
 export { default as Badge } from './_Badge.svelte';
 export { default as BadgeGroup } from './_BadgeGroup.svelte';
 export { default as Blurb } from './_Blurb.svelte';
-export { default as Component } from './_Component.svelte';
+export { default as Container } from './_Container.svelte';
 export { default as Dot } from './_Dot.svelte';
 export { default as FacebookLoginButton } from './_FacebookLoginButton.svelte';
 export { default as GoogleLoginButton } from './_GoogleLoginButton.svelte';

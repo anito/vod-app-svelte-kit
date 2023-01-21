@@ -2,7 +2,7 @@
   // @ts-nocheck
 
   import { onMount } from 'svelte';
-  import { Component } from '$lib/components';
+  import { Container } from '$lib/components';
   import { Header } from '$lib/components';
   import { sitename } from '$lib/stores';
 
@@ -13,7 +13,7 @@
   <title>{$sitename} | Privacy Policy</title>
 </svelte:head>
 
-<Component density="sm" extended>
+<Container density="sm" extended>
   <div slot="header" class="">
     <Header>Privacy Policy</Header>
   </div>
@@ -82,7 +82,7 @@
       frequency and duration of any such suspension or restriction.
     </p>
   </div>
-</Component>
+</Container>
 
 <style>
 </style>

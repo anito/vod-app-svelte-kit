@@ -26,7 +26,7 @@
     user-select: none;
     border-radius: 50%;
     justify-content: center;
-    box-shadow: 0px 0px 0px 4px var(--primary), 0px 0px 0px 10px var(--back-grid-item);
+    box-shadow: 0px 0px 0px 4px var(--primary), 0px 0px 0px 10px var(--background-intense);
     right: 40px;
     background-color: var(--background);
     z-index: 1;

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { getContext } from 'svelte';
   import Section from './Section.svelte';
-  import { Component, Header } from '$lib/components';
+  import { Container, Header } from '$lib/components';
 
   const { getProgress }: any = getContext('progress');
   const progress = getProgress();
@@ -10,7 +10,7 @@
 
 <Section>
   <div class="" style:--progressbar-w="{progressbarWidth}%">
-    <Component
+    <Container
       density="sm"
       variant="primary"
       contentBackgroundColor="var(--surface)"
@@ -47,7 +47,7 @@
           <slot name="fore" />
         </div>
       </div>
-    </Component>
+    </Container>
   </div>
 </Section>
 

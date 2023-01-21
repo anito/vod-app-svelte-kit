@@ -26,7 +26,7 @@
 <style>
   .grid-item {
     display: flex;
-    background: var(--back-grid-item);
+    background: var(--background-intense);
     position: relative;
     align-self: normal;
   }

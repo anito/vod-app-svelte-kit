@@ -51,7 +51,7 @@ import {
 import { getFragment, afterOrBeforeNavigation } from './navigation';
 import { getExt, getMediaAvatar, getMediaImage, getMediaVideo } from './media';
 import { localeFormat } from './locale-format';
-import { get, post, put, del } from './http';
+import { get, post, put, del, getBlob } from './http';
 import { getAuxSession } from './auxSession';
 import { posterCreatedHandler, posterSelectedHandler, posterRemoveHandler } from './video';
 import read from './reader';
@@ -69,6 +69,7 @@ export {
   equals,
   formatter,
   get,
+  getBlob,
   getExt,
   getAuxSession,
   getFragment,
