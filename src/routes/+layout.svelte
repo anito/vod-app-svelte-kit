@@ -98,15 +98,13 @@
   setContext('progress', {
     getProgress: () =>
       derived(streams, ($streams, set) => {
-        set(
-          $streams.reduce<number>((map, el) => {
-            const { total, received } = el.stream;
-            const minmax =
-              received !== undefined && total !== undefined && (received * 100) / total;
-            const percent = minmax && Math.min(100, Math.max(0, minmax));
-            return percent ? map + percent : map;
-          }, 0)
-        );
+        const res = $streams.reduce<number>((map, el) => {
+          const { total, received } = el.stream;
+          const percent = received !== undefined && total !== undefined && (received * 100) / total;
+          return percent ? Math.min(100, Math.max(0, map + percent)) : map;
+        }, 0);
+        console.log(res);
+        set(res);
       })
   });
 
