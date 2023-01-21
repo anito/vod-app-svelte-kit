@@ -102,7 +102,7 @@
           let { total, received } = el.stream;
           if (received !== undefined && total !== undefined && total > 0) {
             let percent = (received * 100) / total;
-            total && console.log('=', percent.minDigits(3), total, received);
+            total && console.log('=', (map + percent).minDigits(3), total, received);
             return map + percent;
           } else {
             total && console.log('!', map.minDigits(3), total, received);
