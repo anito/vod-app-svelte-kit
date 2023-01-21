@@ -65,7 +65,6 @@
   import type { User } from '$lib/types';
   import type { NavigationTarget } from '@sveltejs/kit';
   import type { Dropzone } from '$lib/components/Dropzone/type';
-  import { browser } from '$app/environment';
 
   const snackbarLifetime = 4000;
   const redirectDelay = 300;
@@ -101,15 +100,15 @@
       derived(streams, ($streams, set) => {
         const res = $streams.reduce<number>((map, el) => {
           let { total, received } = el.stream;
-          console.log(total, received, browser);
           if (received !== undefined && total !== undefined && total > 0) {
+            total && console.log('=', map, total, received);
             let percent = (received * 100) / total;
             return Math.min(100, Math.max(0, map + percent));
           } else {
+            total && console.log('!', map, total, received);
             return map;
           }
         }, 0);
-        console.log(res);
         set(res);
       })
   });
