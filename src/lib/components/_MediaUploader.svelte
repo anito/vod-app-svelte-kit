@@ -7,7 +7,6 @@
   import type { Dropzone } from '.';
   import { each } from 'svelte/internal';
 
-  export let layoutProps = {};
   export { className as class };
   export let type = '';
   export let uid = '';

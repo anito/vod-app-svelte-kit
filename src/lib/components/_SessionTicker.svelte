@@ -43,9 +43,9 @@
     }
     fails = Fails;
     tt = ms / 1000;
-    sec = Math.floor(tt % 60).minDigits(2);
-    min = Math.floor((tt / 60) % 60).minDigits(2);
-    hrs = Math.floor(tt / 3600).minDigits(2);
+    sec = Math.floor(tt % 60).minimumIntegerDigits(2);
+    min = Math.floor((tt / 60) % 60).minimumIntegerDigits(2);
+    hrs = Math.floor(tt / 3600).minimumIntegerDigits(2);
     return (last = `${hrs}:${min}:${sec}`);
   }
 

@@ -30,7 +30,8 @@ declare global {
      * Default length is 2
      * @param minimumIntegerDigits
      */
-    minDigits(minimumIntegerDigits?: number): string;
+    minimumIntegerDigits(minimumIntegerDigits?: number): string;
+    minimumFractionDigits(minimumFractionDigits?: number): string;
   }
 
   interface Array {

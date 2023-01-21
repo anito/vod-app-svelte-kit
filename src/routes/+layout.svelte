@@ -102,10 +102,17 @@
           let { total, received } = el.stream;
           if (received !== undefined && total !== undefined && total > 0) {
             let percent = (received * 100) / total;
-            total && console.log('=', (map + percent).minDigits(3), total, received);
-            return map + percent;
+            total &&
+              console.log(
+                '=',
+                Number((map + percent).toFixed(2)).minimumIntegerDigits(3),
+                total,
+                received
+              );
+            return Math.min(100, Math.max(0, map + percent));
           } else {
-            total && console.log('!', map.minDigits(3), total, received);
+            total &&
+              console.log('!', Number(map.toFixed(2)).minimumIntegerDigits(3), total, received);
             return map;
           }
         }, 0);
@@ -326,8 +333,8 @@
 
   function displayRemainingTime(timestamp: number) {
     const now = Date.now();
-    const sec = Math.floor(((timestamp - now) / 1000) % 60).minDigits(2);
-    const min = Math.floor((timestamp - now) / (1000 * 60)).minDigits(2);
+    const sec = Math.floor(((timestamp - now) / 1000) % 60).minimumIntegerDigits(2);
+    const min = Math.floor((timestamp - now) / (1000 * 60)).minimumIntegerDigits(2);
     return `${min}:${sec}`;
   }
 

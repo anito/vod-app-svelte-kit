@@ -327,9 +327,15 @@ Array.prototype.unique = function () {
   return this.filter((val, index, self) => self.indexOf(index) != val);
 };
 
-Number.prototype.minDigits = function (minimumIntegerDigits = 2) {
+Number.prototype.minimumIntegerDigits = function (minimumIntegerDigits = 2) {
   return this.toLocaleString('en-US', {
     minimumIntegerDigits
+  });
+};
+
+Number.prototype.minimumFractionDigits = function (minimumFractionDigits = 2) {
+  return this.toLocaleString('en-US', {
+    minimumFractionDigits
   });
 };
 
