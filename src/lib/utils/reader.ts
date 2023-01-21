@@ -32,6 +32,7 @@ function bodyReader(store: {
   let contentLength: number;
   const getPercent = () => {
     if (contentLength) return Math.floor((received * 100) / contentLength);
+    else 0;
   };
   const getStatus = () => {
     const percent = getPercent();
@@ -72,7 +73,6 @@ function bodyReader(store: {
           reader?.closed.then(() => (closed = true));
 
           contentLength = parseInt(res.headers.get('content-length') || '0');
-          // console.log(res.headers.forEach((v, k) => console.log(k, v)));
           store.set({ total: contentLength, controller, reader });
 
           return pump();
