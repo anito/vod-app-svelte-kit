@@ -29,7 +29,7 @@ function bodyReader(store: {
   let reader: ReadableStreamDefaultReader<any> | undefined;
   let closed = false;
   let received = 0;
-  let contentLength = 0;
+  let contentLength: number;
   const getPercent = () => {
     if (contentLength) return Math.floor((received * 100) / contentLength);
   };
