@@ -99,10 +99,15 @@
     getProgress: () =>
       derived(streams, ($streams, set) => {
         const res = $streams.reduce<number>((map, el) => {
-          const { total, received } = el.stream;
+          let { total, received } = el.stream;
           console.log(total, received);
-          const percent = received !== undefined && total !== undefined && (received * 100) / total;
-          return percent ? Math.min(100, Math.max(0, map + percent)) : map;
+          if (received !== undefined && total !== undefined) {
+            total = total < received ? received : total;
+            let percent = (received * 100) / total;
+            return Math.min(100, Math.max(0, map + percent));
+          } else {
+            return map;
+          }
         }, 0);
         console.log(res);
         set(res);
