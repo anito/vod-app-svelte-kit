@@ -101,8 +101,8 @@
         const res = $streams.reduce<number>((map, el) => {
           let { total, received } = el.stream;
           if (received !== undefined && total !== undefined && total > 0) {
-            total && console.log('=', map, total, received);
             let percent = (received * 100) / total;
+            total && console.log('=', percent.minDigits(3), total, received);
             return Math.min(100, Math.max(0, map + percent));
           } else {
             total && console.log('!', map, total, received);

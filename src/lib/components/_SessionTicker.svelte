@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import './_chip.scss';
   import { onMount } from 'svelte';
   import Chip, { Set, LeadingIcon, Text } from '@smui/chips';
@@ -12,29 +12,11 @@
 
   const Fails = 2;
 
-  /**
-   * @type {string}
-   */
   let className = '';
-  /**
-   * @type {string}
-   */
-  let last;
-  /**
-   * @type {ReturnType<typeof setTimeout>}
-   */
-  let timeoutId;
-  /**
-   * @type {number}
-   */
+  let last: string;
+  let timeoutId: string | number | NodeJS.Timeout | undefined;
   let fails = Fails;
-  /**
-   * @type {boolean}
-   */
   let forced = false;
-  /**
-   * @type {number}
-   */
   let fadeoutTimeMs = 2000;
 
   $: chipClassName = $ticker / (60 * 1000) <= leadTime ? signalType : '';
@@ -54,12 +36,7 @@
     };
   });
 
-  /**
-   *
-   * @param {number} ms
-   * @returns {string}
-   */
-  function parse(ms) {
+  function parse(ms: number) {
     let tt, sec, min, hrs;
     if (isNaN(ms)) {
       return (--fails && last) || '--:--:--';
