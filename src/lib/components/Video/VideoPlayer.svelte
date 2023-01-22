@@ -1,54 +1,44 @@
 <script context="module">
   const MAXSTREAMS = 5;
-
-  let players = new Set();
-  let now = new Date().getTime();
 </script>
 
-<script>
+<script lang="ts">
   import { page } from '$app/stores';
   import { Video, mute } from '.';
   import { onMount } from 'svelte';
   import { getExt } from '$lib/utils';
   import { _ } from 'svelte-i18n';
+  import type { Video as VideoType } from '$lib/types';
+  import { players } from '$lib/utils';
+
+  let now = new Date().getTime();
 
   export let poster = '';
-  /**
-   * @type {import('$lib/types').Video}
-   */
-  export let video;
-  /**
-   * @type {any}
-   */
-  export let src;
+  export let video: VideoType;
+  export let src: string | undefined;
   export let type = getExt(src);
   export let paused = true;
   export let autoplay = false;
-  /**
-   * @type {any}
-   */
-  export let playhead;
+  export let playhead: any;
   export let controls = false;
   export let multiplayer = false;
   export let curtain = false;
 
   const browserName = $page.data.browser.name;
 
-  /**
-   * @type {any}
-   */
-  let videoElement;
+  let videoElement: HTMLVideoElement;
   let className = '';
 
   export { className as class };
 
   onMount(() => {
     let timestamp = now;
-    multiplayer &&
+    if (multiplayer) {
       players.add({
         videoElement,
         timestamp
       });
+    }
   });
 
   $: multiplayer &&

@@ -1,74 +1,34 @@
-<script>
+<script lang="ts">
+  import type { Video } from '$lib/types';
   import { log } from '$lib/utils';
   import { tick, createEventDispatcher } from 'svelte';
   import { _ } from 'svelte-i18n';
+  import { prevent_default } from 'svelte/internal';
   import { Ui, mute } from '.';
 
   const dispatch = createEventDispatcher();
   const scrubStart = { x: 0, y: 0, playhead: 0 };
 
-  /**
-   * @type {number}
-   */
-  let duration;
-  /**
-   * @type {ReturnType<typeof setTimeout>}
-   */
-  let controlsTimeout;
+  let duration: number;
+  let controlsTimeout: string | number | NodeJS.Timeout | undefined;
   let className = '';
   let hydrated = false;
   let hydrating = false;
-  /**
-   * @type {string | undefined}
-   */
-  let currentPoster;
+  let currentPoster: any;
   let buffered;
-  /**
-   * @type {boolean}
-   */
-  let scrubbing;
-  /**
-   * @type {Element}
-   */
-  let target;
-  /**
-   * @type {boolean}
-   */
-  let isMouseAction;
-  /**
-   * @type {boolean}
-   */
-  let customControls;
-  /**
-   * @type {string | null}
-   */
-  let _src;
+  let scrubbing: boolean;
+  let target: Element;
+  let isMouseAction: boolean;
+  let customControls: boolean;
+  let _src: string | null;
 
   export let allowScrubbing = false;
-  /**
-   * @type {HTMLVideoElement}
-   */
-  export let videoElement;
-  /**
-   * @type {string | undefined}
-   */
-  export let src;
-  /**
-   * @type {import('$lib/types').Video}
-   */
-  export let video;
-  /**
-   * @type {boolean}
-   */
-  export let autoplay;
-  /**
-   * @type {string | undefined}
-   */
-  export let poster;
-  /**
-   * @type {string | undefined}
-   */
-  export let type;
+  export let videoElement: HTMLVideoElement;
+  export let src: string | undefined;
+  export let video: Video;
+  export let autoplay: boolean;
+  export let poster: string | undefined;
+  export let type: string | undefined;
   export let controls = false; // use native controls if true
   export let paused = false;
   export let preload = 'none';
@@ -111,20 +71,12 @@
     showControls = true;
   }
 
-  /**
-   *
-   * @param {CustomEvent} event
-   */
-  function handleMousemove({ detail }) {
+  function handleMousemove({ detail }: CustomEvent) {
     delayHideControls();
     allowScrubbing && handleScrubbing(detail);
   }
 
-  /**
-   *
-   * @param {MouseEvent} event
-   */
-  function handleScrubbing(event) {
+  function handleScrubbing(event: MouseEvent) {
     if (!(event.buttons & 1)) return; // mouse not down
     if (!duration) return; // videoElement not loaded yet
 
@@ -167,48 +119,33 @@
     dispatch('player:paused');
   }
 
-  /**
-   *
-   * @param {CustomEvent} event
-   */
-  function handleRewind({ detail }) {
+  function handleRewind({ detail }: CustomEvent) {
     let step = detail || 15;
     let s;
     playhead -= (s = playhead - step) < 0 ? step + s : step;
     dispatch('player:rwd');
   }
 
-  /**
-   *
-   * @param {CustomEvent} event
-   */
-  function handleForeward(event) {
+  function handleForeward(event: CustomEvent) {
     let step = event.detail || 15;
     playhead += playhead + step > duration ? duration - playhead : step;
     dispatch('player:fwd');
   }
 
-  /**
-   *
-   * @param {CustomEvent} event
-   */
-  function handleWheel({ detail }) {
+  function handleWheel({ detail }: CustomEvent) {
     playhead += detail.deltaY * 0.2;
   }
 
-  /**
-   *
-   * @param {CustomEvent} event
-   */
-  function handleMousedown({ detail }) {
+  function handleMousedown(event: CustomEvent) {
+    console.log(event.detail);
+    const detail = event.detail as unknown as MouseEvent;
+    const target = event.detail.target as Element;
+    const isMediaControl = target.classList.contains('play-pause-controllable');
     isMouseAction = true;
-    const isMediaControl = detail.target.classList.contains('play-pause-controllable');
 
     scrubStart.x = detail.clientX;
     scrubStart.y = detail.clientY;
     scrubStart.playhead = playhead;
-
-    target = detail.currentTarget;
 
     // we can't rely on the built-in click event, because it fires
     // after a drag — we have to listen for clicks ourselves
@@ -297,7 +234,6 @@
     {poster}
     {preload}
     {controls}
-    {type}
     {autoplay}
     {src}
     on:loadstart={handleLoadstart}
@@ -316,16 +252,15 @@
   {#if customControls}
     <Ui
       on:wheel={handleWheel}
-      on:touchstart={handleMousedown}
-      on:mousedown={handleMousedown}
-      on:mousemove={handleMousemove}
+      on:ui:touchstart={handleMousedown}
+      on:ui:mousedown={handleMousedown}
+      on:ui:pip={handlePictureInPicture}
       on:mouseenter={handleMouseenter}
       on:mouseleave={handleMouseleave}
       on:fullscreen={handleFullscreen}
       on:play-pause={handlePlayPause}
       on:rwd={handleRewind}
       on:fwd={handleForeward}
-      on:pip={handlePictureInPicture}
       bind:time={playhead}
       {duration}
       {showControls}

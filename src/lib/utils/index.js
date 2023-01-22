@@ -24,6 +24,7 @@ import {
   svg,
   windowSize
 } from './helper';
+import { key, players } from './module-vars';
 import {
   ADMIN,
   ASC,
@@ -80,12 +81,14 @@ export {
   info,
   isExpired,
   isToday,
+  key,
   localeFormat,
   log,
   parseConfigData,
   parseLifetime,
   parseRedirect,
   placeholderDotComAvatar,
+  players,
   post,
   posterCreatedHandler,
   posterRemoveHandler,

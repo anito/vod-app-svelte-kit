@@ -43,7 +43,8 @@
         <Menu bind:this={userMenu}>
           <List>
             <Item
-              class="text-red-700"
+              ripple={false}
+              class="error-on-background"
               on:SMUI:action={() => proxyEvent('user:delete', { id: user.id })}
             >
               <Text>{$_('text.delete-user')}</Text>

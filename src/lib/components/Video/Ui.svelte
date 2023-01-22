@@ -1,12 +1,11 @@
-<script>
+<script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import { mute } from '.';
 
   let dispatch = createEventDispatcher();
   let pipButton;
   let fullscreenButton;
-  /** @type {Element} */
-  let mediaControls;
+  let mediaControls: HTMLDivElement;
   let listeners = 0;
 
   const data_play_not_loaded =
@@ -33,24 +32,16 @@
     'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iYmxhY2siIHdpZHRoPSIxOHB4IiBoZWlnaHQ9IjE4cHgiPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNNSAxNmgzdjNoMnYtNUg1djJ6bTMtOEg1djJoNVY1SDh2M3ptNiAxMWgydi0zaDN2LTJoLTV2NXptMi0xMVY1aC0ydjVoNVY4aC0zeiIvPjwvc3ZnPg==';
 
   export let time = 0;
-  /** @type {number} */
-  export let duration;
-  /** @type {boolean} */
-  export let paused;
-  /** @type {boolean} */
-  export let showControls;
+  export let duration: number;
+  export let paused: boolean;
+  export let showControls: boolean;
   export let buffered;
 
   $: percentageTime = (time * 100) / duration;
   $: percentageBuffer =
     (buffered?.length && (buffered[buffered.length - 1].end * 100) / duration) || 0;
 
-  /**
-   *
-   * @param {number} seconds
-   * @param {string} prefix
-   */
-  function format(seconds, prefix = '') {
+  function format(seconds: number, prefix = '') {
     if (isNaN(seconds)) return '...';
 
     const minutes = Math.floor(seconds / 60);
@@ -61,11 +52,7 @@
     return `${prefix}${printMinutes}:${printSeconds}`;
   }
 
-  /**
-   *
-   * @param {WheelEvent} event
-   */
-  function handleWheel(event) {
+  function handleWheel(event: WheelEvent) {
     dispatch('wheel', {
       deltaX: event.deltaX,
       deltaY: event.deltaY,
@@ -73,28 +60,22 @@
     });
   }
 
-  /**
-   *
-   * @param {Event} event
-   */
-  function dispatchMousemove(event) {
-    dispatch('mousemove', event);
+  function dispatchMousemove(event: MouseEvent) {
+    dispatch('ui:mousemove', event);
   }
 
-  /**
-   *
-   * @param {Event} event
-   */
-  function dispatchMousedown(event) {
-    dispatch('mousedown', event);
+  function dispatchMousedown(event: MouseEvent) {
+    console.log(event);
+    dispatch('ui:mousedown', event);
   }
 
-  /**
-   *
-   * @param {Event} event
-   */
-  function dispatchPip(event) {
-    dispatch('pip', event);
+  function dispatchTouchStart(event: TouchEvent) {
+    console.log(event);
+    dispatch('ui:touchstart', event);
+  }
+
+  function dispatchPip(event: MouseEvent) {
+    dispatch('ui:pip', event);
   }
 
   function handleAddMousemove() {
@@ -107,11 +88,7 @@
     mediaControls.removeEventListener('mousemove', dispatchMousemove);
   }
 
-  /**
-   *
-   * @param {Element} node
-   */
-  function maybeEnablePipButton(node) {
+  function maybeEnablePipButton(node: Element) {
     if ('pictureInPictureEnabled' in document) {
       node.classList.remove('hidden');
       node.removeAttribute('disabled');
@@ -126,7 +103,8 @@
     class:faded={!showControls}
     bind:this={mediaControls}
     on:wheel={handleWheel}
-    on:touchstart={dispatchMousedown}
+    on:touchstart={dispatchTouchStart}
+    on:keydown
     on:mousedown={dispatchMousedown}
     on:mouseenter={handleAddMousemove}
     on:mouseleave={handleRemMousemove}

@@ -74,7 +74,7 @@ export async function getMediaVideo(id: any, jwt: string) {
   return getMedia('VIDEO', id, jwt, { video: true });
 }
 
-export function getExt(fn: { match: (arg0: RegExp) => string[] }) {
-  let match = fn?.match(/[A-Za-z0-9]+$/) || [];
-  return (match.length && match[0].toLowerCase()) || undefined;
+export function getExt(name: string | undefined) {
+  let match = name?.match(/[A-Za-z0-9]+$/) || [];
+  return String(match.length && match[0]).toLowerCase() || undefined;
 }

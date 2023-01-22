@@ -10,9 +10,6 @@
   export let selectionUserId: string;
   export let user: User | undefined;
   export let id: string;
-  export { className as class };
-
-  let className = '';
 
   $: _infos = $infos as Map<string, { issues: Issue[] }>;
   $: userInfos =

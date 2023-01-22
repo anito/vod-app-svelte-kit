@@ -1,14 +1,12 @@
-<script>
+<script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import { Group } from '@smui/button';
   import IconButton from '@smui/icon-button';
+  import type { Mail } from '$lib/types';
 
-  /** @type {import('$lib/types').Mail | null | undefined} */
-  export let selection = null;
-  /** @type {string | null} */
-  export let type;
-  /** @type {string} */
-  export let sort;
+  export let selection: Mail | null | undefined = null;
+  export let type: string | null;
+  export let sort: string;
 
   const dispatch = createEventDispatcher();
 </script>
@@ -18,18 +16,11 @@
     <IconButton
       class="material-icons"
       on:click={() => dispatch('mail:reload', { selection })}
-      variant="outlined"
       color="primary"
     >
       sync
     </IconButton>
-    <IconButton
-      class="material-icons"
-      on:click={() => dispatch('mail:sort')}
-      variant="outlined"
-      color="primary"
-      disabled={!type}
-    >
+    <IconButton class="material-icons" on:click={() => dispatch('mail:sort')} disabled={!type}>
       {sort === 'DESC' ? 'sort' : sort === 'ASC' ? 'sort' : 'sort'}
     </IconButton>
   </Group>
@@ -37,7 +28,6 @@
     <IconButton
       class="material-icons"
       on:click={() => dispatch('mail:toggleRead', { selection })}
-      variant="outlined"
       color="primary"
       disabled={!selection || type === 'sents'}
       >{type === 'sents'
@@ -51,7 +41,6 @@
     <IconButton
       class="material-icons"
       on:click={() => dispatch('mail:delete', { selection })}
-      variant="outlined"
       color="primary"
       disabled={!selection}
       >delete

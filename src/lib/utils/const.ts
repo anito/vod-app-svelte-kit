@@ -17,11 +17,6 @@ export const DateTimeFormatOptions = {
 } as {
   weekday: 'long' | 'short' | 'narrow' | undefined;
 };
-export const DateTimeFormatOptions_ = {
-  day: '2-digit',
-  year: 'numeric',
-  month: '2-digit'
-};
 export const INBOX = 'inboxes';
 export const SENT = 'sents';
 export const ADMIN = 'Administrator';

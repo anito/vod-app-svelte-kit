@@ -41,7 +41,11 @@
         </IconButton>
         <Menu bind:this={posterMenu}>
           <List>
-            <Item class="text-red-700" on:SMUI:action={() => dispatch('Image:delete', { image })}>
+            <Item
+              ripple={false}
+              class="error-on-background"
+              on:SMUI:action={() => dispatch('Image:delete', { image })}
+            >
               <Text>{$_('text.delete-poster')}</Text>
             </Item>
           </List>

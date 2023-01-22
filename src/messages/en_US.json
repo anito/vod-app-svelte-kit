@@ -247,7 +247,9 @@
     "type-min-char-count": "Please type {count} or more characters for max. results",
     "you-will-be-logged-out": "Terminate current session and sign in as <strong>{name}</strong>?",
     "files-in-upload-queue": "Upload-Queue not empty!",
-    "files-in-queue": "You still have {count} {files} in the queue!"
+    "files-in-queue": "You still have {count} {files} in the queue!",
+    "select": "Select",
+    "done": "Done"
   },
   "summary": {
     "copy-link": {

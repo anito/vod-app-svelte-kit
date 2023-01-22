@@ -1,27 +1,47 @@
-<script>
+<script lang="ts">
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { onMount } from 'svelte';
+  import { getContext, onMount, setContext } from 'svelte';
   import { session, sitename } from '$lib/stores';
-  import { ADMIN, SUPERUSER } from '$lib/utils';
+  import { ADMIN, proxyEvent, SUPERUSER } from '$lib/utils';
   import Button, { Group, Label, Icon } from '@smui/button';
+  import IconButton from '@smui/icon-button';
   import { VideoManager, ImageManager, Container } from '$lib/components';
   import { Header } from '$lib/components';
   import { _ } from 'svelte-i18n';
+  import { writable, type Writable } from 'svelte/store';
 
   const TABS = ['videos', 'images'];
 
+  let select = true;
+  let selectionStore: Writable<string[]> = writable([] as never[]);
+
   $: tab = ((tab) => TABS.find((itm) => itm === tab))($page.url.searchParams.get('tab')) || TABS[0];
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
+  $: selection = $selectionStore;
 
   onMount(() => {});
 
-  /**
-   * @param {string} tab
-   */
-  async function changeTab(tab) {
+  setContext('video-selection', {
+    store: selectionStore,
+    add: (id: string) =>
+      selectionStore.update((items) => {
+        const index = items.findIndex((item) => item === id);
+        return [...items.slice(0, index), id, ...items.slice(index + 1)];
+      }),
+    remove: (id: string) => selectionStore.update((items) => items.filter((item) => item !== id)),
+    reset: () => selectionStore.update(() => [])
+  });
+  const { reset }: any = getContext('video-selection');
+
+  async function changeTab(tab: string) {
     await goto(`/videos?tab=${tab}`);
     return false;
+  }
+
+  function toggleCardSelect() {
+    reset();
+    select = !select;
   }
 </script>
 
@@ -30,8 +50,8 @@
 </svelte:head>
 
 {#if hasPrivileges}
-  <div class="media-grid {tab} flex-1 has-privileges" style="margin-top: 10px;">
-    <div class="grid-item toolbar mt-2">
+  <div class:select class="media-grid {tab} flex-1 has-privileges" style="margin-top: 10px;">
+    <div class="flex grid-item toolbar mt-2" style="justify-content: space-between;">
       <Group variant="unelevated">
         <Button
           class="focus:outline-none focus:shadow-outline"
@@ -49,6 +69,25 @@
         >
           <Icon class="material-icons">collections</Icon>
           <Label>{$_('text.posters')}</Label>
+        </Button>
+      </Group>
+      <Group variant="unelevated">
+        <Button
+          class="focus:outline-none focus:shadow-outline"
+          on:click={() => toggleCardSelect()}
+          variant="unelevated"
+        >
+          <Label>{select ? $_('text.done') : $_('text.select')}</Label>
+        </Button>
+
+        <Button
+          class="focus:outline-none focus:shadow-outline"
+          disabled={!selection.length}
+          on:click={() => proxyEvent('video:delete', { data: [] })}
+          variant="outlined"
+        >
+          <Icon class="material-icons">delete</Icon>
+          <Label>{$_('text.delete')}</Label>
         </Button>
       </Group>
     </div>
