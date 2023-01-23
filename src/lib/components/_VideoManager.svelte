@@ -158,19 +158,19 @@
         </li>
       {/each}
     </ul>
-    <Paginator
-      label={false}
-      icon="rotate_right"
-      {pagination}
-      store={videos}
-      id="videos-paginator"
-      action="/videos?/more_videos"
-    />
   {:else}
-    <FlexContainer>
+    <FlexContainer maxHeight="300px">
       {$_('text.no-content-available')}
     </FlexContainer>
   {/if}
+  <Paginator
+    label={false}
+    icon="rotate_right"
+    {pagination}
+    store={videos}
+    id="videos-paginator"
+    action="/videos?/more_videos"
+  />
   {#if $fabs === 'add-video'}
     <Fab class="floating-fab" color="primary" on:click={() => openUploader()} extended>
       <Label>{$_('text.add-video')}</Label>

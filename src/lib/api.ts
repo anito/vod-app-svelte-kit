@@ -16,7 +16,7 @@ async function send(atts: {
   const useBlob = method === 'GET' && browser && false;
 
   if (useBlob) {
-    getBlob(url, token);
+    return getBlob(url, token);
   }
 
   const opts = {

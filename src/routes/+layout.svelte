@@ -62,7 +62,7 @@
   import { svg_manifest } from '$lib/svg_manifest';
   import { _, locale } from 'svelte-i18n';
   import Dialog, { Title as DialogTitle, Content, Actions as DialogActions } from '@smui/dialog';
-  import type { User } from '$lib/types';
+  import type { User, Video } from '$lib/types';
   import type { NavigationTarget } from '@sveltejs/kit';
   import type { Dropzone } from '$lib/components/Dropzone/type';
 
@@ -82,6 +82,8 @@
   let emphasize: string;
   let snackbar: Snackbar;
   let settingsDialog: Dialog;
+  let deletingVideosDialog: Dialog;
+  let deletedVideo: Video | undefined;
   let loaderBackgroundOpacity = 1;
   let loaderColor = 'var(--primary)';
   let loaderBackgroundColor: string;
@@ -282,6 +284,7 @@
     window.addEventListener('video:save', videoSaveHandler);
     window.addEventListener('video:add', videoAddHandler);
     window.addEventListener('video:delete', videoDeleteHandler);
+    window.addEventListener('video:deleteMany', videoDeleteManyHandler);
     window.addEventListener('user:save', userSaveHandler);
     window.addEventListener('user:delete', userDeleteHandler);
   }
@@ -421,6 +424,34 @@
 
     if (show) {
       let message = res.message || res.data.message;
+      configSnackbar(message);
+      snackbar?.forceOpen();
+    }
+  }
+
+  async function videoDeleteManyHandler({ detail }: CustomEvent) {
+    const { data, show, oncompleted } = detail;
+    deletingVideosDialog?.setOpen(true);
+    const errors = [];
+    data.forEach(async (id: string) => {
+      deletedVideo = $videos.find((video) => video.id === id);
+      const res = await fetch(`/videos/${id}`, { method: 'DELETE' }).then(async (res) => {
+        if (res.ok) return await res.json();
+      });
+      if (res?.success) {
+        urls.del(id);
+        videos.del(id);
+      } else {
+        errors.push(id);
+      }
+    });
+    oncompleted?.();
+    deletingVideosDialog?.setOpen(false);
+
+    if (show) {
+      let message = errors.length
+        ? $_('text.errors-occured', { values: { count: errors.length } })
+        : $_('text.all-videos-deleted', { values: { count: data.length } });
       configSnackbar(message);
       snackbar?.forceOpen();
     }
@@ -808,6 +839,19 @@
 <LoadingModal backgroundColor={loaderBackgroundColor} opacity={loaderBackgroundOpacity} wait={1000}>
   <DoubleBounce color={loaderColor} unit="px" size="200" />
 </LoadingModal>
+<Dialog
+  bind:this={deletingVideosDialog}
+  aria-labelledby="info-title"
+  aria-describedby="info-content"
+  on:SMUIDialog:closed={async () => {
+    deletedVideo = undefined;
+  }}
+>
+  <DialogTitle id="info-title">{$_('text.deleting-videos')}</DialogTitle>
+  <Content>
+    <div class="">{$_('text.deleting-video', { values: { title: deletedVideo?.title } })}</div>
+  </Content>
+</Dialog>
 <Dialog
   bind:this={settingsDialog}
   aria-labelledby="info-title"

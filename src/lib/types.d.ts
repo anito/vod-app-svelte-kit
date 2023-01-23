@@ -21,6 +21,7 @@ declare global {
     'video:save': CustomEvent;
     'video:add': CustomEvent;
     'video:delete': CustomEvent;
+    'video:deleteMany': CustomEvent;
   }
 
   interface Number {

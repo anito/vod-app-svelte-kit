@@ -46,7 +46,7 @@
   let description: string;
   let isImageListOpen = false;
 
-  const { store, add, remove: rem }: any = getContext('video-selection');
+  const { selection, add, remove: rem }: any = getContext('video-selection');
 
   $: pagination = $page.data.pagination?.images;
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
@@ -58,7 +58,7 @@
     : { label: $_('text.delete'), icon: 'delete' };
   $: matchingData = ('_matchingData' in video && video._matchingData.UsersVideos) || null;
   $: canSave = description !== video.description || title !== video.title;
-  $: selected = $store.find((id: string) => id === video.id);
+  $: selected = $selection.find((id: string) => id === video.id);
 
   function save() {
     proxyEvent('video:save', {
@@ -329,6 +329,7 @@
     position: relative;
   }
   :global(.select) {
+    --select-border-w: 6px;
     .card-outer {
       position: relative;
       &::after {
@@ -342,10 +343,10 @@
         cursor: pointer;
       }
       :global(.card) {
-        outline: 3px solid var(--background);
+        outline: var(--select-border-w) solid var(--surface);
       }
       :global(.card.selected) {
-        outline: 3px solid var(--secondary);
+        outline: var(--select-border-w) solid var(--secondary);
       }
     }
   }

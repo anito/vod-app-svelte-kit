@@ -1,8 +1,11 @@
-<script>
+<script lang="ts">
+  import { max } from 'date-fns';
+
+  export let maxHeight: string = '100%';
   export let style = '';
 </script>
 
-<div class="wrapper">
+<div class="wrapper" style:--max-height={maxHeight}>
   <div class="container" {style}>
     <span style="text-align: center;"><slot /></span>
   </div>
@@ -11,6 +14,7 @@
 <style>
   .wrapper {
     height: 100%;
+    max-height: var(--max-height);
     display: flex;
     justify-content: center;
   }

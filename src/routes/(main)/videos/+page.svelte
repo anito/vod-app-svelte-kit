@@ -13,17 +13,11 @@
 
   const TABS = ['videos', 'images'];
 
-  let select = true;
+  let select: boolean;
   let selectionStore: Writable<string[]> = writable([] as never[]);
 
-  $: tab = ((tab) => TABS.find((itm) => itm === tab))($page.url.searchParams.get('tab')) || TABS[0];
-  $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
-  $: selection = $selectionStore;
-
-  onMount(() => {});
-
   setContext('video-selection', {
-    store: selectionStore,
+    selection: selectionStore,
     add: (id: string) =>
       selectionStore.update((items) => {
         const index = items.findIndex((item) => item === id);
@@ -34,6 +28,15 @@
   });
   const { reset }: any = getContext('video-selection');
 
+  $: tab = ((tab) => TABS.find((itm) => itm === tab))($page.url.searchParams.get('tab')) || TABS[0];
+  $: tab && resetCardSelect();
+  $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
+  $: selection = $selectionStore;
+
+  onMount(() => {
+    resetCardSelect();
+  });
+
   async function changeTab(tab: string) {
     await goto(`/videos?tab=${tab}`);
     return false;
@@ -42,6 +45,11 @@
   function toggleCardSelect() {
     reset();
     select = !select;
+  }
+
+  function resetCardSelect() {
+    reset();
+    select = false;
   }
 </script>
 
@@ -83,7 +91,12 @@
         <Button
           class="focus:outline-none focus:shadow-outline"
           disabled={!selection.length}
-          on:click={() => proxyEvent('video:delete', { data: [] })}
+          on:click={() =>
+            proxyEvent('video:deleteMany', {
+              data: selection,
+              show: true,
+              oncompleted: () => toggleCardSelect()
+            })}
           variant="outlined"
         >
           <Icon class="material-icons">delete</Icon>
