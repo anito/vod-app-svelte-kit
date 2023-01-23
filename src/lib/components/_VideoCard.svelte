@@ -4,7 +4,7 @@
   import { page } from '$app/stores';
   import { getContext, createEventDispatcher } from 'svelte';
   import { fly } from 'svelte/transition';
-  import { currentVideo, images, session } from '$lib/stores';
+  import { currentVideo, images, selection, session } from '$lib/stores';
   import { getMediaImage } from '$lib/utils/media';
   import {
     addClass,
@@ -46,8 +46,6 @@
   let description: string;
   let isImageListOpen = false;
 
-  const { selection, add, remove: rem }: any = getContext('video-selection');
-
   $: pagination = $page.data.pagination?.images;
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: leftButton = isEditMode
@@ -58,7 +56,7 @@
     : { label: $_('text.delete'), icon: 'delete' };
   $: matchingData = ('_matchingData' in video && video._matchingData.UsersVideos) || null;
   $: canSave = description !== video.description || title !== video.title;
-  $: selected = $selection.find((id: string) => id === video.id);
+  $: selected = $selection.find((id: string) => id === video.id) || false;
 
   function save() {
     proxyEvent('video:save', {
@@ -145,9 +143,8 @@
   function cardClick(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
-    // (event.currentTarget as Element).classList.toggle('selected');
     selected = !selected;
-    selected ? add(video.id) : rem(video.id);
+    selected ? selection.add(video.id) : selection.remove(video.id);
   }
 </script>
 

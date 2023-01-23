@@ -8,6 +8,7 @@ export { default as framework } from './frameworkStore';
 export { default as images } from './imageStore';
 export { default as inboxes } from './inboxStore';
 export { default as sents } from './sentStore';
+export { default as selection } from './selectionStore';
 export { default as sessionCookie } from './sessionCookieStore';
 export { default as session } from './sessionStore'; // derived
 export { default as settings } from './settingStore';

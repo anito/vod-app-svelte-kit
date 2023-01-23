@@ -820,13 +820,6 @@
                     <Label style="">Settings</Label>
                   </Button>
                 </Item>
-                <Separator />
-                <Item class="justify-start">
-                  <Button href="/readable-stream" class="link-button" ripple={false}>
-                    <SvgIcon name="dynamic-feed" class="mr-2" fillColor="none" />
-                    <Label style="">ReadableStream</Label>
-                  </Button>
-                </Item>
               </MoreMenu>
             </NavItem>
           </Nav>

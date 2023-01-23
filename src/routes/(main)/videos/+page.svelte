@@ -1,37 +1,21 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { getContext, onMount, setContext } from 'svelte';
-  import { session, sitename } from '$lib/stores';
+  import { onMount } from 'svelte';
+  import { selection, session, sitename } from '$lib/stores';
   import { ADMIN, proxyEvent, SUPERUSER } from '$lib/utils';
   import Button, { Group, Label, Icon } from '@smui/button';
-  import IconButton from '@smui/icon-button';
   import { VideoManager, ImageManager, Container } from '$lib/components';
   import { Header } from '$lib/components';
   import { _ } from 'svelte-i18n';
-  import { writable, type Writable } from 'svelte/store';
 
   const TABS = ['videos', 'images'];
 
   let select: boolean;
-  let selectionStore: Writable<string[]> = writable([] as never[]);
-
-  setContext('video-selection', {
-    selection: selectionStore,
-    add: (id: string) =>
-      selectionStore.update((items) => {
-        const index = items.findIndex((item) => item === id);
-        return [...items.slice(0, index), id, ...items.slice(index + 1)];
-      }),
-    remove: (id: string) => selectionStore.update((items) => items.filter((item) => item !== id)),
-    reset: () => selectionStore.update(() => [])
-  });
-  const { reset }: any = getContext('video-selection');
 
   $: tab = ((tab) => TABS.find((itm) => itm === tab))($page.url.searchParams.get('tab')) || TABS[0];
   $: tab && resetCardSelect();
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
-  $: selection = $selectionStore;
 
   onMount(() => {
     resetCardSelect();
@@ -43,12 +27,12 @@
   }
 
   function toggleCardSelect() {
-    reset();
+    selection.reset();
     select = !select;
   }
 
   function resetCardSelect() {
-    reset();
+    selection.reset();
     select = false;
   }
 </script>
@@ -90,10 +74,10 @@
 
         <Button
           class="focus:outline-none focus:shadow-outline"
-          disabled={!selection.length}
+          disabled={!$selection.length}
           on:click={() =>
             proxyEvent('video:deleteMany', {
-              data: selection,
+              data: $selection,
               show: true,
               oncompleted: () => toggleCardSelect()
             })}

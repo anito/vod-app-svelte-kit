@@ -399,7 +399,7 @@
         </SimpleUserCard>
         {#if filteredUsers.length}
           {#each filteredUsers as user (user.id)}
-            <SimpleUserCard id={user.id} class="flex" {selectionUserId} {user} />
+            <SimpleUserCard id={user.id} {selectionUserId} {user} />
           {/each}
           {#if !isDeepSearch}
             <Paginator
