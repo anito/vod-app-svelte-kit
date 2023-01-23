@@ -77,14 +77,13 @@
           disabled={!$selection.length}
           on:click={() =>
             proxyEvent('video:deleteMany', {
-              data: $selection,
               show: true,
               oncompleted: () => toggleCardSelect()
             })}
           variant="outlined"
         >
           <Icon class="material-icons">delete</Icon>
-          <Label>{$_('text.delete')}</Label>
+          <Label>({$selection.length}) {$_('text.delete')}</Label>
         </Button>
       </Group>
     </div>

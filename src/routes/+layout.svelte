@@ -46,7 +46,8 @@
     urls,
     videos,
     users,
-    streams
+    streams,
+    selection
   } from '$lib/stores';
   import { Modal, SvgIcon } from '$lib/components';
   import { DoubleBounce } from 'svelte-loading-spinners';
@@ -430,10 +431,10 @@
   }
 
   async function videoDeleteManyHandler({ detail }: CustomEvent) {
-    const { data, show, oncompleted } = detail;
+    const { show, oncompleted } = detail;
     deletingVideosDialog?.setOpen(true);
     const errors = [];
-    data.forEach(async (id: string) => {
+    $selection.forEach(async (id: string) => {
       deletedVideo = $videos.find((video) => video.id === id);
       const res = await fetch(`/videos/${id}`, { method: 'DELETE' }).then(async (res) => {
         if (res.ok) return await res.json();
@@ -451,7 +452,7 @@
     if (show) {
       let message = errors.length
         ? $_('text.errors-occured', { values: { count: errors.length } })
-        : $_('text.all-videos-deleted', { values: { count: data.length } });
+        : $_('text.all-videos-deleted', { values: { count: $selection.length } });
       configSnackbar(message);
       snackbar?.forceOpen();
     }
