@@ -4,11 +4,7 @@ function createStore() {
   const { update, subscribe, set } = writable([] as string[]);
 
   return {
-    add: (id: string) =>
-      update((items) => {
-        const index = items.findIndex((item) => item === id);
-        return [...items.slice(0, index), id, ...items.slice(index + 1)];
-      }),
+    add: (id: string) => update((items) => [...items, id]),
     remove: (id: string) => update((items) => items.filter((item) => item !== id)),
     reset: () => update(() => []),
     subscribe,

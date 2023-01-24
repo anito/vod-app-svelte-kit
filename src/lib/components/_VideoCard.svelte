@@ -56,7 +56,7 @@
     : { label: $_('text.delete'), icon: 'delete' };
   $: matchingData = ('_matchingData' in video && video._matchingData.UsersVideos) || null;
   $: canSave = description !== video.description || title !== video.title;
-  $: selected = $selection.find((id: string) => id === video.id) || false;
+  $: selected = !!$selection.find((id: string) => id === video.id) || false;
 
   function save() {
     proxyEvent('video:save', {
@@ -149,7 +149,7 @@
 </script>
 
 <div class="card-outer" on:click={cardClick} on:mousedown on:keydown>
-  <Card use={[prepareClick]} class="card {className} {selected ? 'selected' : ''}">
+  <Card use={[prepareClick]} class="card {className}" {selected}>
     <PrimaryAction class="primary-action" onclick={() => currentVideo.set(video)}>
       <VideoMedia {video} bind:title bind:description {isEditMode} {emptyPoster} />
       <Content class="mdc-typography--body2">
@@ -326,7 +326,6 @@
     position: relative;
   }
   :global(.select) {
-    --select-border-w: 6px;
     .card-outer {
       position: relative;
       &::after {
@@ -342,7 +341,7 @@
       :global(.card) {
         outline: var(--select-border-w) solid var(--surface);
       }
-      :global(.card.selected) {
+      :global(.card[selected='true']) {
         outline: var(--select-border-w) solid var(--secondary);
       }
     }

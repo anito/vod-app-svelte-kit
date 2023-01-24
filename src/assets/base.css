@@ -97,6 +97,7 @@
   --ripple-activated-opacity: 0.4;
   --ripple-hover-opacity: 0.2;
   --ripple-press-opacity: 0.5;
+  --select-border-w: 6px;
 
   --mdc-typography-font-family: var(--font);
   --mdc-shape-none: 0;
