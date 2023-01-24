@@ -45,6 +45,7 @@
     ticker,
     urls,
     videos,
+    images,
     users,
     streams,
     selection
@@ -83,8 +84,8 @@
   let emphasize: string;
   let snackbar: Snackbar;
   let settingsDialog: Dialog;
-  let deletingVideosDialog: Dialog;
-  let deletedVideo: Video | undefined;
+  let deletingMediaDialog: Dialog;
+  let deletedMedia: Video | undefined;
   let loaderBackgroundOpacity = 1;
   let loaderColor = 'var(--primary)';
   let loaderBackgroundColor: string;
@@ -284,8 +285,8 @@
     window.addEventListener('session:extend', sessionExtendHandler);
     window.addEventListener('video:save', videoSaveHandler);
     window.addEventListener('video:add', videoAddHandler);
-    window.addEventListener('video:delete', videoDeleteHandler);
-    window.addEventListener('video:deleteMany', videoDeleteManyHandler);
+    window.addEventListener('media:delete', mediaDeleteHandler);
+    window.addEventListener('media:deleteMany', mediaDeleteManyHandler);
     window.addEventListener('user:save', userSaveHandler);
     window.addEventListener('user:delete', userDeleteHandler);
   }
@@ -347,7 +348,8 @@
     window.removeEventListener('session:extend', sessionExtendHandler);
     window.removeEventListener('video:save', videoSaveHandler);
     window.removeEventListener('video:add', videoAddHandler);
-    window.removeEventListener('video:delete', videoDeleteHandler);
+    window.removeEventListener('media:delete', mediaDeleteHandler);
+    window.removeEventListener('media:deleteMany', mediaDeleteManyHandler);
     window.removeEventListener('user:save', userSaveHandler);
     window.removeEventListener('user:delete', userDeleteHandler);
   }
@@ -409,15 +411,19 @@
     // invalidate('app:pagination');
   }
 
-  async function videoDeleteHandler({ detail }: CustomEvent) {
-    const { data, show, onsuccess, onerror } = detail;
-    const res = await fetch(`/videos/${data.id}`, { method: 'DELETE' }).then(async (res) => {
+  async function mediaDeleteHandler({ detail }: CustomEvent) {
+    const { data, type, show, onsuccess, onerror } = detail;
+    const res = await fetch(`/${type}/${data.id}`, { method: 'DELETE' }).then(async (res) => {
       if (res.ok) return await res.json();
     });
+    const stores = new Map();
+    stores.set('images', images);
+    stores.set('videos', videos);
+    const store = stores.get(type);
 
     if (res?.success) {
       urls.del(data.id);
-      videos.del(data.id);
+      store.del(data.id);
       onsuccess?.(res);
     } else {
       onerror?.(res);
@@ -430,29 +436,37 @@
     }
   }
 
-  async function videoDeleteManyHandler({ detail }: CustomEvent) {
-    const { show, oncompleted } = detail;
-    deletingVideosDialog?.setOpen(true);
+  async function mediaDeleteManyHandler({ detail }: CustomEvent) {
+    const { type, show, oncompleted } = detail;
+    const stores = new Map();
+    stores.set('images', images);
+    stores.set('videos', videos);
+    const store = stores.get(type);
+
+    deletingMediaDialog?.setOpen(true);
     const errors = [];
-    $selection.forEach(async (id: string) => {
-      deletedVideo = $videos.find((video) => video.id === id);
-      const res = await fetch(`/videos/${id}`, { method: 'DELETE' }).then(async (res) => {
+    const ids = $selection.slice();
+    ids.forEach(async (id: string) => {
+      deletedMedia = $videos.find((video) => video.id === id);
+      const res = await fetch(`/${type}/${id}`, { method: 'DELETE' }).then(async (res) => {
         if (res.ok) return await res.json();
       });
       if (res?.success) {
         urls.del(id);
-        videos.del(id);
+        store.del(id);
       } else {
         errors.push(id);
       }
     });
     oncompleted?.();
-    deletingVideosDialog?.setOpen(false);
+    deletingMediaDialog?.setOpen(false);
 
     if (show) {
       let message = errors.length
-        ? $_('text.errors-occured', { values: { count: errors.length } })
-        : $_('text.all-videos-deleted', { values: { count: $selection.length } });
+        ? $_('text.errors-occured', {
+            values: { count: errors.length, type: type.charAt(0).toUpperCase() + type.slice(1) }
+          })
+        : $_('text.all-media-deleted', { values: { count: ids.length, type } });
       configSnackbar(message);
       snackbar?.forceOpen();
     }
@@ -834,16 +848,16 @@
   <DoubleBounce color={loaderColor} unit="px" size="200" />
 </LoadingModal>
 <Dialog
-  bind:this={deletingVideosDialog}
+  bind:this={deletingMediaDialog}
   aria-labelledby="info-title"
   aria-describedby="info-content"
   on:SMUIDialog:closed={async () => {
-    deletedVideo = undefined;
+    deletedMedia = undefined;
   }}
 >
   <DialogTitle id="info-title">{$_('text.deleting-videos')}</DialogTitle>
   <Content>
-    <div class="">{$_('text.deleting-video', { values: { title: deletedVideo?.title } })}</div>
+    <div class="">{$_('text.deleting-video', { values: { title: deletedMedia?.title } })}</div>
   </Content>
 </Dialog>
 <Dialog

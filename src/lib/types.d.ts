@@ -20,8 +20,8 @@ declare global {
     'ui:pip': CustomEvent;
     'video:save': CustomEvent;
     'video:add': CustomEvent;
-    'video:delete': CustomEvent;
-    'video:deleteMany': CustomEvent;
+    'media:delete': CustomEvent;
+    'media:deleteMany': CustomEvent;
   }
 
   interface Number {

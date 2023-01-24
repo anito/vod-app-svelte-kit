@@ -82,22 +82,6 @@
     }
     close$uploader();
   }
-
-  async function deletePoster(event: CustomEvent) {
-    const { image }: any = { ...event.detail };
-    const id = image.id;
-    await api
-      .del(`images/${image.id}?locale=${$page.data.session.locale}`, { token: $session.user?.jwt })
-      .then((res) => {
-        let message = res.message || res.data.message || res.statusText;
-        if (res?.success) {
-          urls.del(id);
-          images.del(id);
-        }
-        configSnackbar(message);
-        snackbar?.forceOpen();
-      });
-  }
 </script>
 
 <svelte:head>
@@ -109,7 +93,7 @@
     <ul bind:this={imagesList} class="items-list grid grid-cols-3 grid-flow-row gap-4 mb-10">
       {#each $images as image (image.id)}
         <li class="list-item">
-          <ImageCard on:Image:delete={deletePoster} {image} />
+          <ImageCard {image} />
         </li>
       {/each}
     </ul>

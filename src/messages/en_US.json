@@ -251,8 +251,8 @@
     "select": "Select",
     "deleting-videos": "Deleting Videos",
     "deleting-video": "Removing {title}",
-    "errors-occured": "{count} Videos could not be deleted. Try again.",
-    "all-videos-deleted": "{count} Videos have been removed"
+    "errors-occured": "{count} {type} could not be deleted. Try again.",
+    "all-media-deleted": "{count} {type} have been removed"
   },
   "summary": {
     "copy-link": {

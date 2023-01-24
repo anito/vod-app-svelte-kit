@@ -252,7 +252,7 @@
     "deleting-videos": "Entferne Videos",
     "deleting-video": "entferne {title}",
     "errors-occured": "{count} Videos konnten nicht entfernt werden. Bitte erneut versuchen.",
-    "all-videos-deleted": "{count} Videos wurden entfernt"
+    "all-media-deleted": "{count} {type} wurden entfernt"
   },
   "summary": {
     "copy-link": {

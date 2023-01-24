@@ -57,7 +57,8 @@
               <Item
                 ripple={false}
                 class="error-on-background"
-                on:SMUI:action={() => dispatch('Image:delete', { image })}
+                on:SMUI:action={() =>
+                  dispatch('media:delete', { type: 'images', data: { id: image.id } })}
               >
                 <Text>{$_('text.delete-poster')}</Text>
               </Item>

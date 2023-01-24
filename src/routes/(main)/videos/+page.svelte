@@ -76,7 +76,8 @@
           class="focus:outline-none focus:shadow-outline"
           disabled={!$selection.length}
           on:click={() =>
-            proxyEvent('video:deleteMany', {
+            proxyEvent('media:deleteMany', {
+              type: tab,
               show: true,
               oncompleted: () => toggleCardSelect()
             })}
