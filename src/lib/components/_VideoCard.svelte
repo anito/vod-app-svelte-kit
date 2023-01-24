@@ -335,6 +335,7 @@
         width: 100%;
         height: 100%;
         background: #fff2;
+        border-radius: var(--mdc-shape-medium, 4px);
         cursor: pointer;
       }
     }
