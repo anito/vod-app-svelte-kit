@@ -466,7 +466,9 @@
         ? $_('text.errors-occured', {
             values: { count: errors.length, type: type.charAt(0).toUpperCase() + type.slice(1) }
           })
-        : $_('text.all-media-deleted', { values: { count: ids.length, type } });
+        : $_('text.all-media-deleted', {
+            values: { count: ids.length, type: type.charAt(0).toUpperCase() + type.slice(1) }
+          });
       configSnackbar(message);
       snackbar?.forceOpen();
     }

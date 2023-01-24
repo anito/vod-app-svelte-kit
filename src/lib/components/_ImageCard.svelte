@@ -1,5 +1,6 @@
 <script lang="ts">
   import './_button.scss';
+  import './_card.scss';
   import { createEventDispatcher } from 'svelte';
   import MediaImagePreview from './_MediaImagePreview.svelte';
   import { selection } from '$lib/stores';
@@ -31,8 +32,8 @@
   }
 </script>
 
-<Card class="card {className}" {selected}>
-  <PrimaryAction>
+<Card class="card image {className}" {selected}>
+  <PrimaryAction class="primary-action">
     <MediaImagePreview media={image} />
   </PrimaryAction>
   <Actions class="card-actions">
@@ -69,29 +70,5 @@
 </Card>
 <div class="card-outer" on:click={cardClick} on:mousedown on:keydown />
 
-<style lang="scss">
-  :global(.card) {
-    position: relative;
-  }
-  :global(.select) {
-    .card-outer {
-      &::after {
-        content: '';
-        display: block;
-        top: 0;
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background: #fff2;
-        border-radius: var(--mdc-shape-medium, 4px);
-        cursor: pointer;
-      }
-    }
-    :global(.card) {
-      outline: var(--select-border-w) solid var(--surface);
-    }
-    :global(.card[selected='true']) {
-      outline: var(--select-border-w) solid var(--secondary);
-    }
-  }
+<style>
 </style>

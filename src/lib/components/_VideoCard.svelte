@@ -1,6 +1,7 @@
 <script lang="ts">
   import './_button.scss';
   import './_menu-surface.scss';
+  import './_card.scss';
   import { page } from '$app/stores';
   import { getContext, createEventDispatcher } from 'svelte';
   import { fly } from 'svelte/transition';
@@ -149,7 +150,7 @@
   }
 </script>
 
-<Card use={[prepareClick]} class="card {className}" {selected}>
+<Card use={[prepareClick]} class="card {className} primary" {selected}>
   <PrimaryAction class="primary-action" onclick={() => currentVideo.set(video)}>
     <VideoMedia {video} bind:title bind:description {isEditMode} {emptyPoster} />
     <Content class="mdc-typography--body2">
@@ -321,30 +322,6 @@
 <style lang="scss">
   :global(.preview-image) {
     cursor: pointer;
-  }
-  :global(.card) {
-    position: relative;
-  }
-  :global(.select) {
-    .card-outer {
-      &::after {
-        content: '';
-        display: block;
-        top: 0;
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background: #fff2;
-        border-radius: var(--mdc-shape-medium, 4px);
-        cursor: pointer;
-      }
-    }
-    :global(.card) {
-      outline: var(--select-border-w) solid var(--surface);
-    }
-    :global(.card[selected='true']) {
-      outline: var(--select-border-w) solid var(--secondary);
-    }
   }
   .ellipsed {
     overflow: hidden;

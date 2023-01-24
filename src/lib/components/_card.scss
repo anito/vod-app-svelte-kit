@@ -1,0 +1,41 @@
+.select {
+  .card {
+    padding: var(--select-border-w);
+    background-color: var(--surface);
+    z-index: 2;
+    &[selected='true']::after {
+      content: '';
+      background: var(--secondary);
+    }
+  }
+  .card-outer::after {
+    content: '';
+    display: block;
+    top: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1333333333);
+    cursor: pointer;
+    z-index: 2;
+  }
+}
+.card {
+  position: relative;
+  .primary-action,
+  .card-actions {
+    position: relative;
+    z-index: 1;
+  }
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: var(--select-border-w);
+  right: var(--select-border-w);
+  left: var(--select-border-w);
+  height: calc(100% - 2 * var(--select-border-w));
+  background: var(--surface);
+  z-index: 1;
+  border-radius: var(--mdc-shape-medium);
+}
