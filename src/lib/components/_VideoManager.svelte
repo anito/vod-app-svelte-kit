@@ -148,7 +148,7 @@
       class="items-list grid lg:grid-cols-3 md:grid-cols-2 grid-flow-row gap-4"
     >
       {#each $videos.sort(sortAZ) as video (video.id)}
-        <li class="list-item">
+        <li class="list-item relative">
           <VideoCard
             on:video:posterCreated={(event) => posterCreatedHandler(event, video.id)}
             on:video:selectedPoster={(event) => posterSelectedHandler(event.detail, video.id)}

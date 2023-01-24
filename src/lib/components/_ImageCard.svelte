@@ -31,44 +31,43 @@
   }
 </script>
 
-<div class="card-outer" on:click={cardClick} on:mousedown on:keydown>
-  <Card class="card {className}" {selected}>
-    <PrimaryAction>
-      <MediaImagePreview media={image} />
-    </PrimaryAction>
-    <Actions class="card-actions">
-      <ActionButtons class="action-buttons" style="flex: 1 0 auto;">
-        <Button class="action-button" color="primary" on:click={() => posterMenu?.setOpen(true)}>
-          <Label>{$_('text.delete')}</Label>
-          <Icon class="material-icons">delete</Icon>
-        </Button>
-        <ActionIcons style="position: relative;">
-          <IconButton
-            class="material-icons"
-            on:click={() => posterMenu?.setOpen(true)}
-            toggle
-            aria-label={$_('text.more-options')}
-            title={$_('text.more-options')}
-          >
-            more_vert
-          </IconButton>
-          <Menu bind:this={posterMenu}>
-            <List>
-              <Item
-                ripple={false}
-                class="error-on-background"
-                on:SMUI:action={() =>
-                  dispatch('media:delete', { type: 'images', data: { id: image.id } })}
-              >
-                <Text>{$_('text.delete-poster')}</Text>
-              </Item>
-            </List>
-          </Menu>
-        </ActionIcons>
-      </ActionButtons>
-    </Actions>
-  </Card>
-</div>
+<Card class="card {className}" {selected}>
+  <PrimaryAction>
+    <MediaImagePreview media={image} />
+  </PrimaryAction>
+  <Actions class="card-actions">
+    <ActionButtons class="action-buttons" style="flex: 1 0 auto;">
+      <Button class="action-button" color="primary" on:click={() => posterMenu?.setOpen(true)}>
+        <Label>{$_('text.delete')}</Label>
+        <Icon class="material-icons">delete</Icon>
+      </Button>
+      <ActionIcons style="position: relative;">
+        <IconButton
+          class="material-icons"
+          on:click={() => posterMenu?.setOpen(true)}
+          toggle
+          aria-label={$_('text.more-options')}
+          title={$_('text.more-options')}
+        >
+          more_vert
+        </IconButton>
+        <Menu bind:this={posterMenu}>
+          <List>
+            <Item
+              ripple={false}
+              class="error-on-background"
+              on:SMUI:action={() =>
+                dispatch('media:delete', { type: 'images', data: { id: image.id } })}
+            >
+              <Text>{$_('text.delete-poster')}</Text>
+            </Item>
+          </List>
+        </Menu>
+      </ActionIcons>
+    </ActionButtons>
+  </Actions>
+</Card>
+<div class="card-outer" on:click={cardClick} on:mousedown on:keydown />
 
 <style lang="scss">
   :global(.card) {
@@ -76,7 +75,6 @@
   }
   :global(.select) {
     .card-outer {
-      position: relative;
       &::after {
         content: '';
         display: block;
@@ -87,12 +85,12 @@
         background: #fff2;
         cursor: pointer;
       }
-      :global(.card) {
-        outline: var(--select-border-w) solid var(--surface);
-      }
-      :global(.card[selected='true']) {
-        outline: var(--select-border-w) solid var(--secondary);
-      }
+    }
+    :global(.card) {
+      outline: var(--select-border-w) solid var(--surface);
+    }
+    :global(.card[selected='true']) {
+      outline: var(--select-border-w) solid var(--secondary);
     }
   }
 </style>

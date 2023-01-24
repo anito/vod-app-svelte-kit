@@ -92,24 +92,24 @@
   {#if $images.length}
     <ul bind:this={imagesList} class="items-list grid grid-cols-3 grid-flow-row gap-4 mb-10">
       {#each $images as image (image.id)}
-        <li class="list-item">
+        <li class="list-item relative">
           <ImageCard {image} />
         </li>
       {/each}
     </ul>
-    <Paginator
-      {pagination}
-      store={images}
-      id="images-paginator"
-      action="/videos?/more_images"
-      label={false}
-      icon="rotate_right"
-    />
   {:else}
-    <FlexContainer>
+    <FlexContainer maxHeight="300px">
       {$_('text.no-content-available')}
     </FlexContainer>
   {/if}
+  <Paginator
+    {pagination}
+    store={images}
+    id="images-paginator"
+    action="/videos?/more_images"
+    label={false}
+    icon="rotate_right"
+  />
   {#if $fabs === 'add-image'}
     <Fab class="floating-fab" color="primary" on:click={() => openUploader()} extended>
       <Label>{$_('text.new-poster')}</Label>

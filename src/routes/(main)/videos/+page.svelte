@@ -16,6 +16,7 @@
   $: tab = ((tab) => TABS.find((itm) => itm === tab))($page.url.searchParams.get('tab')) || TABS[0];
   $: tab && resetCardSelect();
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
+  $: deleteLabel = $_('text.delete').concat($selection.length ? ` (${$selection.length})` : '');
 
   onMount(() => {
     resetCardSelect();
@@ -84,7 +85,7 @@
           variant="outlined"
         >
           <Icon class="material-icons">delete</Icon>
-          <Label>({$selection.length}) {$_('text.delete')}</Label>
+          <Label>{deleteLabel}</Label>
         </Button>
       </Group>
     </div>

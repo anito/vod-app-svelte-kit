@@ -149,175 +149,174 @@
   }
 </script>
 
-<div class="card-outer" on:click={cardClick} on:mousedown on:keydown>
-  <Card use={[prepareClick]} class="card {className}" {selected}>
-    <PrimaryAction class="primary-action" onclick={() => currentVideo.set(video)}>
-      <VideoMedia {video} bind:title bind:description {isEditMode} {emptyPoster} />
-      <Content class="mdc-typography--body2">
-        <div class="wrapper flex flex-row justify-between">
-          <div class="flex flex-col" style="flex-basis: 50%; max-width: 50%">
-            <div class="text-xs text-inherit inline-flex">
-              <Icon class="material-icons">movie</Icon>
-              <span class="ellipsed pl-2">{video.title || $_('text.no-title')}</span>
+<Card use={[prepareClick]} class="card {className}" {selected}>
+  <PrimaryAction class="primary-action" onclick={() => currentVideo.set(video)}>
+    <VideoMedia {video} bind:title bind:description {isEditMode} {emptyPoster} />
+    <Content class="mdc-typography--body2">
+      <div class="wrapper flex flex-row justify-between">
+        <div class="flex flex-col" style="flex-basis: 50%; max-width: 50%">
+          <div class="text-xs text-inherit inline-flex">
+            <Icon class="material-icons">movie</Icon>
+            <span class="ellipsed pl-2">{video.title || $_('text.no-title')}</span>
+          </div>
+          {#if hasPrivileges}
+            <div class="text-xs text-inherit">
+              <Icon class="material-icons">cloud_upload</Icon>
+              <span class="ellipsed pl-2"
+                >{$_('text.uploaded-on', {
+                  values: {
+                    date: new Date(video.created).toLocaleDateString(
+                      LOCALESTORE.get($locale || DEFAULT_LOCALE)?.fns?.code,
+                      DateTimeFormatOptions
+                    )
+                  }
+                })}</span
+              >
             </div>
-            {#if hasPrivileges}
-              <div class="text-xs text-inherit">
-                <Icon class="material-icons">cloud_upload</Icon>
-                <span class="ellipsed pl-2"
-                  >{$_('text.uploaded-on', {
-                    values: {
-                      date: new Date(video.created).toLocaleDateString(
-                        LOCALESTORE.get($locale || DEFAULT_LOCALE)?.fns?.code,
-                        DateTimeFormatOptions
-                      )
-                    }
-                  })}</span
-                >
-              </div>
-            {:else}
-              <div class="flex text-xs text-inherit">
-                <Icon class="material-icons">timer</Icon>
-                <span class="ellipsed pl-2"
-                  >{@html $_('text.until-date', {
-                    values: {
-                      date:
-                        (matchingData &&
-                          new Date(matchingData.end).toLocaleDateString(
-                            LOCALESTORE.get($locale || DEFAULT_LOCALE)?.fns?.code,
-                            DateTimeFormatOptions
-                          )) ||
-                        'date invalid'
-                    }
-                  })}</span
-                >
-              </div>
-            {/if}
-          </div>
-          <div class="flex justify-end" style="flex-basis: 50%; max-width: 50%">
-            <IconButton
-              href={`/videos/${video.id}`}
-              color="primary"
-              class="button-shaped-round unelevated small"
-            >
-              <i class="material-icons">smart_display</i>
-            </IconButton>
-          </div>
+          {:else}
+            <div class="flex text-xs text-inherit">
+              <Icon class="material-icons">timer</Icon>
+              <span class="ellipsed pl-2"
+                >{@html $_('text.until-date', {
+                  values: {
+                    date:
+                      (matchingData &&
+                        new Date(matchingData.end).toLocaleDateString(
+                          LOCALESTORE.get($locale || DEFAULT_LOCALE)?.fns?.code,
+                          DateTimeFormatOptions
+                        )) ||
+                      'date invalid'
+                  }
+                })}</span
+              >
+            </div>
+          {/if}
         </div>
-      </Content>
-    </PrimaryAction>
-    {#if hasPrivileges}
-      <Actions class="card-actions">
-        <ActionButtons class="action-buttons" style="flex: 1 0 auto;">
+        <div class="flex justify-end" style="flex-basis: 50%; max-width: 50%">
+          <IconButton
+            href={`/videos/${video.id}`}
+            color="primary"
+            class="button-shaped-round unelevated small"
+          >
+            <i class="material-icons">smart_display</i>
+          </IconButton>
+        </div>
+      </div>
+    </Content>
+  </PrimaryAction>
+  {#if hasPrivileges}
+    <Actions class="card-actions">
+      <ActionButtons class="action-buttons" style="flex: 1 0 auto;">
+        <Button
+          color="primary"
+          class="action-button"
+          disabled={isEditMode && !canSave}
+          on:click={() => (isEditMode = !isEditMode && edit()) || save()}
+        >
+          <Label>{leftButton.label}</Label>
+          <Icon class="material-icons">{leftButton.icon}</Icon>
+        </Button>
+        <div bind:this={deleteMenuAnchor} use:Anchor>
           <Button
             color="primary"
             class="action-button"
-            disabled={isEditMode && !canSave}
-            on:click={() => (isEditMode = !isEditMode && edit()) || save()}
+            on:click={() => (isEditMode = !isEditMode && setDeleteMenuOpen(true))}
           >
-            <Label>{leftButton.label}</Label>
-            <Icon class="material-icons">{leftButton.icon}</Icon>
+            <Label>{rightButton.label}</Label>
+            <Icon class="material-icons">{rightButton.icon}</Icon>
           </Button>
-          <div bind:this={deleteMenuAnchor} use:Anchor>
-            <Button
-              color="primary"
-              class="action-button"
-              on:click={() => (isEditMode = !isEditMode && setDeleteMenuOpen(true))}
+          <Menu
+            bind:this={deleteMenu}
+            anchor={false}
+            bind:anchorElement={deleteMenuAnchor}
+            anchorCorner="TOP_RIGHT"
+          >
+            <List>
+              <Item ripple={false} class="error-on-background" on:SMUI:action={() => remove()}>
+                <Text>{$_('text.delete-video')}</Text>
+              </Item>
+            </List>
+          </Menu>
+        </div>
+        <ActionIcons>
+          <div bind:this={menuAnchor} use:Anchor>
+            <IconButton
+              class="material-icons"
+              on:click={() => cardMenu?.setOpen(true)}
+              aria-label={$_('text.more-options')}
+              title={$_('text.more-options')}>more_vert</IconButton
             >
-              <Label>{rightButton.label}</Label>
-              <Icon class="material-icons">{rightButton.icon}</Icon>
-            </Button>
             <Menu
-              bind:this={deleteMenu}
+              bind:this={cardMenu}
+              on:MDCMenuSurface:opened={cardMenuOpenedHandler}
               anchor={false}
-              bind:anchorElement={deleteMenuAnchor}
-              anchorCorner="TOP_RIGHT"
+              bind:anchorElement={menuAnchor}
+              anchorCorner="BOTTOM_LEFT"
+              style="left: -112px;"
             >
-              <List>
+              <List class="menu-list">
+                <Item on:click={() => createPoster()}>
+                  <Text>{$_('text.new-poster')}</Text>
+                </Item>
+                <Item disabled={!$images.length} on:click={() => imageList?.setOpen(true)}>
+                  <Text>{$_('text.select-poster')}</Text>
+                </Item>
+                <Separator />
+                <Item
+                  disabled={!video.image_id}
+                  on:SMUI:action={() => dispatch('video:removePoster', video.image_id)}
+                >
+                  <Text>{$_('text.remove-poster')}</Text>
+                </Item>
                 <Item ripple={false} class="error-on-background" on:SMUI:action={() => remove()}>
                   <Text>{$_('text.delete-video')}</Text>
                 </Item>
               </List>
             </Menu>
           </div>
-          <ActionIcons>
-            <div bind:this={menuAnchor} use:Anchor>
-              <IconButton
-                class="material-icons"
-                on:click={() => cardMenu?.setOpen(true)}
-                aria-label={$_('text.more-options')}
-                title={$_('text.more-options')}>more_vert</IconButton
-              >
-              <Menu
-                bind:this={cardMenu}
-                on:MDCMenuSurface:opened={cardMenuOpenedHandler}
-                anchor={false}
-                bind:anchorElement={menuAnchor}
-                anchorCorner="BOTTOM_LEFT"
-                style="left: -112px;"
-              >
-                <List class="menu-list">
-                  <Item on:click={() => createPoster()}>
-                    <Text>{$_('text.new-poster')}</Text>
-                  </Item>
-                  <Item disabled={!$images.length} on:click={() => imageList?.setOpen(true)}>
-                    <Text>{$_('text.select-poster')}</Text>
-                  </Item>
-                  <Separator />
-                  <Item
-                    disabled={!video.image_id}
-                    on:SMUI:action={() => dispatch('video:removePoster', video.image_id)}
-                  >
-                    <Text>{$_('text.remove-poster')}</Text>
-                  </Item>
-                  <Item ripple={false} class="error-on-background" on:SMUI:action={() => remove()}>
-                    <Text>{$_('text.delete-video')}</Text>
-                  </Item>
-                </List>
-              </Menu>
-            </div>
-          </ActionIcons>
-        </ActionButtons>
-        <div use:Anchor bind:this={imageListAnchor} style="top: -320px; right: 250px;">
-          <MenuSurface
-            bind:this={imageList}
-            bind:anchorElement={imageListAnchor}
-            anchor={false}
-            anchorCorner="TOP_RIGHT"
-            on:MDCMenuSurface:opened={imageListOpenedHandler}
-            on:MDCMenuSurface:closed={imageListClosedHandler}
-          >
-            <ImageList class="menu-surface-image-list">
-              {#if isImageListOpen}
-                {#each $images as image, i (image.id)}
-                  {#await getCachedImage(image.id) then src}
-                    <ImageListItem>
-                      <ImageAspectContainer>
-                        <Image
-                          class="preview-image"
-                          on:click={() => dispatch('video:selectedPoster', image.id)}
-                          {src}
-                        />
-                      </ImageAspectContainer>
-                    </ImageListItem>
-                  {/await}
-                {/each}
-              {/if}
-            </ImageList>
-            <Paginator
-              {pagination}
-              store={images}
-              label={false}
-              icon="rotate_right"
-              action="/videos?/more_images"
-              id="images-paginator"
-              style="--fontSize: 0.6em;"
-            />
-          </MenuSurface>
-        </div>
-      </Actions>
-    {/if}
-  </Card>
-</div>
+        </ActionIcons>
+      </ActionButtons>
+      <div use:Anchor bind:this={imageListAnchor} style="top: -320px; right: 250px;">
+        <MenuSurface
+          bind:this={imageList}
+          bind:anchorElement={imageListAnchor}
+          anchor={false}
+          anchorCorner="TOP_RIGHT"
+          on:MDCMenuSurface:opened={imageListOpenedHandler}
+          on:MDCMenuSurface:closed={imageListClosedHandler}
+        >
+          <ImageList class="menu-surface-image-list">
+            {#if isImageListOpen}
+              {#each $images as image, i (image.id)}
+                {#await getCachedImage(image.id) then src}
+                  <ImageListItem>
+                    <ImageAspectContainer>
+                      <Image
+                        class="preview-image"
+                        on:click={() => dispatch('video:selectedPoster', image.id)}
+                        {src}
+                      />
+                    </ImageAspectContainer>
+                  </ImageListItem>
+                {/await}
+              {/each}
+            {/if}
+          </ImageList>
+          <Paginator
+            {pagination}
+            store={images}
+            label={false}
+            icon="rotate_right"
+            action="/videos?/more_images"
+            id="images-paginator"
+            style="--fontSize: 0.6em;"
+          />
+        </MenuSurface>
+      </div>
+    </Actions>
+  {/if}
+</Card>
+<div class="card-outer" on:click={cardClick} on:mousedown on:keydown />
 
 <style lang="scss">
   :global(.preview-image) {
@@ -328,7 +327,6 @@
   }
   :global(.select) {
     .card-outer {
-      position: relative;
       &::after {
         content: '';
         display: block;
@@ -339,12 +337,12 @@
         background: #fff2;
         cursor: pointer;
       }
-      :global(.card) {
-        outline: var(--select-border-w) solid var(--surface);
-      }
-      :global(.card[selected='true']) {
-        outline: var(--select-border-w) solid var(--secondary);
-      }
+    }
+    :global(.card) {
+      outline: var(--select-border-w) solid var(--surface);
+    }
+    :global(.card[selected='true']) {
+      outline: var(--select-border-w) solid var(--secondary);
     }
   }
   .ellipsed {
