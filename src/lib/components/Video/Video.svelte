@@ -137,7 +137,6 @@
   }
 
   function handleMousedown(event: CustomEvent) {
-    console.log(event.detail);
     const detail = event.detail as unknown as MouseEvent;
     const target = event.detail.target as Element;
     const isMediaControl = target.classList.contains('play-pause-controllable');
