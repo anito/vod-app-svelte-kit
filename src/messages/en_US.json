@@ -249,7 +249,7 @@
     "files-in-upload-queue": "Upload-Queue not empty!",
     "files-in-queue": "You still have {count} {files} in the queue!",
     "select": "Select",
-    "deleting-media": "Deleting {media}",
+    "deleting-media": "Deleting {count} {media}",
     "deleting-media-title": "Removing {title}",
     "errors-occured": "{count} {type} could not be deleted. Try again.",
     "all-media-deleted": "{count} {type} have been removed",

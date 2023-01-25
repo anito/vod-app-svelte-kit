@@ -147,7 +147,9 @@
   }}
 >
   <Title id="info-title"
-    >{$_('text.deleting-media', { values: { media: getNameByEndpoint(tab) } })}</Title
+    >{$_('text.deleting-media', {
+      values: { count: $selection.length, media: getNameByEndpoint(tab) }
+    })}</Title
   >
   <Content>
     <div class="">{$_('text.confirm-deletion')}</div>

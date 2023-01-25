@@ -249,7 +249,7 @@
     "files-in-upload-queue": "Upload-Warteschlange ist nicht leer!",
     "files-in-queue": "Es befinde{plural} sich noch {count} {files} in der Warteschlange!",
     "select": "Auswählen",
-    "deleting-media": "Entferne {media}",
+    "deleting-media": "{count} {media} löschen",
     "deleting-media-title": "Entferne {title}",
     "errors-occured": "{count} {type} konnten nicht entfernt werden. Bitte erneut versuchen.",
     "all-media-deleted": "{count} {type} wurden entfernt",
