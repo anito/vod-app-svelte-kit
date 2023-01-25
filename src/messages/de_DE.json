@@ -249,10 +249,12 @@
     "files-in-upload-queue": "Upload-Warteschlange ist nicht leer!",
     "files-in-queue": "Es befinde{plural} sich noch {count} {files} in der Warteschlange!",
     "select": "Auswählen",
-    "deleting-videos": "Entferne Videos",
-    "deleting-video": "entferne {title}",
-    "errors-occured": "{count} Videos konnten nicht entfernt werden. Bitte erneut versuchen.",
-    "all-media-deleted": "{count} {type} wurden entfernt"
+    "deleting-media": "Entferne {media}",
+    "deleting-media-title": "Entferne {title}",
+    "errors-occured": "{count} {type} konnten nicht entfernt werden. Bitte erneut versuchen.",
+    "all-media-deleted": "{count} {type} wurden entfernt",
+    "confirm-deletion": "Die ausgewählten Dateien werden permanent entfernt. Möchten Siei fortfahren?",
+    "images": "Poster"
   },
   "summary": {
     "copy-link": {

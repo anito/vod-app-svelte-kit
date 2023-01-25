@@ -1,6 +1,5 @@
 <script lang="ts">
   import './_button.scss';
-  import './_card.scss';
   import { createEventDispatcher } from 'svelte';
   import MediaImagePreview from './_MediaImagePreview.svelte';
   import { selection } from '$lib/stores';

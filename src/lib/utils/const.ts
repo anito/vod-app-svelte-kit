@@ -17,6 +17,8 @@ export const DateTimeFormatOptions = {
 } as {
   weekday: 'long' | 'short' | 'narrow' | undefined;
 };
+export const VIDEO = 'videos';
+export const IMAGE = 'images';
 export const INBOX = 'inboxes';
 export const SENT = 'sents';
 export const ADMIN = 'Administrator';

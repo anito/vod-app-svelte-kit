@@ -1,17 +1,22 @@
 <script lang="ts">
+  import './_card.scss';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { onMount } from 'svelte';
-  import { selection, session, sitename } from '$lib/stores';
+  import { getContext, onMount } from 'svelte';
+  import { selection, session, sitename, currentMediaStore } from '$lib/stores';
   import { ADMIN, proxyEvent, SUPERUSER } from '$lib/utils';
   import Button, { Group, Label, Icon } from '@smui/button';
   import { VideoManager, ImageManager, Container } from '$lib/components';
   import { Header } from '$lib/components';
   import { _ } from 'svelte-i18n';
+  import Dialog, { Title, Content, Actions } from '@smui/dialog';
 
   const TABS = ['videos', 'images'];
 
   let select: boolean;
+  let confirmDeletionMediaDialog: Dialog;
+
+  const { getNameByEndpoint }: any = getContext('media');
 
   $: tab = ((tab) => TABS.find((itm) => itm === tab))($page.url.searchParams.get('tab')) || TABS[0];
   $: tab && resetCardSelect();
@@ -34,7 +39,7 @@
 
   function resetCardSelect() {
     selection.reset();
-    select = false;
+    currentMediaStore.update(tab);
   }
 </script>
 
@@ -76,12 +81,7 @@
         <Button
           class="focus:outline-none focus:shadow-outline"
           disabled={!$selection.length}
-          on:click={() =>
-            proxyEvent('media:deleteMany', {
-              type: tab,
-              show: true,
-              oncompleted: () => toggleCardSelect()
-            })}
+          on:click={() => confirmDeletionMediaDialog?.setOpen(true)}
           variant="outlined"
         >
           <Icon class="material-icons">delete</Icon>
@@ -132,6 +132,35 @@
     </div></Container
   >
 {/if}
+<Dialog
+  bind:this={confirmDeletionMediaDialog}
+  aria-labelledby="info-title"
+  aria-describedby="info-content"
+  on:SMUIDialog:closed={({ detail }) => {
+    if (detail.action === 'accept') {
+      proxyEvent('media:deleteMany', {
+        endpoint: tab,
+        show: true,
+        oncompleted: () => selection.reset()
+      });
+    }
+  }}
+>
+  <Title id="info-title"
+    >{$_('text.deleting-media', { values: { media: getNameByEndpoint(tab) } })}</Title
+  >
+  <Content>
+    <div class="">{$_('text.confirm-deletion')}</div>
+  </Content>
+  <Actions>
+    <Button>
+      <Label>{$_('text.cancel')}</Label>
+    </Button>
+    <Button action="accept" variant="unelevated">
+      <Label>{$_('text.delete')}</Label>
+    </Button>
+  </Actions>
+</Dialog>
 
 <style>
   .media-grid:not(.has-privileges),

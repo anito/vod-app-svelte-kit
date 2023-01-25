@@ -249,10 +249,12 @@
     "files-in-upload-queue": "Upload-Queue not empty!",
     "files-in-queue": "You still have {count} {files} in the queue!",
     "select": "Select",
-    "deleting-videos": "Deleting Videos",
-    "deleting-video": "Removing {title}",
+    "deleting-media": "Deleting {media}",
+    "deleting-media-title": "Removing {title}",
     "errors-occured": "{count} {type} could not be deleted. Try again.",
-    "all-media-deleted": "{count} {type} have been removed"
+    "all-media-deleted": "{count} {type} have been removed",
+    "confirm-deletion": "You are about to permanently delete selected media files. Do you want to proceed? ",
+    "images": "Images"
   },
   "summary": {
     "copy-link": {

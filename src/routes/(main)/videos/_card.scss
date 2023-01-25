@@ -1,12 +1,21 @@
 .select {
   .card {
     padding: var(--select-border-w);
-    background-color: var(--surface);
-    z-index: 2;
     &[selected='true']::after {
       content: '';
       background: var(--secondary);
     }
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: var(--select-border-w);
+    right: var(--select-border-w);
+    left: var(--select-border-w);
+    height: calc(100% - 2 * var(--select-border-w));
+    background: var(--surface);
+    z-index: 1;
+    border-radius: var(--mdc-shape-medium);
   }
   .card-outer::after {
     content: '';
@@ -27,15 +36,4 @@
     position: relative;
     z-index: 1;
   }
-}
-.card::before {
-  content: '';
-  position: absolute;
-  top: var(--select-border-w);
-  right: var(--select-border-w);
-  left: var(--select-border-w);
-  height: calc(100% - 2 * var(--select-border-w));
-  background: var(--surface);
-  z-index: 1;
-  border-radius: var(--mdc-shape-medium);
 }

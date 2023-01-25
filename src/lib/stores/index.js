@@ -1,6 +1,7 @@
 export { default as avatars } from './avatarStore';
 export { default as currentImage } from './currentImageStore';
 export { default as currentVideo } from './currentVideoStore';
+export { default as currentMediaStore } from './currentMediaStore';
 export { default as fabs } from './fabStore';
 export { default as flash } from './flashStore';
 export { default as googleUser } from './googleUser';

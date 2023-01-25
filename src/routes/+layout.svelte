@@ -7,7 +7,7 @@
   import '$lib/components/_colored_snackbar.scss';
   import '$lib/components/_dialog.scss';
   import '$lib/components/_list.scss';
-  import { derived, writable } from 'svelte/store';
+  import { derived, get, writable, type Readable } from 'svelte/store';
   import { afterNavigate, beforeNavigate, goto, invalidate, invalidateAll } from '$app/navigation';
   import { navigating, page } from '$app/stores';
   import { enhance } from '$app/forms';
@@ -35,6 +35,7 @@
     buildSearchParams
   } from '$lib/utils';
   import {
+    currentMediaStore,
     fabs,
     flash,
     framework,
@@ -50,8 +51,7 @@
     streams,
     selection
   } from '$lib/stores';
-  import { Modal, SvgIcon } from '$lib/components';
-  import { DoubleBounce } from 'svelte-loading-spinners';
+  import { Modal, SvgIcon, DoubleBounce } from '$lib/components';
   import {
     FrameworkSwitcher,
     LoadingModal,
@@ -64,9 +64,10 @@
   import { svg_manifest } from '$lib/svg_manifest';
   import { _, locale } from 'svelte-i18n';
   import Dialog, { Title as DialogTitle, Content, Actions as DialogActions } from '@smui/dialog';
-  import type { User, Video } from '$lib/types';
+  import type { User } from '$lib/types';
   import type { NavigationTarget } from '@sveltejs/kit';
   import type { Dropzone } from '$lib/components/Dropzone/type';
+  import { IMAGE, VIDEO } from '$lib/utils/const';
 
   const snackbarLifetime = 4000;
   const redirectDelay = 300;
@@ -85,7 +86,7 @@
   let snackbar: Snackbar;
   let settingsDialog: Dialog;
   let deletingMediaDialog: Dialog;
-  let deletedMedia: Video | undefined;
+  let media: any | undefined;
   let loaderBackgroundOpacity = 1;
   let loaderColor = 'var(--primary)';
   let loaderBackgroundColor: string;
@@ -226,6 +227,7 @@
   $: $locale && setMode(colorSchema?.current.mode);
   $: $mounted &&
     (loaderBackgroundColor = colorSchema.current.mode === DARK ? '#000000' : '#ffffff');
+  $: currentStore = $currentMediaStore;
 
   onMount(async () => {
     $mounted = true;
@@ -436,26 +438,40 @@
     }
   }
 
+  setContext('media', {
+    getNameByEndpoint: (endpoint: string | null) => {
+      if (endpoint === IMAGE) return $_('text.images');
+      if (endpoint === VIDEO) return $_('text.videos');
+    }
+  });
+
+  const { getNameByEndpoint }: any = getContext('media');
+
   async function mediaDeleteManyHandler({ detail }: CustomEvent) {
-    const { type, show, oncompleted } = detail;
-    const stores = new Map();
-    stores.set('images', images);
-    stores.set('videos', videos);
-    const store = stores.get(type);
+    const {
+      endpoint,
+      show,
+      oncompleted
+    }: { endpoint: string; show: boolean; oncompleted: () => void } = detail;
 
     deletingMediaDialog?.setOpen(true);
     const errors = [];
     const ids = $selection.slice();
     ids.forEach(async (id: string) => {
-      deletedMedia = $videos.find((video) => video.id === id);
-      const res = await fetch(`/${type}/${id}`, { method: 'DELETE' }).then(async (res) => {
-        if (res.ok) return await res.json();
-      });
-      if (res?.success) {
-        urls.del(id);
-        store.del(id);
-      } else {
-        errors.push(id);
+      media = $currentStore.find((media: any) => media.id === id);
+      if (media) {
+        const res = await fetch(`/${endpoint}/${media.id}`, { method: 'DELETE' }).then(
+          async (res) => {
+            if (res.ok) return await res.json();
+          }
+        );
+        await tick();
+        if (res?.success) {
+          urls.del(id);
+          currentStore.del(id);
+        } else {
+          errors.push(id);
+        }
       }
     });
     oncompleted?.();
@@ -464,10 +480,16 @@
     if (show) {
       let message = errors.length
         ? $_('text.errors-occured', {
-            values: { count: errors.length, type: type.charAt(0).toUpperCase() + type.slice(1) }
+            values: {
+              count: errors.length,
+              type: getNameByEndpoint(endpoint)
+            }
           })
         : $_('text.all-media-deleted', {
-            values: { count: ids.length, type: type.charAt(0).toUpperCase() + type.slice(1) }
+            values: {
+              count: ids.length,
+              type: getNameByEndpoint(endpoint)
+            }
           });
       configSnackbar(message);
       snackbar?.forceOpen();
@@ -829,7 +851,9 @@
                 {/if}
                 <Item class="justify-start">
                   <Button
-                    href={`${$page.url.pathname}${buildSearchParams($page.url.searchParams, {})}`}
+                    href={`${$page.url.pathname}${buildSearchParams($page.url.searchParams, {
+                      addableKeys: [['modal', 'settings']]
+                    })}`}
                     class="link-button"
                     ripple={false}
                   >
@@ -846,7 +870,7 @@
     </Modal>
   </Modal>
 {/if}
-<LoadingModal backgroundColor={loaderBackgroundColor} opacity={loaderBackgroundOpacity} wait={1000}>
+<LoadingModal backgroundColor={loaderBackgroundColor} opacity={loaderBackgroundOpacity} wait={500}>
   <DoubleBounce color={loaderColor} unit="px" size="200" />
 </LoadingModal>
 <Dialog
@@ -854,12 +878,12 @@
   aria-labelledby="info-title"
   aria-describedby="info-content"
   on:SMUIDialog:closed={async () => {
-    deletedMedia = undefined;
+    media = undefined;
   }}
 >
-  <DialogTitle id="info-title">{$_('text.deleting-videos')}</DialogTitle>
+  <DialogTitle id="info-title">{$_('text.deleting-media')}</DialogTitle>
   <Content>
-    <div class="">{$_('text.deleting-video', { values: { title: deletedMedia?.title } })}</div>
+    <div class="">{$_('text.deleting-media-title', { values: { title: media?.title } })}</div>
   </Content>
 </Dialog>
 <Dialog

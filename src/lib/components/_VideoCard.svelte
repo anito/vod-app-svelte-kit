@@ -1,7 +1,6 @@
 <script lang="ts">
   import './_button.scss';
   import './_menu-surface.scss';
-  import './_card.scss';
   import { page } from '$app/stores';
   import { getContext, createEventDispatcher } from 'svelte';
   import { fly } from 'svelte/transition';

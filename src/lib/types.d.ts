@@ -108,6 +108,7 @@ export interface UserFoundation<UserFoundationType = Record<any, any>> {
 export interface Image<ImageRepoType = Record<string, any>> {
   id: string | any;
   src: string;
+  created: string | number | Date;
 }
 
 export interface Avatar<AvatarRepoType = Record<string, any>> {

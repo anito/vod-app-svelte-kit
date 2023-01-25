@@ -1,8 +1,10 @@
-<script>
+<script lang="ts">
   import { navigating } from '$app/stores';
   import { afterNavigate, beforeNavigate } from '$app/navigation';
   import { onMount } from 'svelte';
   import { convert } from '$lib/utils';
+  import type { NavigationTarget } from '@sveltejs/kit';
+  import { DoubleBounce } from 'svelte-loading-spinners';
 
   export let wait = 500;
   export let backgroundColor = '#222222';
@@ -13,27 +15,22 @@
 
   /**
    * Configure where to supress the LoadinSpinner
-   * @type {string[]} - Configure url query names which shall supress the LoadinSpinner
+   * - Configure url query names which shall supress the LoadinSpinner
    */
   const searches = ['active'];
   /**
-   * @type {string[]} - Configure pathnames which shall supress the LoadinSpinner
+   * - Configure pathnames which shall supress the LoadinSpinner
    */
-  const pathnames = [];
+  const pathnames: string[] = [];
 
-  /** @type {HTMLElement} */
-  let root;
-  /** @type {ReturnType<typeof setTimeout>} */
-  let timeoutId;
+  let root: HTMLElement;
+  let timeoutId: string | number | NodeJS.Timeout | undefined;
 
   let disabled = false;
   const omitt = new Map([
     [
       SEARCHES_KEY,
-      /**
-       * @param {import('@sveltejs/kit').NavigationTarget} to
-       */
-      (to) => {
+      (to: NavigationTarget) => {
         searches.forEach((slug) => {
           if (to.url.searchParams.has(slug)) {
             disabled = true;

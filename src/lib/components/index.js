@@ -64,3 +64,4 @@ export { default as Section } from './_Section.svelte';
 export { default as Scrim } from './_Scrim.svelte';
 export { default as SvgIcon } from './_SvgIcon.svelte';
 export * from './DateRangePicker/index.js';
+export * from './LoadingSpinners';

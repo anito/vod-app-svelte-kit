@@ -266,7 +266,7 @@ export function buildSearchParams(
   searchParams: string | URLSearchParams | string[][] | Record<string, string> | undefined,
   options: {
     removableKeys?: string[];
-    addableKeys?: string[] | string[][];
+    addableKeys?: string[][];
   } = {}
 ) {
   const { removableKeys, addableKeys } = { ...options };
