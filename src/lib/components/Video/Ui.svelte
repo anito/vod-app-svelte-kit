@@ -65,12 +65,10 @@
   }
 
   function dispatchMousedown(event: MouseEvent) {
-    console.log(event);
     dispatch('ui:mousedown', event);
   }
 
   function dispatchTouchStart(event: TouchEvent) {
-    console.log(event);
     dispatch('ui:touchstart', event);
   }
 

@@ -70,14 +70,17 @@
         </Button>
       </Group>
       <Group variant="unelevated">
-        <Button
-          class="focus:outline-none focus:shadow-outline"
-          on:click={() => toggleCardSelect()}
-          variant="unelevated"
-        >
-          <Label>{select ? $_('text.done') : $_('text.select')}</Label>
-        </Button>
-
+        {#if $selection.length}
+          <Button
+            class="focus:outline-none focus:shadow-outline"
+            disabled={!$selection.length}
+            on:click={() => selection.reset()}
+            variant="unelevated"
+          >
+            <Icon class="material-icons">clear</Icon>
+            <Label>{$_('text.clear')}</Label>
+          </Button>
+        {/if}
         <Button
           class="focus:outline-none focus:shadow-outline"
           disabled={!$selection.length}
@@ -86,6 +89,14 @@
         >
           <Icon class="material-icons">delete</Icon>
           <Label>{deleteLabel}</Label>
+        </Button>
+        <Button
+          style="min-width: 150px;"
+          class="focus:outline-none focus:shadow-outline"
+          on:click={() => toggleCardSelect()}
+          variant="unelevated"
+        >
+          <Label>{select ? $_('text.done') : $_('text.select')}</Label>
         </Button>
       </Group>
     </div>

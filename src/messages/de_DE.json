@@ -254,7 +254,8 @@
     "errors-occured": "{count} {type} konnten nicht entfernt werden. Bitte erneut versuchen.",
     "all-media-deleted": "{count} {type} wurden entfernt",
     "confirm-deletion": "Die ausgewählten Dateien werden permanent entfernt. Möchten Siei fortfahren?",
-    "images": "Poster"
+    "images": "Poster",
+    "clear": "Aufheben"
   },
   "summary": {
     "copy-link": {

@@ -254,7 +254,8 @@
     "errors-occured": "{count} {type} could not be deleted. Try again.",
     "all-media-deleted": "{count} {type} have been removed",
     "confirm-deletion": "You are about to permanently delete selected media files. Do you want to proceed? ",
-    "images": "Images"
+    "images": "Images",
+    "clear": "Clear"
   },
   "summary": {
     "copy-link": {
