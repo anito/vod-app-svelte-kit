@@ -31,9 +31,7 @@
 }
 .card {
   position: relative;
-  .primary-action,
-  .card-actions {
-    position: relative;
+  .primary-action {
     z-index: 1;
   }
 }
