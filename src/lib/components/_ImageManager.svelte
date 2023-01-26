@@ -83,6 +83,7 @@
     }
     close$uploader();
   }
+
   function isVideoPoster(image: Image) {
     return !!image.videos?.length;
   }
