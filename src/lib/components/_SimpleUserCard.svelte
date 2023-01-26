@@ -42,7 +42,9 @@
           <SecondaryText>{user.email}</SecondaryText>
         </Text>
         {#if user?.protected}
-          <Meta class="material-icons locked">lock</Meta>
+          <div class="locked">
+            <Meta class="material-icons">lock</Meta>
+          </div>
         {/if}
         <div class="infos">
           {#each userInfos as info}
@@ -55,7 +57,7 @@
   </Item>
 {/if}
 
-<style>
+<style lang="scss">
   :global(.users-list .usercard-item) {
     background: var(--background);
     background: linear-gradient(
@@ -65,6 +67,20 @@
       var(--background-intense) 25%,
       var(--background-intense) 100%
     );
+    .locked {
+      position: absolute;
+      top: 0;
+      right: 0;
+      margin: 3px;
+      font-size: 0.7em;
+    }
+    .infos {
+      margin-left: auto;
+      margin-right: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
   }
   .usercard-box {
     display: flex;
@@ -77,20 +93,6 @@
   }
   .content-box.usercard-box {
     width: 100%;
-  }
-  .infos {
-    margin-left: auto;
-    margin-right: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-  :global(.locked) {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: 3px;
-    font-size: 0.7em;
   }
   .item-inner {
     border-bottom: none;

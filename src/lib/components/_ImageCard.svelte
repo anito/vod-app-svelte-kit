@@ -10,9 +10,11 @@
   import List, { Item, Separator, Text, PrimaryText, SecondaryText, Graphic } from '@smui/list';
   import { _ } from 'svelte-i18n';
   import type { Image } from '$lib/types';
+  import { SvgIcon } from '.';
 
   export let image: Image;
   export { className as class };
+  export let locked = false;
 
   const dispatch = createEventDispatcher();
 
@@ -34,6 +36,9 @@
 <Card class="card image {className}" {selected}>
   <PrimaryAction class="primary-action">
     <MediaImagePreview media={image} />
+    <div class="hidden" class:locked>
+      <SvgIcon name="image" fillColor="#000" />
+    </div>
   </PrimaryAction>
   <Actions class="card-actions">
     <ActionButtons class="action-buttons" style="flex: 1 0 auto;">
@@ -70,4 +75,15 @@
 <div class="card-outer" on:click={cardClick} on:mousedown on:keydown />
 
 <style>
+  .locked {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 3px;
+    font-size: 0.7em;
+    border-radius: 50%;
+    padding: 4px;
+    background-color: #fff;
+  }
 </style>

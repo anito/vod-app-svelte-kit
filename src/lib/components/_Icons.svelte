@@ -242,4 +242,18 @@
       />
     </circle>
   </svg>
+
+  <symbol id="ondemand_video" class="icon" viewBox="0 0 24 24">
+    <path
+      stroke="none"
+      d="M9 7v8l7-4zm12-4H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"
+    />
+  </symbol>
+
+  <symbol id="image" class="icon" viewBox="0 0 24 24">
+    <path
+      stroke="none"
+      d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4.86 8.86l-3 3.87L9 13.14 6 17h12l-3.86-5.14z"
+    />
+  </symbol>
 </div>

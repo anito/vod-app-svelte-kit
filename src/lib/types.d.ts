@@ -108,6 +108,7 @@ export interface UserFoundation<UserFoundationType = Record<any, any>> {
 export interface Image<ImageRepoType = Record<string, any>> {
   id: string | any;
   src: string;
+  videos: Video[];
   created: string | number | Date;
 }
 

@@ -7,7 +7,6 @@
   import { currentVideo, images, selection, session } from '$lib/stores';
   import { getMediaImage } from '$lib/utils/media';
   import {
-    addClass,
     ADMIN,
     DateTimeFormatOptions,
     DEFAULT_LOCALE,
@@ -46,6 +45,7 @@
   let description: string;
   let isImageListOpen = false;
 
+  $: console.log(video.image);
   $: pagination = $page.data.pagination?.images;
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: leftButton = isEditMode

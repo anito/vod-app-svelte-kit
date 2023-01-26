@@ -7,10 +7,11 @@
   import Fab, { Icon } from '@smui/fab';
   import { Label } from '@smui/common';
   import { ImageCard, MediaUploader, Info, Paginator, FlexContainer } from '$lib/components';
-  import { fabs, urls, sitename, images, session } from '$lib/stores';
+  import { fabs, videos, sitename, images, session } from '$lib/stores';
   import { _ } from 'svelte-i18n';
   import type Snackbar from '@smui/snackbar';
   import type { Dropzone } from '.';
+  import type { Image } from '$lib/types';
 
   let snackbar: Snackbar;
   let imagesList;
@@ -82,6 +83,9 @@
     }
     close$uploader();
   }
+  function isVideoPoster(image: Image) {
+    return !!image.videos.length;
+  }
 </script>
 
 <svelte:head>
@@ -90,10 +94,10 @@
 
 {#if $session.user}
   {#if $images.length}
-    <ul bind:this={imagesList} class="items-list grid grid-cols-3 grid-flow-row gap-4 mb-10">
+    <ul bind:this={imagesList} class="items-list grid grid-cols-3 grid-flow-row gap-4 mb-10 mt-10">
       {#each $images as image (image.id)}
         <li class="list-item relative">
-          <ImageCard {image} />
+          <ImageCard {image} locked={isVideoPoster(image)} />
         </li>
       {/each}
     </ul>
