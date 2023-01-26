@@ -147,7 +147,7 @@
 <Card class="card {className} primary" {selected}>
   <PrimaryAction class="primary-action" onclick={() => currentVideo.set(video)}>
     <VideoMedia {video} bind:title bind:description {isEditMode} {emptyPoster} />
-    <Content class="mdc-typography--body2">
+    <Content>
       <div class="wrapper flex flex-row justify-between">
         <div class="flex flex-col" style="flex-basis: 50%; max-width: 50%">
           <div class="text-xs text-inherit inline-flex">
@@ -155,7 +155,7 @@
             <span class="ellipsed pl-2">{video.title || $_('text.no-title')}</span>
           </div>
           {#if hasPrivileges}
-            <div class="text-xs text-inherit">
+            <div class="flex text-xs text-inherit ">
               <Icon class="material-icons">cloud_upload</Icon>
               <span class="ellipsed pl-2"
                 >{$_('text.uploaded-on', {
@@ -190,8 +190,7 @@
         <div class="flex justify-end" style="flex-basis: 50%; max-width: 50%">
           <IconButton
             href={`/videos/${video.id}`}
-            color="primary"
-            class="button-shaped-round unelevated small"
+            class="action-button button-shaped-round unelevated small"
           >
             <i class="material-icons">smart_display</i>
           </IconButton>
@@ -203,8 +202,8 @@
     <Actions class="card-actions">
       <ActionButtons class="action-buttons" style="flex: 1 0 auto;">
         <Button
-          color="primary"
           class="action-button"
+          variant="unelevated"
           disabled={isEditMode && !canSave}
           on:click={() => (isEditMode = !isEditMode && edit()) || save()}
         >
@@ -213,7 +212,7 @@
         </Button>
         <div bind:this={deleteMenuAnchor} use:Anchor>
           <Button
-            color="primary"
+            variant="unelevated"
             class="action-button"
             on:click={() => (isEditMode = !isEditMode && setDeleteMenuOpen(true))}
           >
@@ -321,5 +320,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    display: inline-block;
   }
 </style>
