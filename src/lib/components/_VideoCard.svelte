@@ -45,7 +45,6 @@
   let description: string;
   let isImageListOpen = false;
 
-  $: console.log(video.image);
   $: pagination = $page.data.pagination?.images;
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: leftButton = isEditMode
@@ -137,10 +136,6 @@
     $currentVideo !== video && currentVideo.set(video);
   }
 
-  function prepareClick(node: Element) {
-    // console.log(node);
-  }
-
   function cardClick(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
@@ -149,7 +144,7 @@
   }
 </script>
 
-<Card use={[prepareClick]} class="card {className} primary" {selected}>
+<Card class="card {className} primary" {selected}>
   <PrimaryAction class="primary-action" onclick={() => currentVideo.set(video)}>
     <VideoMedia {video} bind:title bind:description {isEditMode} {emptyPoster} />
     <Content class="mdc-typography--body2">
