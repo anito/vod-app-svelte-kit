@@ -11,4 +11,3 @@ node_modules
 .netlify
 static/smui-dark.css
 static/smui.css
-package-lock.json
