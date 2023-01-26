@@ -9,3 +9,6 @@ node_modules
 !.env.example
 .vercel
 .netlify
+static/smui-dark.css
+static/smui.css
+package-lock.json
