@@ -7,6 +7,7 @@
   import Button, { Label } from '@smui/button';
   import IconButton, { Icon } from '@smui/icon-button';
   import Menu from '@smui/menu';
+  import Tooltip, { Wrapper } from '@smui/tooltip';
   import List, { Item, Separator, Text, PrimaryText, SecondaryText, Graphic } from '@smui/list';
   import { _ } from 'svelte-i18n';
   import type { Image } from '$lib/types';
@@ -17,6 +18,7 @@
   export let locked = false;
 
   const dispatch = createEventDispatcher();
+  const videos = image.videos || [];
 
   let selected: boolean;
 
@@ -37,12 +39,19 @@
   <PrimaryAction class="primary-action">
     <MediaImagePreview media={image} />
     <div class="hidden" class:locked>
-      <SvgIcon name="image" fillColor="#000" />
+      <Wrapper>
+        <SvgIcon name="image" fillColor="#000" />
+        <Tooltip>
+          {#each videos as video}
+            {video.title}<br />
+          {/each}
+        </Tooltip>
+      </Wrapper>
     </div>
   </PrimaryAction>
   <Actions class="card-actions">
     <ActionButtons class="action-buttons" style="flex: 1 0 auto;">
-      <Button class="action-button" color="primary" on:click={() => posterMenu?.setOpen(true)}>
+      <Button class="action-button" variant="unelevated" on:click={() => posterMenu?.setOpen(true)}>
         <Label>{$_('text.delete')}</Label>
         <Icon class="material-icons">delete</Icon>
       </Button>

@@ -45,14 +45,6 @@
     padding: 0 10px;
   }
 }
-.card-actions {
-  display: inline-block;
-  --fontSize: 0.7em;
-  .mdc-button {
-    @include mdc-button-label-overflow-ellipsis();
-    @include mdc-button-density(-3);
-  }
-}
 
 .is-login-page {
   .sign-in-out {

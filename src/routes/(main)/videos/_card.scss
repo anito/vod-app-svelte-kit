@@ -1,10 +1,43 @@
+@import '@material/button/mixins';
+@import '@material/card';
+
+$border-radius: 3px;
+.card {
+  position: relative;
+  @include fill-color(var(--primary));
+  @include shape-radius($border-radius);
+  .primary-action {
+    color: var(--on-primary);
+    z-index: 1;
+  }
+  .mdc-icon-button {
+    color: var(--on-primary);
+  }
+  .card-actions {
+    display: inline-block;
+    --fontSize: 0.7em;
+  }
+  .mdc-button {
+    @include mdc-button-label-overflow-ellipsis();
+    @include mdc-button-density(0);
+  }
+}
+
 .select {
   .card {
     padding: var(--select-border-w);
+    @include fill-color(#42424231);
     &[selected='true']::after {
       content: '';
       background: var(--secondary);
     }
+    .card-actions {
+      display: none;
+    }
+  }
+  .card::after {
+    content: '';
+    border: 8px solid rgba(190, 28, 28, 0);
   }
   .card::before {
     content: '';
@@ -13,9 +46,9 @@
     right: var(--select-border-w);
     left: var(--select-border-w);
     height: calc(100% - 2 * var(--select-border-w));
-    background: var(--surface);
+    @include fill-color(var(--primary));
+    border-radius: $border-radius;
     z-index: 1;
-    border-radius: var(--mdc-shape-medium);
   }
   .card-outer::after {
     content: '';
@@ -24,14 +57,7 @@
     position: absolute;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.1333333333);
-    cursor: pointer;
     z-index: 2;
-  }
-}
-.card {
-  position: relative;
-  .primary-action {
-    z-index: 1;
+    cursor: pointer;
   }
 }
