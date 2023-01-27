@@ -144,7 +144,7 @@
   }
 </script>
 
-<Card class="card {className} primary" {selected}>
+<Card class="card {className} primary" {selected} variant="raised">
   <PrimaryAction class="primary-action" onclick={() => currentVideo.set(video)}>
     <VideoMedia {video} bind:title bind:description {isEditMode} {emptyPoster} />
     <Content>
@@ -203,6 +203,7 @@
       <ActionButtons class="action-buttons" style="flex: 1 0 auto;">
         <Button
           class="action-button"
+          color="primary"
           variant="unelevated"
           disabled={isEditMode && !canSave}
           on:click={() => (isEditMode = !isEditMode && edit()) || save()}
@@ -212,8 +213,9 @@
         </Button>
         <div bind:this={deleteMenuAnchor} use:Anchor>
           <Button
-            variant="unelevated"
             class="action-button"
+            color="primary"
+            variant="unelevated"
             on:click={() => (isEditMode = !isEditMode && setDeleteMenuOpen(true))}
           >
             <Label>{rightButton.label}</Label>

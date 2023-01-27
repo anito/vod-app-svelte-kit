@@ -5,14 +5,29 @@ $border-radius: 3px;
 .theme-default {
   .card {
     position: relative;
-    @include fill-color(var(--primary));
     @include shape-radius($border-radius);
     .primary-action {
-      color: var(--on-primary);
       z-index: 1;
     }
-    .mdc-icon-button {
-      color: var(--on-primary);
+    &.primary {
+      @include fill-color(var(--primary));
+      .primary-action,
+      .card-actions {
+        color: var(--on-primary);
+        .mdc-icon-button {
+          color: var(--on-primary);
+        }
+      }
+    }
+    &.secondary {
+      @include fill-color(var(--secondary));
+      .primary-action,
+      .card-actions {
+        color: var(--on-secondary);
+        .mdc-icon-button {
+          color: var(--on-secondary);
+        }
+      }
     }
     .card-actions {
       display: inline-block;
@@ -40,6 +55,12 @@ $border-radius: 3px;
       content: '';
       border: 8px solid rgba(190, 28, 28, 0);
     }
+    .card.primary::before {
+      @include fill-color(var(--primary));
+    }
+    .card.secondary::before {
+      @include fill-color(var(--secondary));
+    }
     .card::before {
       content: '';
       position: absolute;
@@ -47,7 +68,6 @@ $border-radius: 3px;
       right: var(--select-border-w);
       left: var(--select-border-w);
       height: calc(100% - 2 * var(--select-border-w));
-      @include fill-color(var(--primary));
       border-radius: $border-radius;
       z-index: 1;
     }
