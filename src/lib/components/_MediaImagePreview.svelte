@@ -4,8 +4,7 @@
   import { getExt, getMediaImage } from '$lib/utils';
   import type { Avatar, Image, Video } from '$lib/types';
 
-  const posterUrl = `https://via.placeholder.com/320x180.png?text=`;
-
+  export let fallback = `https://placehold.co/100x100?text=`;
   export let media: Video | Image | Avatar;
 
   const settings = {
@@ -14,11 +13,14 @@
     square: 0
   };
 
-  let id: string;
-  let poster: string | undefined = (media && `${posterUrl}${getExt(media.src)}`) || posterUrl;
+  let poster: string | undefined = `${fallback}${getExt(media?.src || '')}`;
 
-  $: media && (id = media.id);
-  $: id && ((id) => getMediaImage(id, $session.user?.jwt, settings).then((v) => (poster = v)))(id);
+  $: (async (id) => {
+    if (id) {
+      const res = await getMediaImage(id, $session.user?.jwt, settings).then((v) => v);
+      if (res) poster = res;
+    }
+  })(media?.id);
 </script>
 
 <Media aspectRatio="16x9" style="background-image:url({poster})" />

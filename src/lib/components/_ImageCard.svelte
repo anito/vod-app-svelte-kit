@@ -36,7 +36,7 @@
   }
 </script>
 
-<Card class="card image {className}" {selected}>
+<Card class="card image {className} primary" {selected}>
   <PrimaryAction class="primary-action">
     <MediaImagePreview media={image} />
     <div class="hidden" class:locked>
