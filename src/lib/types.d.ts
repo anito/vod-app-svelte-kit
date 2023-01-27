@@ -156,9 +156,9 @@ export interface IndexedStream<IndexedStreamType = Record<string, any>> {
 }
 
 export interface GoogleUser<GoogleUserType = Record<string, any>> {
-  id: string;
-  name: string;
-  email: string | undefined;
+  id?: string;
+  name?: string;
+  email?: string;
 }
 
 export interface Group<GroupType = Record<string, any>> {

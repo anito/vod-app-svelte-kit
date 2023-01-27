@@ -1,33 +1,31 @@
-<script>
-  // @ts-nocheck
+<script lang="ts">
   import { onMount } from 'svelte';
   import { flash, googleUser } from '$lib/stores';
   import { get, proxyEvent } from '$lib/utils';
   import { _ } from 'svelte-i18n';
-  import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import type { GoogleUser } from '$lib/types';
 
   export let client_id = '';
 
-  /** @type {HTMLButtonElement}*/
-  let signInButton;
-  /** @type {string}*/
-  let id;
-  /** @type {string}*/
-  let name;
-  /** @type {string}*/
-  let email;
+  let signInButton: HTMLButtonElement;
+  let id: string | undefined;
+  let name: string | undefined;
+  let email: string | undefined;
+  let globalGoogle: any;
 
-  googleUser.subscribe(
-    /** @param {import('$lib/types').GoogleUser} val*/ (val) => ({ id, name, email } = { ...val })
-  );
+  googleUser.subscribe((val) => ({ id, name, email } = { ...val }));
 
   onMount(() => {
-    (window.google && signIn()) || window.addEventListener('load', signIn);
+    if ('google' in window) {
+      globalGoogle = window['google'];
+      signIn();
+    } else {
+      window.addEventListener('load', signIn);
+    }
   });
 
   function signIn() {
-    google.accounts.id.initialize({
+    globalGoogle.accounts.id.initialize({
       client_id,
       auto_select: false,
       context: 'signin',
@@ -36,26 +34,26 @@
     renderButton();
   }
 
-  async function googleHandleCredentialResponse({ credential }) {
+  async function googleHandleCredentialResponse({ credential }: any) {
     decodeJwtResponse(credential);
   }
 
-  async function decodeJwtResponse(token) {
+  async function decodeJwtResponse(token: string) {
     flash.update({ message: $_('text.authenticating'), permanent: true });
-    await get(`/auth/login?token=${token}&type=google`, { token }).then(async (res) => {
-      const { success, data } = { ...res };
+    await get(`/auth/login?token=${token}&type=google`).then(async (res) => {
+      const { success, data }: any = { ...res };
       if (success) {
         googleUser.set(data.user);
         proxyEvent('session:success', { session: { ...data } });
       } else {
         proxyEvent('session:error', { ...data, redirect: '/login' });
       }
-      google.accounts.id.prompt(); // display the One Tap dialog
+      globalGoogle.accounts.id.prompt(); // display the One Tap dialog
     });
   }
 
   function renderButton() {
-    google.accounts.id.renderButton(
+    globalGoogle.accounts.id.renderButton(
       signInButton,
       {
         theme: 'filled_blue',
@@ -66,13 +64,13 @@
         width: '221'
       } // customization attributes
     );
-    google.accounts.id.prompt(); // display the One Tap dialog
+    globalGoogle.accounts.id.prompt(); // display the One Tap dialog
   }
 
-  function signOut(id) {
-    google.accounts.id.disableAutoSelect();
-    google.accounts.id.revoke(id, (res) => {
-      googleUser.set(null);
+  function signOut(id: string | undefined) {
+    globalGoogle.accounts.id.disableAutoSelect();
+    globalGoogle.accounts.id.revoke(id, (res: any) => {
+      googleUser.set({ id: undefined });
     });
   }
 </script>

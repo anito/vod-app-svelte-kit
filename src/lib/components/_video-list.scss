@@ -62,6 +62,8 @@ $on-active: color-palette.$light-green-50;
   }
 }
 .video-list {
-  margin-bottom: 2.5rem;
-  padding: 0;
+  &.mdc-deprecated-list {
+    margin-bottom: 2.5rem;
+    padding: 0;
+  }
 }
