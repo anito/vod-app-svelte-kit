@@ -16,7 +16,7 @@
     FlexContainer,
     SearchTextField
   } from '$lib/components';
-  import { dynamicUrl, log, proxyEvent } from '$lib/utils';
+  import { dynamicUrl, filterByModelKeys, proxyEvent } from '$lib/utils';
   import { session, videos } from '$lib/stores';
   import emptyPoster from '/src/assets/images/empty-poster.jpg';
   import { _ } from 'svelte-i18n';
@@ -26,6 +26,7 @@
 
   const minSearchChars = 2;
   const { searchVideos }: any = getContext('search');
+  const modelSearchKeys = 'title,id';
 
   let selectedIndex: any;
   let search = '';
@@ -36,17 +37,14 @@
   $: isDeepSearch = search.length >= minSearchChars;
   $: if (isDeepSearch) {
     (async (s) => {
-      const { success, data } = await searchVideos('title', s);
+      const { success, data } = await searchVideos({ keys: modelSearchKeys, search: s });
       if (success) {
         proxyEvent('video:add', { data });
       }
     })(search);
   }
-  $: filteredVideos =
-    Array.isArray($videos) &&
-    $videos
-      .filter((video) => video.title?.toLowerCase().indexOf(search.toLowerCase()) !== -1)
-      .sortBy('title');
+  $: filteredVideos = ((videos) => filterByModelKeys(search, videos, modelSearchKeys))($videos);
+  $: filteredVideos.sortBy('title');
 </script>
 
 <Layout {sidebar}>

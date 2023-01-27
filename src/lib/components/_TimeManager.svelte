@@ -26,6 +26,7 @@
     proxyEvent,
     sortByEndDate,
     createRedirectSlug,
+    filterByModelKeys,
     ADMIN,
     SUPERUSER,
     LOCALESTORE
@@ -42,7 +43,7 @@
   const { getSnackbar, configSnackbar }: any = getContext('snackbar');
   const { open, close }: any = getContext('editor-modal');
   const { setFab }: any = getContext('fab');
-  const { searchVideos }: any = getContext('search');
+  const { searchVideos, searchVideosAll }: any = getContext('search');
   const timespanSelections = [
     { title: 'text.1-month', value: 30 },
     { title: 'text.2-months', value: 60 },
@@ -53,6 +54,7 @@
   const USERVIDEOSLIST = 'user-video-list';
   const NONUSERVIDEOSLIST = 'non-user-videos-list';
   const minSearchChars = 2;
+  const modelSearchKeys = 'description,title,id';
 
   let root: Element;
   let main: Element;
@@ -127,30 +129,30 @@
         return { ...video };
       }
     }) || [];
-  $: noneUserVideos = hasPrivileges
-    ? $videos?.sortBy('title')
-    : $videosAll
-        ?.filter(
-          (video) =>
-            !userVideos?.find((uv) => {
-              return (
-                video.id === uv.id && (!uv._joinData.end || new Date(uv._joinData.end) > new Date())
-              );
-            })
-        )
-        .sortBy('title');
+  $: noneUserVideos = hasPrivileges ? $videos : $videosAll;
+  // : $videosAll?.filter(
+  //     (video) =>
+  //       !userVideos?.find((uv) => {
+  //         return (
+  //           video.id === uv.id && (!uv._joinData.end || new Date(uv._joinData.end) > new Date())
+  //         );
+  //       })
+  //   );
   $: if (search.length >= minSearchChars) {
     (async (s) => {
-      const { success, data } = await searchVideos('title', s);
-      if (success) {
-        hasPrivileges ? videos.add(data) : videosAll.add(data);
+      let res: any;
+      if (hasPrivileges) {
+        res = await searchVideos({ keys: modelSearchKeys, search: s });
+        if (res.success) videos.add(res.data);
+      } else {
+        res = await searchVideosAll({ keys: modelSearchKeys, search: s });
+        if (res.success) videosAll.add(res.data);
       }
     })(search);
   }
-  $: filteredVideos = ((videos) =>
-    videos?.filter(
-      (video: Video) => video.title?.toLowerCase().indexOf(search.toLowerCase()) !== -1
-    ) || [])(noneUserVideos);
+  $: filteredVideos = ((videos) => filterByModelKeys(search, videos, modelSearchKeys))(
+    noneUserVideos
+  );
   $: filteredVideos.sortBy('title');
   $: addClass(isopen);
 
@@ -210,7 +212,7 @@
     const { video } = detail;
     const id = video?.id;
     selectionVideoId = id;
-    const videoExists = $videos.find((video) => selectionVideoId === video.id) || false;
+    const videoExists = $videosAll.find((video) => selectionVideoId === video.id) || false;
     if (!videoExists) {
       await fetchVideo(id).then((res) => proxyEvent('video:add', { data: [res] }));
     }
@@ -218,13 +220,9 @@
   }
 
   async function fetchVideo(id: string) {
-    return await fetch(`/videos/${id}`)
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.success) {
-          return res.data;
-        }
-      });
+    return await fetch(`/repos/videos/all?id=${id}`)
+      .then(async (res) => await res.json())
+      .then((res) => res);
   }
 
   function onApplyHandler({ detail }: CustomEvent) {
@@ -355,7 +353,7 @@
     setTimeout(() => {
       lists.forEach((name) => {
         let item = itemsList[name].items.find((item: { selected: any }) => item.selected);
-        item?.element.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        item?.element.scrollIntoView({ block: 'center', behavior: 'smooth' });
       });
     }, 100);
   }
@@ -364,7 +362,7 @@
     const { items, element } = itemsList[NONUSERVIDEOSLIST];
     await tick();
     const last = element.querySelector(`li:nth-child(${items.length})`); // :last-child fails for some reason
-    last.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    last.scrollIntoView({ block: 'center', behavior: 'smooth' });
   }
 
   function addClass(isopen: boolean) {
@@ -522,6 +520,8 @@
                 >
                   <Icon class="material-icons">add_circle</Icon>
                 </IconButton>
+              {:else if userVideos.find(({ id }) => video.id == id)}
+                <Icon class="material-icons">verified</Icon>
               {/if}
             </SimpleVideoCard>
           {/each}

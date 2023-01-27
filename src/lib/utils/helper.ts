@@ -180,6 +180,21 @@ export function svg(fn: { (c: any): string }, colors: string | string[]) {
   );
 }
 
+export function filterByModelKeys(search: string, stack: any, keys: string = '') {
+  const modelKeys = keys.replace(/\s+/, '').split(',');
+  return (
+    stack?.filter((item: any) => {
+      let n = modelKeys.length;
+      let res = false;
+      while (n > 0) {
+        res = item[modelKeys[--n]]?.toLowerCase().indexOf(search.toLowerCase()) !== -1;
+        if (res) break;
+      }
+      return res;
+    }) || []
+  );
+}
+
 export function addClass(node: HTMLDivElement, className: string) {
   const classNames = className.trim().replace(/(\s+)/g, ' ').split(' ');
   classNames.map((cn) => cn && node.classList.add(cn));

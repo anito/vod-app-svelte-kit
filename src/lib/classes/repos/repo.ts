@@ -17,8 +17,9 @@ export class Repo {
       token: string;
     }
   ) => {
-    const url = `${this.endpoint}/${slug}`;
+    const url = `${this.endpoint}/${slug}?limit=1`;
     return await api.get(url, { token: token || this.token }).then((res) => {
+      console.log('#########', url, res);
       return res.data;
     });
   };
@@ -32,12 +33,14 @@ export class Repo {
     page: string;
     limit: string;
     token: string;
-    match?: Record<string, unknown>;
+    match?: Record<string, string>;
   }): Promise<Response> => {
-    const searchParams = new URLSearchParams();
+    // console.log(match);
+    const searchParams = new URLSearchParams(match);
     page && searchParams.append('page', page);
     limit && searchParams.append('limit', limit);
     const url = `${this.endpoint}?${searchParams.toString()}`;
+    console.log(url);
     return await api
       .get(url, { token: token || this.token })
       .then((res) => {

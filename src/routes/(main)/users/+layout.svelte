@@ -19,10 +19,9 @@
     UserGraphic,
     VideoEditorList
   } from '$lib/components';
-  import { log, proxyEvent, USER } from '$lib/utils';
+  import { proxyEvent, filterByModelKeys, USER } from '$lib/utils';
   import Button, { Icon as ButtonIcon } from '@smui/button';
   import Fab, { Label } from '@smui/fab';
-  import Textfield from '@smui/textfield';
   import Icon from '@smui/textfield/icon';
   import List from '@smui/list';
   import Dialog, { Title as DialogTitle, Content, Actions, InitialFocus } from '@smui/dialog';
@@ -39,6 +38,7 @@
   const { getSnackbar, configSnackbar }: any = getContext('snackbar');
   const { getSegment }: any = getContext('segment');
   const { searchUsers }: any = getContext('search');
+  const modelSearchKeys = 'name,id';
 
   const segment = getSegment();
   export let data: LayoutData;
@@ -80,16 +80,13 @@
   $: isDeepSearch = search.length >= minSearchChars;
   $: if (isDeepSearch) {
     (async (s) => {
-      const { success, data } = await searchUsers('name', s);
+      const { success, data } = await searchUsers({ keys: 'name,id', search: s }, 10);
       if (success) users.add(data);
     })(search);
   }
-  $: filteredUsers =
-    $users.filter(
-      (user) =>
-        user.name.toLowerCase().indexOf(search.toLowerCase()) !== -1 &&
-        user.id !== $session.user?.id
-    ) || [];
+  $: filteredUsers = ((users) => filterByModelKeys(search, users, modelSearchKeys))(
+    $users.filter((user) => user.id !== $session.user?.id)
+  );
   $: filteredUsers.sortBy('name');
   $: _infos = $infos as Map<string, { issues: Issue[] }>;
   $: userInfos =

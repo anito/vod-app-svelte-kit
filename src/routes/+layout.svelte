@@ -50,7 +50,8 @@
     images,
     users,
     streams,
-    selection
+    selection,
+    videosAll
   } from '$lib/stores';
   import { Modal, SvgIcon, DoubleBounce } from '$lib/components';
   import {
@@ -151,12 +152,32 @@
       })
   });
 
+  const mounted = writable(isMounted);
+  setContext('mounted', {
+    mounted
+  });
+
+  setContext('media', {
+    getNameByEndpoint: (endpoint: string | null) => {
+      if (endpoint === IMAGE) return $_('text.images');
+      if (endpoint === VIDEO) return $_('text.videos');
+    }
+  });
+
+  setContext('search', {
+    searchUsers: (data: any, limit: number) =>
+      searchBy('/repos/users', { match: data, limit: limit || 10 }),
+    searchVideos: (data: any, limit: number) =>
+      searchBy('/repos/videos', { match: data, limit: limit || 10 }),
+    searchVideosAll: (data: any, limit: number) =>
+      searchBy('/repos/videos/all', { match: data, limit: limit || 10 })
+  });
+
   const editableSettings = new Map([
     ['Console', ['infoLevel']],
     ['Session', ['foo', 'bar']]
   ]);
   const { getSnackbar }: any = getContext('snackbar');
-  const mounted = writable(isMounted);
 
   ticker.subscribe((val) => {
     info(
@@ -169,10 +190,6 @@
     if (val === 0) {
       proxyEvent('session:stop', { redirect: '/' });
     }
-  });
-
-  setContext('mounted', {
-    mounted
   });
 
   const { getSegment }: any = getContext('segment');
@@ -410,7 +427,7 @@
     if (!Array.isArray(data)) {
       data = [data];
     }
-    videos.add(data);
+    videosAll.add(data);
     // invalidate('app:pagination');
   }
 
@@ -439,23 +456,10 @@
     }
   }
 
-  setContext('media', {
-    getNameByEndpoint: (endpoint: string | null) => {
-      if (endpoint === IMAGE) return $_('text.images');
-      if (endpoint === VIDEO) return $_('text.videos');
-    }
-  });
-
-  setContext('search', {
-    searchUsers: (key: string, val: any) => searchBy('users', key, val),
-    searchVideos: (key: string, val: any) => searchBy('videos', key, val)
-  });
-
-  async function searchBy(endpoint: string, key: string, val: any) {
-    return await api
-      .get(`${endpoint}?${key}=${val}`, { token: $session.user?.jwt })
-      .then((res) => res)
-      .catch((reason) => {});
+  async function searchBy(endpoint: string, data: any) {
+    return await fetch(`${endpoint}`, { method: 'POST', body: JSON.stringify(data) }).then(
+      async (res) => await res.json()
+    );
   }
 
   const { getNameByEndpoint }: any = getContext('media');

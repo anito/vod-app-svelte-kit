@@ -12,8 +12,17 @@ export const GET = async ({ locals: { usersRepo, session }, url }: RequestEvent)
     const id = url.searchParams.get('id');
     users = await usersRepo.get(id, { locale, token });
   } else {
-    users = await usersRepo.getAll({ page, limit, locale, token });
+    users = await usersRepo.getAll({ page, limit, token });
   }
 
   return json(users);
+};
+
+export const POST = async ({ locals: { usersRepo, session }, url, request }: RequestEvent) => {
+  const { user } = session.data;
+  const token = user?.jwt;
+  const { match, limit } = await request.json();
+  const res = await usersRepo.getAll({ match, token, limit });
+
+  return json(res);
 };
