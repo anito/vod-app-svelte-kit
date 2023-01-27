@@ -482,8 +482,7 @@
         >
       </div>
       <SearchTextField
-        class="absolute"
-        style="z-index: 1;"
+        style="position: absolute; z-index: 1;"
         bind:search
         label={$_('text.search-videos')}
         infoLabel={$_('text.type-min-char-count', { values: { count: minSearchChars } })}
