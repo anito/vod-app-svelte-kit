@@ -427,8 +427,7 @@
     if (!Array.isArray(data)) {
       data = [data];
     }
-    videosAll.add(data);
-    // invalidate('app:pagination');
+    hasPrivileges ? videos.add(data) : videosAll.add(data);
   }
 
   async function mediaDeleteHandler({ detail }: CustomEvent) {

@@ -212,15 +212,24 @@
     const { video } = detail;
     const id = video?.id;
     selectionVideoId = id;
-    const videoExists = $videosAll.find((video) => selectionVideoId === video.id) || false;
+    const videoExists = ((isPrivileged) => {
+      const finder = (v: Video) => selectionVideoId === v.id;
+      if (isPrivileged) {
+        return !!$videos.find(finder);
+      } else {
+        return !!$videosAll.find(finder);
+      }
+    })(hasPrivileges);
     if (!videoExists) {
-      await fetchVideo(id).then((res) => proxyEvent('video:add', { data: [res] }));
+      await fetchVideo(`/repos/videos?id=${id}`).then((res) =>
+        proxyEvent('video:add', { data: [res] })
+      );
     }
     scrollIntoView();
   }
 
-  async function fetchVideo(id: string) {
-    return await fetch(`/repos/videos/all?id=${id}`)
+  async function fetchVideo(path: string) {
+    return await fetch(path)
       .then(async (res) => await res.json())
       .then((res) => res);
   }

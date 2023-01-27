@@ -23,7 +23,7 @@ export const GET = async ({
   return json(res);
 };
 
-export const POST = async ({ locals: { videosAllRepo, session }, url, request }: RequestEvent) => {
+export const POST = async ({ locals: { videosAllRepo, session }, request }: RequestEvent) => {
   const { user } = session.data;
   const token = user?.jwt;
   const { match, limit } = await request.json();

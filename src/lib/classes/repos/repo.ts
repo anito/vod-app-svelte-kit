@@ -17,9 +17,8 @@ export class Repo {
       token: string;
     }
   ) => {
-    const url = `${this.endpoint}/${slug}?limit=1`;
+    const url = `${this.endpoint}/${slug}`;
     return await api.get(url, { token: token || this.token }).then((res) => {
-      console.log('#########', url, res);
       return res.data;
     });
   };
