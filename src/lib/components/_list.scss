@@ -1,6 +1,7 @@
 .dark {
-  .mdc-list-item--selected {
-    a {
+  .mdc-deprecated-list-item--selected {
+    a,
+    .mdc-icon-button {
       color: var(--mdc-theme-text-primary-on-background);
     }
   }

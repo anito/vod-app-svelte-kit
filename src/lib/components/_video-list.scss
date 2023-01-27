@@ -5,11 +5,9 @@
 @import '@material/chips/deprecated/index';
 @import '@material/list/index';
 
-
 $active: color-palette.$light-green-500;
 $on-active: color-palette.$light-green-50;
 .video-list .user-video {
-
   .mdc-deprecated-list-item__primary-text {
     @include baseline-top(23px);
     @include baseline-bottom(20px);
@@ -62,4 +60,8 @@ $on-active: color-palette.$light-green-50;
       }
     }
   }
+}
+.video-list {
+  margin-bottom: 2.5rem;
+  padding: 0;
 }

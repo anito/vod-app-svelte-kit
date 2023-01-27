@@ -13,7 +13,8 @@
     Container,
     Paginator,
     Header,
-    FlexContainer
+    FlexContainer,
+    SearchTextField
   } from '$lib/components';
   import { dynamicUrl, log, proxyEvent } from '$lib/utils';
   import { session, videos } from '$lib/stores';
@@ -23,19 +24,8 @@
 
   export let data: LayoutData;
 
-  async function searchBy(key: any, val: any) {
-    return await api
-      .get(`videos?${key}=${val}`, { token: $session.user?.jwt })
-      .then((res) => res)
-      .catch((reason) => log(reason));
-  }
-
-  setContext('search', {
-    findBy: searchBy
-  });
-
   const minSearchChars = 2;
-  const { findBy }: any = getContext('search');
+  const { searchVideos }: any = getContext('search');
 
   let selectedIndex: any;
   let search = '';
@@ -46,7 +36,7 @@
   $: isDeepSearch = search.length >= minSearchChars;
   $: if (isDeepSearch) {
     (async (s) => {
-      const { success, data } = await findBy('title', s);
+      const { success, data } = await searchVideos('title', s);
       if (success) {
         proxyEvent('video:add', { data });
       }
@@ -67,20 +57,14 @@
   <div class="sidebar flex-1" slot="side">
     <Container transparent headerHeight="76px">
       <div slot="header">
-        <Textfield class="search-for-item" bind:value={search} label={$_('text.search-video')}>
-          <Icon
-            role="button"
-            class="material-icons-outlined cancel-search"
-            slot="trailingIcon"
-            on:click={() => (search = '')}>{search.length && 'cancel'}</Icon
-          >
-          <span class="info-label"
-            >{$_('text.type-min-char-count', { values: { count: minSearchChars } })}</span
-          >
-        </Textfield>
+        <SearchTextField
+          bind:search
+          label={$_('text.search-videos')}
+          infoLabel={$_('text.type-min-char-count', { values: { count: minSearchChars } })}
+        />
       </div>
       {#if filteredVideos.length}
-        <List class="video-list mb-10" twoLine avatarList singleSelection bind:selectedIndex>
+        <List class="video-list" twoLine avatarList singleSelection bind:selectedIndex>
           {#each filteredVideos as video (video.id)}
             <SimpleVideoCard
               class="video"

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import './_user-video.scss';
   import fallbackPoster from './dummy-poster.jpg';
   import { createEventDispatcher } from 'svelte';
   import { Icon } from '@smui/button';

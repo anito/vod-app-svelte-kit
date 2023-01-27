@@ -254,6 +254,13 @@ export interface UploaderOptions<UploaderOptionsType = Recors<string, any>> {
   acceptedFiles?: string;
 }
 
+export interface Badge<BadgeType = Record<string, any>> {
+  icon?: string;
+  position?: 'TOP_RIGHT' | 'BOTTOM_RIGHT' | 'BOTTOM_LEFT' | 'TOP_LEFT';
+  color?: string;
+  size?: 'small' | 'medium' | 'large';
+}
+
 export interface DropzoneOptions<DropzoneOptionsType = Record<string, any>> {
   processQueue?: any;
   removeFile?: any;

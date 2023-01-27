@@ -42,6 +42,7 @@ export { default as SimpleMailCard } from './_SimpleMailCard.svelte';
 export { default as SimpleUserCard } from './_SimpleUserCard.svelte';
 export { default as SimpleVideoCard } from './SimpleVideoCard';
 export { default as Table } from './_Table.svelte';
+export { default as SearchTextField } from './_SearchTextField.svelte';
 export { default as TimeManager } from './_TimeManager.svelte';
 export { default as TokenInfo } from './_TokenInfo.svelte';
 export { default as UserCard } from './_UserCard.svelte';

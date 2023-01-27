@@ -10,12 +10,12 @@
  *  text-icon-on-light, text-primary-on-dark, text-secondary-on-dark, text-hint-on-dark,
  *  text-disabled-on-dark, text-icon-on-dark
  */
-$height: var(--height, 50px);
+$height: var(--height, 60px);
 .mdc-text-field {
   .mdc-text-field__input {
     padding-left: 16px;
   }
-  &.search-for-item {
+  &.textfield-search {
     @include shape-radius(0);
     @include fill-color(var(--background-intense));
     height: $height;
@@ -29,7 +29,7 @@ $height: var(--height, 50px);
       transform: translateY(-50%) translateX(16px);
     }
     .mdc-floating-label--float-above {
-      transform: translateY(-185%) translateX(16px) scale(75%);
+      transform: translateY(-145%) translateX(16px) scale(75%);
       + .info-label {
         transform: translate(0, calc(var(--height) - 21px));
         visibility: visible;
@@ -40,28 +40,28 @@ $height: var(--height, 50px);
       display: flex;
       align-self: center;
     }
-  }
-  .info-label {
-    visibility: hidden;
-    position: absolute;
-    padding: 3px 10px;
-    left: 0;
-    font-size: 0.5em;
-    color: var(--mdc-theme-primary);
-    width: 100%;
-    height: 21px;
-    transform: translate(0, calc(var(--height) - 0.00021px));
-    transition: all 0.3s;
-  }
-  .info-label::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    left: 0;
-    background-color: var(--mdc-theme-primary);
-    opacity: 0.1;
+    .info-label {
+      visibility: hidden;
+      position: absolute;
+      padding: 3px 10px;
+      left: 0;
+      font-size: 0.5em;
+      color: var(--mdc-theme-primary);
+      width: 100%;
+      height: 21px;
+      transform: translate(0, calc(var(--height)));
+      transition: all 0.3s;
+    }
+    .info-label::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      left: 0;
+      background-color: var(--mdc-theme-primary);
+      opacity: 0.1;
+    }
   }
 }

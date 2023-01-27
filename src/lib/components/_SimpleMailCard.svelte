@@ -93,7 +93,7 @@
   >
     <div class="staggered">
       {#each userItems as user, i}
-        <UserGraphic size="30" {user} style={`z-index: ${10 - i};`} />
+        <UserGraphic size={30} {user} style={`z-index: ${10 - i};`} />
       {/each}
     </div>
     <Text style="flex: 1; align-self: auto;">

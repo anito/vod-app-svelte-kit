@@ -156,7 +156,7 @@ export function slugify(str: string) {
 }
 
 export function placeholderDotComAvatar(name = '?') {
-  const placeholder = 'https://via.placeholder.com/100x100.png?text=';
+  const placeholder = 'https://placehold.co/100x100?text=';
   return `${placeholder}${name
     .split(' ')
     .map((val) => val.substring(0, 1))

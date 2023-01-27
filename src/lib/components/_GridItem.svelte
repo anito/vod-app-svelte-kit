@@ -12,12 +12,7 @@
   $: inner = `grid-inner slot-${name}`;
 </script>
 
-<div
-  in:fly={{ opacity: 0, duration: 800 }}
-  class="grid-item {name} {className}"
-  {style}
-  class:is-item={name}
->
+<div in:fly={{ opacity: 0, duration: 800 }} class="grid-item {name} {className}" {style}>
   <div class="inner flex flex-1 {className}" class:vcenter class:hcenter>
     <slot {inner} />
   </div>

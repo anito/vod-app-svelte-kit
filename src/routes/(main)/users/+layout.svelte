@@ -13,12 +13,13 @@
     MediaUploader,
     PageBar,
     Paginator,
+    SearchTextField,
     SimpleUserCard,
     SvgIcon,
     UserGraphic,
     VideoEditorList
   } from '$lib/components';
-  import { log, proxyEvent } from '$lib/utils';
+  import { log, proxyEvent, USER } from '$lib/utils';
   import Button, { Icon as ButtonIcon } from '@smui/button';
   import Fab, { Label } from '@smui/fab';
   import Textfield from '@smui/textfield';
@@ -31,24 +32,13 @@
   import type Snackbar from '@smui/snackbar';
   import type Dropzone from '$lib/components/Dropzone/index.svelte';
 
-  async function searchBy(key: any, val: any) {
-    return await api
-      .get(`users?${key}=${val}`, { token: $session.user?.jwt })
-      .then((res) => res)
-      .catch((reason) => log(reason));
-  }
-
-  setContext('search', {
-    findBy: searchBy
-  });
-
   const minSearchChars = 2;
   const { getDropzone }: any = getContext('dropzone');
   const { open: open$editor }: any = getContext('editor-modal');
   const { open: open$default, close: close$default }: any = getContext('default-modal');
   const { getSnackbar, configSnackbar }: any = getContext('snackbar');
   const { getSegment }: any = getContext('segment');
-  const { findBy }: any = getContext('search');
+  const { searchUsers }: any = getContext('search');
 
   const segment = getSegment();
   export let data: LayoutData;
@@ -90,7 +80,7 @@
   $: isDeepSearch = search.length >= minSearchChars;
   $: if (isDeepSearch) {
     (async (s) => {
-      const { success, data } = await findBy('name', s);
+      const { success, data } = await searchUsers('name', s);
       if (success) users.add(data);
     })(search);
   }
@@ -353,11 +343,13 @@
   }
 
   function scrollSelectedIntoView() {
-    const { items } = listMethods;
-    setTimeout(() => {
-      const item = items.find((item: { selected: any }) => item.selected);
-      item?.element.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-    }, 100);
+    if (listMethods) {
+      const { items } = listMethods;
+      setTimeout(() => {
+        const item = items.find((item: { selected: any }) => item.selected);
+        item?.element.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }, 100);
+    }
   }
 </script>
 
@@ -366,20 +358,19 @@
     <PageBar />
   </div>
   <slot />
-  <div class="sidebar flex-1" slot="side" class:deep-search={isDeepSearch}>
-    <Container transparent headerHeight="76px">
+  <div
+    class="sidebar flex-1"
+    slot="side"
+    class:deep-search={isDeepSearch}
+    class:hide-if-user={$session.role === USER}
+  >
+    <Container transparent>
       <div slot="header">
-        <Textfield class="search-for-item" bind:value={search} label={$_('text.search-user')}>
-          <Icon
-            role="button"
-            class="material-icons-outlined cancel-search"
-            slot="trailingIcon"
-            on:click={() => (search = '')}>{search.length && 'cancel'}</Icon
-          >
-          <span class="info-label"
-            >{$_('text.type-min-char-count', { values: { count: minSearchChars } })}</span
-          >
-        </Textfield>
+        <SearchTextField
+          bind:search
+          label={$_('text.search-users')}
+          infoLabel={$_('text.type-min-char-count', { values: { count: minSearchChars } })}
+        />
       </div>
       <List
         class="mb-10 users-list"
@@ -627,10 +618,10 @@
     {/if}
     <div class="absolute" style="z-index: 1; top: -11px; right: 3px;">
       <UserGraphic
-        size="40"
-        borderSize="2"
+        size={40}
+        borderSize={2}
         borderColor="--primary"
-        extendedBorderSize="5"
+        extendedBorderSize={5}
         extendedBorderColor="--surface"
         dense
         user={currentUser}
@@ -644,10 +635,10 @@
     </div>
     <div class="absolute" style="z-index: 0; top: -7px; right: 37px;">
       <UserGraphic
-        size="35"
-        borderSize="2"
+        size={35}
+        borderSize={2}
         borderColor="--primary"
-        extendedBorderSize="6"
+        extendedBorderSize={6}
         dense
         extendedBorderColor="--surface"
         user={$session.user}
@@ -789,5 +780,8 @@
     vertical-align: middle;
     margin: 0 auto;
     color: white;
+  }
+  .hide-if-user {
+    display: none;
   }
 </style>

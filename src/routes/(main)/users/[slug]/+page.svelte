@@ -123,9 +123,9 @@
         variant="unelevated"
       >
         <UserGraphic
-          borderSize="1"
+          borderSize={1}
           borderColor="--surface"
-          size="18"
+          size={18}
           dense
           style="margin-right: 10px;"
           user={currentUser}

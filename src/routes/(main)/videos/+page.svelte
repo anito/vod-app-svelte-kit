@@ -1,5 +1,4 @@
 <script lang="ts">
-  import './_card.scss';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { getContext, onMount } from 'svelte';

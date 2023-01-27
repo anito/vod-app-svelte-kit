@@ -79,7 +79,7 @@
 
   function remove() {
     proxyEvent('media:delete', {
-      data: { id: video.id },
+      id: video.id,
       type: 'videos',
       show: true,
       onsuccess: (res: any) => {}

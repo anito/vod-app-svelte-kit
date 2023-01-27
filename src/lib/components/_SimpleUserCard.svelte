@@ -5,7 +5,7 @@
   import { UserGraphic, Dot } from '$lib/components';
   import { Meta, Item, Text, PrimaryText, SecondaryText } from '@smui/list';
   import { ADMIN, dynamicUrl, SUPERUSER } from '$lib/utils';
-  import type { Issue, User } from '$lib/types';
+  import type { Issue, User, Badge } from '$lib/types';
 
   export let selectionUserId: string;
   export let user: User | undefined;
@@ -24,7 +24,7 @@
     color: isSuperuser ? 'rgb(26, 4, 4)' : 'rgb(206, 4, 4)',
     position: 'TOP_RIGHT',
     size: 'small'
-  };
+  } as Badge;
   $: href = user && dynamicUrl(user.id, $page.url);
 
   function focusHandler() {}
@@ -34,7 +34,7 @@
   <Item {id} class="usercard-item" selected={selectionUserId == user?.id}>
     <a on:focus={() => focusHandler()} {href} class="flex flex-1 item-inner">
       <span class="grafic-box usercard-box">
-        <UserGraphic size="40" {user} {badge} borderSize="1" borderColor="#c5c5c5" />
+        <UserGraphic size={40} {user} {badge} borderSize={1} borderColor="#c5c5c5" />
       </span>
       <span class="content-box usercard-box">
         <Text>

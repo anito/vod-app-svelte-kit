@@ -74,7 +74,6 @@
   let active = false;
   let __protected = false;
   let mode = EDIT;
-  let user: User;
 
   $: token = $session.user?.jwt;
   $: redirectMode(mode);
@@ -428,12 +427,12 @@
               >
                 <div bind:this={avatarMenuAnchor} use:Anchor>
                   <UserGraphic
-                    size="100"
+                    size={100}
                     user={currentUser}
-                    borderSize="4"
+                    borderSize={4}
                     borderColor="--primary"
                     extendedBorderColor="--background-intense"
-                    extendedBorderSize="6"
+                    extendedBorderSize={6}
                     badge={{
                       icon: hasCurrentPrivileges ? 'admin_panel_settings' : '',
                       color: isCurrentSuperuser ? 'rgb(26, 4, 4)' : 'rgb(206, 4, 4)',

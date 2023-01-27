@@ -2,11 +2,12 @@
   import 'assets/base.css';
   import 'assets/app.css';
   import '$lib/components/_button.scss';
-  import '$lib/components/_input.scss';
   import '$lib/components/_notched_outline.scss';
   import '$lib/components/_colored_snackbar.scss';
   import '$lib/components/_dialog.scss';
   import '$lib/components/_list.scss';
+  import '$lib/components/_card.scss';
+  import * as api from '$lib/api';
   import { derived, get, writable, type Readable } from 'svelte/store';
   import { afterNavigate, beforeNavigate, goto, invalidate, invalidateAll } from '$app/navigation';
   import { navigating, page } from '$app/stores';
@@ -414,8 +415,8 @@
   }
 
   async function mediaDeleteHandler({ detail }: CustomEvent) {
-    const { data, type, show, onsuccess, onerror } = detail;
-    const res = await fetch(`/${type}/${data.id}`, { method: 'DELETE' }).then(async (res) => {
+    const { id, type, show, onsuccess, onerror } = detail;
+    const res = await fetch(`/${type}/${id}`, { method: 'DELETE' }).then(async (res) => {
       if (res.ok) return await res.json();
     });
     const stores = new Map();
@@ -424,8 +425,8 @@
     const store = stores.get(type);
 
     if (res?.success) {
-      urls.del(data.id);
-      store.del(data.id);
+      urls.del(id);
+      store.del(id);
       onsuccess?.(res);
     } else {
       onerror?.(res);
@@ -444,6 +445,18 @@
       if (endpoint === VIDEO) return $_('text.videos');
     }
   });
+
+  setContext('search', {
+    searchUsers: (key: string, val: any) => searchBy('users', key, val),
+    searchVideos: (key: string, val: any) => searchBy('videos', key, val)
+  });
+
+  async function searchBy(endpoint: string, key: string, val: any) {
+    return await api
+      .get(`${endpoint}?${key}=${val}`, { token: $session.user?.jwt })
+      .then((res) => res)
+      .catch((reason) => {});
+  }
 
   const { getNameByEndpoint }: any = getContext('media');
 
@@ -764,15 +777,14 @@
             {#if $session.user}
               <NavItem title="Avatar" href="/users/{$session.user?.id}?tab=profile">
                 <UserGraphic
-                  size="40"
-                  borderSize="3"
+                  size={40}
+                  borderSize={3}
                   borderColor="--primary"
                   dense
                   user={$session.user}
                   badge={{
                     icon: 'settings',
                     color: '--primary',
-                    size: 'small',
                     position: 'BOTTOM_RIGHT'
                   }}
                 />
@@ -780,10 +792,10 @@
             {:else}
               <NavItem title="Avatar" class="hide-if-mobile">
                 <UserGraphic
-                  borderSize="3"
+                  borderSize={3}
                   borderColor="--primary"
                   dense
-                  size="40"
+                  size={40}
                   fallback={person}
                 />
               </NavItem>

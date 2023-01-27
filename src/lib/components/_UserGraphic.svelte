@@ -1,47 +1,42 @@
-<script>
+<script lang="ts">
   import { session } from '$lib/stores';
   import { Graphic } from '@smui/list';
   import { Icon } from '@smui/common';
   import { getMediaAvatar, placeholderDotComAvatar } from '$lib/utils';
+  import type { Badge, User } from '$lib/types';
 
-  /** @type {any | null} */
-  export let user = null;
+  export let user: User | null = null;
   export let dense = false;
   export let inactive = false;
-  export let size = '24';
-  export let borderSize = '0';
+  export let size = 24;
+  export let borderSize = 0;
   export let borderColor = '';
-  export let extendedBorderSize = '10';
+  export let extendedBorderSize = 10;
   export let extendedBorderColor = '';
   export let overlayColor = '';
   export let overlayOpacity = 0.5;
-
-  /**
-   * @type {{icon?: string, position?: any, color?: string | null, size?: string}}
-   */
-  export let badge = {
-    icon: '',
-    position: 'BOTTOM_RIGHT',
-    color: '#ff0000',
-    size: '20'
-  };
+  export let badge: Badge = {};
   export let style = '';
   export let fallback = '';
 
-  const width = parseInt(size);
-  const height = parseInt(size);
-
-  /**
-   * @type {{TOP_RIGHT: string, BOTTOM_RIGHT: string, BOTTOM_LEFT: string, TOP_LEFT: string} | any}
-   */
-  const badgePosition = {
+  const width = size;
+  const height = size;
+  const badgePositions = {
     TOP_RIGHT: 'tr',
     BOTTOM_RIGHT: 'br',
     BOTTOM_LEFT: 'bl',
     TOP_LEFT: 'tl'
   };
-  /** @type {string | undefined}} */
-  let src;
+
+  let src: string | undefined;
+
+  badge = {
+    icon: '',
+    color: '#ff0000',
+    size: 'small',
+    position: 'TOP_LEFT',
+    ...badge
+  };
 
   borderColor = borderColor.startsWith('--')
     ? `var(${borderColor})`
@@ -64,27 +59,27 @@
   $: overlayVars =
     (overlayColor && `--overlay-color: ${overlayColor}; --overlay-opacity: ${overlayOpacity}`) ||
     '';
-  $: (badge.icon && (badge.position = badgePosition[badge.position])) || badgePosition['TOP_LEFT'];
   $: style = ((style) => style.trim().replace(/ +(?= )/g, ''))(
     `${style} ${sizeVar} ${overlayVars}`
   );
   $: (async (user) => {
-    if (user?.avatar?.src?.startsWith('http')) {
-      Promise.resolve(user.avatar.src).then((val) => (src = val));
-    } else if (user?.avatar) {
-      await getMediaAvatar(user?.avatar?.id, $session.user?.jwt, {
-        width,
-        height,
-        square: 1,
-        quality: 100
-      }).then((val) => (src = val));
-    } else if (fallback) {
-      Promise.resolve(fallback).then((val) => (src = val));
-    } else {
-      Promise.resolve(placeholderDotComAvatar(user?.email?.split('@').join(' '))).then(
-        (val) => (src = val)
-      );
-    }
+    const getSource = async (user: User | null) => {
+      if (user?.avatar?.src?.startsWith('http')) {
+        return user.avatar.src;
+      } else if (user?.avatar) {
+        return await getMediaAvatar(user?.avatar?.id, $session.user?.jwt, {
+          width,
+          height,
+          square: 1,
+          quality: 100
+        });
+      } else if (fallback) {
+        return fallback;
+      } else {
+        return placeholderDotComAvatar(user?.email?.split('@').join(' '));
+      }
+    };
+    src = await getSource(user);
   })(user);
 </script>
 
@@ -106,7 +101,7 @@
         background-color: var(--back-light);"
     />
     {#if badge.icon}
-      <div class="badge {badge.size} {badge.position}">
+      <div class="badge {badge.size} {badgePositions[badge.position || 'TOP_LEFT']}">
         <Icon style="color:{badge.color}" class="material-icons">{badge.icon}</Icon>
       </div>
     {/if}

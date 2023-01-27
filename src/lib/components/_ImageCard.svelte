@@ -12,6 +12,7 @@
   import { _ } from 'svelte-i18n';
   import type { Image } from '$lib/types';
   import { SvgIcon } from '.';
+  import { proxyEvent } from '$lib/utils';
 
   export let image: Image;
   export { className as class };
@@ -71,7 +72,7 @@
               ripple={false}
               class="error-on-background"
               on:SMUI:action={() =>
-                dispatch('media:delete', { type: 'images', data: { id: image.id } })}
+                proxyEvent('media:delete', { type: 'images', id: image.id, show: true })}
             >
               <Text>{$_('text.delete-poster')}</Text>
             </Item>

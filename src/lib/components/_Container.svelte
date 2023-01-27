@@ -7,7 +7,7 @@
   export { className as class };
   export { headerClassName as headerClass };
   export let transparent = false;
-  export let headerHeight = '50px';
+  export let headerHeight = '80px';
   export let contentBackgroundColor = 'inherit';
   export let borderShape = 'none' as 'none' | 'small' | 'medium' | 'large';
 
@@ -16,7 +16,7 @@
 </script>
 
 <div
-  style={`display: contents;}`}
+  style="display: contents; flex-grow: 1; position: relative; z-index: 0"
   style:--height={headerHeight}
   style:--content-background-color={contentBackgroundColor}
   style:--border-shape={`var(--mdc-shape-${borderShape})`}

@@ -1,6 +1,7 @@
 <script lang="ts">
   import './_icon-button.scss';
   import './_date-range-picker.scss';
+  import './_video-list.scss';
   import { page } from '$app/stores';
   import { onMount, getContext, tick } from 'svelte';
   import { fly } from 'svelte/transition';
@@ -16,7 +17,8 @@
     Container,
     VideoEditorList,
     Paginator,
-    FlexContainer
+    FlexContainer,
+    SearchTextField
   } from '$lib/components';
   import { endOfWeek, startOfYear, endOfYear, addYears, subYears, parseISO } from 'date-fns';
   import {
@@ -40,6 +42,7 @@
   const { getSnackbar, configSnackbar }: any = getContext('snackbar');
   const { open, close }: any = getContext('editor-modal');
   const { setFab }: any = getContext('fab');
+  const { searchVideos }: any = getContext('search');
   const timespanSelections = [
     { title: 'text.1-month', value: 30 },
     { title: 'text.2-months', value: 60 },
@@ -49,6 +52,7 @@
   const lists: Set<string> = new Set();
   const USERVIDEOSLIST = 'user-video-list';
   const NONUSERVIDEOSLIST = 'non-user-videos-list';
+  const minSearchChars = 2;
 
   let root: Element;
   let main: Element;
@@ -71,6 +75,7 @@
   let isExpired: boolean;
   let itemsList: { [x: string]: { items: any; element: any; focusItemAtIndex: any } } = {};
   let displayedVideos: Video[];
+  let search: string = '';
 
   $: selectionUserId && (selectionVideoId = null);
   $: currentUser = $users.find((usr) => usr.id === selectionUserId);
@@ -134,6 +139,19 @@
             })
         )
         .sortBy('title');
+  $: if (search.length >= minSearchChars) {
+    (async (s) => {
+      const { success, data } = await searchVideos('title', s);
+      if (success) {
+        hasPrivileges ? videos.add(data) : videosAll.add(data);
+      }
+    })(search);
+  }
+  $: filteredVideos = ((videos) =>
+    videos?.filter(
+      (video: Video) => video.title?.toLowerCase().indexOf(search.toLowerCase()) !== -1
+    ) || [])(noneUserVideos);
+  $: filteredVideos.sortBy('title');
   $: addClass(isopen);
 
   onMount(() => {
@@ -375,7 +393,7 @@
       </div>
       {#if currentUser}
         <List
-          class="video-list mb-10"
+          class="video-list"
           threeLine
           avatarList
           singleSelection
@@ -409,13 +427,13 @@
                       variant="unelevated"
                       on:click={() => toggleDataPicker(video.id)}
                     >
-                      <Icon class="material-icons">
+                      <ButtonIcon class="material-icons">
                         {isopen
                           ? video.id === selectionVideoId
                             ? 'close'
                             : 'insert_invitation'
                           : 'insert_invitation'}
-                      </Icon>
+                      </ButtonIcon>
                       <Label>{$_('text.scheduler')}</Label>
                     </Button>
                     <IconButton
@@ -463,16 +481,24 @@
           </div></Header
         >
       </div>
+      <SearchTextField
+        class="absolute"
+        style="z-index: 1;"
+        bind:search
+        label={$_('text.search-videos')}
+        infoLabel={$_('text.type-min-char-count', { values: { count: minSearchChars } })}
+      />
       <List
-        class="video-list mb-10"
+        class="video-list"
+        style="margin-top: 80px;"
         on:SMUIList:mount={(e) => receiveListMethods(NONUSERVIDEOSLIST, { ...e.detail })}
         twoLine
         avatarList
         singleSelection
         bind:selectedIndex={selectedNoneUserIndex}
       >
-        {#if noneUserVideos?.length}
-          {#each noneUserVideos as video (video.id)}
+        {#if filteredVideos?.length}
+          {#each filteredVideos as video (video.id)}
             <SimpleVideoCard
               on:video:selected={videoSelectedHandler}
               let:unmanagable
@@ -484,25 +510,15 @@
               {selectionUserId}
             >
               {#if hasPrivileges}
-                <IconButton
-                  class="self-center mr-2 small"
-                  color="secondary"
-                  style=""
-                  on:click={() => editVideo(video)}
-                >
+                <IconButton class="mr-2 small" on:click={() => editVideo(video)}>
                   <Icon class="material-icons">edit</Icon>
                 </IconButton>
-                <IconButton
-                  class="self-center mr-2 small"
-                  color="primary"
-                  style=""
-                  href={`/videos/${video.id}`}
-                >
+                <IconButton class="mr-2 small" href={`/videos/${video.id}`}>
                   <Icon class="material-icons">smart_display</Icon>
                 </IconButton>
                 <IconButton
                   disabled={hasCurrentPrivileges || unmanagable || video.teaser}
-                  class="add-action-button add small"
+                  class="add small"
                   on:click={() => openScheduleDialog(video)}
                 >
                   <Icon class="material-icons">add_circle</Icon>
@@ -513,14 +529,19 @@
           <Paginator {id} {pagination} {store} {action} label={false} icon="rotate_right" />
         {:else}
           <li class="flex flex-1 flex-col self-center text-center">
-            <div class="m-5">{$_('text.no-videos-available')}</div>
+            <div class="m-5">{$_('text.no-videos')}</div>
           </li>
         {/if}
       </List>
     </Container>
   </div>
   {#if isopen}
-    <div in:fly={{ opacity: 0 }} out:fly={{ opacity: 0 }} class="grid-item time">
+    <div
+      in:fly={{ opacity: 0 }}
+      out:fly={{ opacity: 0 }}
+      class="grid-item time"
+      style="z-index: 1;"
+    >
       <Container density="sm">
         <div slot="header">
           <div>
@@ -581,7 +602,7 @@
       {/each}
       {#if !jwt || isExpired || !active}
         <div class="mt-3">
-          <Icon class="material-icons leading">warning</Icon>
+          <ButtonIcon class="material-icons leading">warning</ButtonIcon>
           <p>
             {$_('text.account-inactive')}
           </p>
