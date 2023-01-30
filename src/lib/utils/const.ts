@@ -6,8 +6,8 @@ export const DIFFSTORES = new Map([
 ]);
 export const DEFAULT_LOCALE = 'en';
 export const LOCALESTORE = new Map([
-  [DEFAULT_LOCALE, { fns: enUS, localized: 'English', filename: 'en_US' }],
-  ['de', { fns: de, localized: 'Deutsch', filename: 'de_DE' }]
+  [DEFAULT_LOCALE, { fns: enUS, localized: 'English', filename: 'en-US' }],
+  ['de', { fns: de, localized: 'Deutsch', filename: 'de-DE' }]
 ]);
 export const DateTimeFormatOptions = {
   weekday: 'short',
