@@ -7,7 +7,8 @@
   import '$lib/components/_dialog.scss';
   import '$lib/components/_list.scss';
   import '$lib/components/_card.scss';
-  import { derived, get, writable, type Readable } from 'svelte/store';
+  import { derived, writable } from 'svelte/store';
+  import { version } from '$app/environment';
   import { afterNavigate, beforeNavigate, goto, invalidate, invalidateAll } from '$app/navigation';
   import { navigating, page } from '$app/stores';
   import { enhance } from '$app/forms';
@@ -914,6 +915,7 @@
   <DialogTitle id="info-title">{$_('text.settings')}</DialogTitle>
   <Content>
     <div class="settings-list">
+      <div style="position: absolute; right: 20px; top: 20px; font-size: .5rem;">VERSION: {version}</div>
       <ul class="level-1">
         {#each Object.entries($settings).sort() as setting}
           <li>
@@ -1034,8 +1036,6 @@
     text-overflow: ellipsis;
   }
   .settings-headline {
-    border-bottom: 1px solid var(--text-light);
-    border-left: 1px solid var(--text-light);
     padding-left: 5px;
     margin-bottom: 10px;
   }

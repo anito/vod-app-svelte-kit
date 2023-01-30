@@ -138,7 +138,7 @@
 </script>
 
 <Item
-  on:SMUI:action={(e) => dispatch('video:selected', { video })}
+  on:SMUI:action={(e) => dispatch('video:selected', { event: e, video })}
   class="item {className}"
   disabled={unmanagable}
   bind:this={item}

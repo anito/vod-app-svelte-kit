@@ -209,7 +209,7 @@
   }
 
   async function videoSelectedHandler({ detail }: CustomEvent) {
-    const { video } = detail;
+    const { event, video } = detail;
     const id = video?.id;
     selectionVideoId = id;
     const videoExists = ((isPrivileged) => {
@@ -225,7 +225,7 @@
         proxyEvent('video:add', { data: [res] })
       );
     }
-    scrollIntoView();
+    scrollIntoView(event);
   }
 
   async function fetchVideo(path: string) {
@@ -358,11 +358,14 @@
     );
   }
 
-  function scrollIntoView() {
+  function scrollIntoView({detail}: CustomEvent) {
+    const listEl = detail.target.closest('li') 
     setTimeout(() => {
       lists.forEach((name) => {
         let item = itemsList[name].items.find((item: { selected: any }) => item.selected);
-        item?.element.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        if(item?.element && item?.element !== listEl) {
+          item.element.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
       });
     }, 100);
   }
