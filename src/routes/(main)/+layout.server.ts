@@ -35,8 +35,12 @@ export async function load({ fetch, depends, locals }: LayoutServerLoadEvent) {
   const videosAll =
     (role === USER &&
       (await fetch('/repos/videos/all')
-        .then(async (res) => {
-          if (res.ok) return await res.json();
+      .then(async (res) => {
+        if (res.ok) {
+          const json = await res.json();
+          console.log(json)
+          return json
+        }
         })
         .catch((reason) => console.error(reason)))) ||
     [];

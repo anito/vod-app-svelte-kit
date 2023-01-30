@@ -17,6 +17,7 @@
     max-height: var(--max-height);
     display: flex;
     justify-content: center;
+    flex-grow: 1;
   }
   .container {
     display: flex;
