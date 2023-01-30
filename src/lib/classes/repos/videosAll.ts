@@ -11,5 +11,5 @@ export class VideosAllRepo extends Repo {
   }
 
   public static getInstance = (): VideosAllRepo =>
-    VideosAllRepo.instance || (VideosAllRepo.instance = new VideosAllRepo());
+    VideosAllRepo.instance || (VideosAllRepo.instance = new VideosAllRepo());
 }
