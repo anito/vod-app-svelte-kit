@@ -34,12 +34,10 @@ export class Repo {
     token: string;
     match?: Record<string, string>;
   }): Promise<Response> => {
-    // console.log(match);
     const searchParams = new URLSearchParams(match);
     page && searchParams.append('page', page);
     limit && searchParams.append('limit', limit);
     const url = `${this.endpoint}?${searchParams.toString()}`;
-    console.log(url);
     return await api
       .get(url, { token: token || this.token })
       .then((res) => {

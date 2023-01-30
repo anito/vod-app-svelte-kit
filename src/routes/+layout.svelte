@@ -7,7 +7,6 @@
   import '$lib/components/_dialog.scss';
   import '$lib/components/_list.scss';
   import '$lib/components/_card.scss';
-  import * as api from '$lib/api';
   import { derived, get, writable, type Readable } from 'svelte/store';
   import { afterNavigate, beforeNavigate, goto, invalidate, invalidateAll } from '$app/navigation';
   import { navigating, page } from '$app/stores';
@@ -165,12 +164,12 @@
   });
 
   setContext('search', {
-    searchUsers: (data: any, limit: number) =>
-      searchBy('/repos/users', { match: data, limit: limit || 10 }),
-    searchVideos: (data: any, limit: number) =>
-      searchBy('/repos/videos', { match: data, limit: limit || 10 }),
-    searchVideosAll: (data: any, limit: number) =>
-      searchBy('/repos/videos/all', { match: data, limit: limit || 10 })
+    searchUsers: (data: any, limit: number = 10) =>
+      searchBy('/repos/users', { match: data, limit }),
+    searchVideos: (data: any, limit: number = 10) =>
+      searchBy('/repos/videos', { match: data, limit }),
+    searchVideosAll: (data: any, limit: number = 10) =>
+      searchBy('/repos/videos/all', { match: data, limit })
   });
 
   const editableSettings = new Map([
