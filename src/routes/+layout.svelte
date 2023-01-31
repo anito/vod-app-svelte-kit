@@ -410,6 +410,7 @@
 
     if (res?.success) {
       videos.put(data);
+      await invalidate('app:main')
       onsuccess?.(res);
     } else {
       onerror?.(res);
@@ -544,6 +545,7 @@
       onerror?.(res);
     }
   }
+
   function configSnackbar(msg: string | undefined, link?: undefined) {
     try {
       snackbar?.close();

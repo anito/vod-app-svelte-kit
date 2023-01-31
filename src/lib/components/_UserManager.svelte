@@ -7,12 +7,12 @@
   import * as api from '$lib/api';
   import { page } from '$app/stores';
   import { browser } from '$app/environment';
-  import { goto, invalidate } from '$app/navigation';
+  import { goto, invalidate, invalidateAll } from '$app/navigation';
   import { getContext, onMount } from 'svelte';
   import Header from './_Header.svelte';
   import { fly } from 'svelte/transition';
-  import { session, users } from '$lib/stores';
-  import { proxyEvent, ADMIN, SUPERUSER, post } from '$lib/utils';
+  import { session, settings, users } from '$lib/stores';
+  import { proxyEvent, ADMIN, SUPERUSER, post, parseLifetime } from '$lib/utils';
   import Textfield from '@smui/textfield';
   import TextfieldIcon from '@smui/textfield/icon';
   import HelperText from '@smui/textfield/helper-text';
@@ -355,13 +355,12 @@
   async function actionResultHandler({ result }: { result: ActionResult }) {
     if (result.type === 'success') {
       if (result.data) {
-        const { success, message: message$1, data: user }: any = { ...result.data };
+        const { success, message: message$1, data: user }: any= { ...result.data };
         const { message: message$2 }: any = { ...user };
         switch (formAction) {
           case 'add': {
             if (success) {
               users.add([user]);
-              // await invalidate('app:main');
               setTimeout(async () => {
                 await goto(`/users/${user.id}?tab=profile&mode=edit`);
               }, 200);
@@ -372,14 +371,21 @@
           case 'edit': {
             if (success) {
               users.put(user);
-              // await invalidate('app:main');
+              if($session.user?.id === user.id) {
+                const { id, name, email, avatar, jwt, role, groups }: User = user;
+                const lifetime = parseLifetime($settings?.Session.lifetime);
+                const _expires = new Date(Date.now() + lifetime).toISOString();
+                await post('/session', {
+                  user: { id, name, email, jwt, avatar }, role, groups, _expires
+                });
+                await invalidate('app:session');
+              }
             }
             break;
           }
           case 'del': {
             if (success) {
               users.del(currentUser?.id);
-              // await invalidate('app:main');
             }
             mode = EDIT;
             break;
