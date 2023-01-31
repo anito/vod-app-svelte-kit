@@ -409,8 +409,8 @@
     });
 
     if (res?.success) {
+      images.set(res.data)
       videos.put(data);
-      await invalidate('app:main')
       onsuccess?.(res);
     } else {
       onerror?.(res);

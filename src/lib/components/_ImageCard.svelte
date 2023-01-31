@@ -1,6 +1,5 @@
 <script lang="ts">
   import './_button.scss';
-  import { createEventDispatcher } from 'svelte';
   import MediaImagePreview from './_MediaImagePreview.svelte';
   import { selection } from '$lib/stores';
   import Card, { Content, PrimaryAction, Actions, ActionButtons, ActionIcons } from '@smui/card';
@@ -18,7 +17,6 @@
   export { className as class };
   export let locked = false;
 
-  const dispatch = createEventDispatcher();
   const videos = image.videos || [];
 
   let selected: boolean;
