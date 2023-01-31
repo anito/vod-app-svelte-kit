@@ -409,9 +409,7 @@
     });
 
     if (res?.success) {
-      if(res.data) {
-        images.set(res.data)
-      }
+      images.set(res.data)
       videos.put(data);
       onsuccess?.(res);
     } else {
