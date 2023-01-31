@@ -4,7 +4,6 @@
 </script>
 
 <script lang="ts">
-  import './_button.scss';
   import { enhance } from '$app/forms';
   import { writable } from 'svelte/store';
   import { createEventDispatcher, tick } from 'svelte';
@@ -18,9 +17,9 @@
   export let style = '';
   export let action = '';
   export let store: any = createStore();
-  export let icon = '';
+  export let icon = 'rotate_right';
   export let indicator = false;
-  export let label = true;
+  export let type: 'icon' | 'label' = 'label';
 
   if (!id) {
     throw 'No Paginator ID specified';
@@ -44,13 +43,11 @@
     const next_count = page_count - current_page === 1 ? rest || limit : limit;
     const loaded_count = $store.length;
     const remaining_count = count - limit * current_page;
-    const next_page = has_next_page ? current_page + 1 : current_page;
     return {
-      next_page,
+      ...paginator,
       remaining_count,
       next_count,
-      loaded_count,
-      ...paginator
+      loaded_count
     };
   }
 
@@ -120,12 +117,11 @@
 
 <li class="paginator-appendix paginator-appendix-{id}" class:indicator>
   <form {action} method="POST" use:enhance={formHandler}>
-    <input type="hidden" name="page" value={page_data?.next_page} />
     {#if paginator?.has_next_page}
-      {#if label}
+      {#if type === 'label'}
         <Button
           variant="unelevated"
-          color="secondary"
+          color="primary"
           class="button-shaped-round load-more"
           {style}
         >
@@ -135,7 +131,7 @@
             >{$_('text.more')}</Label
           >
           {#if indicator}
-            <small class="paginator-indicator"
+            <small class="indicator"
               >{$_('text.paginator-indicator', {
                 values: {
                   next_count: page_data.next_count,
@@ -147,8 +143,7 @@
             >
           {/if}
         </Button>
-      {/if}
-      {#if icon}
+      {:else if type === 'icon'}
         <IconButton class="material-icons">
           {icon}</IconButton
         >
@@ -157,7 +152,7 @@
   </form>
 </li>
 
-<style>
+<style lang="scss">
   .paginator-appendix {
     display: flex;
     justify-content: center;
@@ -168,13 +163,7 @@
     content: '';
     height: 90px;
   }
-  small.paginator-indicator {
-    position: absolute;
-    font-size: 0.6em;
-    bottom: 5px;
-    line-height: 1em;
-  }
   .paginator-appendix.indicator :global(.label) {
-    margin-bottom: 5px;
+    margin-bottom: 8px;
   }
 </style>

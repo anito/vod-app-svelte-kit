@@ -164,12 +164,12 @@
     </FlexContainer>
   {/if}
   <Paginator
-    label={false}
-    icon="rotate_right"
     {pagination}
+    indicator
     store={videos}
     id="videos-paginator"
     action="/videos?/more_videos"
+    type='label'
   />
   {#if $fabs === 'add-video'}
     <Fab class="floating-fab" color="primary" on:click={() => openUploader()} extended>

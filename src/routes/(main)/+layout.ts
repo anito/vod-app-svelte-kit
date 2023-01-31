@@ -9,14 +9,5 @@ export async function load({ data, depends }: LayoutLoadEvent) {
 
   if (data.user) users.add([data.user]);
 
-  depends('app:pagination');
-
-  return {
-    pagination: {
-      users: data.users.pagination,
-      videos: data.videos.pagination,
-      videosAll: data.videosAll.pagination,
-      images: data.images.pagination
-    }
-  };
+  return {};
 }

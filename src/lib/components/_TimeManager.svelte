@@ -537,7 +537,7 @@
               {/if}
             </SimpleVideoCard>
           {/each}
-          <Paginator {id} {pagination} {store} {action} label={false} icon="rotate_right" />
+          <Paginator {id} {pagination} {store} {action} type='label' />
         {:else}
           <li class="flex flex-1 flex-col self-center text-center">
             <div class="m-5">{$_('text.no-videos')}</div>

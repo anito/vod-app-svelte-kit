@@ -392,11 +392,11 @@
           {#if !isDeepSearch}
             <Paginator
               {pagination}
+              indicator
               store={users}
-              icon="rotate_right"
-              label={false}
               id="users-paginator"
               action="/users?/more"
+              type='label'
             />
           {/if}
         {/if}

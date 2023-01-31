@@ -1,7 +1,7 @@
 <script lang="ts">
   import './_button.scss';
   import MediaImagePreview from './_MediaImagePreview.svelte';
-  import { selection } from '$lib/stores';
+  import { selection, videos } from '$lib/stores';
   import Card, { Content, PrimaryAction, Actions, ActionButtons, ActionIcons } from '@smui/card';
   import Button, { Label } from '@smui/button';
   import IconButton, { Icon } from '@smui/icon-button';
@@ -15,9 +15,9 @@
 
   export let image: Image;
   export { className as class };
-  export let locked = false;
 
-  const videos = image.videos || [];
+  $: videosWithPoster = $videos.filter((video) => video.image_id === image.id);
+  $: activeposter = videosWithPoster.length
 
   let selected: boolean;
 
@@ -37,15 +37,17 @@
 <Card class="card image {className} primary" {selected}>
   <PrimaryAction class="primary-action">
     <MediaImagePreview media={image} />
-    <div class="hidden" class:locked>
-      <Wrapper>
-        <SvgIcon name="image" fillColor="#000" />
-        <Tooltip>
-          {#each videos as video}
-            {video.title}<br />
-          {/each}
-        </Tooltip>
-      </Wrapper>
+    <div class="hidden" class:activeposter>
+      {#if videosWithPoster.length}
+        <Wrapper>
+          <SvgIcon name="image" fillColor="#000" />
+          <Tooltip>
+            {#each videosWithPoster as video}
+              {video.title}<br />
+            {/each}
+          </Tooltip>
+        </Wrapper>
+      {/if}
     </div>
   </PrimaryAction>
   <Actions class="card-actions">
@@ -83,7 +85,7 @@
 <div class="card-outer" on:click={cardClick} on:mousedown on:keydown />
 
 <style>
-  .locked {
+  .activeposter {
     display: block;
     position: absolute;
     top: 0;

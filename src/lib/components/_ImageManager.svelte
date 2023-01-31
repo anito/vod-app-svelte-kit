@@ -98,7 +98,7 @@
     <ul bind:this={imagesList} class="items-list grid grid-cols-3 grid-flow-row gap-4 mb-10 mt-10">
       {#each $images as image (image.id)}
         <li class="list-item relative">
-          <ImageCard {image} locked={isVideoPoster(image)} />
+          <ImageCard {image} />
         </li>
       {/each}
     </ul>
@@ -109,11 +109,11 @@
   {/if}
   <Paginator
     {pagination}
+    indicator
     store={images}
     id="images-paginator"
     action="/videos?/more_images"
-    label={false}
-    icon="rotate_right"
+    type='label'
   />
   {#if $fabs === 'add-image'}
     <Fab class="floating-fab" color="primary" on:click={() => openUploader()} extended>

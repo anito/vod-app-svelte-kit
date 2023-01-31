@@ -8,6 +8,7 @@
   import { session, users } from '$lib/stores';
   import { _ } from 'svelte-i18n';
   import type { Video } from '$lib/types';
+    import { fly } from 'svelte/transition';
 
   export let video: Video;
   export let emptyPoster: string = dummyPoster;
@@ -124,14 +125,20 @@
     paused = true;
     canplay = false;
   }
+
+  function setFocus(node: HTMLElement) {
+    const inputEl = node.querySelector('input')
+    inputEl?.focus()
+    inputEl?.select()
+  }
 </script>
 
 <Media aspectRatio="16x9">
   <MediaContent class="flex z-10">
-    {#if hasPrivileges}
-      <div class="editor-wrapper" class:is-edit-mode={isEditMode}>
+    {#if isEditMode}
+      <div in:fly out:fly class="editor-wrapper">
         <div class="editor p-2">
-          <Textfield class="mb-3" variant="outlined" bind:value={title} label="Title" />
+          <Textfield  class="mb-3" variant="outlined" use={[setFocus]} bind:value={title} label="Title" />
           <Textfield
             class="flex-1"
             textarea
@@ -165,7 +172,6 @@
 
 <style>
   .editor-wrapper {
-    display: none;
     position: absolute;
     width: 100%;
     height: 100%;

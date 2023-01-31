@@ -300,11 +300,11 @@
           </ImageList>
           <Paginator
             {pagination}
+            indicator
             store={images}
-            label={false}
-            icon="rotate_right"
-            action="/videos?/more_images"
             id="images-paginator"
+            action="/videos?/more_images"
+            type='label'
             style="--fontSize: 0.6em;"
           />
         </MenuSurface>

@@ -409,7 +409,6 @@
     });
 
     if (res?.success) {
-      images.set(res.data)
       videos.put(data);
       onsuccess?.(res);
     } else {

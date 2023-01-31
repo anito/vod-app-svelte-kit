@@ -38,14 +38,23 @@
     @include mdc-button-container-fill-color(error);
     @include mdc-button-ink-color(on-error);
   }
-  &.load-more {
-    @include height(24px);
-    font-size: 0.6em;
-    letter-spacing: 0em;
-    padding: 0 10px;
-  }
 }
 
+.load-more {
+  &.mdc-button {
+    @include height(30px);
+    font-size: 0.6em;
+    letter-spacing: 0em;
+    padding: 3px 12px;
+
+    small.indicator {
+      position: absolute;
+      font-size: 0.8em;
+      bottom: 4px;
+      line-height: 1em;
+    }
+  }
+}
 .is-login-page {
   .sign-in-out {
     &.mdc-button {

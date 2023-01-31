@@ -11,7 +11,7 @@ declare namespace App {
     imagesRepo: import('$lib/types').Repo;
     videosAllRepo: import('$lib/types').Repo;
     userAgent: any;
-    version: string;
+    pagination: any;
   }
   // interface Platform {}
   // interface Session {}
