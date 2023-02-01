@@ -20,7 +20,7 @@
       href: 'https://github.com/anito/vod-app',
       host: dev ? 'http://localhost:3001' : 'https://doojoo.de',
       target: '_blank',
-      disabled: true
+      disabled: false
     },
     {
       name: 'SvelteKit',
@@ -31,8 +31,6 @@
       target: '_blank'
     }
   ];
-
-  let selected;
 
   framework.update(db[defaultFrameworkIndex]);
 
