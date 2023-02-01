@@ -1,6 +1,5 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { dev } from '$app/environment';
   import { goto } from '$app/navigation';
   import { tick } from 'svelte';
   import { framework, session } from '$lib/stores';
@@ -11,28 +10,10 @@
   import { createRedirectSlug } from '$lib/utils';
   import type { Framework } from '$lib/types';
 
-  const defaultFrameworkIndex = 1;
-  const db = [
-    {
-      name: 'Sapper',
-      icon: 'sapper-icon',
-      icontype: 'svg',
-      href: 'https://github.com/anito/vod-app',
-      host: dev ? 'http://localhost:3001' : 'https://doojoo.de',
-      target: '_blank',
-      disabled: false
-    },
-    {
-      name: 'SvelteKit',
-      icon: 'svelte-kit-icon',
-      icontype: 'svg',
-      href: 'https://github.com/anito/vod-app-svelte-kit',
-      host: dev ? 'https://localhost:3000' : 'https://vod-app.doojoo.de',
-      target: '_blank'
-    }
-  ];
+  export let db: any[] = [];
+  export let defaultIndex = 1;
 
-  framework.update(db[defaultFrameworkIndex]);
+  framework.update(db[defaultIndex]);
 
   $: token = $session.user?.jwt;
   $: url = () => {

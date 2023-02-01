@@ -7,6 +7,7 @@
   import '$lib/components/_dialog.scss';
   import '$lib/components/_list.scss';
   import '$lib/components/_card.scss';
+  import { dev } from '$app/environment';
   import { derived, writable } from 'svelte/store';
   import { version } from '$app/environment';
   import { afterNavigate, beforeNavigate, goto, invalidate, invalidateAll } from '$app/navigation';
@@ -404,12 +405,14 @@
     if (res?.success) {
       videos.put(data);
       // Reload images repo in order to reflect changes on images posters
-      if('image_id' in data) {
-        await fetch(`/repos/images?currentpage=true`).then(async (res) => await res.json() ).then((res) => {
-          if(res.success) {
-            images.update(res.data)
-          }
-        });
+      if ('image_id' in data) {
+        await fetch(`/repos/images?currentpage=true`)
+          .then(async (res) => await res.json())
+          .then((res) => {
+            if (res.success) {
+              images.update(res.data);
+            }
+          });
       }
       onsuccess?.(res);
     } else {
@@ -443,18 +446,20 @@
       if (res.ok) return await res.json();
     });
     const stores = new Map();
-    stores.set('images', {store: images, relatedStore: videos, relatedEndpoint: '/repos/videos'});
-    stores.set('videos', {store: videos, relatedStore: images, relatedEndpoint: '/repos/images'});
-    const {store, relatedStore, relatedEndpoint } = stores.get(type);
+    stores.set('images', { store: images, relatedStore: videos, relatedEndpoint: '/repos/videos' });
+    stores.set('videos', { store: videos, relatedStore: images, relatedEndpoint: '/repos/images' });
+    const { store, relatedStore, relatedEndpoint } = stores.get(type);
 
     if (res?.success) {
       urls.del(id);
       store.del(id);
-      await fetch(`${relatedEndpoint}?currentpage=true`).then(async (res) => await res.json() ).then((res) => {
-        if(res.success) {
-          relatedStore.update(res.data)
-        }
-      });
+      await fetch(`${relatedEndpoint}?currentpage=true`)
+        .then(async (res) => await res.json())
+        .then((res) => {
+          if (res.success) {
+            relatedStore.update(res.data);
+          }
+        });
       onsuccess?.(res);
     } else {
       onerror?.(res);
@@ -843,7 +848,28 @@
 
             <NavItem title={$_('text.more-dots')} class="hide-if-mobile">
               <MoreMenu labelSize="1em">
-                <FrameworkSwitcher />
+                <FrameworkSwitcher
+                  defaultIndex={1}
+                  db={[
+                    {
+                      name: 'Sapper',
+                      icon: 'sapper-icon',
+                      icontype: 'svg',
+                      href: 'https://github.com/anito/vod-app',
+                      host: dev ? 'http://localhost:3001' : 'https://doojoo.de',
+                      target: '_blank',
+                      disabled: false
+                    },
+                    {
+                      name: 'SvelteKit',
+                      icon: 'svelte-kit-icon',
+                      icontype: 'svg',
+                      href: 'https://github.com/anito/vod-app-svelte-kit',
+                      host: dev ? 'https://localhost:3000' : 'https://vod-app.doojoo.de',
+                      target: '_blank'
+                    }
+                  ]}
+                />
                 <Separator />
                 <Item class="justify-start">
                   <Button href={$framework.href} target="_blank" class="link-button" ripple={false}>
@@ -927,7 +953,9 @@
   <DialogTitle id="info-title">{$_('text.settings')}</DialogTitle>
   <Content>
     <div class="settings-list">
-      <div style="position: absolute; right: 20px; top: 20px; font-size: .5rem;">VERSION: {version}</div>
+      <div style="position: absolute; right: 20px; top: 20px; font-size: .5rem;">
+        VERSION: {version}
+      </div>
       <ul class="level-1">
         {#each Object.entries($settings).sort() as setting}
           <li>
