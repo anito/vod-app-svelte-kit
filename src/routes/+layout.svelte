@@ -856,7 +856,7 @@
                       icon: 'sapper-icon',
                       icontype: 'svg',
                       href: 'https://github.com/anito/vod-app',
-                      host: dev ? 'http://localhost:3001' : 'https://doojoo.de',
+                      host: dev ? 'http://localhost:3001' : 'https://vod-app.vercel.app/',
                       target: '_blank',
                       disabled: false
                     },
@@ -865,7 +865,7 @@
                       icon: 'svelte-kit-icon',
                       icontype: 'svg',
                       href: 'https://github.com/anito/vod-app-svelte-kit',
-                      host: dev ? 'https://localhost:3000' : 'https://vod-app.doojoo.de',
+                      host: dev ? 'https://localhost:3000' : 'https://vod-app-svelte-kit.vercel.app/',
                       target: '_blank'
                     }
                   ]}
