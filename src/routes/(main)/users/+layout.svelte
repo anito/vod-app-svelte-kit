@@ -396,6 +396,7 @@
               id="users-paginator"
               action="/users?/more"
               type='label'
+              indicator
             />
           {/if}
         {/if}

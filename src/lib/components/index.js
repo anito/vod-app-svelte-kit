@@ -62,7 +62,6 @@ export { default as Icons } from './_Icons.svelte';
 export { default as LayoutGrid } from './_LayoutGrid.svelte';
 export { default as Modal } from './_Modal.svelte';
 export { default as Section } from './_Section.svelte';
-export { default as Scrim } from './_Scrim.svelte';
 export { default as SvgIcon } from './_SvgIcon.svelte';
 export * from './DateRangePicker/index.js';
 export * from './LoadingSpinners';

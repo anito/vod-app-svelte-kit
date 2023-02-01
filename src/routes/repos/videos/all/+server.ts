@@ -8,8 +8,17 @@ export const GET = async ({
 }: RequestEvent) => {
   const { user } = session.data;
   const token = user?.jwt;
-  const page = url.searchParams.get('page') || 1;
-  const countlimit = url.searchParams.get('limit') || 10;
+  const page: number = parseInt(url.searchParams.get('page') || '1');
+  const pagination = JSON.parse(cookies.get('pagination') || '{}');
+  let countlimit: number;
+  // Use last pagination data (from cookie) if the query parameter "currentpage" has been passed
+  if (url.searchParams.has('currentpage')) {
+    const { page_count, current_page, has_next_page, has_prev_page, count, limit }: any =
+      pagination.videosAll;
+    countlimit = Math.min(current_page * limit, count);
+  } else {
+    countlimit = parseInt(url.searchParams.get('limit') || '9');
+  }
 
   let videosAll;
   if (url.searchParams.has('id')) {
@@ -19,14 +28,13 @@ export const GET = async ({
     videosAll = await videosRepo.get(id, { token });
   } else {
     videosAll = await videosAllRepo.getAll({ page, limit: countlimit, token });
-    const pagination = cookies.get('pagination') || '{}';
     const { page_count, current_page, has_next_page, has_prev_page, count, limit }: any =
       videosAll.pagination;
     cookies.set(
       'pagination',
       JSON.stringify({
-        ...JSON.parse(pagination),
-        users: {
+        ...pagination,
+        videosAll: {
           next_page: has_next_page ? current_page + 1 : undefined,
           ...videosAll.pagination
         }
