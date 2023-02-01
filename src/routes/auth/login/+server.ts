@@ -22,13 +22,14 @@ const parseData = ({ success, data }: any) => {
   }
 };
 
-export async function GET({ locals, url }: RequestEvent) {
+export async function GET({ locals, url, cookies }: RequestEvent) {
   const token = url.searchParams.get('token');
   const type = url.searchParams.get('type') || 'login';
   const { locale } = locals.session.data;
 
   if (token) {
     return await api.get(`${type}?token=${token}&locale=${locale}`).then(async (res) => {
+      cookies.set('pagination', '{}', { path: '/', expires: new Date('1970') });
       await locals.session.destroy();
       await locals.session.set({ ...parseData(res), locale });
       return json(res);
@@ -37,7 +38,7 @@ export async function GET({ locals, url }: RequestEvent) {
   throw error(401, 'This method is only allowed for token logins');
 }
 
-export async function POST({ locals, request, url }: RequestEvent) {
+export async function POST({ locals, request, url, cookies }: RequestEvent) {
   const data = await request.json();
   const type = url.searchParams.get('type') || 'login';
   const { locale } = locals.session.data;
@@ -45,6 +46,7 @@ export async function POST({ locals, request, url }: RequestEvent) {
   return await api
     .post(`${type}?locale=${locale}`, { token: data.token, data })
     .then(async (res) => {
+      cookies.set('pagination', '{}', { path: '/', expires: new Date('1970') });
       await locals.session.destroy();
       await locals.session.set({ ...parseData(res), locale });
       return json(res);

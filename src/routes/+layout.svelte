@@ -686,12 +686,12 @@
   function printCopyright(color?: string) {
     color = color || '#ad1457';
     -1 < navigator.userAgent.toLowerCase().indexOf('chrome')
-      ? console.log([
+      ? console.log(
           '%c %c Axel Nitzschner - Immersive Studio %c https://vod-app-svelte-kit.vercel.app/ ',
           'background: #ad1457; padding:5px 0; margin:3px 0 10px 0;',
           'background: #eeeeee; color: #e2370f; padding:5px; margin:3px 0 10px 0;',
           'background: #ad1457; color: #fff; padding:5px; margin:3px 0 10px 0;'
-        ])
+        )
       : console.log(
           ' Axel Nitzschner - Immersive Studio - https://vod-app-svelte-kit.vercel.app/ '
         );
