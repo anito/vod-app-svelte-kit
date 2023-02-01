@@ -10,7 +10,17 @@
   import { createRedirectSlug } from '$lib/utils';
   import type { Framework } from '$lib/types';
 
-  export let db: any[] = [];
+  interface database {
+    name: string;
+    icon: string;
+    icontype: 'svg' | 'material';
+    href: string;
+    host: string;
+    target: '_blank' | '_self';
+    disabled?: boolean
+  }
+
+  export let db: database[] = [];
   export let defaultIndex = 1;
 
   framework.update(db[defaultIndex]);
