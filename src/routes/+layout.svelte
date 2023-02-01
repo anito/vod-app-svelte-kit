@@ -248,7 +248,6 @@
   $: currentStore = $currentMediaStore;
 
   onMount(async () => {
-    $mounted = true;
     root = document.documentElement;
     snackbar = getSnackbar();
 
@@ -265,6 +264,7 @@
     const mode = isPreferredDarkMode ? DARK : LIGHT;
     setMode(mode);
 
+    $mounted = true;
     return () => {
       removeListener();
       removeClasses();

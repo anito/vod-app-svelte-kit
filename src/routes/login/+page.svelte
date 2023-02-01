@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import './_tabs.scss';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
@@ -6,18 +6,18 @@
   import { LoginForm } from '$lib/components';
   import { flash, session, sitename, salutation } from '$lib/stores';
   import { fly } from 'svelte/transition';
-  import { log, processRedirect, proxyEvent } from '$lib/utils';
+  import { processRedirect, proxyEvent } from '$lib/utils';
   import { _ } from 'svelte-i18n';
+  import type { PageData } from './$types';
 
-  /** @type {import('./$types').PageData | any} */
-  export let data;
+  export let data: PageData;
 
   const transitionParams = {
     delay: 100,
     duration: 600
   };
   const textTransitionParams = { ...transitionParams, x: -80 };
-  const { mounted } = getContext('mounted');
+  const { mounted }: any = getContext('mounted');
   const promise = new Promise((resolve) => {
     setTimeout(() => resolve(1), 500);
   });

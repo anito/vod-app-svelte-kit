@@ -5,8 +5,8 @@
   import { onMount, setContext } from 'svelte';
   import { UserManager, TimeManager, MailManager, UserGraphic } from '$lib/components';
   import Button, { Group, Label, Icon } from '@smui/button';
-  import { users, usersFoundation, sitename, session } from '$lib/stores';
-  import { proxyEvent, INBOX, ADMIN, SUPERUSER, TABS, log } from '$lib/utils';
+  import { users, usersFoundation, sitename, session, settings } from '$lib/stores';
+  import { proxyEvent, INBOX, ADMIN, SUPERUSER, TABS, log, createTabSearch } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import type { PageData } from './$types';
   import type { User } from '$lib/types';
@@ -57,7 +57,10 @@
 
   onMount(() => {
     window.addEventListener('user:add', addUserHandler);
-
+    if(!tab) {
+      const search = createTabSearch($settings.Site.defaultAdminTab)
+      setTimeout(() => goto($page.url.pathname+search), 200)
+    }
     return () => {
       window.removeEventListener('user:add', addUserHandler);
     };
