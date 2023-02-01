@@ -1,23 +1,19 @@
 <script lang="ts">
-  import * as api from '$lib/api';
   import { page } from '$app/stores';
-  import { setContext, getContext, onMount } from 'svelte';
+  import { getContext } from 'svelte';
   import Layout from './layout.svelte';
   import List from '@smui/list';
-  import Textfield from '@smui/textfield';
-  import Icon from '@smui/textfield/icon';
   import {
     Legal,
     PageBar,
     SimpleVideoCard,
     Container,
     Paginator,
-    Header,
     FlexContainer,
     SearchTextField
   } from '$lib/components';
   import { dynamicUrl, filterByModelKeys, proxyEvent } from '$lib/utils';
-  import { session, videos } from '$lib/stores';
+  import { videos } from '$lib/stores';
   import emptyPoster from '/src/assets/images/empty-poster.jpg';
   import { _ } from 'svelte-i18n';
   import type { LayoutData } from './$types';

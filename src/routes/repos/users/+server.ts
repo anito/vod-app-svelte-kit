@@ -9,8 +9,17 @@ export const GET = async ({
 }: RequestEvent) => {
   const { locale, user } = session.data;
   const token = user?.jwt;
-  const page = url.searchParams.get('page') || 1;
-  const countlimit = url.searchParams.get('limit') || 8;
+  const page: number = parseInt(url.searchParams.get('page') || '1');
+  const pagination = JSON.parse(cookies.get('pagination') || '{}');
+  let countlimit: number;
+  // Use last pagination data (from cookie) if the query parameter "currentpage" has been passed
+  if (url.searchParams.has('currentpage')) {
+    const { page_count, current_page, has_next_page, has_prev_page, count, limit }: any =
+      pagination.users;
+    countlimit = Math.min(current_page * limit, count);
+  } else {
+    countlimit = parseInt(url.searchParams.get('limit') || '8');
+  }
 
   let users;
   if (url.searchParams.has('id')) {
@@ -18,13 +27,12 @@ export const GET = async ({
     users = await usersRepo.get(id, { locale, token });
   } else {
     users = await usersRepo.getAll({ page, limit: countlimit, token });
-    const pagination = cookies.get('pagination') || '{}';
     const { page_count, current_page, has_next_page, has_prev_page, count, limit }: any =
       users.pagination;
     cookies.set(
       'pagination',
       JSON.stringify({
-        ...JSON.parse(pagination),
+        ...pagination,
         users: {
           next_page: has_next_page ? current_page + 1 : undefined,
           ...users.pagination

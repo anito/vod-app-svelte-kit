@@ -410,6 +410,14 @@
 
     if (res?.success) {
       videos.put(data);
+      // Reload images repo in order to reflect images posters
+      if('image_id' in data) {
+        await fetch(`/repos/images?currentpage=true`).then(async (res) => await res.json() ).then((res) => {
+          if(res.success) {
+            images.update(res.data)
+          }
+        });
+      }
       onsuccess?.(res);
     } else {
       onerror?.(res);
@@ -420,6 +428,12 @@
       configSnackbar(message);
       snackbar?.forceOpen();
     }
+  }
+
+  async function fetchImages(path: string) {
+    return await fetch(path)
+      .then(async (res) => await res.json())
+      .then((res) => res);
   }
 
   async function videoAddHandler({ detail }: CustomEvent) {
@@ -674,14 +688,13 @@
   function printCopyright(color?: string) {
     color = color || '#ad1457';
     -1 < navigator.userAgent.toLowerCase().indexOf('chrome')
-      ? window.console.log.apply(console, [
+      ? console.log([
           '%c %c Axel Nitzschner - Immersive Studio %c https://vod-app-svelte-kit.vercel.app/ ',
           'background: #ad1457; padding:5px 0; margin:3px 0 10px 0;',
           'background: #eeeeee; color: #e2370f; padding:5px; margin:3px 0 10px 0;',
           'background: #ad1457; color: #fff; padding:5px; margin:3px 0 10px 0;'
         ])
-      : window.console &&
-        window.console.log(
+      : console.log(
           ' Axel Nitzschner - Immersive Studio - https://vod-app-svelte-kit.vercel.app/ '
         );
   }

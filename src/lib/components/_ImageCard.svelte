@@ -1,23 +1,23 @@
 <script lang="ts">
   import './_button.scss';
   import MediaImagePreview from './_MediaImagePreview.svelte';
-  import { selection, videos } from '$lib/stores';
+  import { selection } from '$lib/stores';
   import Card, { Content, PrimaryAction, Actions, ActionButtons, ActionIcons } from '@smui/card';
   import Button, { Label } from '@smui/button';
   import IconButton, { Icon } from '@smui/icon-button';
   import Menu from '@smui/menu';
   import Tooltip, { Wrapper } from '@smui/tooltip';
-  import List, { Item, Separator, Text, PrimaryText, SecondaryText, Graphic } from '@smui/list';
+  import List, { Item, Text } from '@smui/list';
   import { _ } from 'svelte-i18n';
-  import type { Image } from '$lib/types';
   import { SvgIcon } from '.';
   import { proxyEvent } from '$lib/utils';
+  import type { Image } from '$lib/types';
 
   export let image: Image;
   export { className as class };
 
-  $: videosWithPoster = $videos.filter((video) => video.image_id === image.id);
-  $: activeposter = videosWithPoster.length
+  $: posterVideos = image.videos || [];
+  $: activeposter = posterVideos.length
 
   let selected: boolean;
 
@@ -38,11 +38,11 @@
   <PrimaryAction class="primary-action">
     <MediaImagePreview media={image} />
     <div class="hidden" class:activeposter>
-      {#if videosWithPoster.length}
+      {#if posterVideos.length}
         <Wrapper>
           <SvgIcon name="image" fillColor="#000" />
           <Tooltip>
-            {#each videosWithPoster as video}
+            {#each posterVideos as video}
               {video.title}<br />
             {/each}
           </Tooltip>

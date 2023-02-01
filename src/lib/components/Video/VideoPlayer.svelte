@@ -24,7 +24,7 @@
   export let multiplayer = false;
   export let curtain = false;
 
-  const browserName = $page.data.browser.name;
+  const browserName = $page.data.ua.name;
 
   let videoElement: HTMLVideoElement;
   let className = '';

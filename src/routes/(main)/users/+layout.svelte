@@ -392,7 +392,6 @@
           {#if !isDeepSearch}
             <Paginator
               {pagination}
-              indicator
               store={users}
               id="users-paginator"
               action="/users?/more"

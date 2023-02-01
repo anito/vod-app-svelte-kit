@@ -39,9 +39,9 @@ export async function load({ data, fetch }: LayoutLoadEvent) {
   });
 
   const parser = new UAParser(data.ua);
-  const browser = parser.getBrowser();
+  const ua = parser.getBrowser();
   const pagination = data.pagination;
 
   await waitLocale();
-  return { session: { ...session, locale }, browser, pagination };
+  return { session: { ...session, locale }, ua, pagination };
 }
