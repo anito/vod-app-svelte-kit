@@ -353,13 +353,6 @@
 
   function startPolling() {}
 
-  function displayRemainingTime(timestamp: number) {
-    const now = Date.now();
-    const sec = Math.floor(((timestamp - now) / 1000) % 60).minimumIntegerDigits(2);
-    const min = Math.floor((timestamp - now) / (1000 * 60)).minimumIntegerDigits(2);
-    return `${min}:${sec}`;
-  }
-
   function removeListener() {
     window.removeEventListener('dropzone:initialized', dropzoneInitializedHandler);
     window.removeEventListener('session:success', sessionSuccessHandler);
@@ -410,7 +403,7 @@
 
     if (res?.success) {
       videos.put(data);
-      // Reload images repo in order to reflect images posters
+      // Reload images repo in order to reflect changes on images posters
       if('image_id' in data) {
         await fetch(`/repos/images?currentpage=true`).then(async (res) => await res.json() ).then((res) => {
           if(res.success) {
@@ -450,13 +443,18 @@
       if (res.ok) return await res.json();
     });
     const stores = new Map();
-    stores.set('images', images);
-    stores.set('videos', videos);
-    const store = stores.get(type);
+    stores.set('images', {store: images, relatedStore: videos, relatedEndpoint: '/repos/videos'});
+    stores.set('videos', {store: videos, relatedStore: images, relatedEndpoint: '/repos/images'});
+    const {store, relatedStore, relatedEndpoint } = stores.get(type);
 
     if (res?.success) {
       urls.del(id);
       store.del(id);
+      await fetch(`${relatedEndpoint}?currentpage=true`).then(async (res) => await res.json() ).then((res) => {
+        if(res.success) {
+          relatedStore.update(res.data)
+        }
+      });
       onsuccess?.(res);
     } else {
       onerror?.(res);
