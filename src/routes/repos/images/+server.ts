@@ -43,3 +43,26 @@ export const GET = async ({
   }
   return json(images);
 };
+
+export const POST = async ({ locals: { imagesRepo, session }, request, cookies }: RequestEvent) => {
+  const { user } = session.data;
+  const token = user?.jwt;
+  const { match, limit: countlimit } = await request.json();
+  const pagination = JSON.parse(cookies.get('pagination') || '{}');
+  const images = await imagesRepo.getAll({ match, token, limit: countlimit });
+  const { page_count, current_page, has_next_page, has_prev_page, count, limit }: any =
+    images.pagination;
+  cookies.set(
+    'pagination',
+    JSON.stringify({
+      ...pagination,
+      images: {
+        next_page: has_next_page ? current_page + 1 : undefined,
+        ...images.pagination
+      }
+    }),
+    { path: '/' }
+  );
+
+  return json(images);
+};

@@ -39,11 +39,25 @@ export const GET = async ({ locals: { videosRepo, session }, url, cookies }: Req
   return json(videos);
 };
 
-export const POST = async ({ locals: { videosRepo, session }, request }: RequestEvent) => {
+export const POST = async ({ locals: { videosRepo, session }, request, cookies }: RequestEvent) => {
   const { user } = session.data;
   const token = user?.jwt;
-  const { match, limit } = await request.json();
-  const videos = await videosRepo.getAll({ match, token, limit });
+  const { match, limit: countlimit } = await request.json();
+  const pagination = JSON.parse(cookies.get('pagination') || '{}');
+  const videos = await videosRepo.getAll({ match, token, limit: countlimit });
+  const { page_count, current_page, has_next_page, has_prev_page, count, limit }: any =
+    videos.pagination;
+  cookies.set(
+    'pagination',
+    JSON.stringify({
+      ...pagination,
+      videos: {
+        next_page: has_next_page ? current_page + 1 : undefined,
+        ...videos.pagination
+      }
+    }),
+    { path: '/' }
+  );
 
   return json(videos);
 };
