@@ -33,16 +33,17 @@
 
   const dispatch = createEventDispatcher();
 
-  $: paginator = (pagination || store) && sync();
+  let paginator: any
+
+  $: (pagination || store) && (paginator = sync());
   $: page_data = paginator && pageData();
 
   function pageData() {
     paginator = { ...paginator, has_next_page: !($store.length === paginator.count) };
     const { count, page_count, current_page, has_next_page, limit } = paginator;
-    const rest = count % limit;
-    const next_count = page_count - current_page === 1 ? rest || limit : limit;
+    const next_count = (page_count - current_page) === 1 ? count % limit : has_next_page ? limit : 0;
     const loaded_count = $store.length;
-    const remaining_count = count - limit * current_page;
+    const remaining_count = Math.max(0, count - limit * current_page);
     return {
       ...paginator,
       remaining_count,
@@ -55,24 +56,21 @@
     if (PAGINATORS.has(id)) {
       let outofsync = false;
       // we don't know which fires first, store or pagination
-      // so pagination could be still undefined here
+      // so pagination could still be undefined here
       try {
         const { count: paginator_count, has_next_page: paginator_has_next_page } =
           PAGINATORS.get(id);
         if (!paginator_has_next_page && paginator_count !== $store.length) outofsync = true;
-        const { count } = pagination;
-        if (count !== paginator_count) outofsync = true;
+        if (pagination.count !== paginator_count) outofsync = true;
       } catch (e) {}
 
       if (outofsync) {
         PAGINATORS.delete(id);
         return sync();
       }
-      return PAGINATORS.get(id);
-    } else {
-      pagination && PAGINATORS.set(id, pagination);
-      return PAGINATORS.get(id);
     }
+    pagination && PAGINATORS.set(id, pagination);
+    return PAGINATORS.get(id);
   }
 
   function createStore() {
