@@ -41,7 +41,7 @@
   function pageData() {
     paginator = { ...paginator, has_next_page: !($store.length === paginator.count) };
     const { count, page_count, current_page, has_next_page, limit } = paginator;
-    const next_count = (page_count - current_page) === 1 ? count % limit : has_next_page ? limit : 0;
+    const next_count = has_next_page ? (page_count - current_page) === 1 ? (count % limit) || limit : limit : 0;
     const loaded_count = $store.length;
     const remaining_count = Math.max(0, count - limit * current_page);
     return {
