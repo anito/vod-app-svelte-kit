@@ -90,8 +90,8 @@
 
   async function scrollIntoView() {
     await tick();
-    const appendix = document.documentElement.querySelector(`.paginator-appendix-${id}`);
-    appendix?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    const control = document.documentElement.querySelector(`.paginator-${id}`);
+    control?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
 
   async function formHandler() {
@@ -113,7 +113,7 @@
   }
 </script>
 
-<li class="paginator-appendix paginator-appendix-{id}" class:indicator>
+<li class="paginator paginator-{id}" class:indicator>
   <form {action} method="POST" use:enhance={formHandler}>
     {#if paginator?.has_next_page}
       {#if type === 'label'}
@@ -151,17 +151,17 @@
 </li>
 
 <style lang="scss">
-  .paginator-appendix {
+  .paginator {
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
   }
-  .paginator-appendix::after {
+  .paginator::after {
     content: '';
     height: 90px;
   }
-  .paginator-appendix.indicator :global(.label) {
+  .paginator.indicator :global(.label) {
     margin-bottom: 8px;
   }
 </style>

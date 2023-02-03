@@ -40,12 +40,12 @@
   }
 }
 
-.load-more {
+.paginator .load-more {
   &.mdc-button {
     @include height(30px);
     font-size: 0.6em;
     letter-spacing: 0em;
-    padding: 3px 12px;
+    padding: 3px 17px;
 
     small.indicator {
       position: absolute;
