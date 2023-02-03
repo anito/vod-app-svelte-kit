@@ -1,25 +1,6 @@
-import { json, type Cookies } from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
+import { getPagination, setPaginationItem } from '$lib/utils';
 import type { RequestEvent } from './$types';
-
-function getPagination(cookies: Cookies) {
-  return JSON.parse(cookies.get('pagination') || '{}');
-}
-
-function setPagination(data: any, cookies: Cookies) {
-  const pagination = getPagination(cookies);
-  const { current_page, has_next_page }: any = data || {};
-  cookies.set(
-    'pagination',
-    JSON.stringify({
-      ...pagination,
-      users: {
-        next_page: has_next_page ? current_page + 1 : undefined,
-        ...data
-      }
-    }),
-    { path: '/' }
-  );
-}
 
 const LIMIT = '8';
 
@@ -43,7 +24,7 @@ export const GET = async ({ locals: { usersRepo, session }, url, cookies }: Requ
       countlimit = parseInt(url.searchParams.get('limit') || LIMIT);
     }
     users = await usersRepo.getAll({ page, limit: countlimit, token });
-    if (users.pagination) setPagination(users.pagination, cookies);
+    if (users.pagination) setPaginationItem({ name: 'users', data: users.pagination, cookies });
   }
   return json(users);
 };
@@ -53,7 +34,7 @@ export const POST = async ({ locals: { usersRepo, session }, request, cookies }:
   const token = user?.jwt;
   const { match, limit } = await request.json();
   const users = await usersRepo.getAll({ match, token, limit });
-  if (users.pagination) setPagination(users.pagination, cookies);
+  if (users.pagination) setPaginationItem({ name: 'users', data: users.pagination, cookies });
 
   return json(users);
 };

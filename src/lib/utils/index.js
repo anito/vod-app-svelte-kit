@@ -56,6 +56,7 @@ import { localeFormat } from './locale-format';
 import { get, post, put, del, getBlob } from './http';
 import { getAuxSession } from './auxSession';
 import { posterCreatedHandler, posterSelectedHandler, posterRemoveHandler } from './video';
+import { setPaginationItem, getPagination } from './pagination';
 import read from './reader';
 
 export {
@@ -79,6 +80,7 @@ export {
   getMediaAvatar,
   getMediaImage,
   getMediaVideo,
+  getPagination,
   hasStarted,
   info,
   isExpired,
@@ -102,6 +104,7 @@ export {
   randomItem,
   read,
   searchParams,
+  setPaginationItem,
   slugify,
   sortByEndDate,
   sortByStartDate,

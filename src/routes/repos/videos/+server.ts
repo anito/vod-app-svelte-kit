@@ -1,25 +1,6 @@
-import { json, type Cookies } from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
+import { getPagination, setPaginationItem } from '$lib/utils';
 import type { RequestEvent } from './$types';
-
-function getPagination(cookies: Cookies) {
-  return JSON.parse(cookies.get('pagination') || '{}');
-}
-
-function setPagination(data: any, cookies: Cookies) {
-  const pagination = getPagination(cookies);
-  const { current_page, has_next_page }: any = data || {};
-  cookies.set(
-    'pagination',
-    JSON.stringify({
-      ...pagination,
-      videos: {
-        next_page: has_next_page ? current_page + 1 : undefined,
-        ...data
-      }
-    }),
-    { path: '/' }
-  );
-}
 
 const LIMIT = '9';
 
@@ -43,7 +24,7 @@ export const GET = async ({ locals: { videosRepo, session }, url, cookies }: Req
       countlimit = parseInt(url.searchParams.get('limit') || LIMIT);
     }
     videos = await videosRepo.getAll({ page, limit: countlimit, token });
-    if (videos.pagination) setPagination(videos.pagination, cookies);
+    if (videos.pagination) setPaginationItem({ name: 'videos', data: videos.pagination, cookies });
   }
   return json(videos);
 };
@@ -53,7 +34,7 @@ export const POST = async ({ locals: { videosRepo, session }, request, cookies }
   const token = user?.jwt;
   const { match, limit } = await request.json();
   const videos = await videosRepo.getAll({ match, token, limit });
-  if (videos.pagination) setPagination(videos.pagination, cookies);
+  if (videos.pagination) setPaginationItem({ name: 'videos', data: videos.pagination, cookies });
 
   return json(videos);
 };

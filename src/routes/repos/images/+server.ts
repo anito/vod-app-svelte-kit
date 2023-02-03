@@ -1,34 +1,10 @@
-import { error, json, type Cookies } from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
+import { getPagination, setPaginationItem } from '$lib/utils';
 import type { RequestEvent } from './$types';
-
-function getPagination(cookies: Cookies) {
-  return JSON.parse(cookies.get('pagination') || '{}');
-}
-
-function setPagination(data: any, cookies: Cookies) {
-  const pagination = getPagination(cookies);
-  const { current_page, has_next_page }: any = data || {};
-  cookies.set(
-    'pagination',
-    JSON.stringify({
-      ...pagination,
-      images: {
-        next_page: has_next_page ? current_page + 1 : undefined,
-        ...data
-      }
-    }),
-    { path: '/' }
-  );
-}
 
 const LIMIT = '9';
 
-export const GET = async ({
-  locals: { imagesRepo, session },
-  url,
-  cookies,
-  request
-}: RequestEvent) => {
+export const GET = async ({ locals: { imagesRepo, session }, url, cookies }: RequestEvent) => {
   const { user } = session.data;
   const token = user?.jwt;
   const page: number = parseInt(url.searchParams.get('page') || '1');
@@ -48,7 +24,7 @@ export const GET = async ({
       countlimit = parseInt(url.searchParams.get('limit') || LIMIT);
     }
     images = await imagesRepo.getAll({ page, limit: countlimit, token }, cookies);
-    if (images.pagination) setPagination(images.pagination, cookies);
+    if (images.pagination) setPaginationItem({ name: 'images', data: images.pagination, cookies });
   }
   return json(images);
 };
@@ -58,7 +34,7 @@ export const POST = async ({ locals: { imagesRepo, session }, request, cookies }
   const token = user?.jwt;
   const { match, limit } = await request.json();
   const images = await imagesRepo.getAll({ match, token, limit });
-  if (images.pagination) setPagination(images.pagination, cookies);
+  if (images.pagination) setPaginationItem({ name: 'images', data: images.pagination, cookies });
 
   return json(images);
 };
