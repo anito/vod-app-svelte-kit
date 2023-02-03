@@ -354,6 +354,21 @@ Number.prototype.minimumFractionDigits = function (minimumFractionDigits = 2) {
   });
 };
 
+Number.prototype.toHHMMSS = function () {
+  const seconds = Number(this);
+  const hrs_num = Math.floor(seconds / 3600);
+  const min_num = Math.floor((seconds - hrs_num * 3600) / 60);
+  const sec_num = seconds - hrs_num * 3600 - min_num * 60;
+
+  const hrs = hrs_num < 10 ? '0' + hrs_num : hrs_num;
+  const min = min_num < 10 ? '0' + min_num : min_num;
+  const sec = sec_num < 10 ? '0' + sec_num : sec_num;
+  if (seconds < 6000) {
+    return min + ':' + sec;
+  }
+  return hrs + ':' + min + ':' + sec;
+};
+
 String.prototype.remove = function (val) {
   const arr = this.split(/\s+/);
   return arr

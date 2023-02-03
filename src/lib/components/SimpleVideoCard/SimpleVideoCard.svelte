@@ -152,7 +152,7 @@
     <Text>
       <PrimaryText>
         <span class="opacity-25" class:opacity-25={!video.title}>
-          {`${video.title || $_('text.no-title')}`}
+          {`${video.title || video.src}`}
         </span>
       </PrimaryText>
       {#if isUserVideo}

@@ -37,10 +37,11 @@
     (poster = emptyPoster);
   $: video?.id && getMediaVideo(video?.id, $session.user?.jwt).then((res) => (src = res));
   $: ((time) => {
-    if (!paused || !canplay) return;
-    let pausedTime = time;
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout((saved) => saved === time && savePlayhead(), 200, pausedTime);
+    if (paused && canplay) {
+      let pausedTime = time;
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout((saved) => saved === time && savePlayhead(), 200, pausedTime);
+    };
   })(playhead);
 
   onMount(() => {});
@@ -182,9 +183,6 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-  }
-  .editor-wrapper.is-edit-mode {
-    display: inline-block;
   }
   .player-container {
     position: relative;

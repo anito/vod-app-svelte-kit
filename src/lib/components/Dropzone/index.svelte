@@ -36,8 +36,8 @@
     svDropzone.on('dragleave', () => {
       dropzoneElement?.classList.toggle(hoveringClass);
     });
-    svDropzone.on('error', (file: Blob, errorMessage: any) => {
-      console.log('Error:', errorMessage);
+    svDropzone.on('error', (file: Blob, errorMessage: any, request: XMLHttpRequest) => {
+      // console.log('Error:', errorMessage, file, request);
     });
     Object.entries(dropzoneEvents).map(([eventKey, eventFunc]) => {
       svDropzone.on(eventKey, eventFunc);

@@ -27,6 +27,7 @@
   let selectedIndex: any;
   let search = '';
 
+  $: $videos.map((video) => console.log(video.title, video.duration?.toHHMMSS()))
   $: pagination = data.pagination?.videos;
   $: sidebar = !!$page.params.slug;
   $: selectionVideoId = $page.params.slug;

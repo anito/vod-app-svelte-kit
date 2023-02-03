@@ -48,6 +48,9 @@
     success: (files: Blob[], responseText: any, event: Event) => {
       dispatch('uploader:success', { files, responseText, event });
     },
+    error: (file: Blob, responseText: any, request: XMLHttpRequest) => {
+      dispatch('uploader:error', { file, responseText, request });
+    },
     addedfile: (file: Blob) => {
       ++count;
       dispatch('uploader:addedfile', { file });

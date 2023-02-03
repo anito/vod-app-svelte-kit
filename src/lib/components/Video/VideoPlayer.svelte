@@ -26,6 +26,7 @@
 
   const browserName = $page.data.ua.name;
 
+  let canplay = false;
   let videoElement: HTMLVideoElement;
   let className = '';
 
@@ -87,7 +88,7 @@
         class="mdc-typography--headline6 curtain-title opacity-25"
         class:opacity-25={!video.title}
       >
-        {video.title || $_('text.empty-title')}
+        {video.title || video.src}
       </h2>
       <h3
         class="mdc-typography--subtitle2 curtain-desc opacity-25"
@@ -99,13 +100,18 @@
     <div class="curtain-right bg-black opacity-30" />
   </div>
 {/if}
+{#if !canplay && video.duration}
+    <div class="duration">
+      {video.duration?.toHHMMSS()}
+    </div>
+{/if}
 <Video
   class={className}
   bind:paused
   bind:videoElement
   bind:playhead
   on:player:paused
-  on:player:canplay
+  on:player:canplay={() => canplay = true}
   on:player:emptied
   on:player:aborted
   on:player:loadeddata
@@ -138,7 +144,8 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 50%;
+    min-width: 50%;
+    max-width: 80%;
     height: 100%;
     z-index: 1;
     padding: 15px;
@@ -150,6 +157,7 @@
     transition-timing-function: ease-in-out;
     background-color: var(--curtain-bg-left);
     padding: var(--curtain-p);
+    word-wrap: break-word;
   }
   .curtain-right {
     position: absolute;
@@ -172,10 +180,24 @@
     font-size: var(--curtain-fs-title);
     line-height: var(--curtain-lh-title, 1rem);
     color: var(--curtain-c-title, #444444);
+    word-wrap: break-word;
   }
   .curtain .curtain-desc {
     font-size: var(--curtain-fs-descr);
     line-height: var(--curtain-lh-descr, 1rem);
     color: var(--curtain-c-descr, #444444);
+  }
+  .duration {
+    display: inline-block;
+    font-family: -apple-system, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji';
+    font-size: 11px;
+    position: absolute;
+    z-index: 1;
+    bottom: 15px;
+    right: 15px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: #fff;
+    background: #000;
   }
 </style>

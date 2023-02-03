@@ -33,6 +33,12 @@ declare global {
      */
     minimumIntegerDigits(minimumIntegerDigits?: number): string;
     minimumFractionDigits(minimumFractionDigits?: number): string;
+
+    /**
+     * Converts seconds to a formatted string in the form of"HH:MM:SS""
+     * @returns string - The formatted string
+     */
+    toHHMMSS();
   }
 
   interface Array {
@@ -59,6 +65,7 @@ declare global {
     add(val: string);
   }
 }
+
 export declare type EventType = keyof GlobalEventHandlersEventMap;
 // export declare type SpecificEventListener<K extends EventType> = (evt: GlobalEventHandlersEventMap[K]) => void;
 // export declare type CustomEventListener<E extends Event> = (evt: E) => void;
@@ -125,6 +132,7 @@ export interface Video<VideoRepoType = Record<string, any>> {
   image?: Image | any;
   image_id?: string | any;
   src?: string | any;
+  duration?: number | null;
   playhead?: number | any;
   _joinData?: any[] | any;
   _matchingData?: any[] | any;
@@ -138,6 +146,7 @@ export interface VideoAll<VideoAllRepoType = Record<string, any>> {
   image: Image | any;
   image_id: string | any;
   src: string | any;
+  duration?: number | null;
   created?: string | number | Date;
 }
 

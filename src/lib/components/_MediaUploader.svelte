@@ -65,7 +65,14 @@
   }
 
   function onErrorHandler({ detail }: CustomEvent) {
-    const message = detail.message;
+    const {file, responseText, request } = detail;
+    let message = 'Error'
+    console.log(responseText)
+    if(responseText.data) {
+      message = responseText.data.message
+    } else if (typeof responseText === 'string') {
+      message = responseText;
+    }
     configSnackbar(message);
     snackbar?.forceOpen();
   }

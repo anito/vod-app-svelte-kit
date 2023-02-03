@@ -251,60 +251,6 @@
 </div>
 
 <style>
-  .activity-indicator {
-    position: absolute;
-    mix-blend-mode: lighten;
-  }
-
-  .activity-indicator > div {
-    position: absolute;
-    left: 6px;
-    width: 2px;
-    height: 4px;
-    border-radius: 1px;
-    background-color: white;
-    animation-name: activity-indicator-pulse;
-    animation-duration: 1s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    transform-origin: 50% 7px;
-  }
-
-  .activity-indicator > .ne {
-    transform: rotate(45deg);
-    animation-delay: -875ms;
-  }
-
-  .activity-indicator > .e {
-    transform: rotate(90deg);
-    animation-delay: -750ms;
-  }
-
-  .activity-indicator > .se {
-    transform: rotate(135deg);
-    animation-delay: -625ms;
-  }
-
-  .activity-indicator > .s {
-    transform: rotate(180deg);
-    animation-delay: -500ms;
-  }
-
-  .activity-indicator > .sw {
-    transform: rotate(-135deg);
-    animation-delay: -375ms;
-  }
-
-  .activity-indicator > .w {
-    transform: rotate(-90deg);
-    animation-delay: -250ms;
-  }
-
-  .activity-indicator > .nw {
-    transform: rotate(-45deg);
-    animation-delay: -125ms;
-  }
-
   @keyframes activity-indicator-pulse {
     from {
       opacity: 0.9;
@@ -312,11 +258,6 @@
     to {
       opacity: 0.25;
     }
-  }
-
-  button.airplay.on > picture {
-    background-color: -apple-wireless-playback-target-active !important;
-    mix-blend-mode: normal !important;
   }
 
   .background-tint {
@@ -382,21 +323,11 @@
     background-color: var(--primary-glyph-color);
   }
 
-  button.on > picture {
-    background-color: white !important;
-  }
-
   button:active > picture {
     transform: scale(0.89);
   }
 
-  button.corner {
-    width: 44px !important;
-    height: var(--inline-controls-bar-height) !important;
-  }
-
-  button.center,
-  button.small-center {
+  button.center {
     left: 50% !important;
     top: 50% !important;
     transform: translate(-50%, -50%);
@@ -407,20 +338,12 @@
     height: 60px !important;
   }
 
-  button.small-center {
-    width: 31px !important;
-    height: 31px !important;
-  }
-
   button.center > .background-tint,
-  button.small-center > .background-tint,
-  button.center > .background-tint > div,
-  button.small-center > .background-tint > div {
+  button.center > .background-tint > div {
     border-radius: 50%;
   }
 
-  button.center > picture,
-  button.small-center > picture {
+  button.center > picture {
     position: absolute;
     left: 0;
     top: 0;
@@ -429,8 +352,7 @@
     transform: scale(0.4);
   }
 
-  button.center:active > picture,
-  button.small-center:active > picture {
+  button.center:active > picture {
     transform: scale(0.4) scale(calc(8 / 9));
   }
 
@@ -444,30 +366,6 @@
     padding: 8px;
     transform: translateX(-8px);
     box-sizing: content-box;
-  }
-
-  button.compact-activity-indicator > picture {
-    --width: 27px;
-
-    --number-of-frames: 23;
-
-    width: var(--width) !important;
-    height: 29.5px !important;
-
-    -webkit-mask-size: calc(var(--number-of-frames) * 100%) 100%;
-
-    --spins: compact-activity-indicator-intro frames(8) calc(8s / 15),
-      compact-activity-indicator-loop frames(15) 1s calc(8s / 15) infinite;
-
-    --fades-out: compact-activity-indicator-fades-out 500ms;
-  }
-
-  button.compact-activity-indicator.spins > picture {
-    animation: var(--spins);
-  }
-
-  button.compact-activity-indicator.spins.fades-out > picture {
-    animation: var(--spins), var(--fades-out);
   }
 
   @keyframes compact-activity-indicator-intro {
@@ -497,34 +395,6 @@
     }
   }
 
-  .media-controls.compact:before {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.2);
-    content: '';
-  }
-
-  .media-controls.compact button {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100% !important;
-    height: 100% !important;
-  }
-
-  .media-controls.compact button > picture {
-    mix-blend-mode: normal;
-    background-color: white;
-    transition-duration: 0;
-  }
-
-  .media-controls.compact button:active > picture {
-    transform: none;
-  }
-
   .controls-bar {
     position: absolute;
     cursor: default;
@@ -537,150 +407,24 @@
     height: var(--inline-controls-bar-height);
   }
 
-  .media-controls.inline.uses-ltr-user-interface-layout-direction .controls-bar.top-left,
   .media-controls.inline:not(.uses-ltr-user-interface-layout-direction) .controls-bar.top-right {
     top: var(--inline-controls-inside-margin);
   }
 
-  .media-controls.inline.uses-ltr-user-interface-layout-direction .controls-bar.top-right,
   .media-controls.inline:not(.uses-ltr-user-interface-layout-direction) .controls-bar.top-left {
     left: auto;
     right: var(--inline-controls-inside-margin);
     top: var(--inline-controls-inside-margin);
   }
 
-  .media-controls.inline.audio .controls-bar {
-    top: auto;
-    left: auto;
-  }
-
-  .media-controls.inline .controls-bar > * {
-  }
-
-  .media-controls.inline > button.play-pause.corner {
-    left: var(--inline-controls-inside-margin) !important;
-    top: auto;
-    bottom: var(--inline-controls-inside-margin);
-  }
-
-  .media-controls.inline.audio > button.play-pause.corner {
-    left: auto !important;
-    top: auto;
-    bottom: auto;
-  }
-
   .media-controls.inline .controls-bar button {
     height: 100% !important;
   }
 
-  .media-controls.inline button.start.center > picture,
-  .media-controls.inline button.play-pause.center.paused > picture {
-    left: 3px;
-  }
-
-  .media-controls.inline button.start.small-center > picture,
-  .media-controls.inline button.play-pause.small-center.paused > picture {
-    left: 1px;
-  }
-
-  .media-controls.inline .time-control,
-  .media-controls.inline .status-label {
+  .media-controls.inline .time-control {
     height: 100%;
     display: flex;
     align-items: center;
-  }
-
-  .media-controls.mac.fullscreen {
-    --controls-bar-width: 468px;
-    --tracks-panel-right-margin: 40px;
-
-    width: 100% !important;
-    height: 100% !important;
-  }
-
-  .media-controls.mac.fullscreen .controls-bar {
-    left: calc((100% - var(--controls-bar-width)) / 2);
-    bottom: 25px;
-    width: var(--controls-bar-width);
-    height: var(--fullscreen-controls-bar-height);
-  }
-
-  .media-controls.mac.fullscreen:not(.uses-ltr-user-interface-layout-direction)
-    :is(.volume-down, .volume.slider, .volume-up) {
-    transform: scaleX(-1);
-  }
-
-  .media-controls.mac.fullscreen .buttons-container {
-    height: 44px;
-  }
-
-  .media-controls.mac.fullscreen .buttons-container.left {
-    top: 16px;
-    height: 16px;
-  }
-
-  .media-controls.mac.fullscreen .buttons-container.center {
-    left: 50%;
-    top: 3px;
-    transform: translateX(-50%);
-  }
-
-  .media-controls.mac.fullscreen .buttons-container.right {
-    right: 0;
-  }
-
-  .media-controls.mac.fullscreen .buttons-container.right button {
-    top: 18px;
-  }
-
-  .media-controls.mac.fullscreen .time-control {
-    position: absolute;
-    left: 10px;
-    top: 49px;
-    height: 16px;
-    display: flex;
-    align-items: center;
-  }
-
-  .media-controls.mac.fullscreen .controls-bar .status-label {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 13px;
-    font-size: 14px;
-    text-align: center;
-  }
-
-  .media-controls.mac.inline .volume-slider-container {
-    position: absolute;
-    bottom: calc(var(--inline-controls-bar-height) + var(--inline-controls-inside-margin));
-    width: 94px;
-    height: 31px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    --volume-slider-transform: rotate(-90deg) translate(26px, -30px);
-    transform: var(--volume-slider-transform);
-  }
-
-  .media-controls.mac.inline.audio .volume-slider-container {
-    transform: var(--volume-slider-transform) translateY(-8px);
-  }
-
-  .media-controls.mac.inline .volume-slider-container > .background-tint {
-    top: 0;
-    left: var(--inline-controls-inside-margin);
-    right: 0;
-    bottom: 0;
-    width: auto;
-  }
-
-  .media-controls.mac.inline .volume-slider-container > .background-tint > div {
-    border-radius: 8px;
-  }
-
-  .media-controls.mac.inline .volume-slider-container > .slider {
-    margin-left: 6px;
   }
 
   :host {
@@ -755,11 +499,6 @@
     transition: opacity 0.1s linear;
   }
 
-  .media-controls.shows-tracks-panel .controls-bar > *,
-  .media-controls.shows-tracks-panel > button {
-    pointer-events: none;
-  }
-
   .media-controls.faded > *:not(.placard) {
     opacity: 0;
     pointer-events: none;
@@ -770,13 +509,7 @@
     position: absolute;
   }
 
-  .media-controls.fade-in {
-    animation-name: fade-in;
-    animation-duration: 350ms;
-  }
-
-  .media-controls .time-label,
-  .media-controls .status-label {
+  .media-controls .time-label {
     color: var(--primary-glyph-color);
     mix-blend-mode: lighten;
   }
@@ -849,66 +582,6 @@
     width: 100% !important;
   }
 
-  :host(.media-document.video.invalid) .placard {
-    background-color: transparent;
-  }
-
-  .placard {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-
-    background-color: black;
-    color: rgb(164, 164, 164);
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .placard .container {
-    max-width: 402px;
-    width: 100%;
-  }
-
-  .placard button {
-    position: relative;
-    margin: auto;
-    margin-bottom: 10px;
-    pointer-events: none;
-  }
-
-  .placard button > picture {
-    background-color: rgb(164, 164, 164) !important;
-  }
-
-  .placard .title,
-  .placard .description {
-    padding: 0 10px;
-    text-align: center;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    cursor: default;
-  }
-
-  .placard .title {
-    font-size: 20px;
-  }
-
-  .placard .description {
-    font-size: 13px;
-    white-space: initial;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-  }
-
-  .media-controls:not(.uses-ltr-user-interface-layout-direction) .placard {
-    direction: rtl;
-  }
-
   .slider {
     position: relative;
   }
@@ -970,14 +643,6 @@
     outline: none;
   }
 
-  .ios .slider > input {
-    pointer-events: none;
-
-    -webkit-user-select: none !important;
-    -webkit-touch-callout: none !important;
-    -webkit-tap-highlight-color: transparent;
-  }
-
   .slider > input::-webkit-slider-thumb {
     width: 9px;
     height: 100%;
@@ -988,181 +653,12 @@
     pointer-events: all;
   }
 
-  .slider.disabled > input,
-  .slider.disabled > .custom-slider > .primary,
-  .slider.disabled > .custom-slider > .secondary,
-  .slider.disabled > .custom-slider > .knob {
-    display: none;
-  }
-
-  .ios .slider > input {
-    width: calc(100% + 16px);
-    height: calc(100% + 10px);
-    transform: translate(-8px, -5px);
-  }
-
-  .ios .slider > input::-webkit-slider-runnable-track {
-    height: 100%;
-  }
-
-  .ios .slider > input::-webkit-slider-thumb {
-    padding: 0 8px;
-    box-sizing: content-box;
-  }
-
-  .status-label {
-    position: absolute;
-
-    text-align: left;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-
-    font-size: 12px;
-  }
-
-  video::-webkit-media-text-track-container {
-    overflow: hidden;
-    padding-bottom: 0;
-    z-index: 0;
-
-    text-align: center;
-    color: rgba(255, 255, 255, 1);
-
-    letter-spacing: normal;
-    word-spacing: normal;
-    text-transform: none;
-    text-indent: 0;
-    text-decoration: none;
-    pointer-events: none;
-    -webkit-user-select: none;
-
-    flex: 1 1 auto;
-
-    -webkit-line-box-contain: block inline-box replaced;
-  }
-
-  video[controls]::-webkit-media-text-track-container.visible-controls-bar {
-    height: calc(100% - var(--inline-controls-bar-height) - var(--inline-controls-inside-margin));
-  }
-
-  video::cue {
-    background-color: rgba(0, 0, 0, 0.8);
-  }
-
-  video::-webkit-media-text-track-display {
-    position: absolute;
-    overflow: hidden;
-    white-space: pre-wrap;
-    box-sizing: border-box;
-    font: 22px sans-serif;
-  }
-
-  video::-webkit-media-text-track-display-backdrop {
-    display: inline-block;
-  }
-
-  video::cue(:future) {
-    color: gray;
-  }
-
-  video::-webkit-media-text-track-container b {
-    font-weight: bold;
-  }
-
-  video::-webkit-media-text-track-container u {
-    text-decoration: underline;
-  }
-
-  video::-webkit-media-text-track-container i {
-    font-style: italic;
-  }
-
-  video::-webkit-media-text-track-container .hidden {
-    display: none;
-  }
-
   .time-label {
-    font-family: Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
-      'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    font-family: -apple-system, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji';
     padding: 0 8px;
     font-size: 12px;
     text-align: right;
     font-feature-settings: 'case';
-  }
-
-  .tracks-panel {
-    position: absolute;
-    display: inline-block;
-  }
-
-  .tracks-panel > .scrollable-container {
-    border-radius: 8px;
-  }
-
-  .tracks-panel > .scrollable-container {
-    position: relative;
-    overflow-y: scroll;
-  }
-
-  .tracks-panel * {
-    font-size: 14px;
-    font-weight: 500;
-  }
-
-  .tracks-panel.fade-out {
-    transition-property: opacity;
-    transition-duration: 265ms;
-    opacity: 0;
-  }
-
-  .tracks-panel section {
-    border-top: 2px solid var(--secondaryary-glyph-color);
-    will-change: transform;
-  }
-
-  .tracks-panel section:first-of-type {
-    border-top: 0;
-  }
-
-  .tracks-panel section > h3 {
-    color: var(--primary-glyph-color);
-    mix-blend-mode: lighten;
-    padding: 5px 20px 1px 21px;
-    margin: 0;
-  }
-
-  .tracks-panel section > ul {
-    list-style-type: none;
-    margin-top: 0;
-    padding: 0;
-  }
-
-  .tracks-panel section > ul > li {
-    position: relative;
-    padding: 1px 20px 1px 33px;
-    color: white;
-  }
-
-  .tracks-panel section > ul > li:focus {
-    background-color: rgb(20, 105, 209);
-    outline: none;
-  }
-
-  .tracks-panel section > ul > li.selected:before {
-    position: absolute;
-    top: 3px;
-    left: 12px;
-    width: 12px;
-    display: inline-block;
-    content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"><polygon fill="white" points="252.301,4.477 126.667,194.104 43.358,108.3 6.868,161.408 132.515,290.814 297.732,49.926"/></svg>');
-  }
-
-  .tracks-panel section > ul > li.animated {
-    animation-name: tracks-panel-item-selection;
-    animation-duration: 150ms;
-    animation-timing-function: step-end;
-    animation-fill-mode: forwards;
   }
 
   @keyframes tracks-panel-item-selection {
