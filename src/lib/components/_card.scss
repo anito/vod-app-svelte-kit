@@ -42,7 +42,7 @@ $border-radius: 3px;
   .select {
     .card {
       padding: var(--select-border-w);
-      @include fill-color(#42424231);
+      @include fill-color(rgba(255, 255, 255, 0.192));
       &[selected='true']::after {
         content: '';
         background: var(--secondary);
