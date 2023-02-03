@@ -13,6 +13,11 @@
         @include icon-size(19px);
       }
     }
+    &.large {
+      .material-icons {
+        @include icon-size(32px);
+      }
+    }
 
     &.material-icons {
       @include icon-size(23px);

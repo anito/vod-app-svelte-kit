@@ -20,7 +20,7 @@
   @include theme.property(color, custom-properties.create(--error-color, red));
   @include theme.property(
     background-color,
-    custom-properties.create(--error-background-color, red)
+    custom-properties.create(--error-background-color, rgba(255, 0, 0, 0.48))
   );
 }
 

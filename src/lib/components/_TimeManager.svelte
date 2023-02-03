@@ -358,12 +358,12 @@
     );
   }
 
-  function scrollIntoView({detail}: CustomEvent) {
-    const listEl = detail.target.closest('li') 
+  function scrollIntoView({ detail }: CustomEvent) {
+    const listEl = detail.target.closest('li');
     setTimeout(() => {
       lists.forEach((name) => {
         let item = itemsList[name].items.find((item: { selected: any }) => item.selected);
-        if(item?.element && item?.element !== listEl) {
+        if (item?.element && item?.element !== listEl) {
           item.element.scrollIntoView({ block: 'center', behavior: 'smooth' });
         }
       });
@@ -432,22 +432,20 @@
                     <Icon class="material-icons">smart_display</Icon>
                   </IconButton>
                   {#if hasPrivileges}
-                    <Button
-                      class="close-action-button button-shaped-round flex self-center"
-                      variant="unelevated"
-                      on:click={() => toggleDataPicker(video.id)}
-                    >
-                      <ButtonIcon class="material-icons">
-                        {isopen
-                          ? video.id === selectionVideoId
-                            ? 'close'
-                            : 'insert_invitation'
-                          : 'insert_invitation'}
-                      </ButtonIcon>
-                      <Label>{$_('text.scheduler')}</Label>
-                    </Button>
                     <IconButton
                       color="primary"
+                      class="large"
+                      on:click={() => toggleDataPicker(video.id)}
+                    >
+                      <Icon class="material-icons">
+                        {isopen
+                          ? video.id === selectionVideoId
+                            ? 'cancel'
+                            : 'av_timer'
+                          : 'av_timer'}
+                      </Icon>
+                    </IconButton>
+                    <IconButton
                       class="delete-action-button delete ml-2 small"
                       on:click$preventDefault={() => openRemoveDialog(video)}
                     >
@@ -537,7 +535,7 @@
               {/if}
             </SimpleVideoCard>
           {/each}
-          <Paginator {id} {pagination} {store} {action} type='label' indicator />
+          <Paginator {id} {pagination} {store} {action} type="label" indicator />
         {:else}
           <li class="flex flex-1 flex-col self-center text-center">
             <div class="m-5">{$_('text.no-videos')}</div>
