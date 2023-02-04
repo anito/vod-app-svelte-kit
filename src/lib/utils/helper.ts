@@ -213,10 +213,10 @@ export function createTabSearch(tab: string) {
 }
 
 export function parseLifetime(lifetime: boolean | string | number) {
-  const minToMs = 60 * 1000;
+  const toMs = 1000;
   lifetime = typeof lifetime === 'boolean' ? (lifetime ? 1 : 0) : lifetime;
   lifetime = typeof lifetime === 'string' ? parseFloat(lifetime) : lifetime;
-  return lifetime * minToMs;
+  return lifetime * toMs;
 }
 
 export function searchParams(url: URL) {
@@ -356,9 +356,9 @@ Number.prototype.minimumFractionDigits = function (minimumFractionDigits = 2) {
 
 Number.prototype.toHHMMSS = function () {
   const seconds = Number(this);
-  const hrs_num = Math.floor(seconds / 3600);
-  const min_num = Math.floor((seconds - hrs_num * 3600) / 60);
-  const sec_num = seconds - hrs_num * 3600 - min_num * 60;
+  const hrs_num = Math.round(seconds / 3600);
+  const min_num = Math.round((seconds - hrs_num * 3600) / 60);
+  const sec_num = Math.round(seconds - hrs_num * 3600 - min_num * 60);
 
   const hrs = hrs_num < 10 ? '0' + hrs_num : hrs_num;
   const min = min_num < 10 ? '0' + min_num : min_num;

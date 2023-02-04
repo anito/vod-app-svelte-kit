@@ -1,6 +1,6 @@
 import { derived } from 'svelte/store';
 import { session, settings } from '$lib/stores';
-import { info } from '$lib/utils';
+import { info, parseLifetime } from '$lib/utils';
 
 function createStore() {
   const INTERVAL = 1;
@@ -10,10 +10,12 @@ function createStore() {
   return derived(
     [session, settings],
     ([$session, $settings], set) => {
+      if (!$session.user) return;
+
       const expires = () => {
         return {
           SESSION: new Date($session._expires).getTime(),
-          CONFIG: new Date().getTime() + $settings.Session.lifetime * 60 * 1000
+          CONFIG: new Date().getTime() + parseLifetime($settings.Session.lifetime)
         };
       };
       const { CONFIG, SESSION } = expires();

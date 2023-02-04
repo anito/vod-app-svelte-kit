@@ -186,7 +186,7 @@
       '%c TICKER %c %s',
       'background: #ffd54f; color: #000000; padding:4px 6px 3px 0;',
       'background: #ffff81; color: #000000; padding:4px 6px 3px 0;',
-      `${(!isNaN(val) && val / 1000 + 's') || '--'}`
+      `${(!isNaN(val) && (val / 1000).toHHMMSS()) || '--'}`
     );
     if (val === 0) {
       proxyEvent('session:stop', { redirect: '/' });
@@ -659,8 +659,7 @@
 
   async function killSession() {
     return await post('/auth/logout').then((res) => {
-      snackbarMessage = res.message || res.data?.message;
-
+      snackbarMessage = res?.message || res.data?.message;
       configSnackbar(snackbarMessage);
       snackbar?.forceOpen();
       return res;
