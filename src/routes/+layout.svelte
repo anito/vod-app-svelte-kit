@@ -7,7 +7,7 @@
   import '$lib/components/_dialog.scss';
   import '$lib/components/_list.scss';
   import '$lib/components/_card.scss';
-  import { dev } from '$app/environment';
+  import { browser, dev } from '$app/environment';
   import { derived, writable } from 'svelte/store';
   import { version } from '$app/environment';
   import { afterNavigate, beforeNavigate, goto, invalidate, invalidateAll } from '$app/navigation';
@@ -71,6 +71,7 @@
   import type { NavigationTarget } from '@sveltejs/kit';
   import type { Dropzone } from '$lib/components/Dropzone/type';
   import { IMAGE, VIDEO } from '$lib/utils/const';
+  import { webVitals } from '$lib/vitals';
   import { inject } from '@vercel/analytics';
 
   inject({ mode: dev ? 'development' : 'production' });
@@ -101,6 +102,15 @@
   let isMounted = false;
   let isPreferredDarkMode;
   let dropzone: Dropzone;
+  let analyticsId = import.meta.env.VERCEL_ANALYTICS_ID;
+  
+  $: if (browser && analyticsId) {
+    webVitals({
+      path: $page.url.pathname,
+      params: $page.params,
+      analyticsId
+    })
+  }
 
   settings.subscribe((val) => {
     printDiff(val, { store: 'config' });
