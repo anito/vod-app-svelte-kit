@@ -71,7 +71,6 @@
   import type { NavigationTarget } from '@sveltejs/kit';
   import type { Dropzone } from '$lib/components/Dropzone/type';
   import { IMAGE, VIDEO } from '$lib/utils/const';
-  import { webVitals } from '$lib/vitals';
   import { inject } from '@vercel/analytics';
 
   inject({ mode: dev ? 'development' : 'production' });
@@ -102,15 +101,6 @@
   let isMounted = false;
   let isPreferredDarkMode;
   let dropzone: Dropzone;
-  let analyticsId = import.meta.env.VERCEL_ANALYTICS_ID;
-
-  $: if (browser && analyticsId) {
-    webVitals({
-      path: $page.url.pathname,
-      params: $page.params,
-      analyticsId
-    })
-  }
 
   settings.subscribe((val) => {
     printDiff(val, { store: 'config' });
