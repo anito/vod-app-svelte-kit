@@ -13,6 +13,6 @@ export const actions = {
     return await api
       .post(`sents/add`, { data: { user: { name, email }, subject, content, template }, token })
       .then(async (res) => res)
-      .catch((reason) => console.error(reason));
+      .catch((reason) => console.error('[ACTIONS]', reason));
   }
 } as Actions;

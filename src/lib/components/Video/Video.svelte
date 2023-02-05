@@ -109,8 +109,8 @@
           // playback started so we can safely pause
           videoElement.pause();
         })
-        .catch(() => {
-          log('Auto-play was prevented');
+        .catch((reason: any) => {
+          console.error('[VIDEO PLAYER]', reason);
         });
     }
   }

@@ -8,7 +8,7 @@ export function get(endpoint: RequestInfo | URL) {
     method: 'GET'
   })
     .then(async (r) => await r.json())
-    .catch((reason) => console.error(reason));
+    .catch((reason) => console.error('[HTTP GET]', reason));
 }
 
 export function post(endpoint: RequestInfo | URL, data = {}) {
@@ -20,7 +20,7 @@ export function post(endpoint: RequestInfo | URL, data = {}) {
     }
   })
     .then(async (r) => await r.json())
-    .catch((reason) => console.error(reason));
+    .catch((reason) => console.error('[HTTP POST]', reason));
 }
 
 export function del(endpoint: RequestInfo | URL, id: any) {
@@ -33,7 +33,7 @@ export function del(endpoint: RequestInfo | URL, id: any) {
     }
   })
     .then(async (r) => await r.json())
-    .catch((reason) => console.error(reason));
+    .catch((reason) => console.error('[HTTP DEL]', reason));
 }
 
 export function put(endpoint: RequestInfo | URL, data = {}) {
@@ -46,7 +46,7 @@ export function put(endpoint: RequestInfo | URL, data = {}) {
     }
   })
     .then(async (r) => await r.json())
-    .catch((reason) => console.error(reason));
+    .catch((reason) => console.error('[HTTP PUT]', reason));
 }
 
 export function getBlob(url: string, token?: string) {

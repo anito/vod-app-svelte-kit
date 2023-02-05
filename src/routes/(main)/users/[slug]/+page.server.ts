@@ -19,7 +19,7 @@ export const actions = {
         body: JSON.stringify({ ...formData, active: false })
       })
         .then(async (res) => await res.json())
-        .catch((err) => console.error(err));
+        .catch((reason) => console.error('[ACTIONS]', reason));
     });
   },
   edit: async ({ request, params, fetch, locals }) => {
@@ -32,7 +32,7 @@ export const actions = {
         body: JSON.stringify({ ...formData, locale: get(locale) })
       })
         .then(async (res) => await res.json())
-        .catch((err) => console.error(err));
+        .catch((reason) => console.error('[ACTIONS]', reason));
     });
   },
   del: async ({ params, fetch, locals }) => {
@@ -41,6 +41,6 @@ export const actions = {
       method: 'DELETE'
     })
       .then(async (res) => await res.json())
-      .catch((err) => console.error(err));
+      .catch((reason) => console.error('[ACTIONS]', reason));
   }
 } as Actions;

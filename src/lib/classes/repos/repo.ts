@@ -47,7 +47,7 @@ export class Repo {
         return [];
       })
       .catch((reason) => {
-        console.error(reason);
+        console.error('[REPO]', reason);
       });
   };
 

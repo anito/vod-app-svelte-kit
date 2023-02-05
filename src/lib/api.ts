@@ -53,11 +53,11 @@ async function send(atts: {
       try {
         return JSON.parse(res);
       } catch (err) {
-        console.log('API PARSE ERROR', err);
+        console.error('[API PARSE]', err);
       }
     })
     .catch((err) => {
-      console.log('API FETCH ERROR', err);
+      console.error('[API FETCH]', err);
     });
 }
 

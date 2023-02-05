@@ -46,9 +46,6 @@ function sendToAnalytics(metric: Metric, options: any) {
     });
 }
 
-/**
- * @param {any} options
- */
 export function webVitals(options: any) {
   try {
     getFID((metric) => sendToAnalytics(metric, options));

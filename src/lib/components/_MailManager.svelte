@@ -208,15 +208,11 @@
   async function getMail(name: string | undefined) {
     const endpoint = validateMailboxName(name);
     if (!endpoint)
-      return new Promise((res, rej) => rej(`The mailbox "${endpoint}" doesn't exist`)).catch(
-        (reason) => log(1, reason)
-      );
+      return new Promise((res, rej) => rej(`The mailbox "${endpoint}" doesn't exist`));
 
     const validUser = validateUser();
     if (!validUser)
-      return new Promise((res, rej) => rej(`This user doesn't exist`)).catch((reason) =>
-        log(1, reason)
-      );
+      return new Promise((res, rej) => rej(`This user doesn't exist`));
 
     return await api
       .get(`${endpoint}/get/${currentUser?.id}`, { token: $session.user?.jwt })
@@ -224,8 +220,7 @@
         if (res?.success) {
           return res.data;
         }
-      })
-      .catch((reason) => log(reason));
+      });
   }
 
   async function sendMail() {

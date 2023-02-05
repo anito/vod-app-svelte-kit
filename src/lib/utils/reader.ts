@@ -168,8 +168,8 @@ export function register(
           data.controller = undefined;
           data.stream = undefined;
           data.unsubscribe?.();
-        } catch (err) {
-          console.log('ERROR in ReadableStream', err);
+        } catch (reason) {
+          console.error('[READABLESTREAM]', reason);
         }
       }
       return data.stream;
@@ -223,7 +223,7 @@ export default function read(
         })
         .then((stream) => new Response(stream))
         .then(process)
-        .catch((err) => console.error('ERROR in Fetch', err));
+        .catch((reason) => console.error('[FETCH]', reason));
     }
   };
 }

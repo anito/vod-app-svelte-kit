@@ -103,7 +103,7 @@
   let isPreferredDarkMode;
   let dropzone: Dropzone;
   let analyticsId = import.meta.env.VERCEL_ANALYTICS_ID;
-  
+
   $: if (browser && analyticsId) {
     webVitals({
       path: $page.url.pathname,
@@ -389,7 +389,7 @@
       .then((res) => {
         settings.update(parseConfigData(res));
       })
-      .catch((reason) => console.error(reason));
+      .catch((reason) => console.error('[CONFIG]', reason));
   }
 
   function removeClasses() {

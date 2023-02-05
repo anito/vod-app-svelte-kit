@@ -7,7 +7,7 @@ export const actions = {
         method: 'GET'
       })
         .then(async (res) => await res.json())
-        .catch((err) => console.error(err));
+        .catch((reason) => console.error('[ACTIONS]', reason));
     });
   },
   mode: async ({ request, locals }) => {

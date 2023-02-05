@@ -44,7 +44,7 @@ async function getMedia(
           return res['url'];
         })
         .catch((err) => log(err));
-      // console.log('CACHING MEDIA URL', url);
+      console.error('[CACHING MEDIA]', url);
     }
     if (url) return `${url}/?token=${token}`;
   }

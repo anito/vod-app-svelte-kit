@@ -6,6 +6,6 @@ export const actions = {
       .then(async (res) => {
         if (res.ok) return await res.json();
       })
-      .catch((reason) => console.error(reason));
+      .catch((reason) => console.error('[ACTIONS]', reason));
   }
 } as Actions;
