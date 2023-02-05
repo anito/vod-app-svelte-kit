@@ -72,7 +72,7 @@
   });
 
   const loginHandler = () => {
-    flash.update({ message: $_('text.authenticating'), permanent: true });
+    flash.update({ message: $_('text.authenticating') });
     block();
     return ({ result }: { result: ActionResult }) => {
       if (result.type === 'success') {

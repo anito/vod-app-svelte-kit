@@ -320,7 +320,7 @@
       configSnackbar(message);
       snackbar?.forceOpen();
     } else {
-      flash.update({ type: 'error', message });
+      flash.update({ type: 'error', message, timeout: 3500 });
       const url = `login?${createRedirectSlug($page.url)}`;
       configSnackbar(message, url);
       snackbar?.forceOpen();

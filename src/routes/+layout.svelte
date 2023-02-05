@@ -599,8 +599,7 @@
     flash.update({
       message,
       type: 'success',
-      timeout: 2000,
-      permanent: false
+      timeout: 2000
     });
 
     renewed && localStorage.setItem('renewed', 'true');

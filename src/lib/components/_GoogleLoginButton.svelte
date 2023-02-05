@@ -39,7 +39,7 @@
   }
 
   async function decodeJwtResponse(token: string) {
-    flash.update({ message: $_('text.authenticating'), permanent: true });
+    flash.update({ message: $_('text.authenticating') });
     await get(`/auth/login?token=${token}&type=google`).then(async (res) => {
       const { success, data }: any = { ...res };
       if (success) {

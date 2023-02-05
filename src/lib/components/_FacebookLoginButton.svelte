@@ -52,7 +52,7 @@
       FB.api(`/${userID}/picture`, 'GET', { type: 'large', redirect: false }, async ({ data }) => {
         ({ url: src } = { ...data }); // The src attribute for login buttton
         if (id && redirect) {
-          flash.update({ message: $_('text.authenticating'), permanent: true });
+          flash.update({ message: $_('text.authenticating') });
           await post(`/auth/login?type=facebook`, {
             id,
             email,
