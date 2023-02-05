@@ -71,6 +71,9 @@
   import type { NavigationTarget } from '@sveltejs/kit';
   import type { Dropzone } from '$lib/components/Dropzone/type';
   import { IMAGE, VIDEO } from '$lib/utils/const';
+  import { inject } from '@vercel/analytics';
+
+  inject({ mode: dev ? 'development' : 'production' });
 
   const snackbarLifetime = 4000;
   const redirectDelay = 300;
