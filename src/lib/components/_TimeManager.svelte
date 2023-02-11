@@ -329,7 +329,7 @@
 
   function onDateRangeSelected(event: Event) {}
 
-  function toggleDataPicker(id: string | null) {
+  function toggleDatePicker(id: string | null) {
     if (selectionVideoId !== id) {
       selectionVideoId = id;
       isopen = true;
@@ -417,7 +417,7 @@
                   isUserVideo
                   threeLine
                   class="user-video video-list-item"
-                  on:datapicker={({ detail }) => toggleDataPicker(detail.id)}
+                  on:datapicker={({ detail }) => toggleDatePicker(detail.id)}
                   on:video:selected={videoSelectedHandler}
                   selected={selectionVideoId === video.id}
                   {emptyPoster}
@@ -434,8 +434,8 @@
                   {#if hasPrivileges}
                     <IconButton
                       color="primary"
-                      class="large"
-                      on:click={() => toggleDataPicker(video.id)}
+                      class="large toggle-date-picker"
+                      on:click={() => toggleDatePicker(video.id)}
                     >
                       <Icon class="material-icons">
                         {isopen
@@ -555,7 +555,7 @@
         <div slot="header">
           <div>
             <Header mdc h="5">{readout}</Header>
-            <button on:click={() => toggleDataPicker(selectionVideoId)} class="button-close" />
+            <button on:click={() => toggleDatePicker(selectionVideoId)} class="button-close" />
           </div>
         </div>
         {#if $locale}

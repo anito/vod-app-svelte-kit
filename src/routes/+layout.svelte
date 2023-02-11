@@ -626,8 +626,6 @@
     await post('/session/extend', time);
     if (detail?.start) {
       if (!$navigating) await invalidateAll();
-    } else {
-      if (!$navigating) await invalidate('app:session');
     }
     detail?.callback?.();
   }
