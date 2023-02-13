@@ -9,7 +9,6 @@ export async function POST({ locals, cookies }: RequestEvent) {
   await locals.session.set({ locale });
 
   return await api.post(`users/logout?locale=${locale}`).then((res) => {
-    cookies.set('pagination', '{}', { path: '/', expires: new Date('1970') });
     return json({
       ...res
     });

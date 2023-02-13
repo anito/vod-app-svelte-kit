@@ -29,7 +29,6 @@ export async function GET({ locals, url, cookies }: RequestEvent) {
 
   if (token) {
     return await api.get(`${type}?token=${token}&locale=${locale}`).then(async (res) => {
-      cookies.set('pagination', '{}', { path: '/', expires: new Date('1970') });
       await locals.session.destroy();
       await locals.session.set({ ...parseData(res), locale });
       return json(res);
@@ -46,7 +45,6 @@ export async function POST({ locals, request, url, cookies }: RequestEvent) {
   return await api
     .post(`${type}?locale=${locale}`, { token: data.token, data })
     .then(async (res) => {
-      cookies.set('pagination', '{}', { path: '/', expires: new Date('1970') });
       await locals.session.destroy();
       await locals.session.set({ ...parseData(res), locale });
       return json(res);

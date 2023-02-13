@@ -4,7 +4,7 @@
   import { goto } from '$app/navigation';
   import { onMount, getContext, setContext } from 'svelte';
   import { fly } from 'svelte/transition';
-  import { infos, fabs, session, users, usersFoundation } from '$lib/stores';
+  import { fabs, infos, session, users, usersFoundation } from '$lib/stores';
   import Layout from './layout.svelte';
   import {
     Container,

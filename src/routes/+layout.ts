@@ -20,7 +20,7 @@ function getInitialLocale() {
 }
 
 export async function load({ data, fetch }: LayoutLoadEvent) {
-  const { session } = data;
+  const { pagination, session } = data;
   const initialLocale = session.locale || getInitialLocale();
   init({
     fallbackLocale,
@@ -40,7 +40,6 @@ export async function load({ data, fetch }: LayoutLoadEvent) {
 
   const parser = new UAParser(data.ua);
   const ua = parser.getBrowser();
-  const pagination = data.pagination;
 
   await waitLocale();
   return { session: { ...session, locale }, ua, pagination };

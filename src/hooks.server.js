@@ -1,5 +1,7 @@
 import { dev } from '$app/environment';
 import { handleSession } from 'svelte-kit-cookie-session';
+import { get } from 'svelte/store';
+import { pagination } from '$lib/stores';
 import { UsersRepo, VideosRepo, ImagesRepo, VideosAllRepo } from '$lib/classes';
 
 export const handle = handleSession(
@@ -9,14 +11,14 @@ export const handle = handleSession(
     rolling: true
   },
   async ({ event, resolve }) => {
-    dev && (process.env[ 'NODE_TLS_REJECT_UNAUTHORIZED' ] = '0');
+    dev && (process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0');
 
     event.locals.usersRepo = event.locals.usersRepo ?? UsersRepo.getInstance();
     event.locals.videosRepo = event.locals.videosRepo ?? VideosRepo.getInstance();
     event.locals.imagesRepo = event.locals.imagesRepo ?? ImagesRepo.getInstance();
     event.locals.videosAllRepo = event.locals.videosAllRepo ?? VideosAllRepo.getInstance();
     event.locals.userAgent = event.locals.userAgent ?? event.request.headers.get('user-agent');
-    event.locals.pagination = JSON.parse(event.cookies.get('pagination') || '{}');
+    event.locals.pagination = get(pagination);
 
     return await resolve(event);
   }

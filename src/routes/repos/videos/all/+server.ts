@@ -1,14 +1,13 @@
 import { json } from '@sveltejs/kit';
-import { getPagination, setPaginationItem } from '$lib/utils';
+import { paginationItems, setPaginationItem } from '$lib/utils';
 import type { RequestEvent } from './$types';
 
 const LIMIT = '9';
 
-export const GET = async ({ locals: { videosAllRepo, session }, url, cookies }: RequestEvent) => {
+export const GET = async ({ locals: { videosAllRepo, session }, url }: RequestEvent) => {
   const { user } = session.data;
   const token = user?.jwt;
   const page: number = parseInt(url.searchParams.get('page') || '1');
-  const pagination = getPagination(cookies);
   let countlimit: number;
 
   let videosAll;
@@ -19,31 +18,25 @@ export const GET = async ({ locals: { videosAllRepo, session }, url, cookies }: 
     videosAll = await videosAllRepo.get(id, { token });
   } else {
     // Use last pagination data (from cookie) if the query parameter "currentpage" has been passed
-    if (url.searchParams.has('currentpage') && pagination.videosAll) {
-      const { current_page, count, limit }: any = pagination.videos;
+    if (url.searchParams.has('currentpage') && paginationItems.videosAll) {
+      const { current_page, count, limit }: any = paginationItems.videos;
       countlimit = Math.min(current_page * limit, count);
     } else {
       countlimit = parseInt(url.searchParams.get('limit') || LIMIT);
     }
     videosAll = await videosAllRepo.getAll({ page, limit: countlimit, token });
-    if (videosAll.pagination)
-      setPaginationItem({ name: 'videosAll', data: videosAll.pagination, cookies });
+    if (videosAll.pagination) setPaginationItem({ name: 'videosAll', data: videosAll.pagination });
   }
 
   return json(videosAll);
 };
 
-export const POST = async ({
-  locals: { videosAllRepo, session },
-  request,
-  cookies
-}: RequestEvent) => {
+export const POST = async ({ locals: { videosAllRepo, session }, request }: RequestEvent) => {
   const { user } = session.data;
   const token = user?.jwt;
   const { match, limit } = await request.json();
   const videosAll = await videosAllRepo.getAll({ match, token, limit });
-  if (videosAll.pagination)
-    setPaginationItem({ name: 'videosAll', data: videosAll.pagination, cookies });
+  if (videosAll.pagination) setPaginationItem({ name: 'videosAll', data: videosAll.pagination });
 
   return json(videosAll);
 };

@@ -1,29 +1,18 @@
-import type { Cookies } from '@sveltejs/kit';
+import { pagination } from '$lib/stores';
 
-export function getPagination(cookies: Cookies) {
-  return JSON.parse(cookies.get('pagination') || '{}');
-}
+export let paginationItems: any;
 
-export function setPaginationItem({
-  name,
-  data,
-  cookies
-}: {
-  name: string;
-  data: any;
-  cookies: Cookies;
-}) {
-  const pagination = getPagination(cookies);
+pagination.subscribe((items) => {
+  paginationItems = items;
+});
+
+export function setPaginationItem({ name, data }: { name: string; data: any }) {
   const { current_page, has_next_page }: any = data || {};
-  cookies.set(
-    'pagination',
-    JSON.stringify({
-      ...pagination,
-      [name]: {
-        next_page: has_next_page ? current_page + 1 : undefined,
-        ...data
-      }
-    }),
-    { path: '/' }
-  );
+  pagination.update({
+    name,
+    data: {
+      next_page: has_next_page ? current_page + 1 : undefined,
+      ...data
+    }
+  });
 }

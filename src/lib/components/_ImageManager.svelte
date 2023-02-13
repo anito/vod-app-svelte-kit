@@ -7,7 +7,7 @@
   import Fab, { Icon } from '@smui/fab';
   import { Label } from '@smui/common';
   import { ImageCard, MediaUploader, Info, Paginator, FlexContainer } from '$lib/components';
-  import { fabs, videos, sitename, images, session } from '$lib/stores';
+  import { fabs, sitename, images, session } from '$lib/stores';
   import { _ } from 'svelte-i18n';
   import type Snackbar from '@smui/snackbar';
   import type { Dropzone } from '.';
