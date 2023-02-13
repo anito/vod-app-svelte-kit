@@ -225,7 +225,7 @@
       from_pathnames: [],
       to_pathnames: ['/auth?/logout', '/auth?/login', '/login', '/logout', '/config']
     },
-    // afterNavigationCallback
+    afterNavigationCallback
   );
 
   beforeNavigate(({ cancel }) => {
@@ -627,8 +627,6 @@
     await post('/session/extend', time);
     if (detail?.start) {
       if (!$navigating) await invalidateAll();
-    } else {
-      if (!$navigating) await invalidate('app:session');
     }
     detail?.callback?.();
   }
