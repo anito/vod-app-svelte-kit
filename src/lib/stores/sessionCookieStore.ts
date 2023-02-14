@@ -5,7 +5,10 @@ function createStore() {
   const { update, subscribe, set } = writable({} as Session);
 
   return {
-    update: (val: Session) => update(() => val),
+    update: (val: Session) =>
+      update((items) => {
+        return { ...items, ...val };
+      }),
     subscribe,
     set
   };

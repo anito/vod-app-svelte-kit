@@ -204,16 +204,16 @@ export interface Framework<FrameworkType = Record<string, any>> {
 }
 
 export interface Session<SessionType = Record<string, any>> {
-  data: Object;
-  fromToken: boolean;
-  user: User;
-  role: string;
-  message: string;
-  success: boolean;
-  renewed: boolean;
-  code: number;
+  data?: Object;
+  fromToken?: boolean;
+  user?: User;
+  role?: string;
+  message?: string;
+  success?: boolean;
+  renewed?: boolean;
+  code?: number;
   locale?: string;
-  _expires: Date | any;
+  _expires?: Date | any;
 }
 
 export interface Sent<SentType = Record<string, any>> {

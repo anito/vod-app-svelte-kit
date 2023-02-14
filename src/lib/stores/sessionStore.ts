@@ -10,7 +10,7 @@ function createStore() {
   return derived(
     [page, sessionCookie],
     ([$page, $sessionCookie], set) => {
-      const session = { ...$page.data.session };
+      const session = { ...$page.data.session, ...$sessionCookie };
       set(session);
     },
     {

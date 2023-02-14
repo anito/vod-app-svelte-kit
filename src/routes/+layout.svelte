@@ -53,7 +53,8 @@
     users,
     streams,
     selection,
-    videosAll
+    videosAll,
+    sessionCookie
   } from '$lib/stores';
   import { Modal, SvgIcon, DoubleBounce } from '$lib/components';
   import {
@@ -620,15 +621,15 @@
   }
 
   async function sessionExtendHandler({ detail }: CustomEvent) {
-    if (!$session.user && !detail?.start) return;
     await tick();
-    const { lifetime } = $settings.Session;
-    const time = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
-    await post('/session/extend', time);
+    if ($session.user) {
+      const { lifetime } = $settings.Session;
+      const _expires = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
+      await post('/session/extend', _expires);
+      sessionCookie.update({ _expires });
+    }
     if (detail?.start) {
       if (!$navigating) await invalidateAll();
-    } else {
-      if (!$navigating) await invalidate('app:session');
     }
     detail?.callback?.();
   }
