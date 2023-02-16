@@ -1,41 +1,40 @@
 import { json } from '@sveltejs/kit';
-import { get } from 'svelte/store';
-import { pagination } from '$lib/stores';
-import { paginationItems, setPaginationItem } from '$lib/utils';
 import type { RequestEvent } from './$types';
-
-const LIMIT = '9';
 
 export const GET = async ({ locals: { imagesRepo, session }, url, cookies }: RequestEvent) => {
   const { user } = session.data;
   const token = user?.jwt;
   const page: number = parseInt(url.searchParams.get('page') || '1');
-  let countlimit: number;
 
   let images;
-  if (url.searchParams.has('id')) {
-    const id = url.searchParams.get('id');
+  let id;
+  if ((id = url.searchParams.get('id'))) {
     images = await imagesRepo.get(id, { token });
   } else {
-    // Use last pagination data (from cookie) if the query parameter "currentpage" has been passed
-    if (url.searchParams.has('currentpage') && paginationItems.images) {
-      const { current_page, count, limit }: any = paginationItems.images;
-      countlimit = Math.min(current_page * limit, count);
-    } else {
-      countlimit = parseInt(url.searchParams.get('limit') || LIMIT);
+    let limit;
+    if (url.searchParams.has('auto')) {
+      const pagination = JSON.parse(cookies.get('pagination') || '{}');
+      const { current_page, count, limit: _limit }: any = pagination.images;
+      if (current_page && _limit && count) {
+        limit = Math.min(current_page * _limit, count);
+      }
     }
-    images = await imagesRepo.getAll({ page, limit: countlimit, token }, cookies);
-    if (images.pagination) setPaginationItem({ name: 'images', data: images.pagination });
+    images = await imagesRepo.getAll({ page, limit, token });
   }
   return json(images);
 };
 
-export const POST = async ({ locals: { imagesRepo, session }, request }: RequestEvent) => {
+export const POST = async ({ locals: { imagesRepo, session }, request, cookies }: RequestEvent) => {
   const { user } = session.data;
   const token = user?.jwt;
-  const { match, limit } = await request.json();
-  const images = await imagesRepo.getAll({ match, token, limit });
-  if (images.pagination) setPaginationItem({ name: 'images', data: images.pagination });
-
+  const options = await request.json(); // { match, limit, auto }
+  if (options.auto) {
+    const pagination = JSON.parse(cookies.get('pagination') || '{}');
+    const { current_page, count, limit: _limit }: any = pagination.images;
+    if (current_page && _limit && count) {
+      options.limit = Math.min(current_page * _limit, count);
+    }
+  }
+  const images = await imagesRepo.getAll({ ...options, token });
   return json(images);
 };

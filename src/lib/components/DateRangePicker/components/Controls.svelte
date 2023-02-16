@@ -1,6 +1,4 @@
-<script>
-  // @ts-nocheck
-
+<script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import {
     addMonths,
@@ -14,41 +12,62 @@
   } from 'date-fns';
   import { buildMonthDropdown, buildYearDropdown, localeFormat } from '../utils';
 
-  export let btnClass;
-  export let month;
-  export let monthFormat;
-  export let monthDropdown;
-  export let maxDate;
-  export let minDate;
-  export let nextIcon;
-  export let pageNum;
-  export let prevIcon;
-  export let selectClass;
-  export let yearDropdown;
+  export let locale: string = 'en';
+  export let btnClass: string;
+  export let month: Date;
+  export let monthFormat: string;
+  export let monthDropdown: boolean;
+  export let maxDate: Date;
+  export let minDate: Date;
+  export let nextIcon: string;
+  export let pageNum: number;
+  export let prevIcon: string;
+  export let selectClass: string;
+  export let yearDropdown: boolean;
 
   const dispatch = createEventDispatcher();
 
-  let selectedMonth;
-  let selectedYear;
+  interface DateRecord {
+    value: Date; text: string
+  }
 
-  $: months = buildMonthDropdown(month, monthFormat);
-  $: years = buildYearDropdown(minDate, maxDate, pageNum);
+  let selectedMonth: DateRecord;
+  let selectedYear: DateRecord;
+
+  $: months = locale && buildMonthDropdown(month, monthFormat) || [];
+  $: years = months && buildYearDropdown(minDate, maxDate, pageNum);
   $: prevMonth = subMonths(month, 1);
   $: nextMonth = addMonths(month, 1);
   /** @todo Simplify disabling logic */
   $: nextBtnDisabled = isSameMonth(month, maxDate) || isAfter(month, maxDate);
   $: prevBtnDisabled = isSameMonth(month, minDate) || isBefore(month, minDate);
 
-  $: isOptionDisabled = (mo) =>
+  $: isOptionDisabled = (mo: Date) =>
     (!isSameMonth(mo, minDate) && isBefore(mo, minDate)) ||
     (!isSameMonth(mo, minDate) && isAfter(mo, maxDate));
 
-  function setSelectedMonth(month) {
-    setTimeout(() => (selectedMonth = month));
+  function isSelectedMonth(mo: DateRecord) {
+    if(isSameMonth(mo.value, month)) {
+      setSelectedMonth(mo)
+      return true
+    }
+    return false
   }
 
-  function setSelectedYear(year) {
-    setTimeout(() => (selectedYear = year));
+  function isSelectedYear(yr: DateRecord) {
+    if(isSameYear(yr.value, month)) {
+      setSelectedYear(yr)
+      return true
+    }
+    return false
+  }
+
+  function setSelectedMonth(month: DateRecord) {
+    selectedMonth = month
+  }
+
+  function setSelectedYear(year: DateRecord) {
+    selectedYear = year
   }
 </script>
 
@@ -80,7 +99,7 @@
         {#each months as mo}
           <option
             disabled={isOptionDisabled(mo.value)}
-            selected={isSameMonth(mo.value, month) && setSelectedMonth(mo)}
+            selected={isSelectedMonth(mo)}
             value={mo}
           >
             {mo.text}
@@ -103,7 +122,7 @@
         {#each years as yr}
           <option
             disabled={isOptionDisabled(yr.value)}
-            selected={isSameYear(yr.value, month) && setSelectedYear(yr)}
+            selected={isSelectedYear(yr)}
             value={yr}
           >
             {yr.text}

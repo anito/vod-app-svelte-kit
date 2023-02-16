@@ -1,8 +1,6 @@
-<script>
-  // @ts-nocheck
-
+<script lang="ts">
   import { createEventDispatcher, onMount } from 'svelte';
-  import { __locale__ } from './stores/localeStore.js';
+  import localeStore from './stores/localeStore';
 
   import {
     addMonths,
@@ -24,25 +22,27 @@
   import Calendar from './components/Calendar.svelte';
   import TimePicker from './components/TimePicker.svelte';
 
-  /**
-   * @type {Intl.DateTimeFormatOptions}
-   */
-  const DateTimeFormatOptions = {
+  interface DateTimeFormat {
+    day: '2-digit' | 'numeric' | undefined;
+    year: '2-digit' | 'numeric' | undefined;
+    month: '2-digit' | 'numeric' | undefined;
+  }
+  const DateTimeFormatOptions: DateTimeFormat = {
     day: '2-digit',
     year: 'numeric',
     month: '2-digit'
-  };
+  }
 
   export let applyBtnText = 'Apply';
   export let btnClass = 'picker-btn';
   export let actionBtnClass = btnClass;
   export let cancelBtnText = 'Cancel';
   export let dateTimeFormatOptions = DateTimeFormatOptions;
-  export let disabledDates = [];
+  export let disabledDates: Date[] = [];
   export let endDate = endOfWeek(new Date());
-  export let events = [];
+  export let events: Date[] = [];
   export let firstDayOfWeek = 'sunday';
-  export let localeObject = undefined;
+  export let localeObject: any;
   export let maxDate = addYears(endOfYear(new Date()), 10);
   export let minDate = subYears(startOfYear(new Date()), 10);
   export let minuteIncrement = 1;
@@ -69,27 +69,23 @@
   export let weekGuides = false;
   export let weekNumbers = false;
   export let yearDropdown = true;
-  export let resetTrigger = undefined;
+  export let resetTrigger: unknown;
   export let disabled = false;
   export let customHeaderHeight = false;
   export let label = false;
-  export let readout;
+  export let readout: string;
   export { className as class };
 
-  /** @todo Implement props/options */
-  // export let maxSpan = null;
-  // export let predefinedRanges = [];
-
   let hasSelection = true;
-  let calendarRef;
+  let calendarRef: HTMLElement;
   let numPages = twoPages ? 2 : 1;
-  let navigator;
-  let tempStartDate;
+  let navigator: Navigator;
+  let tempStartDate: Date;
   let className = '';
 
   const dispatch = createEventDispatcher();
 
-  $: __locale__.update(localeObject);
+  $: localeStore.update(localeObject);
   $: tempEndDate = endDate;
   $: tempStartDate = startDate;
   $: months = [...Array(numPages)].map((_, i) => addMonths(today, i));
@@ -109,7 +105,7 @@
       return new Date(tempEndDate).toLocaleDateString(lang, dateTimeFormatOptions);
     }
   };
-  $: readout = `${startDateReadout()} - ${endDateReadout()}`;
+  $: readout = lang && `${startDateReadout()} - ${endDateReadout()}`;
   $: canResetView = !isSameMonth(tempStartDate, months[0]);
   $: lang = localeObject
     ? localeObject.code
@@ -136,7 +132,7 @@
   $: resetTrigger && resetView();
 
   onMount(() => {
-    calendarRef = document.querySelector('.calendar');
+    calendarRef = document.querySelector('.calendar') || new HTMLElement();
     navigator = window.navigator;
 
     if (twoPages) {
@@ -219,7 +215,7 @@
     });
   };
 
-  const onSelection = ({ detail }) => {
+  const onSelection = ({ detail }: CustomEvent) => {
     /**
      * @todo Take into account the min and max dates
      * when the new end date is after max date, set it to max date
@@ -291,7 +287,7 @@
     }
   };
 
-  const onHover = ({ detail }) => {
+  const onHover = ({ detail }: CustomEvent) => {
     if (!hasSelection) {
       // Only update the year, month, and date when hovering over new dates.
       tempEndDate = new Date(
@@ -313,7 +309,7 @@
     months = months.map((mo) => addMonths(mo, 1));
   };
 
-  const onPageChange = ({ detail: { incrementAmount } }) => {
+  const onPageChange = ({ detail: { incrementAmount } }: CustomEvent) => {
     if (incrementAmount > 0) {
       months = months.map((mo) => addMonths(mo, incrementAmount));
     } else {
@@ -322,7 +318,7 @@
     }
   };
 
-  const onStartTimeChange = ({ detail }) => {
+  const onStartTimeChange = ({ detail }: CustomEvent) => {
     const newDate = new Date(
       tempStartDate.getFullYear(),
       tempStartDate.getMonth(),
@@ -340,7 +336,7 @@
     }
   };
 
-  const onEndTimeChange = ({ detail }) => {
+  const onEndTimeChange = ({ detail }: CustomEvent) => {
     const newDate = new Date(
       tempEndDate.getFullYear(),
       tempEndDate.getMonth(),

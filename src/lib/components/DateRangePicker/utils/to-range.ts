@@ -14,14 +14,14 @@ import { isAfter } from 'date-fns';
  *
  * @returns {Range}
  */
-export const toRange = (date, dateToCompare) => {
-	let start = date;
-	let end = dateToCompare;
+export const toRange = (date: Date, dateToCompare: Date) => {
+  let start = date;
+  let end = dateToCompare;
 
-	if (isAfter(date, dateToCompare)) {
-		start = dateToCompare;
-		end = date;
-	}
+  if (isAfter(date, dateToCompare)) {
+    start = dateToCompare;
+    end = date;
+  }
 
-	return { start, end };
+  return { start, end };
 };

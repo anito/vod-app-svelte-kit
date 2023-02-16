@@ -1,87 +1,97 @@
-<script>
-  // @ts-nocheck
-
+<script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import { isSameDay } from 'date-fns';
   import Controls from './Controls.svelte';
   import DaysOfWeek from './DaysOfWeek.svelte';
   import Week from './Week.svelte';
   import { getCalendarWeeks, getTouchTarget } from '../utils';
+  import localeStore from '../stores/localeStore';
 
-  export let btnClass;
-  export let disabledDates;
-  export let events;
-  export let firstDayOfWeek;
-  export let hasSelection;
-  export let maxDate;
-  export let minDate;
-  export let month;
-  export let monthDropdown;
-  export let monthFormat;
-  export let monthIndicator;
-  export let nextIcon;
-  export let pageNum;
-  export let prevIcon;
-  export let singlePicker;
-  export let selectClass;
-  export let tempEndDate;
-  export let tempStartDate;
-  export let today;
-  export let weekGuides;
-  export let weekNumbers;
-  export let yearDropdown;
+  export let btnClass: string;
+  export let disabledDates: Date[];
+  export let events: Date[];
+  export let firstDayOfWeek: string;
+  export let hasSelection: boolean;
+  export let maxDate: Date;
+  export let minDate: Date;
+  export let month: Date;
+  export let monthDropdown: boolean;
+  export let monthFormat: string;
+  export let monthIndicator: boolean;
+  export let nextIcon: string;
+  export let pageNum: number;
+  export let prevIcon: string;
+  export let singlePicker: boolean;
+  export let selectClass: string;
+  export let tempEndDate: Date;
+  export let tempStartDate: Date;
+  export let today: Date;
+  export let weekGuides: boolean;
+  export let weekNumbers: boolean;
+  export let yearDropdown: boolean;
 
-  $: weeks = getCalendarWeeks({
-    disabledDates,
-    events,
-    firstDayOfWeek,
-    maxDate,
-    minDate,
-    month,
-    singlePicker,
-    tempEndDate,
-    tempStartDate,
-    today
+  $: weeks = $localeStore && getCalendarWeeks({
+      disabledDates,
+      events,
+      firstDayOfWeek,
+      maxDate,
+      minDate,
+      month,
+      singlePicker,
+      tempEndDate,
+      tempStartDate,
+      today,
+      date: new Date()
   });
 
   const dispatchEvent = createEventDispatcher();
 
-  const onTouchmove = (e) => {
+  const onTouchmove = (e: TouchEvent) => {
     const target = getTouchTarget(e);
-    if ('data-date' in target.attributes && !target.disabled) {
-      const valueArray = target.attributes['data-date'].value.split('-');
-      const newDate = new Date(valueArray[0], parseInt(valueArray[1]) - 1, valueArray[2]);
-      // Prevent unnecessary updates
-      if (!isSameDay(newDate, tempEndDate)) {
-        dispatchEvent('hover', newDate);
+    if (target?.dataset.date && !target.disabled) {
+      const valueArray = target.dataset.date?.split('-');
+      if (valueArray.length === 3) {
+        const newDate = new Date(
+          Number(valueArray[0]),
+          parseInt(valueArray[1]) - 1,
+          Number(valueArray[2])
+        );
+        // Prevent unnecessary updates
+        if (!isSameDay(newDate, tempEndDate)) {
+          dispatchEvent('hover', newDate);
+        }
       }
     }
   };
 
-  const onTouchStart = (e) => {
+  const onTouchStart = (e: TouchEvent) => {
     // e.preventDefault() is used to prevent mouse events from firing
     // https://developer.mozilla.org/en-US/docs/Web/API/Touch_events/Supporting_both_TouchEvent_and_MouseEvent
     e.preventDefault();
-    if ('data-date' in e.target.attributes && !e.target.disabled) {
-      const valueArray = e.target.attributes['data-date'].value.split('-');
-      dispatchEvent(
-        'selection',
-        new Date(valueArray[0], parseInt(valueArray[1]) - 1, valueArray[2])
-      );
+    const target = e.target as HTMLSelectElement;
+    if (target?.dataset.date && !target.disabled) {
+      const valueArray = target.dataset.date.split('-');
+      if (valueArray.length === 3)
+        dispatchEvent(
+          'selection',
+          new Date(Number(valueArray[0]), parseInt(valueArray[1]) - 1, Number(valueArray[2]))
+        );
     }
   };
 
-  const onTouchEnd = (e) => {
+  const onTouchEnd = (e: TouchEvent) => {
     // e.preventDefault() is used to prevent mouse events from firing
     // https://developer.mozilla.org/en-US/docs/Web/API/Touch_events/Supporting_both_TouchEvent_and_MouseEvent
     e.preventDefault();
-    const target = getTouchTarget(e);
-    if ('data-date' in target.attributes && !target.disabled) {
-      const valueArray = target.attributes['data-date'].value.split('-');
-      const newDate = new Date(valueArray[0], parseInt(valueArray[1]) - 1, valueArray[2]);
-
-      if (!isSameDay(newDate, tempStartDate) && !hasSelection) {
-        dispatchEvent('selection', newDate);
+    const target = getTouchTarget(e) as HTMLSelectElement;
+    if (target.dataset.date && !target.disabled) {
+      const valueArray = target.dataset.date.split('-');
+      if(valueArray.length === 3) {
+        const newDate = new Date(Number(valueArray[0]), parseInt(valueArray[1]) - 1, Number(valueArray[2]));
+  
+        if (!isSameDay(newDate, tempStartDate) && !hasSelection) {
+          dispatchEvent('selection', newDate);
+        }
       }
     }
   };
@@ -89,6 +99,7 @@
 
 <div class="calendar">
   <Controls
+    locale={$localeStore}
     {btnClass}
     {maxDate}
     {minDate}

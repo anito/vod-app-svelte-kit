@@ -1,15 +1,16 @@
-<script>
+<script lang="ts">
+    import type { WeekMeta } from '../types';
 	import Day from './Day.svelte';
 
-	export let monthIndicator;
-	export let week;
-	export let weekGuides;
-	export let weekNumbers;
+	export let monthIndicator: boolean;
+	export let week: WeekMeta;
+	export let weekGuides: boolean;
+	export let weekNumbers: boolean;
 
 	$: weeksFromToday = week.weeksFromToday > 0 ? `+${week.weeksFromToday}` : week.weeksFromToday;
 </script>
 
-<div class="row" role="row" on:nextMonth on:prevMonth>
+<div class="row" role="row">
 	{#if weekGuides}
 		<small
 			aria-label={`${week.weeksFromToday} weeks from today`}

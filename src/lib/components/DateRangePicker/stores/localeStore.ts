@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { writable } from 'svelte/store';
 import { de } from 'date-fns/locale/index';
 
@@ -7,9 +6,9 @@ function createStore() {
 
   return {
     subscribe,
-    update: (val) => update(() => val),
+    update: (val: any) => update(() => val),
     set
   };
 }
 
-export const __locale__ = createStore();
+export default createStore();

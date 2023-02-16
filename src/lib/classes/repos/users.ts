@@ -8,6 +8,7 @@ export class UsersRepo extends Repo {
   constructor() {
     super();
     this.endpoint = 'users';
+    this.limit = 8;
   }
 
   public static getInstance = (): UsersRepo =>

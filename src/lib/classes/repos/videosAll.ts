@@ -8,6 +8,7 @@ export class VideosAllRepo extends Repo {
   constructor() {
     super();
     this.endpoint = 'videos/all';
+    this.limit = 9;
   }
 
   public static getInstance = (): VideosAllRepo =>

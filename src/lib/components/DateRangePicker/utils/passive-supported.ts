@@ -8,20 +8,21 @@
  * could be extended for any option on addEventListener.
  */
 
-export let passiveSupported = false
+export let passiveSupported = false;
 
 try {
+  const void0 = () => void 0;
   const options = {
     // This function will be called when the browser
     // attempts to access the passive property.
     get passive() {
-      passiveSupported = true
-      return false
+      passiveSupported = true;
+      return false;
     }
-  }
+  };
 
-  window.addEventListener("test", null, options)
-  window.removeEventListener("test", null, options)
+  window.addEventListener('test', void0, options);
+  window.removeEventListener('test', void0);
 } catch (err) {
-  passiveSupported = false
+  passiveSupported = false;
 }

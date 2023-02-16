@@ -9,10 +9,10 @@ import { localeFormat } from './locale-format';
  *
  * @returns {object[]} - { value: Date, text: string }
  */
-export const buildYearDropdown = (min, max, pageNum) => {
-	const numYrs = differenceInCalendarYears(max, min) + pageNum + 1;
-	return [...Array(numYrs)].map((_, i) => {
-		const value = addYears(min, i);
-		return { value, text: localeFormat(value, 'yyyy') };
-	});
+export const buildYearDropdown = (min: Date, max: Date, pageNum: number) => {
+  const numYrs = differenceInCalendarYears(max, min) + pageNum + 1;
+  return [...Array(numYrs)].map((_, i) => {
+    const value = addYears(min, i);
+    return { value, text: localeFormat(value, 'yyyy') };
+  });
 };

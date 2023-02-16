@@ -3,5 +3,8 @@ import type { LayoutServerLoadEvent } from './$types';
 export async function load({ depends, locals }: LayoutServerLoadEvent) {
   depends('app:session');
 
-  return { session: locals.session.data, ua: locals.userAgent, pagination: locals.pagination };
+  return {
+    session: locals.session.data,
+    ua: locals.userAgent
+  };
 }

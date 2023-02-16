@@ -1,7 +1,8 @@
 import { derived } from 'svelte/store';
 import { page } from '$app/stores';
 import { sessionCookie } from '$lib/stores';
-import type { Group, User } from '$lib/types';
+import type { Group } from '$lib/types';
+import type { User } from '$lib/classes/repos/types';
 
 let user: User;
 let groups: Group[] = [];

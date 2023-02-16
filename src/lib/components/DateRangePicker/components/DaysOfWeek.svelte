@@ -1,9 +1,9 @@
-<script>
+<script lang="ts">
 	import { getDaysOfWeek, localeFormat } from '../utils';
 
-	export let firstDayOfWeek;
-	export let weekGuides;
-	export let weekNumbers;
+	export let firstDayOfWeek: string;
+	export let weekGuides: boolean;
+	export let weekNumbers: boolean;
 
 	$: daysOfWeek = getDaysOfWeek(firstDayOfWeek);
 </script>

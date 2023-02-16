@@ -1,20 +1,19 @@
-<script>
-  // @ts-nocheck
-
+<script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import { addDays, addMonths, addWeeks, isSameDay, subDays, subMonths, subWeeks } from 'date-fns';
   import { localeFormat } from '../utils';
+    import type { DayMeta } from '../types';
 
-  export let day;
-  export let monthIndicator;
+  export let day: DayMeta;
+  export let monthIndicator: boolean;
 
-  let mouseDownDate = null;
+  let mouseDownDate: number | Date | null;
 
   const dispatchEvent = createEventDispatcher();
-  const getEl = (date) =>
+  const getEl = (date: Date) =>
     document.querySelector(`[data-date="${localeFormat(date, 'yyyy-MM-dd')}"]`);
   // Enter should submit / apply the selection, not activate a button.
-  const onKeydown = (e, date) => {
+  const onKeydownHandler = (e: KeyboardEvent, date: Date) => {
     let newDate = date;
 
     switch (e.code) {
@@ -58,20 +57,22 @@
     }
 
     dispatchEvent('hover', newDate);
-    getEl(newDate).focus();
+    const element = getEl(newDate) as HTMLElement;
+    element?.focus()
   };
 
-  const onMouseUp = (e, date) => {
-    if (e.button === 0 && !isSameDay(date, mouseDownDate)) {
+  const onMouseUp = (e: MouseEvent, date: Date) => {
+    if (e.button === 0 && mouseDownDate && !isSameDay(date, mouseDownDate)) {
       dispatchEvent('selection', date);
       // Set the focus state to the last selected date.
       // This happens automatically via a "click", but not on "mouseup"
-      getEl(date).focus();
+      const element = getEl(date) as HTMLElement;
+      element?.focus();
     }
     mouseDownDate = null;
   };
 
-  const onMouseDown = (e, date) => {
+  const onMouseDown = (e: MouseEvent, date: Date) => {
     // Only continue if the left mouse button was clicked
     if (e.button === 0) {
       mouseDownDate = date;
@@ -99,7 +100,7 @@
     class:muted={day.isNextMonth || day.isPrevMonth}
     disabled={day.isDisabled}
     data-date={localeFormat(day.date, 'yyyy-MM-dd')}
-    on:keydown={(e) => onKeydown(e, day.date)}
+    on:keydown={(e) => onKeydownHandler(e, day.date)}
     on:mouseenter={() => dispatchEvent('hover', day.date)}
     on:mousedown={(e) => onMouseDown(e, day.date)}
     on:mouseup={(e) => onMouseUp(e, day.date)}

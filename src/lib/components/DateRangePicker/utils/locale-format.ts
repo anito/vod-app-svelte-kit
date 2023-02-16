@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { __locale__ } from '../stores/localeStore';
+import localeStore from '../stores/localeStore';
 import { get } from 'svelte/store';
 
 /**
@@ -10,6 +10,6 @@ import { get } from 'svelte/store';
  * @returns {string} - The date in the supplied locale,
  *                     defaulting to the current system locale
  */
-export const localeFormat = (date, dateFormat) => {
-	return format(date, dateFormat, { locale: get(__locale__) });
+export const localeFormat = (date: Date, dateFormat: string) => {
+  return format(date, dateFormat, { locale: get(localeStore) });
 };

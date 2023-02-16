@@ -3,10 +3,14 @@ import * as api from '$lib/api';
 export class Repo {
   endpoint: string;
   token: string;
+  limit: number;
+  lastpage: number;
 
   constructor() {
     this.token = '';
+    this.limit = 10;
     this.endpoint = '';
+    this.lastpage = 1;
   }
 
   get = async (
@@ -23,25 +27,30 @@ export class Repo {
     });
   };
 
-  getAll = async ({
-    page = '1',
-    limit = '0',
-    token,
-    match = {}
-  }: {
-    page: string;
-    limit: string;
+  getAll = async (opts: {
+    page?: number;
+    limit?: number;
     token: string;
     match?: Record<string, string>;
   }): Promise<Response> => {
+    let {
+      page = 1,
+      limit = this.limit,
+      token = '',
+      match = {}
+    } = {
+      ...opts
+    };
     const searchParams = new URLSearchParams(match);
-    page && searchParams.append('page', page);
-    limit && searchParams.append('limit', limit);
+    page && searchParams.append('page', page.toString());
+    limit && searchParams.append('limit', limit.toString());
     const url = `${this.endpoint}?${searchParams.toString()}`;
+
     return await api
       .get(url, { token: token || this.token })
       .then((res) => {
         if (res?.success) {
+          this.lastpage = Number(page);
           return res;
         }
         return [];

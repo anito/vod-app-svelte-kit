@@ -5,13 +5,18 @@
 declare namespace App {
   interface Locals {
     session: import('svelte-kit-cookie-session').Session<SessionType>;
-    settingsRepo: import('$lib/types').Repo;
-    usersRepo: import('$lib/types').Repo;
-    videosRepo: import('$lib/types').Repo;
-    imagesRepo: import('$lib/types').Repo;
-    videosAllRepo: import('$lib/types').Repo;
+    settings: import('$lib/types').Setting;
+    usersRepo: import('$lib/classes/repos/types').Repo;
+    videosRepo: import('$lib/classes/repos/types').Repo;
+    imagesRepo: import('$lib/classes/repos/types').Repo;
+    videosAllRepo: import('$lib/classes/repos/types').Repo;
     userAgent: any;
-    pagination: any;
+    pagination: {
+      users: import('$lib/classes/repos/types').Pagination;
+      videos: import('$lib/classes/repos/types').Pagination;
+      videosAll: import('$lib/classes/repos/types').Pagination;
+      images: import('$lib/classes/repos/types').Pagination;
+    };
   }
   // interface Platform {}
   // interface Session {}

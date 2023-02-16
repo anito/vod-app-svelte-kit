@@ -8,6 +8,7 @@ export class ImagesRepo extends Repo {
   constructor() {
     super();
     this.endpoint = 'images';
+    this.limit = 12;
   }
 
   public static getInstance = (): ImagesRepo =>

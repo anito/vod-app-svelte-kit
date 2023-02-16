@@ -11,8 +11,9 @@
   import { _ } from 'svelte-i18n';
   import IconButton from '@smui/icon-button';
   import type { ActionResult } from '@sveltejs/kit';
+    import type { Pagination } from '$lib/classes/repos/types';
 
-  export let pagination: any;
+  export let pagination: Pagination;
   export let id: string;
   export let style = '';
   export let action = '';
@@ -97,8 +98,8 @@
   async function formHandler() {
     return ({ result }: { result: ActionResult }) => {
       if (result.type === 'success') {
-        const resultData = result.data;
-        const { data, pagination }: any = resultData;
+        // const resultData = result.data;
+        const { data, pagination }: any = {...result.data};
         if (!pagination) {
           PAGINATORS.delete(id);
         } else {

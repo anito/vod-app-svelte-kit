@@ -35,7 +35,8 @@
   import Radio from '@smui/radio';
   import { _, locale } from 'svelte-i18n';
   import type Snackbar from '@smui/snackbar';
-  import type { Issue, User, Video } from '$lib/types';
+  import type { Issue } from '$lib/types';
+  import type { User, Video } from '$lib/classes/repos/types';
 
   export let selectionUserId: string;
 
@@ -221,17 +222,11 @@
       }
     })(hasPrivileges);
     if (!videoExists) {
-      await fetchVideo(`/repos/videos?id=${id}`).then((res) =>
-        proxyEvent('video:add', { data: [res] })
-      );
+      await fetch(`/repos/videos?id=${id}`)
+        .then(async (res) => await res.json())
+        .then((res) => proxyEvent('video:add', { data: [res] }));
     }
     scrollIntoView(event);
-  }
-
-  async function fetchVideo(path: string) {
-    return await fetch(path)
-      .then(async (res) => await res.json())
-      .then((res) => res);
   }
 
   function onApplyHandler({ detail }: CustomEvent) {

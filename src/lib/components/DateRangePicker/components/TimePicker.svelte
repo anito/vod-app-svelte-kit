@@ -1,6 +1,4 @@
-<script>
-	// @ts-nocheck
-
+<script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import {
 		endOfDay,
@@ -13,17 +11,17 @@
 	} from 'date-fns';
 	import { pad, roundDown } from '../utils';
 
-	export let btnClass;
+	export let btnClass: string;
 	// Start or end date
-	export let dateReference;
-	export let maxDate;
-	export let minDate;
-	export let minuteIncrement;
-	export let secondIncrement;
-	export let selectClass;
-	export let timePickerControls;
-	export let timePicker24Hour;
-	export let timePickerSeconds;
+	export let dateReference: Date;
+	export let maxDate: Date;
+	export let minDate: Date;
+	export let minuteIncrement: number;
+	export let secondIncrement: number;
+	export let selectClass: string;
+	export let timePickerControls: boolean;
+	export let timePicker24Hour: boolean;
+	export let timePickerSeconds: boolean;
 
 	const dispatchEvent = createEventDispatcher();
 
@@ -46,7 +44,7 @@
 			roundDown(endOfDateReferenceDay.getSeconds(), secondIncrement)
 		)
 	);
-	$: isHourOptionDisabled = (h) => {
+	$: isHourOptionDisabled = (h: string) => {
 		const date = new Date(
 			dateReference.getFullYear(),
 			dateReference.getMonth(),
@@ -59,7 +57,7 @@
 		);
 	};
 
-	$: isMinuteOptionDisabled = (m) => {
+	$: isMinuteOptionDisabled = (m: string) => {
 		const date = new Date(
 			dateReference.getFullYear(),
 			dateReference.getMonth(),
@@ -73,7 +71,7 @@
 		);
 	};
 
-	$: isSecondOptionDisabled = (s) => {
+	$: isSecondOptionDisabled = (s: string) => {
 		const date = new Date(
 			dateReference.getFullYear(),
 			dateReference.getMonth(),
@@ -87,6 +85,11 @@
 			(!isSameSecond(date, minDate) && isAfter(date, maxDate))
 		);
 	};
+
+	function getValue(e: FocusEvent) {
+		const target = e.target as HTMLSelectElement
+		return parseInt(target.value)
+	}
 </script>
 
 <div class="space-center">
@@ -114,7 +117,7 @@
 		class={selectClass}
 		on:blur={(e) =>
 			dispatchEvent('timeChange', {
-				hours: parseInt(e.target.value),
+				hours: getValue(e),
 				minutes: selectedMinute,
 				seconds: timePickerSeconds ? selectedSecond : 0
 			})}
@@ -133,7 +136,7 @@
 		on:blur={(e) =>
 			dispatchEvent('timeChange', {
 				hours: selectedHour,
-				minutes: parseInt(e.target.value),
+				minutes: getValue(e),
 				seconds: timePickerSeconds ? selectedSecond : 0
 			})}
 		title={`${selectedMinute} minutes`}
@@ -153,7 +156,7 @@
 				dispatchEvent('timeChange', {
 					hours: selectedHour,
 					minutes: selectedMinute,
-					seconds: parseInt(e.target.value)
+					seconds: getValue(e)
 				})}
 			title={`${selectedSecond} seconds`}
 		>

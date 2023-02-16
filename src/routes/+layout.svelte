@@ -7,7 +7,7 @@
   import '$lib/components/_dialog.scss';
   import '$lib/components/_list.scss';
   import '$lib/components/_card.scss';
-  import { browser, dev } from '$app/environment';
+  import { dev } from '$app/environment';
   import { derived, writable } from 'svelte/store';
   import { version } from '$app/environment';
   import { afterNavigate, beforeNavigate, goto, invalidate, invalidateAll } from '$app/navigation';
@@ -41,7 +41,6 @@
     fabs,
     flash,
     framework,
-    pagination,
     salutation,
     settings,
     session,
@@ -69,11 +68,12 @@
   import { svg_manifest } from '$lib/svg_manifest';
   import { _, locale } from 'svelte-i18n';
   import Dialog, { Title as DialogTitle, Content, Actions as DialogActions } from '@smui/dialog';
-  import type { User } from '$lib/types';
-  import type { NavigationTarget } from '@sveltejs/kit';
-  import type { Dropzone } from '$lib/components/Dropzone/type';
   import { IMAGE, VIDEO } from '$lib/utils/const';
   import { inject } from '@vercel/analytics';
+  import type { NavigationTarget } from '@sveltejs/kit';
+  import type { Dropzone } from '$lib/components/Dropzone/type';
+  import type { User } from '$lib/classes/repos/types';
+  import { ImagesRepo, VideosRepo } from '$lib/classes';
 
   inject({ mode: dev ? 'development' : 'production' });
 
@@ -409,16 +409,14 @@
 
     if (res?.success) {
       videos.put(data);
-      // Reload images repo in order to reflect changes on images posters
-      if ('image_id' in data) {
-        await fetch(`/repos/images?currentpage=true`)
-          .then(async (res) => await res.json())
-          .then((res) => {
-            if (res.success) {
-              images.update(res.data);
-            }
-          });
-      }
+      // We must reload relational images repo in order to reflect poster changes
+      await fetch(`/repos/images?auto=true`)
+        .then(async (res) => await res.json())
+        .then((res) => {
+          if (res.success) {
+            images.update(res.data);
+          }
+        });
       onsuccess?.(res);
     } else {
       onerror?.(res);
@@ -458,7 +456,7 @@
     if (res?.success) {
       urls.del(id);
       store.del(id);
-      await fetch(`${relatedEndpoint}?currentpage=true`)
+      await fetch(`${relatedEndpoint}?auto=true`)
         .then(async (res) => await res.json())
         .then((res) => {
           if (res.success) {
@@ -868,7 +866,9 @@
                       icon: 'svelte-kit-icon',
                       icontype: 'svg',
                       href: 'https://github.com/anito/vod-app-svelte-kit',
-                      host: dev ? 'https://localhost:3000' : 'https://vod-app-svelte-kit.vercel.app/',
+                      host: dev
+                        ? 'https://localhost:3000'
+                        : 'https://vod-app-svelte-kit.vercel.app/',
                       target: '_blank'
                     }
                   ]}

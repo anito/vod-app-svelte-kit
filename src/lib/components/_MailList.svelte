@@ -7,7 +7,8 @@
   import { SimpleMailCard, SvgIcon } from '$lib/components';
   import { _ } from 'svelte-i18n';
   import { goto } from '$app/navigation';
-  import type { Mail, UserFoundation } from '$lib/types';
+  import type { Mail } from '$lib/types';
+  import type { UserFoundation } from '$lib/classes/repos/types';
   import type { SmuiElementMap } from '@smui/common';
 
   export let selection: Mail | undefined;

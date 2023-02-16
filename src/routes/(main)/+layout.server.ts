@@ -1,55 +1,36 @@
+import type { VideoAll } from '$lib/classes/repos/types';
 import { USER } from '$lib/utils';
 import type { LayoutServerLoadEvent } from './$types';
 
-export async function load({ fetch, depends, locals, parent }: LayoutServerLoadEvent) {
-  const { role, user: sessionUser } = locals.session.data;
-
-  const videos = await fetch('/repos/videos')
-    .then(async (res) => {
-      if (res.ok) return await res.json();
-    })
-    .then((res) => res)
-    .catch((reason) => console.error(reason));
-
-  const images = await fetch('/repos/images')
-    .then(async (res) => {
-      if (res.ok) return await res.json();
-    })
-    .catch((reason) => console.error(reason));
-
-  const users = await fetch(`/repos/users`)
-    .then(async (res) => {
-      if (res.ok) return await res.json();
-    })
-    .catch((reason) => console.error(reason));
-
-  const user =
-    (sessionUser &&
-      (await fetch(`/repos/users?id=${sessionUser?.id}`)
-        .then(async (res) => {
-          if (res.ok) return await res.json();
-        })
-        .catch((reason) => console.error(reason)))) ||
-    null;
-
-  const videosAll =
-    (role === USER &&
-      (await fetch('/repos/videos/all')
-        .then(async (res) => {
-          if (res.ok) {
-            return await res.json();
-          }
-        })
-        .catch((reason) => console.error(reason)))) ||
-    [];
+export async function load({
+  depends,
+  locals: { session, usersRepo, videosRepo, videosAllRepo, imagesRepo },
+  cookies
+}: LayoutServerLoadEvent) {
+  const { role = USER, user: sessionUser } = session.data;
+  const id = sessionUser?.id;
+  const token = sessionUser?.jwt;
+  const videos = await videosRepo.getAll({ token });
+  const images = await imagesRepo.getAll({ token });
+  const users = await usersRepo.getAll({ token });
+  const user = (id && (await usersRepo.get(id, { token }))) || null;
+  const videosAll = role === USER && (await videosAllRepo.getAll({ token }));
+  const pagination = {
+    users: users.pagination,
+    videos: videos.pagination,
+    images: images.pagination,
+    videosAll: videosAll ? videosAll.pagination : {}
+  };
 
   depends('app:main');
+  cookies.set('pagination', JSON.stringify(pagination), { path: '/' });
 
   return {
     user,
     users,
     videos,
     images,
-    videosAll
+    videosAll,
+    pagination
   };
 }

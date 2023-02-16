@@ -1,7 +1,6 @@
 import { dev } from '$app/environment';
 import { handleSession } from 'svelte-kit-cookie-session';
 import { UsersRepo, VideosRepo, ImagesRepo, VideosAllRepo } from '$lib/classes';
-import { paginationItems } from '$lib/utils';
 
 export const handle = handleSession(
   {
@@ -17,7 +16,7 @@ export const handle = handleSession(
     event.locals.imagesRepo = event.locals.imagesRepo ?? ImagesRepo.getInstance();
     event.locals.videosAllRepo = event.locals.videosAllRepo ?? VideosAllRepo.getInstance();
     event.locals.userAgent = event.locals.userAgent ?? event.request.headers.get('user-agent');
-    event.locals.pagination = paginationItems;
+    event.locals.pagination = JSON.parse(event.cookies.get('pagination') || '{}');
 
     return await resolve(event);
   }
