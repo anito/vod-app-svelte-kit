@@ -419,12 +419,12 @@
   }
 
   function getTemplateData(slug?: any) {
-    const data: any = templateSlugData.find((item) => slug in item);
-    if (data) {
-      if (typeof data.slug === 'function') {
-        return data.slug();
+    const item: any = templateSlugData.find((item) => slug in item);
+    if (item) {
+      if (typeof item[slug] === 'function') {
+        return item[slug]();
       } else {
-        return data.slug;
+        return item[slug];
       }
     }
   }
