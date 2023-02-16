@@ -30,9 +30,9 @@ export const POST = async ({ locals: { imagesRepo, session }, request, cookies }
   const options = await request.json(); // { match, limit, auto }
   if (options.auto) {
     const pagination = JSON.parse(cookies.get('pagination') || '{}');
-    const { current_page, count, limit: _limit }: any = pagination.images;
-    if (current_page && _limit && count) {
-      options.limit = Math.min(current_page * _limit, count);
+    const { current_page, count, limit }: any = pagination.images;
+    if (current_page && limit && count) {
+      options.limit = Math.min(current_page * limit, count);
     }
   }
   const images = await imagesRepo.getAll({ ...options, token });
