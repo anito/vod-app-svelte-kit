@@ -624,6 +624,7 @@
     const _expires = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
     await post('/session/extend', _expires).then(async (res) => {
       if(res.success) {
+        // update session ticker
         sessionCookie.update({ _expires });
         if (detail?.start || res.uid !== $session.user?.id) {
           if (!$navigating) await invalidateAll();
