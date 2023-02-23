@@ -255,7 +255,8 @@
     "all-media-deleted": "{count} {type} have been removed",
     "confirm-deletion": "You are about to permanently delete selected media files. Do you want to proceed? ",
     "images": "Images",
-    "clear": "Clear"
+    "clear": "Clear",
+    "make-default": "Remember selection"
   },
   "summary": {
     "copy-link": {

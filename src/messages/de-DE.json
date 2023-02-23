@@ -255,7 +255,8 @@
     "all-media-deleted": "{count} {type} wurden entfernt",
     "confirm-deletion": "Die ausgewählten Dateien werden permanent entfernt. Möchten Siei fortfahren?",
     "images": "Poster",
-    "clear": "Aufheben"
+    "clear": "Aufheben",
+    "make-default": "Auswahl merken"
   },
   "summary": {
     "copy-link": {

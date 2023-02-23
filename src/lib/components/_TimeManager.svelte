@@ -6,6 +6,8 @@
   import { onMount, getContext, tick } from 'svelte';
   import { fly } from 'svelte/transition';
   import List, { Item, Graphic, Separator, Text } from '@smui/list';
+  import FormField from '@smui/form-field';
+  import Checkbox from '@smui/checkbox';
   import Button, { Label, Icon as ButtonIcon } from '@smui/button';
   import IconButton, { Icon } from '@smui/icon-button';
   import { flash, infos, session, users, videos, videosAll } from '$lib/stores';
@@ -37,6 +39,7 @@
   import type Snackbar from '@smui/snackbar';
   import type { Issue } from '$lib/types';
   import type { User, Video } from '$lib/classes/repos/types';
+  import { browser } from '$app/environment';
 
   export let selectionUserId: string;
 
@@ -56,6 +59,7 @@
   const NONUSERVIDEOSLIST = 'non-user-videos-list';
   const minSearchChars = 2;
   const modelSearchKeys = 'description,title,id';
+  const localStorageTsIndexName = 'timespanindex';
 
   let root: Element;
   let main: Element;
@@ -63,7 +67,6 @@
   let isopen = false;
   let scheduleDialog: Dialog;
   let removeDialog: Dialog;
-  let timespanSelection: number | string = timespanSelections[0].value;
   let timespanSelected: number | string;
   let firstDayOfWeek = 'monday';
   let snackbar: Snackbar;
@@ -79,6 +82,10 @@
   let itemsList: { [x: string]: { items: any; element: any; focusItemAtIndex: any } } = {};
   let displayedVideos: Video[];
   let search: string = '';
+  let rememberSelection = false;
+  let timespanIndex = browser && localStorage.getItem(localStorageTsIndexName)?.match(/[0|1|2]/)?.[0] || '0'
+  let timespanSelectionIndex = Number(timespanIndex);
+
 
   $: selectionUserId && (selectionVideoId = null);
   $: currentUser = $users.find((usr) => usr.id === selectionUserId);
@@ -196,7 +203,7 @@
       let start = null;
       let end = null;
 
-      timespanSelected = timespanSelection;
+      timespanSelected = timespanSelections[timespanSelectionIndex].value;
       if (typeof timespanSelected === 'number') {
         let now = new Date();
         let time = new Date(now.getTime() + timespanSelected * 24 * 60 * 60 * 1000);
@@ -204,7 +211,12 @@
         end = toISODate(time, true);
       }
       saveScheduledTime(schedulingVideoId, start, end);
-      timespanSelection = timespanSelections[0].value;
+      if (rememberSelection) {
+        localStorage.setItem(localStorageTsIndexName, timespanSelectionIndex.toString());
+      }
+      const tsIndex = localStorage.getItem(localStorageTsIndexName)?.match(/[0|1|2/3]/)?.[0] || '0';
+      timespanSelectionIndex = Number(tsIndex);
+      rememberSelection = false;
       schedulingVideoId = null;
     }
   }
@@ -599,11 +611,17 @@
       {#each timespanSelections as timespan, i}
         <Item use={(i === 0 && [InitialFocus]) || []}>
           <Graphic>
-            <Radio bind:group={timespanSelection} value={timespan.value} />
+            <Radio bind:group={timespanSelectionIndex} value={i} />
           </Graphic>
           <Text>{$_(timespan.title)}</Text>
         </Item>
       {/each}
+      <div class="pl-2 mt-2 mb-2">
+        <FormField>
+          <Checkbox bind:checked={rememberSelection} />
+          <span slot="label">{$_('text.make-default')}</span>
+        </FormField>
+      </div>
       {#if !jwt || isExpired || !active}
         <div class="mt-3">
           <ButtonIcon class="material-icons leading">warning</ButtonIcon>
