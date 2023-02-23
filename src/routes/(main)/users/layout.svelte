@@ -5,7 +5,6 @@
 
   export let segment = '';
   export let stretch = false;
-  export let sidebar = false;
 </script>
 
 <LayoutGrid {segment} {stretch} sidebar={$session.role !== USER}>
