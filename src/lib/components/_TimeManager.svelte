@@ -39,7 +39,6 @@
   import type Snackbar from '@smui/snackbar';
   import type { Issue } from '$lib/types';
   import type { User, Video } from '$lib/classes/repos/types';
-  import { browser } from '$app/environment';
 
   export let selectionUserId: string;
 
@@ -59,7 +58,7 @@
   const NONUSERVIDEOSLIST = 'non-user-videos-list';
   const minSearchChars = 2;
   const modelSearchKeys = 'description,title,id';
-  const localStorageTsIndexName = 'timespanindex';
+  const lsTimespanName = 'timespanindex';
 
   let root: Element;
   let main: Element;
@@ -83,9 +82,7 @@
   let displayedVideos: Video[];
   let search: string = '';
   let rememberSelection = false;
-  let timespanIndex = browser && localStorage.getItem(localStorageTsIndexName)?.match(/[0|1|2]/)?.[0] || '0'
-  let timespanSelectionIndex = Number(timespanIndex);
-
+  let timespanSelectionIndex: number;
 
   $: selectionUserId && (selectionVideoId = null);
   $: currentUser = $users.find((usr) => usr.id === selectionUserId);
@@ -177,7 +174,10 @@
     }
   });
 
+  const getIndex = () => Number(localStorage.getItem(lsTimespanName)?.match(/[0|1|2/3]/)?.[0] || 0);
+
   function openScheduleDialog(video: Video) {
+    timespanSelectionIndex = getIndex();
     schedulingVideoId = video.id;
     scheduleDialog?.setOpen(true);
   }
@@ -212,10 +212,9 @@
       }
       saveScheduledTime(schedulingVideoId, start, end);
       if (rememberSelection) {
-        localStorage.setItem(localStorageTsIndexName, timespanSelectionIndex.toString());
+        localStorage.setItem(lsTimespanName, timespanSelectionIndex.toString());
       }
-      const tsIndex = localStorage.getItem(localStorageTsIndexName)?.match(/[0|1|2/3]/)?.[0] || '0';
-      timespanSelectionIndex = Number(tsIndex);
+      timespanSelectionIndex = getIndex();
       rememberSelection = false;
       schedulingVideoId = null;
     }
@@ -608,12 +607,12 @@
   <Title id="list-selection-title">{$_('text.select-time-slot')}</Title>
   <Content id="list-selection-content">
     <List radioList>
-      {#each timespanSelections as timespan, i}
+      {#each timespanSelections as selection, i}
         <Item use={(i === 0 && [InitialFocus]) || []}>
           <Graphic>
             <Radio bind:group={timespanSelectionIndex} value={i} />
           </Graphic>
-          <Text>{$_(timespan.title)}</Text>
+          <Text>{$_(selection.title)}</Text>
         </Item>
       {/each}
       <div class="pl-2 mt-2 mb-2">

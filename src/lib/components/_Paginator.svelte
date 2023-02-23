@@ -11,7 +11,7 @@
   import { _ } from 'svelte-i18n';
   import IconButton from '@smui/icon-button';
   import type { ActionResult } from '@sveltejs/kit';
-    import type { Pagination } from '$lib/classes/repos/types';
+  import type { Pagination } from '$lib/classes/repos/types';
 
   export let pagination: Pagination;
   export let id: string;
@@ -40,10 +40,10 @@
   $: page_data = paginator && pageData();
 
   function pageData() {
-    paginator = { ...paginator, has_next_page: !($store.length === paginator.count) };
+    paginator = { ...paginator, has_next_page: !($store?.length === paginator.count) };
     const { count, page_count, current_page, has_next_page, limit } = paginator;
     const next_count = has_next_page ? (page_count - current_page) === 1 ? (count % limit) || limit : limit : 0;
-    const loaded_count = $store.length;
+    const loaded_count = $store?.length;
     const remaining_count = Math.max(0, count - limit * current_page);
     return {
       ...paginator,
@@ -98,7 +98,6 @@
   async function formHandler() {
     return ({ result }: { result: ActionResult }) => {
       if (result.type === 'success') {
-        // const resultData = result.data;
         const { data, pagination }: any = {...result.data};
         if (!pagination) {
           PAGINATORS.delete(id);

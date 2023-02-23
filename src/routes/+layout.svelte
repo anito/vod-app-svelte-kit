@@ -620,15 +620,19 @@
 
   async function sessionExtendHandler({ detail }: CustomEvent) {
     await tick();
-    if ($session.user) {
-      const { lifetime } = $settings.Session;
-      const _expires = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
-      await post('/session/extend', _expires);
-      sessionCookie.update({ _expires });
-    }
-    if (detail?.start) {
-      if (!$navigating) await invalidateAll();
-    }
+    const { lifetime } = $settings.Session;
+    const _expires = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
+    await post('/session/extend', _expires).then(async (res) => {
+      if(res.success) {
+        sessionCookie.update({ _expires });
+        if (detail?.start) {
+          if (!$navigating) await invalidateAll();
+        }
+      } else {
+          await invalidateAll();
+      }
+    })
+
     detail?.callback?.();
   }
 

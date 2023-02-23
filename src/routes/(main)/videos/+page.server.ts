@@ -9,7 +9,11 @@ export const actions = {
       token: locals.session.data.user?.jwt
     });
     const newPagination = { ...pagination, videos: videos.pagination };
-    cookies.set('pagination', JSON.stringify(newPagination), { path: '/' });
+    try {
+      cookies.set('pagination', JSON.stringify(newPagination), { path: '/' });
+    } catch (err) {
+      console.log(err);
+    }
     return videos;
   },
   more_videos_all: async ({ locals, cookies }) => {
@@ -21,7 +25,11 @@ export const actions = {
       token: locals.session.data.user?.jwt
     });
     const newPagination = { ...pagination, videosAll: videosAll.pagination };
-    cookies.set('pagination', JSON.stringify(newPagination), { path: '/' });
+    try {
+      cookies.set('pagination', JSON.stringify(newPagination), { path: '/' });
+    } catch (err) {
+      console.log(err);
+    }
     return videosAll;
   },
   more_images: async ({ locals, cookies }) => {
@@ -32,7 +40,11 @@ export const actions = {
       token: locals.session.data.user?.jwt
     });
     const newPagination = { ...pagination, images: images.pagination };
-    cookies.set('pagination', JSON.stringify(newPagination), { path: '/' });
+    try {
+      cookies.set('pagination', JSON.stringify(newPagination), { path: '/' });
+    } catch (err) {
+      console.log(err);
+    }
     return images;
   }
 } as Actions;

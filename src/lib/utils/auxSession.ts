@@ -1,5 +1,5 @@
 import { users } from '$lib/stores';
-import type { User } from '$lib/types';
+import type { User } from '$lib/classes/repos/types';
 import type { LayoutServerLoadEvent } from '../../routes/$types';
 
 export const getAuxSession = () => {

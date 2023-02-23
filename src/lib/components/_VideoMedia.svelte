@@ -7,7 +7,7 @@
   import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, info, proxyEvent } from '$lib/utils';
   import { session, users } from '$lib/stores';
   import { _ } from 'svelte-i18n';
-  import type { Video } from '$lib/types';
+  import type { Video } from '$lib/classes/repos/types';
     import { fly } from 'svelte/transition';
 
   export let video: Video;

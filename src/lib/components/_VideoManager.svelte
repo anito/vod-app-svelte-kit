@@ -24,7 +24,7 @@
   } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import type Snackbar from '@smui/snackbar';
-  import type { Video } from '$lib/types';
+  import type { Video } from '$lib/classes/repos/types';
   import type Dropzone from '$lib/components/Dropzone/index.svelte';
 
   const { getDropzone }: any = getContext('dropzone');

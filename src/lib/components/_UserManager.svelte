@@ -34,7 +34,7 @@
   } from '$lib/components';
   import { _ } from 'svelte-i18n';
   import type Snackbar from '@smui/snackbar';
-  import type { User } from '$lib/types';
+  import type { User } from '$lib/classes/repos/types';
   import type { ActionResult } from '@sveltejs/kit';
 
   const { setFab }: any = getContext('fab');

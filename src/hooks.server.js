@@ -1,6 +1,7 @@
 import { dev } from '$app/environment';
 import { handleSession } from 'svelte-kit-cookie-session';
 import { UsersRepo, VideosRepo, ImagesRepo, VideosAllRepo } from '$lib/classes';
+import { redirect } from '@sveltejs/kit';
 
 export const handle = handleSession(
   {

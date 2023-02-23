@@ -8,7 +8,7 @@
   import { onMount } from 'svelte';
   import { getExt } from '$lib/utils';
   import { _ } from 'svelte-i18n';
-  import type { Video as VideoType } from '$lib/types';
+  import type { Video as VideoType } from '$lib/classes/repos/types';
   import { players } from '$lib/utils';
 
   let now = new Date().getTime();

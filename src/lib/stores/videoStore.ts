@@ -1,4 +1,4 @@
-import type { Video } from '$lib/types';
+import type { Video } from '$lib/classes/repos/types';
 import { writable } from 'svelte/store';
 
 function createStore() {

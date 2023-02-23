@@ -17,7 +17,7 @@
   import { differenceInHours } from 'date-fns';
   import { _, locale } from 'svelte-i18n';
   import { page } from '$app/stores';
-  import type { Video } from '$lib/types';
+  import type { Video } from '$lib/classes/repos/types';
 
   export let video: Video;
   export let selectionUserId: string | null = '';

@@ -1,9 +1,8 @@
 <script lang="ts">
-  import type { Video } from '$lib/types';
+  import type { Video } from '$lib/classes/repos/types';
   import { log } from '$lib/utils';
   import { tick, createEventDispatcher } from 'svelte';
   import { _ } from 'svelte-i18n';
-  import { prevent_default } from 'svelte/internal';
   import { Ui, mute } from '.';
 
   const dispatch = createEventDispatcher();

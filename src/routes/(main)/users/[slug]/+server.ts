@@ -7,6 +7,7 @@ export async function GET({ params, locals }: RequestEvent) {
   const { locale, user } = locals.session.data;
   const token = user?.jwt;
 
+  console.log('fetching user...');
   return await api.get(`users/${id}?token=${token}&locale=${locale}`).then((res) => {
     return json(res);
   });

@@ -24,7 +24,7 @@
   import List, { Item, Separator, Text } from '@smui/list';
   import emptyPoster from '/src/assets/images/empty-poster.jpg';
   import { _, locale } from 'svelte-i18n';
-  import type { Video } from '$lib/types';
+  import type { Video } from '$lib/classes/repos/types';
 
   export let video: Video;
   export { className as class };

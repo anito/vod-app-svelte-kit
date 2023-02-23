@@ -1,12 +1,17 @@
-import type { VideoAll } from '$lib/classes/repos/types';
-import { USER } from '$lib/utils';
+import { redirect } from '@sveltejs/kit';
+import { createRedirectSlug, USER } from '$lib/utils';
 import type { LayoutServerLoadEvent } from './$types';
 
 export async function load({
   depends,
   locals: { session, usersRepo, videosRepo, videosAllRepo, imagesRepo },
-  cookies
+  cookies,
+  url
 }: LayoutServerLoadEvent) {
+  if (!session.data.user) {
+    throw redirect(301, `/login?${createRedirectSlug(url)}`);
+  }
+
   const { role = USER, user: sessionUser } = session.data;
   const id = sessionUser?.id;
   const token = sessionUser?.jwt;

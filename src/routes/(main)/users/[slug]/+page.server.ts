@@ -1,13 +1,6 @@
-import { redirect, type Actions, type ServerLoadEvent } from '@sveltejs/kit';
+import type { Actions } from '@sveltejs/kit';
 import { locale } from 'svelte-i18n';
 import { get } from 'svelte/store';
-
-export async function load({ locals }: ServerLoadEvent) {
-  if (!locals.session.data.user) {
-    throw redirect(301, `/`);
-  }
-  return {};
-}
 
 export const actions = {
   add: async ({ request, fetch, locals }) => {

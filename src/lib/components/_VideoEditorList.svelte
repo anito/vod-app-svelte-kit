@@ -4,7 +4,7 @@
   import { Modal, VideoCard } from '$lib/components';
   import { posterCreatedHandler, posterRemoveHandler, posterSelectedHandler } from '$lib/utils';
   import { _ } from 'svelte-i18n';
-  import type { Video } from '$lib/types';
+  import type { Video } from '$lib/classes/repos/types';
 
   const key = 'editor-uploader-modal';
   const { close }: any = getContext('editor-modal');

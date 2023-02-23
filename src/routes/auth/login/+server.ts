@@ -3,7 +3,7 @@ import { error, json } from '@sveltejs/kit';
 import { get } from 'svelte/store';
 import { settings } from '$lib/stores';
 import { parseLifetime } from '$lib/utils';
-import type { User } from '$lib/types';
+import type { User } from '$lib/classes/repos/types';
 import type { RequestEvent } from './$types';
 
 const parseData = ({ success, data }: any) => {

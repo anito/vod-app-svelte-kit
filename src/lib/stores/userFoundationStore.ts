@@ -1,4 +1,4 @@
-import type { UserFoundation } from '$lib/types';
+import type { UserFoundation } from '$lib/classes/repos/types';
 import { writable } from 'svelte/store';
 
 function createStore() {
