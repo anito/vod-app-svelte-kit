@@ -9,5 +9,5 @@ export async function POST({ locals, request }: RequestEvent) {
   const _expires = await request.json();
 
   await locals.session.update(() => ({ _expires }));
-  return json({ success: true, _expires });
+  return json({ success: true, _expires, uid: locals.session.data.user.id });
 }

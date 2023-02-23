@@ -625,7 +625,7 @@
     await post('/session/extend', _expires).then(async (res) => {
       if(res.success) {
         sessionCookie.update({ _expires });
-        if (detail?.start) {
+        if (detail?.start || res.uid !== $session.user?.id) {
           if (!$navigating) await invalidateAll();
         }
       } else {
