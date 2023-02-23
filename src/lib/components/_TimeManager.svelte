@@ -20,7 +20,8 @@
     VideoEditorList,
     Paginator,
     FlexContainer,
-    SearchTextField
+    SearchTextField,
+    UserGraphic
   } from '$lib/components';
   import { endOfWeek, startOfYear, endOfYear, addYears, subYears, parseISO } from 'date-fns';
   import {
@@ -37,7 +38,7 @@
   import Radio from '@smui/radio';
   import { _, locale } from 'svelte-i18n';
   import type Snackbar from '@smui/snackbar';
-  import type { Issue } from '$lib/types';
+  import type { Badge, Issue } from '$lib/types';
   import type { User, Video } from '$lib/classes/repos/types';
 
   export let selectionUserId: string;
@@ -85,17 +86,29 @@
   let timespanSelectionIndex: number;
 
   $: selectionUserId && (selectionVideoId = null);
-  $: currentUser = $users.find((usr) => usr.id === selectionUserId);
-  $: name = currentUser?.name || '';
-  $: role = currentUser?.role;
-  $: jwt = currentUser?.jwt;
-  $: active = currentUser?.active;
+  $: selectedUser = $users.find((usr) => usr.id === selectionUserId);
+  $: hasSelectedUserPrivileges = selectedUser?.role === ADMIN || selectedUser?.role === SUPERUSER;
+  $: badge = {
+    icon: (hasSelectedUserPrivileges && 'admin_panel_settings') || '',
+    color:
+      selectedUser?.role === SUPERUSER
+        ? 'rgb(26, 4, 4)'
+        : selectedUser?.role === ADMIN
+        ? 'rgb(206, 4, 4)'
+        : '',
+    position: 'TOP_RIGHT',
+    size: 'small'
+  } as Badge;
+  $: name = selectedUser?.name || '';
+  $: role = selectedUser?.role;
+  $: jwt = selectedUser?.jwt;
+  $: active = selectedUser?.active;
   $: joinData =
-    (selectedVideo = currentUser?.videos?.find((video: Video) => video.id === selectionVideoId)) &&
+    (selectedVideo = selectedUser?.videos?.find((video: Video) => video.id === selectionVideoId)) &&
     selectedVideo._joinData;
   $: startDate = (joinData?.start && parseISO(joinData.start)) || endOfWeek(new Date(0));
   $: endDate = (joinData?.end && parseISO(joinData.end)) || endOfWeek(new Date(0));
-  $: expires = currentUser?.expires;
+  $: expires = selectedUser?.expires;
   $: isExpired = (expires && expires * 1000 < +new Date().getTime()) || false;
   $: schedulingVideo =
     (schedulingVideoId && $videos?.find((video) => video.id === schedulingVideoId)) || undefined;
@@ -115,8 +128,8 @@
   $: id = hasPrivileges ? 'videos-paginator' : 'videos-all-paginator';
   $: hasCurrentPrivileges = role === ADMIN || role === SUPERUSER;
   $: displayedVideos = hasPrivileges
-    ? currentUser?.videos?.sort(sortByEndDate) || []
-    : currentUser?.videos
+    ? selectedUser?.videos?.sort(sortByEndDate) || []
+    : selectedUser?.videos
         ?.filter((video: Video) => {
           return (
             new Date(video._joinData.start) <= new Date() &&
@@ -257,7 +270,7 @@
     const joinData = currentVideo?._joinData || {};
 
     const data = {
-      id: currentUser?.id,
+      id: selectedUser?.id,
       videos: [
         {
           id,
@@ -298,7 +311,7 @@
     );
     const _userVideos = [...userVideos.slice(0, idx), ...userVideos.slice(idx + 1)];
     const ids = _userVideos.map((v) => v.id);
-    const data = { id: currentUser?.id, videos: { _ids: [...ids] } };
+    const data = { id: selectedUser?.id, videos: { _ids: [...ids] } };
 
     const onsuccess = (res: any) => {
       selectionVideoId === schedulingVideoId && (selectionVideoId = null);
@@ -391,23 +404,33 @@
 <div bind:this={main} class="main-grid datapicker" class:isopen>
   <div
     class="grid-item user-videos"
-    class:no-user-selected={!currentUser}
+    class:no-user-selected={!selectedUser}
     class:no-videos={!userVideos.length || hasCurrentPrivileges}
   >
     <Container density="sm" variant="primary">
       <div slot="header">
         <Header mdc h="5">
           <div class="flex">
-            {#if currentUser}
-              <span class="header-name pr-5">{name}</span>
-              <span class="uppercase flex-auto text-right" style="font-weight: 400;"
-                >| {$_('text.booked-classes')}</span
+            {#if selectedUser}
+              <span class="flex">
+                <UserGraphic
+                  size={60}
+                  user={selectedUser}
+                  badge={hasSelectedUserPrivileges ? badge : false}
+                  borderSize={2}
+                  borderColor="#c5c5c5"
+                />
+              </span>
+              <span class="header-name pr-5 self-center">{name}</span>
+              <span
+                class="uppercase flex-auto flex self-center justify-end"
+                style="font-weight: 400;">| {$_('text.booked-classes')}</span
               >
             {/if}
           </div>
         </Header>
       </div>
-      {#if currentUser}
+      {#if selectedUser}
         <List
           class="video-list"
           threeLine
@@ -560,7 +583,10 @@
       <Container density="sm">
         <div slot="header">
           <div>
-            <Header mdc h="5">{readout}</Header>
+            <span class="flex">
+              <Icon class="material-icons">date_range</Icon>
+              <Header mdc h="5" class="ml-2">{readout}</Header>
+            </span>
             <button on:click={() => toggleDatePicker(selectionVideoId)} class="button-close" />
           </div>
         </div>

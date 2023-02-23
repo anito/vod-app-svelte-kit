@@ -2,7 +2,7 @@
   import { session } from '$lib/stores';
   import { Media } from '@smui/card';
   import { getExt, getMediaImage } from '$lib/utils';
-  import type { Avatar, Image, Video } from '$lib/types';
+  import type { Avatar, Image, Video } from '$lib/classes/repos/types';
 
   export let fallback = `https://placehold.co/100x100?text=`;
   export let media: Video | Image | Avatar;

@@ -3,7 +3,8 @@
   import { Graphic } from '@smui/list';
   import { Icon } from '@smui/common';
   import { getMediaAvatar, placeholderDotComAvatar } from '$lib/utils';
-  import type { Badge, User } from '$lib/types';
+  import type { Badge } from '$lib/types';
+  import type { User } from '$lib/classes/repos/types';
 
   export let user: User | null = null;
   export let dense = false;
@@ -15,7 +16,7 @@
   export let extendedBorderColor = '';
   export let overlayColor = '';
   export let overlayOpacity = 0.5;
-  export let badge: Badge = {};
+  export let badge: false | Badge = false;
   export let style = '';
   export let fallback = '';
 
@@ -30,13 +31,16 @@
 
   let src: string | undefined;
 
-  badge = {
-    icon: '',
-    color: '#ff0000',
-    size: 'small',
-    position: 'TOP_LEFT',
-    ...badge
-  };
+  if(badge) {
+    badge = {
+      icon: '',
+      color: '#ff0000',
+      size: 'small',
+      position: 'TOP_LEFT',
+      ...badge
+    };
+    badge.color?.startsWith('--') && (badge.color = `var(${badge.color})`);
+  }
 
   borderColor = borderColor.startsWith('--')
     ? `var(${borderColor})`
@@ -53,7 +57,6 @@
     : overlayColor
     ? overlayColor
     : 'transparent';
-  badge.color?.startsWith('--') && (badge.color = `var(${badge.color})`);
 
   $: sizeVar = `--size: ${size}px;`;
   $: overlayVars =
@@ -100,7 +103,7 @@
         background-size: cover;
         background-color: var(--back-light);"
     />
-    {#if badge.icon}
+    {#if badge}
       <div class="badge {badge.size} {badgePositions[badge.position || 'TOP_LEFT']}">
         <Icon style="color:{badge.color}" class="material-icons">{badge.icon}</Icon>
       </div>
@@ -134,34 +137,22 @@
       transform: translate(0px, calc(var(--size) * -1));
     }
     &.small {
-      --badge-size: 18px;
+      --badge-size: 16px;
       width: var(--badge-size);
       height: var(--badge-size);
-
-      :global(.material-icons) {
-        font-size: 0.875em;
-      }
     }
     &.medium {
       --badge-size: 30px;
       width: var(--badge-size);
       height: var(--badge-size);
-
-      :global(.material-icons) {
-        font-size: 1.4444em;
-      }
     }
     &.large {
       --badge-size: 34px;
       width: var(--badge-size);
       height: var(--badge-size);
-
-      :global(.material-icons) {
-        font-size: 1.6666em;
-      }
     }
     :global(.material-icons) {
-      font-size: 1.1em;
+      font-size: var(--badge-size);
       border-radius: 50%;
       border-width: 2px;
       background-color: #ffffff;

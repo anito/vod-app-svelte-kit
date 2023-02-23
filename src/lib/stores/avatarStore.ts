@@ -1,4 +1,4 @@
-import type { Avatar } from '$lib/types';
+import type { Avatar } from '$lib/classes/repos/types';
 import { writable } from 'svelte/store';
 
 function createStore() {

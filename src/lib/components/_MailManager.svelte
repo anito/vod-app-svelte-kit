@@ -67,7 +67,7 @@
     {
       'magic-link': () => {
         return {
-          validate: () => currentUser?.active && isValidToken() && { href: getMagicLink() },
+          validate: () => selectedUser?.active && isValidToken() && { href: getMagicLink() },
           label: $_('text.magic-link')
         };
       }
@@ -75,7 +75,7 @@
     {
       welcome: () => {
         return {
-          validate: () => currentUser?.active && isValidToken() && { href: getMagicLink() },
+          validate: () => selectedUser?.active && isValidToken() && { href: getMagicLink() },
           label: $_('text.welcome-link-label')
         };
       }
@@ -114,22 +114,22 @@
     getMailStore: () => currentStore
   });
 
-  $: currentUser = ((id) => $users.find((usr) => usr.id === id))(selectionUserId) as any;
+  $: selectedUser = ((id) => $users.find((usr) => usr.id === id))(selectionUserId) as any;
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: selectionUserId && (selectionIndex = -1);
-  $: username = currentUser?.name || $_('text.empty-user-selection');
-  $: email = currentUser?.email || '';
+  $: username = selectedUser?.name || $_('text.empty-user-selection');
+  $: email = selectedUser?.email || '';
   $: totalSents = $sents.length;
   $: totalInboxes = $inboxes.length;
   $: unreadInboxes = $inboxes.filter((mail) => !mail._read).length;
   $: activeItem = $page.url.searchParams.get('active');
   $: setActiveListItem(activeItem);
   $: activeTemplate = matchesTemplate(activeListItem);
-  $: dynamicTemplateData = currentUser && getTemplateData(activeTemplate);
+  $: dynamicTemplateData = selectedUser && getTemplateData(activeTemplate);
   $: currentTemplate = $templates.find((tmpl) => tmpl.slug === activeTemplate);
   $: currentTemplate && hasPrivileges ? setFab('send-mail') : setFab('');
   $: dynamicTemplatePath = (slug: any) => {
-    currentUser;
+    selectedUser;
     return createTemplatePath(slug);
   };
   $: data = dynamicTemplateData && {
@@ -142,7 +142,7 @@
    * we're able to control whether mails should be reloaded
    */
   $: currentSlug = (currentSlug !== $page.params.slug && $page.params.slug) || currentSlug;
-  $: isValidTemplate = currentUser && validateData(currentTemplate?.slug);
+  $: isValidTemplate = selectedUser && validateData(currentTemplate?.slug);
   $: waitForData =
     currentSlug &&
     getSIUX()
@@ -215,7 +215,7 @@
       return new Promise((res, rej) => rej(`This user doesn't exist`));
 
     return await api
-      .get(`${endpoint}/get/${currentUser?.id}`, { token: $session.user?.jwt })
+      .get(`${endpoint}/get/${selectedUser?.id}`, { token: $session.user?.jwt })
       .then((res) => {
         if (res?.success) {
           return res.data;
@@ -227,7 +227,7 @@
     await api
       .post('sents/add/', {
         data: {
-          user: { email: currentUser?.email },
+          user: { email: selectedUser?.email },
           salutation: $salutation,
           ...working,
           template: {
@@ -250,10 +250,10 @@
   }
 
   function validateUser() {
-    if (!currentUser) return false;
+    if (!selectedUser) return false;
 
     const user = $users.find((usr) => usr.id === $page.params.slug);
-    return !!user && currentUser.id === user.id;
+    return !!user && selectedUser.id === user.id;
   }
 
   function validateMailboxName(name = '') {
@@ -472,7 +472,7 @@
   }
 
   function isValidToken() {
-    let expires = currentUser.expires;
+    let expires = selectedUser.expires;
     if (!isNaN(expires)) return expires * 1000 > +new Date().getTime();
     return false;
   }
@@ -519,8 +519,8 @@
   }
 
   function getMagicLink() {
-    if (currentUser?.jwt) {
-      return `${$page.url.origin}/login?token=${currentUser.jwt}`;
+    if (selectedUser?.jwt) {
+      return `${$page.url.origin}/login?token=${selectedUser.jwt}`;
     }
   }
 </script>
@@ -535,7 +535,7 @@
             <Subtitle>{email}</Subtitle>
           </Header>
           <Content>
-            <List class="mailbox-list" nonInteractive={!currentUser}>
+            <List class="mailbox-list" nonInteractive={!selectedUser}>
               <Item
                 href={dynamicTemplatePath(INBOX)}
                 on:click={() => (selectionIndex = -1)}
@@ -618,7 +618,7 @@
                       on:save:editable={saveEditableHandler}
                       >{template.name}
                     </TextEditor>
-                    {#if currentUser && !validateData(template.slug)}
+                    {#if selectedUser && !validateData(template.slug)}
                       <Meta class="absolute" style="left: 0;">
                         <Dot size={5} />
                       </Meta>
@@ -667,7 +667,7 @@
                       bind:canSave
                       bind:working
                       template={{ ...currentTemplate, data }}
-                      user={currentUser}
+                      user={selectedUser}
                     />
                   {:else}
                     <FlexContainer>

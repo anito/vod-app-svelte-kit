@@ -18,18 +18,18 @@
   let hasExpired;
   let jwt;
   let magicLink: string;
-  let currentUser: User | undefined;
+  let selectedUser: User | undefined;
   let username: string;
 
   $: if (data.user) users.add([data.user]);
   $: selectionUserId = $page.params.slug;
-  $: currentUser = ((id) =>
+  $: selectedUser = ((id) =>
     $users.find((usr) => usr.id === id) || (!!$users.length && $users[0]) || undefined)(
     selectionUserId
   );
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
-  $: isCurrentSuperUser = currentUser?.role === SUPERUSER;
-  $: username = currentUser?.name || '';
+  $: isCurrentSuperUser = selectedUser?.role === SUPERUSER;
+  $: username = selectedUser?.name || '';
   $: tab = ((tab) => TABS.find((itm) => itm === tab))($page.url.searchParams.get('tab'));
   $: ((user) => {
     if (!user || isCurrentSuperUser) {
@@ -43,7 +43,7 @@
       jwt = user.jwt;
       magicLink = jwt && `${$page.url.origin}/login?token=${jwt}`;
     }
-  })(currentUser);
+  })(selectedUser);
   $: hidden =
     !hasPrivileges || isCurrentSuperUser
       ? true
@@ -131,9 +131,7 @@
           size={18}
           dense
           style="margin-right: 10px;"
-          user={currentUser}
-          overlayColor="--primary"
-          overlayOpacity={0.3}
+          user={selectedUser}
         />
         <Label>{$_('text.change-account')}</Label>
       </Button>

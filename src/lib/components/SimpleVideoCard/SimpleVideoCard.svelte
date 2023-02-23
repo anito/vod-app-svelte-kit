@@ -51,13 +51,13 @@
   $: user = $session.user;
   $: video && (async (vid) => (src = await fetchBackgroundImage(vid)))(video);
   $: unmanagable = disabled;
-  $: currentUser =
+  $: selectedUser =
     (filtered = ((id) => $users.filter((usr) => usr.id === id))(selectionUserId)) &&
     filtered.length &&
     filtered[0];
   $: joinData =
-    currentUser &&
-    (_video = currentUser.videos?.find((_video: Video) => _video.id === video.id)) &&
+    selectedUser &&
+    (_video = selectedUser.videos?.find((_video: Video) => _video.id === video.id)) &&
     _video._joinData;
   $: ((jData, _locale) => (
     (startDate = jData && jData.start && parseISO(jData.start)),

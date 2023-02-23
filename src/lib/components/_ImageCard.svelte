@@ -11,7 +11,7 @@
   import { _ } from 'svelte-i18n';
   import { SvgIcon } from '.';
   import { proxyEvent } from '$lib/utils';
-  import type { Image } from '$lib/types';
+  import type { Image } from '$lib/classes/repos/types';
 
   export let image: Image;
   export { className as class };

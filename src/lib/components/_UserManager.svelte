@@ -92,7 +92,7 @@
   $: root?.classList.toggle('user-password-view', selectedMode === PASS);
   $: root?.classList.toggle('user-delete-view', selectedMode === DEL);
   $: groups = $session.groups || [];
-  $: currentUser = ((id) => {
+  $: selectedUser = ((id) => {
     const user = $users.find((usr) => usr?.id === id) as User | undefined;
     if (user && selectedMode !== ADD) {
       copy(user);
@@ -100,22 +100,22 @@
     return user;
   })(selectionUserId);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
-  $: hasCurrentPrivileges = currentUser?.role === ADMIN || currentUser?.role === SUPERUSER;
+  $: hasCurrentPrivileges = selectedUser?.role === ADMIN || selectedUser?.role === SUPERUSER;
   $: isSuperuser = $session.role === SUPERUSER;
-  $: isCurrentSuperuser = currentUser?.role === SUPERUSER;
+  $: isCurrentSuperuser = selectedUser?.role === SUPERUSER;
   $: isProtected = isCurrentSuperuser ? (!isSuperuser ? true : false) : !hasPrivileges;
-  $: hidden = currentUser?.id === $session.user?.id;
+  $: hidden = selectedUser?.id === $session.user?.id;
   $: notFound =
     selectedMode !== ADD &&
     selectionUserId &&
     undefined === $users.find((user) => user.id === selectionUserId);
-  $: _name = ((user) => user?.name || '')(selectedMode !== ADD ? currentUser : undefined);
-  $: _active = ((usr) => usr?.active || false)(selectedMode !== ADD ? currentUser : undefined);
+  $: _name = ((user) => user?.name || '')(selectedMode !== ADD ? selectedUser : undefined);
+  $: _active = ((usr) => usr?.active || false)(selectedMode !== ADD ? selectedUser : undefined);
   $: _protected = ((usr) => usr?.protected || false)(
-    selectedMode !== ADD ? currentUser : undefined
+    selectedMode !== ADD ? selectedUser : undefined
   );
-  $: _email = ((usr) => usr?.email || '')(selectedMode !== ADD ? currentUser : undefined);
-  $: _group_id = ((usr) => usr?.group_id || '')(selectedMode !== ADD ? currentUser : undefined);
+  $: _email = ((usr) => usr?.email || '')(selectedMode !== ADD ? selectedUser : undefined);
+  $: _group_id = ((usr) => usr?.group_id || '')(selectedMode !== ADD ? selectedUser : undefined);
   $: invalidPassword = password.length < 8;
   $: invalidRepeatedPassword = password !== repeatedPassword || invalidPassword;
   $: canSave =
@@ -144,7 +144,7 @@
     jwt = user?.jwt || '';
     activeLabel = (active && $_('text.deactivate-user')) || $_('text.activate-user');
     protectedLabel = (__protected && $_('text.unprotect-user')) || $_('text.protect-user');
-  })(currentUser);
+  })(selectedUser);
   $: magicLink = (jwt && `${$page.url.origin}/login?token=${jwt}`) || '';
   $: actionsLookup = new Set([
     { name: EDIT, i18n: 'text.edit-user', formAction: 'edit' },
@@ -178,7 +178,7 @@
       {
         layoutProps: { type: $_('text.avatar') },
         type: 'avatar',
-        uid: currentUser?.id,
+        uid: selectedUser?.id,
         options: {
           parallelUploads: 1,
           maxFiles: 1
@@ -226,14 +226,14 @@
   async function deleteAvatar() {
     let msg;
     await api
-      .del(`avatars/${currentUser?.avatar.id}?locale=${$session.locale}`, { token })
+      .del(`avatars/${selectedUser?.avatar.id}?locale=${$session.locale}`, { token })
       .then(async (res) => {
         const { data, success, message }: any = { ...res };
         msg = message || res.data?.message;
 
         if (success) {
           // reflect the change in the session cookie
-          if ($session.user.id === currentUser?.id) {
+          if ($session.user.id === selectedUser?.id) {
             await post('/session', {
               ...$session,
               user: { ...$session.user, avatar: data.avatar }
@@ -260,7 +260,7 @@
           code = (res.data && res.data.code) || res.status;
 
           if (res?.success) {
-            users.put({ ...currentUser, active });
+            users.put({ ...selectedUser, active });
           } else if (200 < code && code < 500) {
             // Sample Users are protected
             reset();
@@ -284,7 +284,7 @@
           code = (res.data && res.data.code) || res.status;
 
           if (res?.success) {
-            users.put({ ...currentUser, protected: __protected });
+            users.put({ ...selectedUser, protected: __protected });
           } else if (200 < code && code < 500) {
             // Sample Users are protected
             reset();
@@ -340,7 +340,7 @@
         if (
           !confirm(
             $_('messages.permanently-remove-user', {
-              values: { name: currentUser?.name }
+              values: { name: selectedUser?.name }
             })
           )
         )
@@ -385,7 +385,7 @@
           }
           case 'del': {
             if (success) {
-              users.del(currentUser?.id);
+              users.del(selectedUser?.id);
             }
             mode = EDIT;
             break;
@@ -410,8 +410,8 @@
               <button on:click={closeAddUserHandler} class="button-close">
                 <Icon class="material-icons" style="vertical-align: middle;">close</Icon>
               </button>
-            {:else if currentUser}
-              {currentUser?.name}
+            {:else if selectedUser}
+              {selectedUser?.name}
             {/if}
           </Header>
         </div>
@@ -434,7 +434,7 @@
                 <div bind:this={avatarMenuAnchor} use:Anchor>
                   <UserGraphic
                     size={100}
-                    user={currentUser}
+                    user={selectedUser}
                     borderSize={4}
                     borderColor="--primary"
                     extendedBorderColor="--background-intense"
@@ -455,12 +455,12 @@
                     <List>
                       <Item on:click={openUploader}>
                         <Text
-                          >{currentUser?.avatar
+                          >{selectedUser?.avatar
                             ? $_('text.change-avatar')
                             : $_('text.add-avatar')}</Text
                         >
                       </Item>
-                      <Item disabled={!currentUser?.avatar} on:click={() => deleteAvatar()}>
+                      <Item disabled={!selectedUser?.avatar} on:click={() => deleteAvatar()}>
                         <Text>{$_('text.remove-avatar')}</Text>
                       </Item>
                     </List>
@@ -657,7 +657,7 @@
               </div>
             </form>
           {/if}
-          {#if currentUser && hasPrivileges && selectedMode !== ADD}
+          {#if selectedUser && hasPrivileges && selectedMode !== ADD}
             <div class="table-wrapper">
               <div class="token-factory" class:no-token={!jwt}>
                 <div class="main-info">
@@ -752,7 +752,7 @@
                         <p>
                           {@html $_('summary.test-magic-link.text', {
                             values: {
-                              currentUserName: currentUser?.name,
+                              currentUserName: selectedUser?.name,
                               sessionUserName: $session.user?.name
                             }
                           })}

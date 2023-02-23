@@ -17,12 +17,12 @@
   let isExpired;
 
   $: dateFormat = $locale?.indexOf('de') != -1 ? 'dd. MMM yyyy HH:mm' : 'yyyy-MM-dd hh:mm a';
-  $: currentUser = ((id) => $users.filter((usr) => usr.id === id))(selectionUserId)[0];
+  $: selectedUser = ((id) => $users.filter((usr) => usr.id === id))(selectionUserId)[0];
   $: ((user) => {
     expires = user?.expires;
     isExpired = (expires && expires * 1000 < +new Date().getTime()) || false;
     expirationDate =
-      (expires && localeFormat(new Date(parseInt(expires) * 1000), dateFormat)) || void 0;
+      (expires && localeFormat(new Date(Number(expires) * 1000), dateFormat)) || void 0;
     expiresChipLabel =
       (expirationDate &&
         `${
@@ -34,7 +34,7 @@
     chipIcon =
       (expirationDate && (isExpired ? 'hourglass_empty' : 'hourglass_full')) ||
       'hourglass_disabled';
-  })(currentUser);
+  })(selectedUser);
 </script>
 
 <span class="chip-items">

@@ -1,7 +1,8 @@
 import { derived } from 'svelte/store';
 import { users } from '$lib/stores';
 import { isExpired, SUPERUSER } from '$lib/utils';
-import type { Issue, User } from '$lib/types';
+import type { Issue } from '$lib/types';
+import type { User } from '$lib/classes/repos/types';
 
 function createStore() {
   function hasActiveVideos(user: User) {

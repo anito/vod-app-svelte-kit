@@ -4,6 +4,7 @@
 
   export let h = DEFAULT_LEVEL;
   export let mdc = false;
+  export let icon: string | boolean = false;
   export { className as class };
   export { wrapperClassName as wrapperClass };
   export let style = '';

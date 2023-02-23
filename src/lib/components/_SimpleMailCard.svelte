@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import './_meta.scss';
   import { localeFormat, isToday, INBOX, SENT } from '$lib/utils';
   import { onMount, onDestroy, createEventDispatcher } from 'svelte';
@@ -6,38 +6,24 @@
   import { Item, Text, PrimaryText, SecondaryText } from '@smui/list';
   import { locale } from 'svelte-i18n';
   import { page } from '$app/stores';
+  import type { Mail } from '$lib/types';
+  import type { User } from '$lib/classes/repos/types';
 
-  /**
-   * @type {any | null | undefined}
-   */
-  export let mail;
-  /**
-   * @type {string | null}
-   */
-  export let type;
+  export let mail: Mail;
+  export let type: string;
   export { className as class };
   export let selected = false;
 
   const dispatch = createEventDispatcher();
 
-  /**
-   * @type {any | never[]}
-   */
-  let userItems = [];
+  let userItems: User[] = [];
   let created = '';
   let className = '';
-  /**
-   * @type {HTMLAnchorElement}
-   */
-  let anchorElement;
-  /**
-   * @type {import('$lib/types').Mail | null | undefined}
-   */
-  export let selection;
+  let anchorElement: HTMLAnchorElement;
+  export let selection: Mail | null | undefined;
 
   $: unread = !mail?._read;
   $: dateFormat =
-    /** @type {string | null | undefined} */
     $locale?.indexOf('de') != -1
       ? isToday(mail?.created)
         ? 'HH:mm'
@@ -66,8 +52,7 @@
     }
   }
 
-  /** @param {KeyboardEvent} event*/
-  function keydownHandler(event) {
+  function keydownHandler(event: KeyboardEvent) {
     const isBackspace = event.key === 'Backspace';
     if (isBackspace) {
       dispatch('mail:delete', { selection });

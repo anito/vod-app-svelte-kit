@@ -1,4 +1,4 @@
-import type { Image } from '$lib/types';
+import type { Image } from '$lib/classes/repos/types';
 import { writable } from 'svelte/store';
 
 function createStore() {

@@ -5,7 +5,8 @@
   import { UserGraphic, Dot } from '$lib/components';
   import { Meta, Item, Text, PrimaryText, SecondaryText } from '@smui/list';
   import { ADMIN, dynamicUrl, SUPERUSER } from '$lib/utils';
-  import type { Issue, User, Badge } from '$lib/types';
+  import type { Issue, Badge } from '$lib/types';
+  import type { User } from '$lib/classes/repos/types';
 
   export let selectionUserId: string;
   export let user: User | undefined;
@@ -18,10 +19,9 @@
       if (id) return _infos.get(id)?.issues;
     })(user) || [];
   $: hasPrivileges = user?.role === ADMIN || user?.role === SUPERUSER;
-  $: isSuperuser = user?.role === SUPERUSER;
   $: badge = {
     icon: (hasPrivileges && 'admin_panel_settings') || '',
-    color: isSuperuser ? 'rgb(26, 4, 4)' : 'rgb(206, 4, 4)',
+    color: user?.role === SUPERUSER ? 'rgb(26, 4, 4)' : user?.role === ADMIN ? 'rgb(206, 4, 4)' : '',
     position: 'TOP_RIGHT',
     size: 'small'
   } as Badge;

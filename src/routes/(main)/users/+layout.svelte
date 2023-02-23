@@ -27,7 +27,8 @@
   import Dialog, { Title as DialogTitle, Content, Actions, InitialFocus } from '@smui/dialog';
   import { _ } from 'svelte-i18n';
   import type { LayoutData } from './$types';
-  import type { Issue, User } from '$lib/types';
+  import type { User } from '$lib/classes/repos/types';
+  import type { Issue } from '$lib/types';
   import type Snackbar from '@smui/snackbar';
   import type Dropzone from '$lib/components/Dropzone/index.svelte';
 
@@ -43,7 +44,7 @@
   const segment = getSegment();
   export let data: LayoutData;
 
-  let currentUser: User | undefined;
+  let selectedUser: User | undefined;
   let username: string | undefined;
   let tokenExpires;
   let hasExpired: boolean;
@@ -67,7 +68,7 @@
 
   $: pagination = data.pagination?.users;
   $: selectionUserId = $page.params.slug || $session.user?.id;
-  $: currentUser = ((id) => $users?.find((usr) => usr.id === id))(selectionUserId);
+  $: selectedUser = ((id) => $users?.find((usr) => usr.id === id))(selectionUserId);
   $: ((user) => {
     username = user?.name;
     active = user?.active || false;
@@ -76,7 +77,7 @@
     tokenExpires = user?.expires;
     hasExpired = (tokenExpires && tokenExpires * 1000 < +new Date().getTime()) || false;
     magicLink = token ? `${$page.url.origin}/login?token=${token}` : '';
-  })(currentUser);
+  })(selectedUser);
   $: isDeepSearch = search.length >= minSearchChars;
   $: if (isDeepSearch) {
     (async (s) => {
@@ -131,7 +132,7 @@
 
   async function generateToken(constrained?: boolean) {
     const res = await api.post(`tokens?locale=${$page.data.session.locale}`, {
-      data: { user_id: currentUser?.id, constrained },
+      data: { user_id: selectedUser?.id, constrained },
       token: $session.user?.jwt
     });
 
@@ -157,7 +158,7 @@
       .del(`tokens/${tokenId}?locale=${$session.locale}`, { token: $session.user?.jwt })
       .then((res) => {
         if (res?.success) {
-          users.put({ ...currentUser, ...res.data });
+          users.put({ ...selectedUser, ...res.data });
         }
         configSnackbar(res.message);
         snackbar?.forceOpen();
@@ -175,7 +176,7 @@
         message = res.message || res.data.message || res.statusText;
 
         if (res?.success) {
-          users.put({ ...currentUser, ...data });
+          users.put({ ...selectedUser, ...data });
         } else {
           active = !active;
         }
@@ -350,7 +351,7 @@
   }
 </script>
 
-<Layout sidebar segment={$segment}>
+<Layout segment={$segment}>
   <div class="flex flex-1" slot="pagebar">
     <PageBar />
   </div>
@@ -621,7 +622,7 @@
         extendedBorderSize={5}
         extendedBorderColor="--surface"
         dense
-        user={currentUser}
+        user={selectedUser}
         inactive={!!userIssues.length}
         badge={{
           icon: 'swap_horiz',
