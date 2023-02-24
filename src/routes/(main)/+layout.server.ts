@@ -5,11 +5,10 @@ import type { LayoutServerLoadEvent } from './$types';
 export async function load({
   depends,
   locals: { session, usersRepo, videosRepo, videosAllRepo, imagesRepo },
-  cookies,
-  url
+  cookies
 }: LayoutServerLoadEvent) {
   if (!session.data.user) {
-    throw redirect(301, `/login?${createRedirectSlug(url)}`);
+    throw redirect(301, '/');
   }
 
   const { role = USER, user: sessionUser } = session.data;

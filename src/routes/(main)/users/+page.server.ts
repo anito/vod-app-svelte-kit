@@ -9,11 +9,7 @@ export const actions = {
       token: locals.session.data.user?.jwt
     });
     const newPagination = { ...pagination, users: users.pagination };
-    try {
-      cookies.set('pagination', JSON.stringify(newPagination), { path: '/' });
-    } catch (err) {
-      console.log(err);
-    }
+    cookies.set('pagination', JSON.stringify(newPagination), { path: '/' });
     return users;
   }
 } as Actions;
