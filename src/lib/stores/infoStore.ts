@@ -15,7 +15,7 @@ function createStore() {
     }, false);
   }
   const infos = new Map();
-  const defs: any = [
+  const defs: { key: Issue; test: (value: User) => boolean }[] = [
     {
       key: {
         id: 'account-inaccessible',
@@ -25,7 +25,7 @@ function createStore() {
         flag: 'warning',
         type: ''
       },
-      inform: (user: User) =>
+      test: (user: User) =>
         hasActiveVideos(user) &&
         (!user.jwt || !user.active || (user.expires && isExpired(user.expires)))
     },
@@ -38,7 +38,7 @@ function createStore() {
         flag: 'flash',
         type: 'issue'
       },
-      inform: (user: User) => user.expires && isExpired(user.expires)
+      test: (user: User) => isExpired(user.expires || new Date(1970))
     },
     {
       key: {
@@ -49,27 +49,28 @@ function createStore() {
         flag: 'flash',
         type: 'issue'
       },
-      inform: (user: User) => !user.active
+      test: (user: User) => !user.active
     },
     {
       key: {
         id: 'token-missing',
         eventType: 'info:token:generate',
         label: 'text.generate-token',
+        reason: 'no-token-information',
         flag: 'flash',
         type: 'issue'
       },
-      inform: (user: User) => !user.jwt && user.role !== SUPERUSER
+      test: (user: User) => !user.jwt && user.role !== SUPERUSER
     }
   ];
 
-  return derived(users, ($users, set) => {
+  return derived(users, ($users, set: (value: Map<string | null, { issues: Issue[] }>) => void) => {
     if (!$users) return;
 
     for (let user of $users) {
       let issues: Issue[] = [];
       for (const def of defs) {
-        def.inform(user) && issues.push(def.key);
+        def.test(user) && issues.push(def.key);
       }
       infos.set(user.id, {
         issues

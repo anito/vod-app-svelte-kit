@@ -4,7 +4,6 @@
 
   export let h: '1' | '2' | '3' | '4' | '5' | '6' = DEFAULT_LEVEL;
   export let mdc = false;
-  export let icon: string | boolean = false;
   export { className as class };
   export { wrapperClassName as wrapperClass };
   export let style = '';

@@ -4,8 +4,9 @@
 
 <script lang="ts">
   import { browser, dev } from '$app/environment';
-  import { onMount, getContext } from 'svelte';
-  import { post, proxyEvent } from '$lib/utils';
+  import { enhance } from '$app/forms';
+  import { onMount } from 'svelte';
+  import { proxyEvent } from '$lib/utils';
   import { flash } from '$lib/stores';
   import Button from '@smui/button';
   import TabBar from '@smui/tab-bar';
@@ -14,9 +15,8 @@
   import Icon from '@smui/textfield/icon';
   import { Label } from '@smui/common';
   import Dialog, { Title as DialogTitle, Content, Actions } from '@smui/dialog';
-  import { FacebookLoginButton, GoogleLoginButton, Header } from '$lib/components';
+  import { FacebookLoginButton, GoogleLoginButton } from '$lib/components';
   import { _ } from 'svelte-i18n';
-  import { enhance } from '$app/forms';
   import type { ActionResult } from '@sveltejs/kit';
 
   const client_id = import.meta.env.VITE_CLIENT_ID; // Ggogle Client ID
