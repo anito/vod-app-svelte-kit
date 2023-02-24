@@ -1,10 +1,10 @@
 <script lang="ts">
   const regex = /[1-6]/g;
-  const DEFAULT_LEVEL = '1';
+  const DEFAULT_LEVEL = '2';
 
-  export let h = DEFAULT_LEVEL;
+  export let h: '1' | '2' | '3' | '4' | '5' | '6' = DEFAULT_LEVEL;
   export let mdc = false;
-  export let icon: string | boolean = false;
+  export let icon: string | boolean = false;
   export { className as class };
   export { wrapperClassName as wrapperClass };
   export let style = '';
@@ -14,8 +14,8 @@
   let className = '';
   let wrapperClassName = '';
 
-  $: h = (regex.test(h) && h.match(regex)?.[0]) || DEFAULT_LEVEL;
-  $: tag = `h${h}`;
+  $: level = (regex.test(h) && h.match(regex)?.[0]) || DEFAULT_LEVEL;
+  $: tag = `h${level}`;
   $: mdcClassName = (mdc && `mdc-typography--headline${h}`) || '';
 </script>
 
@@ -25,7 +25,7 @@
   style={wrapperStyle}
   style:--inkColor={`var(--${inkColor})`}
 >
-  <svelte:element this={tag} class="{mdcClassName} {className}" {style}>
+  <svelte:element this={tag} class="{mdcClassName} {className}" {style} title="">
     <slot />
   </svelte:element>
 </div>

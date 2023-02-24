@@ -5,6 +5,7 @@
 @import '@material/list';
 
 .dark .drawer-container {
+  --drawer-width: 280px;
   .mdc-drawer {
     @include item-activated-text-ink-color(on-primary);
     @include item-icon-ink-color(on-primary);
@@ -12,8 +13,9 @@
 }
 .drawer-container {
   .mdc-drawer {
-    @include width(280px);
+    @include width(var(--drawer-width));
     @include z-index(6);
+    border-top-right-radius: 0;
     --mdc-typography-caption-font-family: var(--caption-font);
     --mdc-typography-caption-font-size: var(--caption-fs);
   }

@@ -6,7 +6,7 @@
   import { Label } from '@smui/common';
   import Paper, { Title, Subtitle, Content } from '@smui/paper';
   import { Info, ImageCard, MediaUploader } from '$lib/components';
-  import { Header } from '$lib/components';
+  import { Heading } from '$lib/components';
   import { fabs, session, sitename, images, currentVideo } from '$lib/stores';
   import { _ } from 'svelte-i18n';
   import type { PageData } from './$types';
@@ -52,7 +52,7 @@
   <title>{$sitename} | Posters</title>
 </svelte:head>
 
-<Header h="2" mdc class="m-2 lg:m-5">Posters</Header>
+<Heading h="2" mdc class="m-2 lg:m-5">Posters</Heading>
 <div class="lg:p-8">
   {#if $session.user}
     {#if $images.length}

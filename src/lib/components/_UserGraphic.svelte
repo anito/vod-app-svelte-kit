@@ -2,7 +2,7 @@
   import { session } from '$lib/stores';
   import { Graphic } from '@smui/list';
   import { Icon } from '@smui/common';
-  import { getMediaAvatar, placeholderDotComAvatar } from '$lib/utils';
+  import { addClass, getMediaAvatar, placeholderDotComAvatar } from '$lib/utils';
   import type { Badge } from '$lib/types';
   import type { User } from '$lib/classes/repos/types';
 
@@ -16,9 +16,10 @@
   export let extendedBorderColor = '';
   export let overlayColor = '';
   export let overlayOpacity = 0.5;
-  export let badge: false | Badge = false;
+  export let badge: boolean | Badge | undefined = false;
   export let style = '';
   export let fallback = '';
+  export { className as class };
 
   const width = size;
   const height = size;
@@ -29,9 +30,10 @@
     TOP_LEFT: 'tl'
   };
 
+  let className = '';
   let src: string | undefined;
 
-  if(badge) {
+  if (typeof badge === 'object') {
     badge = {
       icon: '',
       color: '#ff0000',
@@ -86,7 +88,7 @@
   })(user);
 </script>
 
-<span class="user-graphics-outer" class:inactive class:dense {style}>
+<span use:addClass={className} class="user-graphics-outer {className}" class:inactive class:dense {style}>
   {#if src}
     <Graphic
       class="user-graphics relative"
@@ -103,7 +105,7 @@
         background-size: cover;
         background-color: var(--back-light);"
     />
-    {#if badge}
+    {#if typeof badge === 'object'}
       <div class="badge {badge.size} {badgePositions[badge.position || 'TOP_LEFT']}">
         <Icon style="color:{badge.color}" class="material-icons">{badge.icon}</Icon>
       </div>

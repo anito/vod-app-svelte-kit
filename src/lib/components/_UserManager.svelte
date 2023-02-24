@@ -9,7 +9,6 @@
   import { browser } from '$app/environment';
   import { goto, invalidate, invalidateAll } from '$app/navigation';
   import { getContext, onMount } from 'svelte';
-  import Header from './_Header.svelte';
   import { fly } from 'svelte/transition';
   import { session, settings, users } from '$lib/stores';
   import { proxyEvent, ADMIN, SUPERUSER, post, parseLifetime } from '$lib/utils';
@@ -30,7 +29,8 @@
     TokenInfo,
     MediaUploader,
     UserGraphic,
-    FlexContainer
+    FlexContainer,
+    Heading
   } from '$lib/components';
   import { _ } from 'svelte-i18n';
   import type Snackbar from '@smui/snackbar';
@@ -404,7 +404,7 @@
     <div class="grid-item user" style="height: 100%;">
       <Container density="sm" extended variant="primary">
         <div slot="header">
-          <Header mdc h="5" style="padding-right: 12rem;">
+          <Heading mdc h="5" style="padding-right: 12rem;">
             {#if selectedMode === ADD}
               {$_('text.create-new-user')}
               <button on:click={closeAddUserHandler} class="button-close">
@@ -413,7 +413,7 @@
             {:else if selectedUser}
               {selectedUser?.name}
             {/if}
-          </Header>
+          </Heading>
         </div>
         <div class="flex flex-shrink flex-wrap height-100" style="height: 100%;">
           {#if notFound}

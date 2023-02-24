@@ -13,7 +13,7 @@
       signalOnly
       leadTime={1}
       signalType="primary"
-      on:MDCChip:interaction={() => proxyEvent('session:extend')}
+      on:MDCChip:interaction={() => proxyEvent('session:validate')}
     />
   </div>
 </div>

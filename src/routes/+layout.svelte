@@ -215,7 +215,7 @@
         excludes
       );
     } else {
-      proxyEvent('session:extend');
+      proxyEvent('session:validate');
     }
   };
 
@@ -277,15 +277,16 @@
     };
   });
 
+  const isExpired = () => new Date() > new Date($session._expires);
+
   async function checkSession() {
-    const { user, _expires, fromToken } = { ...$session };
+    const { user, fromToken } = { ...$session };
     if (!user || fromToken) {
       fadeIn();
       return;
     }
 
-    const valid = new Date() < new Date(_expires);
-    if (valid) {
+    if (!isExpired()) {
       proxyEvent('session:success', { session: $session, callback: fadeIn });
     } else {
       proxyEvent('session:stop', {
@@ -308,13 +309,14 @@
     window.addEventListener('session:success', sessionSuccessHandler);
     window.addEventListener('session:error', sessionErrorHandler);
     window.addEventListener('session:stop', sessionStopHandler);
-    window.addEventListener('session:extend', sessionExtendHandler);
+    window.addEventListener('session:validate', sessionValidateHandler);
     window.addEventListener('video:save', videoSaveHandler);
     window.addEventListener('video:add', videoAddHandler);
     window.addEventListener('media:delete', mediaDeleteHandler);
     window.addEventListener('media:deleteMany', mediaDeleteManyHandler);
     window.addEventListener('user:save', userSaveHandler);
     window.addEventListener('user:delete', userDeleteHandler);
+    document.addEventListener('visibilitychange', visibilityChangeHandler);
   }
 
   function dropzoneInitializedHandler({ detail }: CustomEvent) {
@@ -364,13 +366,14 @@
     window.removeEventListener('session:success', sessionSuccessHandler);
     window.removeEventListener('session:error', sessionErrorHandler);
     window.removeEventListener('session:stop', sessionStopHandler);
-    window.removeEventListener('session:extend', sessionExtendHandler);
+    window.removeEventListener('session:validate', sessionValidateHandler);
     window.removeEventListener('video:save', videoSaveHandler);
     window.removeEventListener('video:add', videoAddHandler);
     window.removeEventListener('media:delete', mediaDeleteHandler);
     window.removeEventListener('media:deleteMany', mediaDeleteManyHandler);
     window.removeEventListener('user:save', userSaveHandler);
     window.removeEventListener('user:delete', userDeleteHandler);
+    document.removeEventListener('visibilitychange', visibilityChangeHandler);
   }
 
   async function loadConfig() {
@@ -598,7 +601,7 @@
     const { user, renewed, message }: { user: User; renewed: boolean; message: string } = {
       ...session
     };
-    proxyEvent('session:extend', { start: true });
+    proxyEvent('session:validate', { start: true });
     flash.update({
       message,
       type: 'success',
@@ -618,7 +621,13 @@
     }
   }
 
-  async function sessionExtendHandler({ detail }: CustomEvent) {
+  async function visibilityChangeHandler() {
+    if(document.visibilityState === 'visible') {
+      proxyEvent('session:validate');
+    }
+  }
+
+  async function sessionValidateHandler({ detail }: CustomEvent) {
     await tick();
     const { lifetime } = $settings.Session;
     const _expires = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
@@ -648,14 +657,14 @@
 
   async function sessionStopHandler({ detail }: CustomEvent) {
     await killSession();
-    const { redirect, callback } = detail;
-    const path = redirect || '/';
+    const path = detail?.redirect || '/';
     const search = createRedirectSlug($page.url);
 
     await invalidate('app:session');
     setTimeout(
       async () =>
         await goto(`${path}?${search}`).then(() => {
+          const callback = detail?.callback;
           if (typeof callback === 'function') {
             callback();
           }
@@ -674,7 +683,7 @@
   }
 
   function changedLocaleHandler({ detail }: CustomEvent) {
-    proxyEvent('session:extend');
+    proxyEvent('session:validate');
 
     const { locale }: { locale: string } = { ...detail };
     configSnackbar($_('text.language_is_now', { values: { locale } }));

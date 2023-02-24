@@ -15,7 +15,7 @@
   import {
     SimpleVideoCard,
     DateRangePicker,
-    Header,
+    Heading,
     Container,
     VideoEditorList,
     Paginator,
@@ -409,7 +409,7 @@
   >
     <Container density="sm" variant="primary">
       <div slot="header">
-        <Header mdc h="5">
+        <Heading mdc h="5">
           <div class="flex">
             {#if selectedUser}
               <span class="flex">
@@ -428,7 +428,7 @@
               >
             {/if}
           </div>
-        </Header>
+        </Heading>
       </div>
       {#if selectedUser}
         <List
@@ -512,10 +512,10 @@
   <div class="grid-item videos" class:no-videos={!noneUserVideos?.length}>
     <Container density="sm" variant="primary">
       <div slot="header">
-        <Header mdc h="5">
+        <Heading mdc h="5">
           <div class="uppercase" style="font-weight: 400; text-align: right;">
             {$_('text.more-classes')}
-          </div></Header
+          </div></Heading
         >
       </div>
       <SearchTextField
@@ -585,7 +585,7 @@
           <div>
             <span class="flex">
               <Icon class="material-icons">date_range</Icon>
-              <Header mdc h="5" class="ml-2">{readout}</Header>
+              <Heading mdc h="5" class="ml-2">{readout}</Heading>
             </span>
             <button on:click={() => toggleDatePicker(selectionVideoId)} class="button-close" />
           </div>

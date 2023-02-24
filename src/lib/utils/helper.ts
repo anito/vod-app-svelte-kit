@@ -195,7 +195,7 @@ export function filterByModelKeys(search: string, stack: any, keys: string = '')
   );
 }
 
-export function addClass(node: HTMLDivElement, className: string) {
+export function addClass(node: HTMLElement, className: string) {
   const classNames = className.trim().replace(/(\s+)/g, ' ').split(' ');
   classNames.map((cn) => cn && node.classList.add(cn));
 }

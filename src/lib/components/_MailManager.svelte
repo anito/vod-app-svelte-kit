@@ -22,14 +22,16 @@
     MailToolbar,
     MailTemplateToolbar,
     MailTemplate,
-    Badge,
+    Badge as MailBadge,
     BadgeGroup,
     Dot,
-    FlexContainer
+    FlexContainer,
+    UserGraphic,
+    Heading
   } from '$lib/components';
   import { TextEditor } from '$lib/components/TextEditable';
   import { _ } from 'svelte-i18n';
-  import Drawer, { AppContent, Content, Header, Title, Subtitle } from '@smui/drawer';
+  import Drawer, { AppContent, Content, Header, Subtitle } from '@smui/drawer';
   import Button, { Group, Icon } from '@smui/button';
   import IconButton from '@smui/icon-button';
   import List, {
@@ -49,7 +51,7 @@
     InitialFocus
   } from '@smui/dialog';
   import { INBOX, SENT, ADMIN, SUPERUSER, log, DESC, ASC } from '$lib/utils';
-  import type { Mail } from '$lib/types';
+  import type { Mail, Badge } from '$lib/types';
   import type Snackbar from '@smui/snackbar';
 
   const sortAZProtected = (a: Record<string, any>, b: Record<string, any>) => {
@@ -87,6 +89,7 @@
   const defaultActive = INBOX;
   const mailboxes = [INBOX, SENT];
   const currentStore: any = writable();
+  const avatarSize = 40;
 
   let sort = 'DESC';
   let drawer;
@@ -115,6 +118,18 @@
   });
 
   $: selectedUser = ((id) => $users.find((usr) => usr.id === id))(selectionUserId) as any;
+  $: hasSelectedUserPrivileges = selectedUser?.role === ADMIN || selectedUser?.role === SUPERUSER;
+  $: badge = {
+    icon: (hasSelectedUserPrivileges && 'admin_panel_settings') || '',
+    color:
+      selectedUser?.role === SUPERUSER
+        ? 'rgb(26, 4, 4)'
+        : selectedUser?.role === ADMIN
+        ? 'rgb(206, 4, 4)'
+        : '',
+    position: 'TOP_RIGHT',
+    size: 'small'
+  } as Badge;
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: selectionUserId && (selectionIndex = -1);
   $: username = selectedUser?.name || $_('text.empty-user-selection');
@@ -207,12 +222,10 @@
 
   async function getMail(name: string | undefined) {
     const endpoint = validateMailboxName(name);
-    if (!endpoint)
-      return new Promise((res, rej) => rej(`The mailbox "${endpoint}" doesn't exist`));
+    if (!endpoint) return new Promise((res, rej) => rej(`The mailbox "${endpoint}" doesn't exist`));
 
     const validUser = validateUser();
-    if (!validUser)
-      return new Promise((res, rej) => rej(`This user doesn't exist`));
+    if (!validUser) return new Promise((res, rej) => rej(`This user doesn't exist`));
 
     return await api
       .get(`${endpoint}/get/${selectedUser?.id}`, { token: $session.user?.jwt })
@@ -530,9 +543,28 @@
     <div class="grid-item mail">
       <div class="drawer-container">
         <Drawer variant="dismissible" bind:this={drawer} bind:open={drawerOpen}>
-          <Header>
-            <Title>{username}</Title>
-            <Subtitle>{email}</Subtitle>
+          <Header class="pt-4">
+            <div class="flex" style:--avatar-size={`${avatarSize}px`}>
+              <UserGraphic
+                size={avatarSize}
+                user={selectedUser}
+                badge={hasSelectedUserPrivileges ? badge : false}
+                borderSize={1}
+                borderColor="#c5c5c5"
+                class="self-center mr-3"
+                style="width: var(--avatar-size);"
+              />
+              <div class="flex flex-col">
+                <Heading
+                  mdc
+                  h="6"
+                  style="width: calc(var(--drawer-width) - var(--avatar-size) - 30px);"
+                >
+                  {username}
+                </Heading>
+                <Subtitle>{email}</Subtitle>
+              </div>
+            </div>
           </Header>
           <Content>
             <List class="mailbox-list" nonInteractive={!selectedUser}>
@@ -545,10 +577,10 @@
                 <Text>{$_('text.inbox')}</Text>
                 <BadgeGroup right>
                   {#if totalInboxes}
-                    <Badge class="medium">{totalInboxes}</Badge>
+                    <MailBadge class="medium">{totalInboxes}</MailBadge>
                   {/if}
                   {#if totalInboxes && unreadInboxes > 0}
-                    <Badge class="medium flash">{unreadInboxes}</Badge>
+                    <MailBadge class="medium flash">{unreadInboxes}</MailBadge>
                   {/if}
                 </BadgeGroup>
               </Item>
@@ -560,7 +592,7 @@
                 <Graphic class="material-icons" aria-hidden="true">send</Graphic>
                 <Text>{$_('text.sent')}</Text>
                 {#if totalSents}
-                  <Badge class="medium" right>{totalSents}</Badge>
+                  <MailBadge class="medium" right>{totalSents}</MailBadge>
                 {/if}
               </Item>
 

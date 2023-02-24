@@ -19,12 +19,12 @@
       if (id) return _infos.get(id)?.issues;
     })(user) || [];
   $: hasPrivileges = user?.role === ADMIN || user?.role === SUPERUSER;
-  $: badge = {
+  $: badge = hasPrivileges && {
     icon: (hasPrivileges && 'admin_panel_settings') || '',
     color: user?.role === SUPERUSER ? 'rgb(26, 4, 4)' : user?.role === ADMIN ? 'rgb(206, 4, 4)' : '',
     position: 'TOP_RIGHT',
     size: 'small'
-  } as Badge;
+  } as Badge || false;
   $: href = user && dynamicUrl(user.id, $page.url);
 
   function focusHandler() {}

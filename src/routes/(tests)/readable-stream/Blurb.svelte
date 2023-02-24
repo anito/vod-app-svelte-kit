@@ -1,7 +1,7 @@
 <script lang="ts">
   import { getContext } from 'svelte';
   import Section from './Section.svelte';
-  import { Container, Header } from '$lib/components';
+  import { Container, Heading } from '$lib/components';
 
   const { getProgress }: any = getContext('progress');
   const progress = getProgress();
@@ -18,7 +18,7 @@
       headerClass="progressbar-anchor"
     >
       <header class="header" slot="header">
-        <Header mdc h="5">Take control over the loading process with ReadableStream</Header>
+        <Heading mdc h="5">Take control over the loading process with ReadableStream</Heading>
       </header>
       <div class="subheader" style="font-size: .8em; margin: 20px 15px; line-height: 1em;">
         <a

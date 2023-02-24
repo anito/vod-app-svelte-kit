@@ -2,8 +2,7 @@
   // @ts-nocheck
 
   import { onMount } from 'svelte';
-  import { Container } from '$lib/components';
-  import { Header } from '$lib/components';
+  import { Container, Heading } from '$lib/components';
   import { sitename } from '$lib/stores';
 
   onMount(() => {});
@@ -15,7 +14,7 @@
 
 <Container density="sm" extended>
   <div slot="header" class="">
-    <Header>Privacy Policy</Header>
+    <Heading mdc h="5">Privacy Policy</Heading>
   </div>
   <div class="container flex flex-col self-center">
     <h2>Eligibility / Minimum Age</h2>

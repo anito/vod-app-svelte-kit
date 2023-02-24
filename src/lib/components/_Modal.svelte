@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount, setContext } from 'svelte';
   import { fade } from 'svelte/transition';
-  import { Container, Header } from '$lib/components';
+  import { Container, Heading } from '$lib/components';
   import { _ } from 'svelte-i18n';
 
   export let key = 'default-modal';
@@ -155,9 +155,9 @@
         {#if state.closeButton}<button on:click={handleClose} class="button-close" />{/if}
         <Container density="sm" borderShape="medium">
           <div slot="header">
-            <Header mdc h="5" style="text-transform: uppercase">
+            <Heading mdc h="5" style="text-transform: uppercase">
               {typeof header === 'string' ? header : translateHeader()}
-            </Header>
+            </Heading>
           </div>
           <div class="content" style={cssContent}>
             <svelte:component this={HostedComponent} {...props} />

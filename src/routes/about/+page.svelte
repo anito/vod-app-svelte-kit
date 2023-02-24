@@ -1,7 +1,7 @@
 <script>
 	// @ts-nocheck
 
-	import { Header } from '$lib/components';
+	import { Heading } from '$lib/components';
 	import { Table } from '$lib/components';
 	import { sitename } from '$lib/stores';
 </script>
@@ -10,7 +10,7 @@
 	<title>{$sitename} | About</title>
 </svelte:head>
 
-<Header h="4" mdc class="m-2 lg:m-5">About this site</Header>
+<Heading h="4" mdc class="m-2 lg:m-5">About this site</Heading>
 <div class="grid">
 	<div class="cols-3">
 		<Table />

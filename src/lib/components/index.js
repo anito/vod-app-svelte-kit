@@ -57,7 +57,7 @@ export { default as DateRangePicker } from './DateRangePicker/index.js';
 export { default as Docs } from './_Docs.svelte';
 export { default as Dropzone } from './Dropzone/index.svelte';
 export { default as GridItem } from './_GridItem.svelte';
-export { default as Header } from './_Header.svelte';
+export { default as Heading } from './_Heading.svelte';
 export { default as Icons } from './_Icons.svelte';
 export { default as LayoutGrid } from './_LayoutGrid.svelte';
 export { default as Modal } from './_Modal.svelte';

@@ -3,12 +3,11 @@
   import { goto } from '$app/navigation';
   import { getContext, onMount } from 'svelte';
   import { selection, session, sitename, currentMediaStore } from '$lib/stores';
-  import { ADMIN, proxyEvent, SUPERUSER } from '$lib/utils';
-  import Button, { Group, Label, Icon } from '@smui/button';
-  import { VideoManager, ImageManager, Container } from '$lib/components';
-  import { Header } from '$lib/components';
-  import { _ } from 'svelte-i18n';
   import Dialog, { Title, Content, Actions } from '@smui/dialog';
+  import Button, { Group, Label, Icon } from '@smui/button';
+  import { ADMIN, proxyEvent, SUPERUSER } from '$lib/utils';
+  import { VideoManager, ImageManager, Container, Heading } from '$lib/components';
+  import { _ } from 'svelte-i18n';
 
   const TABS = ['videos', 'images'];
 
@@ -114,12 +113,12 @@
     <div slot="header">
       <div class="grid grid-cols-2">
         <span class="ml-2">
-          <Header h="6" mdc>{$_('text.your-classes')}</Header>
+          <Heading h="6" mdc>{$_('text.your-classes')}</Heading>
         </span>
         <span class="justify-self-end mr-2">
-          <Header h="5" mdc>
+          <Heading h="5" mdc>
             {@html $session.user?.name || ''}
-          </Header>
+          </Heading>
         </span>
       </div>
     </div>
@@ -127,11 +126,11 @@
       <div class="grid-inner">
         <div class="media-grid non-admin">
           <div class="grid-item toolbar pl-8">
-            <Header
+            <Heading
               h="5"
               mdc
               wrapperStyle="
-            padding: 10px 10px 0;">{@html $_('text.your-videos')}</Header
+            padding: 10px 10px 0;">{@html $_('text.your-videos')}</Heading
             >
           </div>
           <div class="frame grid-item one">

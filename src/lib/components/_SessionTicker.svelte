@@ -26,13 +26,13 @@
 
   onMount(() => {
     if (fadeoutTimeMs) {
-      window.addEventListener('session:extend', forceVisible);
+      window.addEventListener('session:validate', forceVisible);
       forceVisible();
     }
 
     return () => {
       clearTimeout(timeoutId);
-      window.removeEventListener('session:extend', forceVisible);
+      window.removeEventListener('session:validate', forceVisible);
     };
   });
 

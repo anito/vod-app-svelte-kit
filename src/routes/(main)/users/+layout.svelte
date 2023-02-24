@@ -140,17 +140,14 @@
     if (res?.success) {
       users.put({ ...res.data });
       message = res.message;
-      configSnackbar(message);
-      snackbar?.forceOpen();
-      return res;
     } else {
       try {
         // validation message
-        let message = res.data.errors.token._isUnique || res.data.massage || 'Error';
-        configSnackbar(message);
+        message = res.data.message || 'Error';
       } catch (e) {}
-      snackbar?.forceOpen();
     }
+    configSnackbar(message);
+    snackbar?.forceOpen();
   }
 
   async function removeToken() {

@@ -9,7 +9,7 @@ declare global {
     'player:aborted': CustomEvent;
     'player:loadeddata': CustomEvent;
     'player:rwd': CustomEvent;
-    'session:extend': CustomEvent;
+    'session:validate': CustomEvent;
     'session:success': CustomEvent;
     'session:error': CustomEvent;
     'session:stop': CustomEvent;
