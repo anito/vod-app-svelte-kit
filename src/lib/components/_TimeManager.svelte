@@ -463,15 +463,15 @@
                   {#if hasPrivileges}
                     <IconButton
                       color="primary"
-                      class="large toggle-date-picker"
+                      class="toggle-date-picker"
                       on:click={() => toggleDatePicker(video.id)}
                     >
                       <Icon class="material-icons">
                         {isopen
                           ? video.id === selectionVideoId
                             ? 'cancel'
-                            : 'av_timer'
-                          : 'av_timer'}
+                            : 'date_range'
+                          : 'date_range'}
                       </Icon>
                     </IconButton>
                     <IconButton
