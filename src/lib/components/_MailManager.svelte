@@ -543,7 +543,7 @@
     <div class="grid-item mail">
       <div class="drawer-container">
         <Drawer variant="dismissible" bind:this={drawer} bind:open={drawerOpen}>
-          <Header class="pt-4">
+          <Header style="padding-top: 1rem;">
             <div class="flex" style:--avatar-size={`${avatarSize}px`}>
               <UserGraphic
                 size={avatarSize}
