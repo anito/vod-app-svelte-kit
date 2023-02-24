@@ -1,5 +1,3 @@
-import { get } from 'svelte/store';
-import { settings } from '$lib/stores';
 import { ADMIN, SUPERUSER, INBOX, DIFFSTORES } from './const';
 import type { Session } from '$lib/types';
 
@@ -120,7 +118,7 @@ export let convert = (() => {
   };
 })();
 
-export const proxyEvent = function (eventType: string, detail?: any, target?: Window) {
+export const dispatch = function (eventType: string, detail?: any, target?: Window) {
   eventType = typeof eventType === 'string' ? eventType : detail?.eventType;
   target = typeof window !== 'undefined' ? window : target;
   if (target) {
@@ -248,8 +246,7 @@ export function printDiff(
           }
         } else {
           if (oldValue !== newValue) {
-            info(
-              1,
+            console.log(
               '%c %s %c %s %c %s',
               `background: #d2d2d2; color: #000000; padding:4px 6px 3px 0;`,
               `DIFF ${store.toUpperCase()} DATA: ${newKey}`,
@@ -298,36 +295,8 @@ export function buildSearchParams(
   return (search && `?${search}`) || '';
 }
 
-export function log(...args: any[]) {
-  const { log } = get(settings).Console;
-  if (log) console.log(...arguments);
-}
-
-export function info(...args: any[]) {
-  if (arguments.length < 2) return;
-  const { infoLevel } = get(settings).Console;
-  args = Array.from(arguments);
-  const level = args.splice(0, 1)[0];
-  if (level <= infoLevel) console.log(...args);
-}
-
 export function stringify(params: any) {
   return JSON.stringify(params).replace(/["'\s]/g, '');
-}
-
-export function parseConfigData(data: object | null | undefined) {
-  if (data instanceof Object) {
-    const ret = Object.create({});
-    Object.entries(data).forEach((val) => {
-      let k = val[0];
-      let v = val[1];
-      v = typeof v === 'object' && !Array.isArray(v) ? parseConfigData(v) : v;
-      v = typeof v === 'boolean' ? (v ? 1 : 0) : v;
-      ret[k] = v;
-    });
-    return ret;
-  }
-  throw 'Configuration data incorrect';
 }
 
 Array.prototype.sortBy = function (/** @type {string | number} */ key) {

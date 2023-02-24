@@ -25,15 +25,13 @@
     createRedirectSlug,
     createTabSearch,
     post,
-    proxyEvent,
+    dispatch,
     svg,
     ADMIN,
     SUPERUSER,
     afterOrBeforeNavigation,
     parseLifetime,
     printDiff,
-    info,
-    parseConfigData,
     buildSearchParams
   } from '$lib/utils';
   import {
@@ -42,7 +40,6 @@
     flash,
     framework,
     salutation,
-    settings,
     session,
     theme,
     ticker,
@@ -53,7 +50,8 @@
     streams,
     selection,
     videosAll,
-    sessionCookie
+    sessionCookie,
+    config
   } from '$lib/stores';
   import { Modal, SvgIcon, DoubleBounce } from '$lib/components';
   import {
@@ -73,7 +71,6 @@
   import type { NavigationTarget } from '@sveltejs/kit';
   import type { Dropzone } from '$lib/components/Dropzone/type';
   import type { User } from '$lib/classes/repos/types';
-  import { ImagesRepo, VideosRepo } from '$lib/classes';
 
   inject({ mode: dev ? 'development' : 'production' });
 
@@ -104,10 +101,6 @@
   let isPreferredDarkMode;
   let dropzone: Dropzone;
 
-  settings.subscribe((val) => {
-    printDiff(val, { store: 'config' });
-  });
-
   setContext('progress', {
     getProgress: () =>
       derived(streams, ($streams, set) => {
@@ -128,6 +121,21 @@
         }, 0);
         set(res);
       })
+  });
+
+  setContext('logger', {
+    log: (...args: any[]) => {
+      const { log } = $page.data.config.Console;
+      if (log) console.log(...args);
+    },
+
+    info: (...args: any[]) => {
+      if (arguments.length < 2) return;
+      const { infoLevel } = $page.data.config.Console;
+      args = Array.from(arguments);
+      const level = args.splice(0, 1)[0];
+      if (level <= infoLevel) console.log(...args);
+    }
   });
 
   setContext('dropzone', {
@@ -179,6 +187,7 @@
       searchBy('/repos/videos/all', { match: data, limit })
   });
 
+  const { info }: any = getContext('logger');
   const editableSettings = new Map([
     ['Console', ['infoLevel']],
     ['Session', ['foo', 'bar']]
@@ -194,7 +203,7 @@
       `${(!isNaN(val) && (val / 1000).toHHMMSS()) || '--'}`
     );
     if (val === 0) {
-      proxyEvent('session:stop', { redirect: '/' });
+      dispatch('session:stop', { redirect: '/' });
     }
   });
 
@@ -215,7 +224,7 @@
         excludes
       );
     } else {
-      proxyEvent('session:validate');
+      dispatch('session:validate');
     }
   };
 
@@ -257,7 +266,6 @@
     root = document.documentElement;
     snackbar = getSnackbar();
 
-    loadConfig();
     initListener();
     initMediaListener();
     checkSession();
@@ -286,14 +294,14 @@
       return;
     }
 
-    if (!isExpired()) {
-      proxyEvent('session:success', { session: $session, callback: fadeIn });
-    } else {
-      proxyEvent('session:stop', {
+    if(user && isExpired()) {
+      dispatch('session:stop', {
         redirect: `/login`,
         callback: fadeIn
       });
+      return;
     }
+    dispatch('session:success', { session: $session, callback: fadeIn });
   }
 
   function fadeIn() {
@@ -374,17 +382,6 @@
     window.removeEventListener('user:save', userSaveHandler);
     window.removeEventListener('user:delete', userDeleteHandler);
     document.removeEventListener('visibilitychange', visibilityChangeHandler);
-  }
-
-  async function loadConfig() {
-    return await fetch('/config', { method: 'GET' })
-      .then(async (res) => {
-        if (res.ok) return await res.json();
-      })
-      .then((res) => {
-        settings.update(parseConfigData(res));
-      })
-      .catch((reason) => console.error('[CONFIG]', reason));
   }
 
   function removeClasses() {
@@ -601,7 +598,7 @@
     const { user, renewed, message }: { user: User; renewed: boolean; message: string } = {
       ...session
     };
-    proxyEvent('session:validate', { start: true });
+    dispatch('session:validate', { noob: true });
     flash.update({
       message,
       type: 'success',
@@ -621,29 +618,31 @@
     }
   }
 
-  async function visibilityChangeHandler() {
-    if(document.visibilityState === 'visible') {
-      proxyEvent('session:validate');
-    }
-  }
-
   async function sessionValidateHandler({ detail }: CustomEvent) {
     await tick();
-    const { lifetime } = $settings.Session;
+    const lifetime = $page.data.config.Session?.lifetime;
     const _expires = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
-    await post('/session/extend', _expires).then(async (res) => {
+    await post('/session/extend', {_expires, noob: detail?.noob }).then(async (res) => {
       if(res.success) {
         // update session ticker
         sessionCookie.update({ _expires });
-        if (detail?.start || res.uid !== $session.user?.id) {
+        if (detail?.noob || res.uid !== $session.user?.id) {
           if (!$navigating) await invalidateAll();
         }
       } else {
-          await invalidateAll();
+        if($session.user) {
+          dispatch('session:stop', { redirect: `/login?${createRedirectSlug($page.url)}` });
+        }
       }
     })
 
     detail?.callback?.();
+  }
+
+  async function visibilityChangeHandler() {
+    if(document.visibilityState === 'visible') {
+      dispatch('session:validate');
+    }
   }
 
   function sessionErrorHandler({ detail }: CustomEvent) {
@@ -683,9 +682,9 @@
   }
 
   function changedLocaleHandler({ detail }: CustomEvent) {
-    proxyEvent('session:validate');
+    dispatch('session:validate');
 
-    const { locale }: { locale: string } = { ...detail };
+    const locale = detail.locale;
     configSnackbar($_('text.language_is_now', { values: { locale } }));
     snackbar?.forceOpen();
   }
@@ -738,14 +737,15 @@
             return async ({ result }) => {
               if (actionParam === 'reload') {
                 if (result.type === 'success') {
-                  settings.update(parseConfigData(result.data));
-                  invalidate('app:session');
+                  console.log(result.data);
+                  // settings.update(parseConfigData(result.data));
+                  // invalidate('app:session');
                 }
               }
               if (actionParam === 'logout') {
                 loggedInButtonTextSecondLine = $_('text.one-moment');
                 if ((result.type = 'success')) {
-                  proxyEvent('session:stop', { redirect: '/login' });
+                  dispatch('session:stop', { redirect: '/login' });
                 }
               }
             };
@@ -764,7 +764,7 @@
             {#if hasPrivileges}
               <NavItem
                 href={`/users/${$session.user?.id}${createTabSearch(
-                  $settings.Site.defaultAdminTab
+                  $page.data.config.Site.defaultAdminTab
                 )}`}
                 title="Administration"
                 segment="users"
@@ -974,7 +974,7 @@
         VERSION: {version}
       </div>
       <ul class="level-1">
-        {#each Object.entries($settings).sort() as setting}
+        {#each Object.entries($page.data.config).sort() as setting}
           <li>
             <div class="settings-headline">{$_(setting[0])}</div>
             <span>

@@ -1,5 +1,3 @@
-import { log } from '$lib/utils';
-
 /** @type {import('@sveltejs/kit').HandleClientError} */
 export function handleError({ error, event }) {
   return {

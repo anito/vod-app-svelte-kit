@@ -19,7 +19,7 @@
     UserGraphic,
     VideoEditorList
   } from '$lib/components';
-  import { proxyEvent, filterByModelKeys, USER } from '$lib/utils';
+  import { dispatch, filterByModelKeys, USER } from '$lib/utils';
   import Button, { Icon as ButtonIcon } from '@smui/button';
   import Fab, { Label } from '@smui/fab';
   import Icon from '@smui/textfield/icon';
@@ -127,7 +127,7 @@
   users.subscribe(() => usersFoundation.set(null));
 
   async function addUser() {
-    proxyEvent('user:add');
+    dispatch('user:add');
   }
 
   async function generateToken(constrained?: boolean) {
@@ -184,7 +184,7 @@
 
   function resolveAll() {
     for (const info of userInfos) {
-      proxyEvent(info.eventType, { silent: true });
+      dispatch(info.eventType, { silent: true });
     }
   }
 
@@ -313,7 +313,7 @@
 
     if (success) {
       uploadedData = data;
-      proxyEvent('video:add', { data });
+      dispatch('video:add', { data });
       close$default();
     }
   }
@@ -597,7 +597,7 @@
             <Button
               variant="raised"
               on:click={() => {
-                proxyEvent(issue.eventType, { silent: true });
+                dispatch(issue.eventType, { silent: true });
               }}
             >
               <Label>{$_(issue.label)}</Label>

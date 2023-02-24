@@ -1,49 +1,25 @@
-<script>
+<script lang="ts">
   import { page, navigating } from '$app/stores';
+  import { getContext } from 'svelte';
   import { fly } from 'svelte/transition';
-  import { session, sitename, videos, users } from '$lib/stores';
+  import { session, videos, users } from '$lib/stores';
   import { FlexContainer } from '$lib/components';
   import VideoPlayer, { mute } from '$lib/components/Video';
-  import {
-    ADMIN,
-    SUPERUSER,
-    USER,
-    getMediaImage,
-    getMediaVideo,
-    info,
-    proxyEvent
-  } from '$lib/utils';
+  import { ADMIN, SUPERUSER, USER, getMediaImage, getMediaVideo, dispatch } from '$lib/utils';
+  import type { PageData } from './$types';
+  import type { User, Video } from '$lib/classes/repos/types';
   import { _ } from 'svelte-i18n';
 
-  /**
-   * @type {import('./$types').PageData}
-   */
-  export let data;
+  export let data: PageData;
 
-  /**
-   * @type {boolean}
-   */
-  let paused;
-  /**
-   * @type {boolean}
-   */
-  let canplay;
-  /**
-   * @type {number}
-   */
-  let playhead;
-  /**
-   * @type {ReturnType <typeof setTimeout>}
-   */
-  let timeoutId;
-  /**
-   * @type {string | undefined}
-   */
-  let poster;
-  /**
-   * @type {string | undefined}
-   */
-  let src;
+  const { info }: any = getContext('logger');
+
+  let paused: boolean;
+  let canplay: boolean;
+  let playhead: number;
+  let timeoutId: ReturnType<typeof setTimeout>;
+  let poster: string | undefined;
+  let src: string | undefined;
 
   $: if (data.video) videos.add([data.video]);
   $: user = $users.find((user) => user.id === $session.user?.id);
@@ -51,8 +27,8 @@
   $: video = $videos.find((v) => v.id === $page.params.slug);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: joinData = $users
-    .find((/** @type {import('$lib/types').User} v */ u) => u.id === user?.id)
-    ?.videos.find((/** @type {import('$lib/types').Video} v */ v) => v.id === video?.id)?._joinData;
+    .find((u: User) => u.id === user?.id)
+    ?.videos.find((v: Video) => v.id === video?.id)?._joinData;
   $: ((time) => {
     if (!paused || !canplay) return;
     let pauseTime = time;
@@ -70,8 +46,7 @@
     playhead = hasPrivileges ? video?.playhead : joinData?.playhead;
   }
 
-  /** @param {CustomEvent} event */
-  function handleEmptied(event) {
+  function handleEmptied(event: CustomEvent) {
     info(
       4,
       '%c EMPTIED   %c %s',
@@ -81,8 +56,7 @@
     );
   }
 
-  /** @param {CustomEvent} event */
-  function handleLoadStart(event) {
+  function handleLoadStart(event: CustomEvent) {
     info(
       4,
       '%c LOADSTART %c %s',
@@ -92,8 +66,7 @@
     );
   }
 
-  /** @param {CustomEvent} event */
-  function handleLoadedData(event) {
+  function handleLoadedData(event: CustomEvent) {
     info(
       4,
       '%c LOADEDDATA%c %s',
@@ -103,8 +76,7 @@
     );
   }
 
-  /** @param {CustomEvent} event */
-  function handleAborted(event) {
+  function handleAborted(event: CustomEvent) {
     info(
       4,
       '%c ABORTED   %c %s',
@@ -123,14 +95,14 @@
     if (!canplay) return;
     if (hasPrivileges) {
       if (Math.round(video?.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
-      proxyEvent('video:save', {
+      dispatch('video:save', {
         data: { id: video?.id, playhead }
       });
     } else if ($session.role === USER) {
       if (Math.round(joinData.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
       const associated = user?.videos
-        .filter(/** @param {import('$lib/types').Video} v */ (v) => v.id != video?.id)
-        .map(/** @param {import('$lib/types').Video} v */ (v) => ({ id: v.id }));
+        .filter((v: Video) => v.id != video?.id)
+        .map((v: Video) => ({ id: v.id }));
       const data = {
         id: user?.id,
         videos: [
@@ -142,13 +114,13 @@
         ]
       };
 
-      proxyEvent('user:save', { data });
+      dispatch('user:save', { data });
     }
   }
 </script>
 
 <svelte:head>
-  <title>{$sitename} | {video?.title || $_('text.no-title')}</title>
+  <title>{$page.data.config.Site?.name} | {video?.title || $_('text.no-title')}</title>
 </svelte:head>
 
 {#if video && user}

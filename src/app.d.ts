@@ -4,8 +4,8 @@
 // for information about these interfaces
 declare namespace App {
   interface Locals {
+    config: import('$lib/types').Config;
     session: import('svelte-kit-cookie-session').Session<SessionType>;
-    settings: import('$lib/types').Setting;
     usersRepo: import('$lib/classes/repos/types').Repo;
     videosRepo: import('$lib/classes/repos/types').Repo;
     imagesRepo: import('$lib/classes/repos/types').Repo;

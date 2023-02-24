@@ -2,7 +2,7 @@
   import { page } from '$app/stores';
 </script>
 
-<div class="flex flex-1 justify-center">
+<div class="flex flex-1 justify-center error-container">
   <div class="error">
     <span class="status">{$page.status}</span>
     <div class="message">
@@ -12,12 +12,18 @@
 </div>
 
 <style>
+  .error-container {
+    --ink-color: #202020;
+    width: 100vw;
+    height: 100vh;
+  }
+
   .error {
     display: flex;
     align-items: center;
     max-width: 32rem;
     margin: 0 1rem;
-    color: var(--error);
+    color: var(--ink-color);
   }
 
   .status {
@@ -29,7 +35,7 @@
   }
 
   .message {
-    border-left: 1px solid #ccc;
+    border-left: 1px solid var(--ink-color);
     padding: 0 0 0 1rem;
     margin: 0 0 0 1rem;
     min-height: 2.5rem;

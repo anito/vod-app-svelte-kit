@@ -1,6 +1,6 @@
 <script>
   import './_chip.scss';
-  import { proxyEvent } from '$lib/utils';
+  import { dispatch } from '$lib/utils';
   import { infos } from '$lib/stores';
   import Chip, { Set, LeadingIcon, Text } from '@smui/chips';
   import { _ } from 'svelte-i18n';
@@ -46,7 +46,7 @@
           color="primary"
           {chip}
           class={chip.flag}
-          on:click={() => proxyEvent(chip.eventType, { ...chip, userId: selectionUserId })}
+          on:click={() => dispatch(chip.eventType, { ...chip, userId: selectionUserId })}
         >
           <LeadingIcon class="material-icons">{getIcon(chip.flag)}</LeadingIcon>
           <Text>{$_(chip.label)}</Text>

@@ -6,7 +6,7 @@ import type { User } from '$lib/classes/repos/types';
 
 export async function load({ params, fetch, parent, setHeaders }: PageLoadEvent) {
   const parentData = await parent();
-  const { role } = parentData.session;
+  const role = parentData.session.role;
   const hasPrivileges = role === SUPERUSER || role === ADMIN;
 
   // load the user in question (from url)

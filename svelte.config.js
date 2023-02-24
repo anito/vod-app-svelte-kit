@@ -19,7 +19,7 @@ const config = {
       pollInterval: 0
     }
   },
-  preprocess: preprocess(),
+  preprocess: preprocess()
 };
 
 export default config;

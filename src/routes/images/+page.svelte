@@ -49,7 +49,7 @@
 </script>
 
 <svelte:head>
-  <title>{$sitename} | Posters</title>
+  <title>{$page.data.config.Site?.name} | Posters</title>
 </svelte:head>
 
 <Heading h="2" mdc class="m-2 lg:m-5">Posters</Heading>

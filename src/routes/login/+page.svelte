@@ -4,9 +4,9 @@
   import { goto } from '$app/navigation';
   import { onMount, getContext, tick } from 'svelte';
   import { LoginForm } from '$lib/components';
-  import { flash, session, sitename, salutation } from '$lib/stores';
+  import { flash, session, salutation } from '$lib/stores';
   import { fly } from 'svelte/transition';
-  import { processRedirect, proxyEvent } from '$lib/utils';
+  import { processRedirect, dispatch } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import type { PageData } from './$types';
 
@@ -57,15 +57,15 @@
 
   async function loginFromToken() {
     if (data.success) {
-      proxyEvent('session:success', { session: { ...data.data } });
+      dispatch('session:success', { session: { ...data.data } });
     } else {
-      proxyEvent('session:error', { ...data.data, redirect: '/login' });
+      dispatch('session:error', { ...data.data, redirect: '/login' });
     }
   }
 </script>
 
 <svelte:head>
-  <title>{$sitename} | Login</title>
+  <title>{$page.data.config.Site?.name} | Login</title>
 </svelte:head>
 
 <div in:fly={{ x: -200, duration: 800 }} out:fly={{ x: 200 }} class="flex flex-1 justify-center">

@@ -1,6 +1,7 @@
 import { derived } from 'svelte/store';
-import { session, settings } from '$lib/stores';
-import { info, parseLifetime } from '$lib/utils';
+import { page } from '$app/stores';
+import { session } from '$lib/stores';
+import { parseLifetime } from '$lib/utils';
 
 function createStore() {
   const INTERVAL = 1;
@@ -8,14 +9,14 @@ function createStore() {
   let intervalId: string | number | NodeJS.Timeout | undefined;
 
   return derived(
-    [session, settings],
-    ([$session, $settings], set) => {
+    [session, page],
+    ([$session, $page], set) => {
       if (!$session.user) return;
 
       const expires = () => {
         return {
           SESSION: new Date($session._expires).getTime(),
-          CONFIG: new Date().getTime() + parseLifetime($settings.Session.lifetime)
+          CONFIG: new Date().getTime() + parseLifetime($page.data.config.Session?.lifetime)
         };
       };
       const { CONFIG, SESSION } = expires();
@@ -34,8 +35,7 @@ function createStore() {
       return () => {
         clearInterval(intervalId);
 
-        info(
-          3,
+        console.log(
           '%c PAGE DATA RECEIVED ',
           'background: #8bc34a; color: #000000; padding:4px 6px 3px 0;'
         );

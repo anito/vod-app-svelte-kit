@@ -1,7 +1,7 @@
 import { get } from 'svelte/store';
 import * as api from '$lib/api';
 import { urls } from '$lib/stores';
-import { buildSearchParams, log } from '$lib/utils';
+import { buildSearchParams } from '$lib/utils';
 
 const MediaTypes = new Map([
   ['VIDEO', { base: 'v' }],

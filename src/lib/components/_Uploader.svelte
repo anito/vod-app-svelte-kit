@@ -8,7 +8,7 @@
   import { base, version } from '$lib/api';
   import { _ } from 'svelte-i18n';
   import type { DropzoneOptions } from '$lib/types';
-  import { proxyEvent } from '$lib/utils';
+  import { dispatch } from '$lib/utils';
 
   export { className as class };
   export let path;
@@ -87,7 +87,7 @@
 
   const init = function () {
     dropzone = this;
-    proxyEvent('dropzone:initialized', dropzone);
+    dispatch('dropzone:initialized', dropzone);
   };
 
   let options: DropzoneOptions = {

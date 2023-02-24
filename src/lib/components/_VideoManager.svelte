@@ -20,7 +20,7 @@
     posterCreatedHandler,
     posterRemoveHandler,
     posterSelectedHandler,
-    proxyEvent
+    dispatch
   } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import type Snackbar from '@smui/snackbar';
@@ -121,7 +121,7 @@
 
     if (success) {
       uploadedData = data;
-      proxyEvent('video:add', { data });
+      dispatch('video:add', { data });
       close$uploader();
     }
   }

@@ -7,7 +7,7 @@
 </script>
 
 <svelte:head>
-	<title>{$sitename} | About</title>
+	<title>{$page.data.config.Site?.name} | About</title>
 </svelte:head>
 
 <Heading h="4" mdc class="m-2 lg:m-5">About this site</Heading>

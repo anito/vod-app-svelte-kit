@@ -90,7 +90,7 @@
 </script>
 
 <svelte:head>
-  <title>{$sitename} | Video Posters</title>
+  <title>{$page.data.config.Site?.name} | Video Posters</title>
 </svelte:head>
 
 {#if $session.user}

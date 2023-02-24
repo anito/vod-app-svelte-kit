@@ -5,6 +5,8 @@ export async function load({ depends, locals }: LayoutServerLoadEvent) {
 
   return {
     session: locals.session.data,
-    ua: locals.userAgent
+    ua: locals.userAgent,
+    config: locals.config,
+    logger: locals.logger
   };
 }

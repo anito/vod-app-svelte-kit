@@ -1,5 +1,5 @@
 import { redirect } from '@sveltejs/kit';
-import { createRedirectSlug, USER } from '$lib/utils';
+import { USER } from '$lib/utils';
 import type { LayoutServerLoadEvent } from './$types';
 
 export async function load({

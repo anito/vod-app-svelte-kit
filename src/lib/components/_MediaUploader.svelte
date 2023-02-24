@@ -5,7 +5,6 @@
   import { _ } from 'svelte-i18n';
   import type { UploaderOptions } from '$lib/types';
   import type { Dropzone } from '.';
-  import { each } from 'svelte/internal';
 
   export { className as class };
   export let type = '';

@@ -9,7 +9,7 @@
   import IconButton, { Icon } from '@smui/icon-button';
   import Menu from '@smui/menu';
   import List, { Item, Separator, Text, PrimaryText, SecondaryText, Graphic } from '@smui/list';
-  import { proxyEvent } from '$lib/utils';
+  import { dispatch } from '$lib/utils';
   import { _ } from 'svelte-i18n';
 
   export let image = null;
@@ -45,7 +45,7 @@
             <Item
               ripple={false}
               class="error-on-background"
-              on:SMUI:action={() => proxyEvent('user:delete', { id: user.id })}
+              on:SMUI:action={() => dispatch('user:delete', { id: user.id })}
             >
               <Text>{$_('text.delete-user')}</Text>
             </Item>

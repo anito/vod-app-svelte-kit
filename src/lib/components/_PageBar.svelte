@@ -1,7 +1,7 @@
 <script>
   import Breadcrumb from './_Breadcrumb.svelte';
   import SessionTicker from './_SessionTicker.svelte';
-  import { proxyEvent } from '$lib/utils';
+  import { dispatch } from '$lib/utils';
 </script>
 
 <div class="pagebar">
@@ -13,7 +13,7 @@
       signalOnly
       leadTime={1}
       signalType="primary"
-      on:MDCChip:interaction={() => proxyEvent('session:validate')}
+      on:MDCChip:interaction={() => dispatch('session:validate')}
     />
   </div>
 </div>

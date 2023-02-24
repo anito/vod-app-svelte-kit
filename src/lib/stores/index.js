@@ -1,4 +1,5 @@
 export { default as avatars } from './avatarStore';
+export { default as config } from './configStore'; // derived from page
 export { default as currentImage } from './currentImageStore';
 export { default as currentVideo } from './currentVideoStore';
 export { default as currentMediaStore } from './currentMediaStore';
@@ -12,10 +13,8 @@ export { default as sents } from './sentStore';
 export { default as selection } from './selectionStore';
 export { default as sessionCookie } from './sessionCookieStore';
 export { default as session } from './sessionStore'; // derived
-export { default as settings } from './settingStore';
 export { default as salutation } from './salutationStore';
 export { default as usersFoundation } from './userFoundationStore';
-export { default as sitename } from './sitenameStore'; // derived
 export { default as streams } from './streamStore';
 export { default as templates } from './templateStore';
 export { default as theme } from './themeStore';

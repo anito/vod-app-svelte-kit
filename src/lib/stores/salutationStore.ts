@@ -1,13 +1,13 @@
+import { page } from '$app/stores';
 import { randomItem } from '$lib/utils';
 import { derived } from 'svelte/store';
-import { settings } from '.';
 
 function createStore() {
   return derived(
-    [settings],
-    ([$settings], set) => {
-      if ($settings.Site?.salutations?.length) {
-        set(randomItem($settings.Site?.salutations));
+    [page],
+    ([$page], set) => {
+      if ($page.data.config.Site?.salutations?.length) {
+        set(randomItem($page.data.config.Site?.salutations));
       }
     },
     'Hi'

@@ -6,7 +6,7 @@
   import { browser, dev } from '$app/environment';
   import { enhance } from '$app/forms';
   import { onMount } from 'svelte';
-  import { proxyEvent } from '$lib/utils';
+  import { dispatch } from '$lib/utils';
   import { flash } from '$lib/stores';
   import Button from '@smui/button';
   import TabBar from '@smui/tab-bar';
@@ -79,9 +79,9 @@
         const { success, data }: any = { ...result.data };
 
         if (success) {
-          proxyEvent('session:success', { session: { ...data } });
+          dispatch('session:success', { session: { ...data } });
         } else {
-          proxyEvent('session:error', { ...data });
+          dispatch('session:error', { ...data });
 
           /**
            * Show dialog after 3 fails

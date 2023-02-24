@@ -1,12 +1,10 @@
-<script>
-  // @ts-nocheck
-
+<script lang="ts">
   import { onMount } from 'svelte';
   import Layout from './layout.svelte';
   import { Legal } from '$lib/components';
   import { windowSize } from '$lib/utils';
 
-  let root;
+  let root: HTMLElement;
   let viewportSize;
 
   onMount(() => {

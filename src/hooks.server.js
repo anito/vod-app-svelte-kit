@@ -1,8 +1,12 @@
 import { dev } from '$app/environment';
+import * as api from '$lib/api';
 import { handleSession } from 'svelte-kit-cookie-session';
 import { UsersRepo, VideosRepo, ImagesRepo, VideosAllRepo } from '$lib/classes';
-import { redirect } from '@sveltejs/kit';
 
+async function getConfig() {
+  const res = await api.get(`settings`);
+  return res?.success ? { ...res.data } : {};
+}
 export const handle = handleSession(
   {
     secret: 'ALKDSFH§%&24LKFDJSD/&$§&ÖLDKFJSDL§&%$&=&=SLKAF',
@@ -12,6 +16,7 @@ export const handle = handleSession(
   async ({ event, resolve }) => {
     dev && (process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0');
 
+    event.locals.config = event.locals.config ?? (await getConfig());
     event.locals.usersRepo = event.locals.usersRepo ?? UsersRepo.getInstance();
     event.locals.videosRepo = event.locals.videosRepo ?? VideosRepo.getInstance();
     event.locals.imagesRepo = event.locals.imagesRepo ?? ImagesRepo.getInstance();

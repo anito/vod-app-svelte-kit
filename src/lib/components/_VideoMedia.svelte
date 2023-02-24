@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { onDestroy, onMount } from 'svelte';
+  import { onDestroy, onMount, getContext } from 'svelte';
+  import { fly } from 'svelte/transition';
   import { Media, MediaContent } from '@smui/card';
   import Textfield, { Textarea } from '@smui/textfield';
   import VideoPlayer, { mute } from '$lib/components/Video';
-  import dummyPoster from '/src/assets/images/empty-poster.jpg';
-  import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, info, proxyEvent } from '$lib/utils';
+  import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, dispatch } from '$lib/utils';
   import { session, users } from '$lib/stores';
+  import dummyPoster from '/src/assets/images/empty-poster.jpg';
   import { _ } from 'svelte-i18n';
   import type { Video } from '$lib/classes/repos/types';
-    import { fly } from 'svelte/transition';
 
   export let video: Video;
   export let emptyPoster: string = dummyPoster;
@@ -22,6 +22,8 @@
   let poster: string | undefined;
   let canplay = false;
   let paused = true;
+
+  const { info }: any = getContext('logger');
 
   $: user = $users.find((user) => user?.id === $session.user?.id);
   $: user && (canplay = false);
@@ -41,7 +43,7 @@
       let pausedTime = time;
       clearTimeout(timeoutId);
       timeoutId = setTimeout((saved) => saved === time && savePlayhead(), 200, pausedTime);
-    };
+    }
   })(playhead);
 
   onMount(() => {});
@@ -63,7 +65,7 @@
     if (!canplay) return;
     if (hasPrivileges) {
       // if (Math.round(video?.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
-      proxyEvent('video:save', {
+      dispatch('video:save', {
         data: { id: video.id, playhead }
       });
     } else {
@@ -79,7 +81,7 @@
         ]
       };
 
-      proxyEvent('user:save', {
+      dispatch('user:save', {
         data
       });
     }
@@ -128,9 +130,9 @@
   }
 
   function setFocus(node: HTMLElement) {
-    const inputEl = node.querySelector('input')
-    inputEl?.focus()
-    inputEl?.select()
+    const inputEl = node.querySelector('input');
+    inputEl?.focus();
+    inputEl?.select();
   }
 </script>
 
@@ -139,7 +141,13 @@
     {#if isEditMode}
       <div in:fly out:fly class="editor-wrapper">
         <div class="editor p-2">
-          <Textfield  class="mb-3" variant="outlined" use={[setFocus]} bind:value={title} label="Title" />
+          <Textfield
+            class="mb-3"
+            variant="outlined"
+            use={[setFocus]}
+            bind:value={title}
+            label="Title"
+          />
           <Textfield
             class="flex-1"
             textarea

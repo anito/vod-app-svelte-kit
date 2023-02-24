@@ -3,7 +3,7 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestEvent } from './$types';
 
 export async function POST({ locals, cookies }: RequestEvent) {
-  const { locale } = locals.session.data;
+  const locale = locals.session.data.locale;
   await locals.session.destroy();
   // re-save locale to session
   await locals.session.set({ locale });

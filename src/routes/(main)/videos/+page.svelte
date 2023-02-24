@@ -5,7 +5,7 @@
   import { selection, session, sitename, currentMediaStore } from '$lib/stores';
   import Dialog, { Title, Content, Actions } from '@smui/dialog';
   import Button, { Group, Label, Icon } from '@smui/button';
-  import { ADMIN, proxyEvent, SUPERUSER } from '$lib/utils';
+  import { ADMIN, dispatch, SUPERUSER } from '$lib/utils';
   import { VideoManager, ImageManager, Container, Heading } from '$lib/components';
   import { _ } from 'svelte-i18n';
 
@@ -42,7 +42,7 @@
 </script>
 
 <svelte:head>
-  <title>{$sitename} | Video-Kurse</title>
+  <title>{$page.data.config.Site?.name} | Video-Kurse</title>
 </svelte:head>
 
 {#if hasPrivileges}
@@ -147,7 +147,7 @@
   aria-describedby="info-content"
   on:SMUIDialog:closed={({ detail }) => {
     if (detail.action === 'accept') {
-      proxyEvent('media:deleteMany', {
+      dispatch('media:deleteMany', {
         endpoint: tab,
         show: true,
         oncompleted: () => selection.reset()

@@ -1,9 +1,11 @@
-<script>
+<script lang="ts">
   import './_form.scss';
+  import { page } from '$app/stores';
+  import { enhance } from '$app/forms';
+  import { getContext, onMount } from 'svelte';
   import logo from 'assets/images/logo-type-vod.svg';
   import hero from 'assets/images/logo-hero-vod.svg';
-  import { getContext, onMount } from 'svelte';
-  import { sitename, session } from '$lib/stores';
+  import { session } from '$lib/stores';
   import Layout from './layout.svelte';
   import { Blurb, Hero } from '$lib/components';
   import Textfield from '@smui/textfield';
@@ -11,9 +13,9 @@
   import Button, { Icon } from '@smui/button';
   import { ADMIN, SUPERUSER } from '$lib/utils';
   import { _ } from 'svelte-i18n';
-  import { enhance } from '$app/forms';
+    import type Snackbar from '@smui/snackbar';
 
-  const { getSnackbar, configSnackbar } = getContext('snackbar');
+  const { getSnackbar, configSnackbar }: any = getContext('snackbar');
   const void0 = void 0;
   const template = 'from-user';
 
@@ -21,14 +23,8 @@
   let email = '';
   let message = '';
   let invalidEmail = true;
-  /**
-   * @type {string | null | undefined}
-   */
-  let selected;
-  /**
-   * @type {import("@smui/snackbar")}
-   */
-  let snackbar;
+  let selected: string | null | undefined;
+  let snackbar: Snackbar;
 
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: options = [
@@ -75,7 +71,7 @@
 </script>
 
 <svelte:head>
-  <title>{$sitename} | Home</title>
+  <title>{$page.data.config.Site?.name} | Home</title>
 </svelte:head>
 
 <Layout>
@@ -106,8 +102,7 @@
         use:enhance={() => {
           return ({ result }) => {
             if (result.type === 'success') {
-              /** @type {any | undefined} */
-              const { success } = result?.data;
+              const success = result.data?.sucess;
               if (success) {
                 configSnackbar($_('text.thank-you-for-your-message'));
                 reset();

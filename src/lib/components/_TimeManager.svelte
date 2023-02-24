@@ -26,7 +26,7 @@
   import { endOfWeek, startOfYear, endOfYear, addYears, subYears, parseISO } from 'date-fns';
   import {
     toISODate,
-    proxyEvent,
+    dispatch,
     sortByEndDate,
     createRedirectSlug,
     filterByModelKeys,
@@ -248,7 +248,7 @@
     if (!videoExists) {
       await fetch(`/repos/videos?id=${id}`)
         .then(async (res) => await res.json())
-        .then((res) => proxyEvent('video:add', { data: [res] }));
+        .then((res) => dispatch('video:add', { data: [res] }));
     }
     scrollIntoView(event);
   }
@@ -292,7 +292,7 @@
       startDate = startDate;
       if (res) handleError(res);
     };
-    proxyEvent('user:save', { data, onsuccess, onerror });
+    dispatch('user:save', { data, onsuccess, onerror });
   }
 
   function timeRemaining(video: Video) {
@@ -320,7 +320,7 @@
     const onerror = (res: any) => {
       if (res) handleError(res);
     };
-    proxyEvent('user:save', { data, onsuccess, onerror });
+    dispatch('user:save', { data, onsuccess, onerror });
   }
 
   function handleSuccess(res: { data: User; message: any }, msg: string) {
@@ -657,7 +657,7 @@
             {#each userInfos as issue}
               <Button
                 variant="raised"
-                on:click={() => proxyEvent(issue.eventType, { silent: true })}
+                on:click={() => dispatch(issue.eventType, { silent: true })}
               >
                 <Label>{$_(issue.label)}</Label>
               </Button>

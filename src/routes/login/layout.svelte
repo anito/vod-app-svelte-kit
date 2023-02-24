@@ -1,6 +1,4 @@
-<script>
-  // @ts-nocheck
-
+<script lan="ts">
   import { GridItem, LayoutGrid } from '$lib/components';
 
   export let stretch = false;

@@ -4,12 +4,8 @@
 @import '@material/drawer';
 @import '@material/list';
 
-.dark .drawer-container {
+.drawer-container {
   --drawer-width: 280px;
-  .mdc-drawer {
-    @include item-activated-text-ink-color(on-primary);
-    @include item-icon-ink-color(on-primary);
-  }
 }
 .drawer-container {
   .mdc-drawer {
@@ -24,5 +20,11 @@
       @include container-fill-color(surface);
       @include ink-color(primary);
     }
+  }
+}
+.dark .drawer-container {
+  .mdc-drawer {
+    @include item-activated-text-ink-color(on-primary);
+    @include item-icon-ink-color(on-primary);
   }
 }

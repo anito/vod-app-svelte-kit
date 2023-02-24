@@ -20,7 +20,7 @@ function getInitialLocale() {
 }
 
 export async function load({ data, fetch }: LayoutLoadEvent) {
-  const { session } = data;
+  const { session, config, logger } = data;
   const initialLocale = session.locale || getInitialLocale();
   init({
     fallbackLocale,
@@ -44,6 +44,9 @@ export async function load({ data, fetch }: LayoutLoadEvent) {
   await waitLocale();
   return {
     session: { ...session, locale },
-    ua
+    ua,
+    config,
+    logger,
+    fromToken: false
   };
 }

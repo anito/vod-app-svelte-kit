@@ -50,7 +50,7 @@
     Actions,
     InitialFocus
   } from '@smui/dialog';
-  import { INBOX, SENT, ADMIN, SUPERUSER, log, DESC, ASC } from '$lib/utils';
+  import { INBOX, SENT, ADMIN, SUPERUSER, DESC, ASC } from '$lib/utils';
   import type { Mail, Badge } from '$lib/types';
   import type Snackbar from '@smui/snackbar';
 
@@ -90,13 +90,13 @@
   const mailboxes = [INBOX, SENT];
   const currentStore: any = writable();
   const avatarSize = 40;
+  const drawerOpenOnMount = true;
 
   let sort = 'DESC';
   let drawer;
 
   let snackbar: Snackbar;
   let drawerOpen: boolean;
-  let drawerOpenOnMount = true;
   let selection: Mail;
   let unreadInboxes = 0;
   let canSave: boolean;

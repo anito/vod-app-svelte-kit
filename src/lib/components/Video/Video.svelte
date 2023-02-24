@@ -1,9 +1,8 @@
 <script lang="ts">
   import type { Video } from '$lib/classes/repos/types';
-  import { log } from '$lib/utils';
   import { tick, createEventDispatcher } from 'svelte';
-  import { _ } from 'svelte-i18n';
   import { Ui, mute } from '.';
+  import { _ } from 'svelte-i18n';
 
   const dispatch = createEventDispatcher();
   const scrubStart = { x: 0, y: 0, playhead: 0 };

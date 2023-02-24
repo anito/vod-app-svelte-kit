@@ -9,7 +9,7 @@
 </script>
 
 <svelte:head>
-  <title>{$sitename} | Privacy Policy</title>
+  <title>{$page.data.config.Site?.name} | Privacy Policy</title>
 </svelte:head>
 
 <Container density="sm" extended>

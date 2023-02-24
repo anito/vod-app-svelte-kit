@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-  import { createEventDispatcher, onMount } from 'svelte/internal';
+  import { createEventDispatcher, onMount } from 'svelte';
   import Span from './_Span.svelte';
   import { Meta } from '@smui/list';
 

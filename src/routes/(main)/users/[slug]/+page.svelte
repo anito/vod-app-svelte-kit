@@ -5,8 +5,8 @@
   import { onMount, setContext } from 'svelte';
   import { UserManager, TimeManager, MailManager, UserGraphic } from '$lib/components';
   import Button, { Group, Label, Icon } from '@smui/button';
-  import { users, usersFoundation, sitename, session, settings } from '$lib/stores';
-  import { proxyEvent, INBOX, ADMIN, SUPERUSER, TABS, log, createTabSearch } from '$lib/utils';
+  import { users, usersFoundation, session } from '$lib/stores';
+  import { dispatch, INBOX, ADMIN, SUPERUSER, TABS, createTabSearch } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import type { PageData } from './$types';
   import type { User } from '$lib/classes/repos/types';
@@ -58,7 +58,7 @@
   onMount(() => {
     window.addEventListener('user:add', addUserHandler);
     if(!tab) {
-      const search = createTabSearch($settings.Site.defaultAdminTab)
+      const search = createTabSearch($page.data.config.Site.defaultAdminTab)
       setTimeout(() => goto($page.url.pathname+search), 200)
     }
     return () => {
@@ -83,12 +83,12 @@
       .then((res) => {
         return res;
       })
-      .catch((reason) => log(reason));
+      .catch((reason) => console.log(reason));
   }
 </script>
 
 <svelte:head>
-  <title>{$sitename} | {$_('text.user')} {username}</title>
+  <title>{$page.data.config.Site?.name} | {$_('text.user')} {username}</title>
 </svelte:head>
 
 <div class="flex flex-1 user-grid inner-grid {tab}">
@@ -121,7 +121,7 @@
     </Group>
     <div class="flex mr-2" class:hidden>
       <Button
-        on:click={() => proxyEvent('info:token:redirect')}
+        on:click={() => dispatch('info:token:redirect')}
         disabled={!magicLink}
         variant="unelevated"
       >

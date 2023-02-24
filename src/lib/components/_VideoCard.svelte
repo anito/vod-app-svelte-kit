@@ -11,7 +11,7 @@
     DateTimeFormatOptions,
     DEFAULT_LOCALE,
     LOCALESTORE,
-    proxyEvent,
+    dispatch,
     SUPERUSER
   } from '$lib/utils';
   import { VideoMedia, MediaUploader, Paginator } from '$lib/components';
@@ -58,7 +58,7 @@
   $: selected = !!$selection.find((id: string) => id === video.id) || false;
 
   function save() {
-    proxyEvent('video:save', {
+    dispatch('video:save', {
       data: { id: video.id, title, description },
       show: true
     });
@@ -78,7 +78,7 @@
   }
 
   function remove() {
-    proxyEvent('media:delete', {
+    dispatch('media:delete', {
       id: video.id,
       type: 'videos',
       show: true,

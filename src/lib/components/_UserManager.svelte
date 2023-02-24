@@ -10,8 +10,8 @@
   import { goto, invalidate, invalidateAll } from '$app/navigation';
   import { getContext, onMount } from 'svelte';
   import { fly } from 'svelte/transition';
-  import { session, settings, users } from '$lib/stores';
-  import { proxyEvent, ADMIN, SUPERUSER, post, parseLifetime } from '$lib/utils';
+  import { session, users } from '$lib/stores';
+  import { dispatch, ADMIN, SUPERUSER, post, parseLifetime } from '$lib/utils';
   import Textfield from '@smui/textfield';
   import TextfieldIcon from '@smui/textfield/icon';
   import HelperText from '@smui/textfield/helper-text';
@@ -373,7 +373,7 @@
               users.put(user);
               if($session.user?.id === user.id) {
                 const { id, name, email, avatar, jwt, role, groups }: User = user;
-                const lifetime = parseLifetime($settings?.Session.lifetime);
+                const lifetime = parseLifetime($page.data.config?.Session.lifetime);
                 const _expires = new Date(Date.now() + lifetime).toISOString();
                 await post('/session', {
                   user: { id, name, email, jwt, avatar }, role, groups, _expires
@@ -668,7 +668,7 @@
                         variant="raised"
                         disabled={isProtected}
                         on:click={() =>
-                          !isProtected && proxyEvent('info:token:generate', { open: !!jwt })}
+                          !isProtected && dispatch('info:token:generate', { open: !!jwt })}
                       >
                         <Icon class="material-icons">link</Icon>
                         <Label class="token-button-label">
@@ -680,7 +680,7 @@
                         label={$_('text.can-not-remove-admin-token')}
                         variant="raised"
                         on:click={() =>
-                          !isProtected && proxyEvent('info:token:remove', { open: true })}
+                          !isProtected && dispatch('info:token:remove', { open: true })}
                       >
                         <Icon class="material-icons">link_off</Icon>
                         <Label class="token-button-label">{$_('text.remove-token')}</Label>
@@ -702,7 +702,7 @@
                           <Button
                             disabled={isProtected || hidden}
                             class="action-magic-link"
-                            on:click={() => !isProtected && proxyEvent('info:token:redirect')}
+                            on:click={() => !isProtected && dispatch('info:token:redirect')}
                             variant="outlined"
                           >
                             <Icon class="material-icons">link</Icon>
@@ -777,7 +777,7 @@
                     <a
                       href="."
                       class="item"
-                      on:click|preventDefault={() => proxyEvent('info:open:help-dialog')}
+                      on:click|preventDefault={() => dispatch('info:open:help-dialog')}
                     >
                       {$_('summary.howDoesItWork.text')}
                     </a>

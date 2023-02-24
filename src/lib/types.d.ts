@@ -155,13 +155,13 @@ export interface Inbox<InboxType = Record<string, any>> {
   id: string;
 }
 
-export interface Setting<SettingType = Record<string, any>> {
-  Session: SessionSettings;
-  Site: SiteSettings;
-  Console: ConsoleSettings;
+export interface Config<ConfigType> {
+  Session: SessionConfig;
+  Site: SiteConfig;
+  Console: ConsoleConfig;
 }
 
-export interface SiteSettings<SiteSettingsType = Record<string, any>> {
+export interface SiteConfig<SiteConfigType = Record<string, any>> {
   defaultAdminTab: string;
   salutation: string;
   salutations: Array;
@@ -170,13 +170,13 @@ export interface SiteSettings<SiteSettingsType = Record<string, any>> {
   logo: string;
 }
 
-export interface ConsoleSettings<ConsoleSettingsType = Record<string, any>> {
+export interface ConsoleConfig<ConsoleConfigType = Record<string, any>> {
   infoLevel: number;
   log: number;
 }
 
-export interface SessionSettings<SessionSettingsType = Record<string, any>> {
-  lifetime: number;
+export interface SessionConfig<SessionConfigType = Record<string, any>> {
+  lifetime: string;
 }
 
 export interface Error<ErrorType = Record<string, any>> {
@@ -221,12 +221,3 @@ export interface DropzoneOptions<DropzoneOptionsType = Record<string, any>> {
   previewsContainer?: string;
   init?: () => void;
 }
-
-// export interface Session<SessionType = Record<string, any>> {
-//   data: SessionType;
-//   expires: Date | undefined;
-//   update: (updateFn: (data: SessionType) => Partial<SessionType> | Promise<Partial<SessionType>>) => Promise<SessionType>;
-//   set: (data?: SessionType) => Promise<SessionType>;
-//   refresh: (expires_in_days?: number) => Promise<boolean>;
-//   destroy: () => Promise<boolean>;
-// }

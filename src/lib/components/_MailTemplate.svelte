@@ -3,10 +3,11 @@
 
   import './_textfield.scss';
   import './_button.scss';
-  import { settings, salutation } from '$lib/stores';
+  import { salutation } from '$lib/stores';
   import Button, { Label } from '@smui/button';
   import Textfield from '@smui/textfield';
   import { _ } from 'svelte-i18n';
+    import { page } from '$app/stores';
 
   export let template = {};
   export let working = {};
@@ -19,8 +20,8 @@
   let stringified;
   let _template = {};
 
-  $: logo = $settings.Site?.['logo'];
-  $: sitename = $settings.Site?.['name'];
+  $: logo = $page.data.config.Site?.logo;
+  $: sitename = $page.data.config.Site?.name;
   $: template.id !== id && createWorkingCopy();
   $: canSave = JSON.stringify(working) !== stringified;
 
