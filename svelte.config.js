@@ -14,6 +14,7 @@ const config = {
     alias: {
       assets: 'src/assets'
     },
+    csrf: false,
     version: {
       name: pkg.version,
       pollInterval: 0

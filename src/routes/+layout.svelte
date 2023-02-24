@@ -130,9 +130,9 @@
     },
 
     info: (...args: any[]) => {
-      if (arguments.length < 2) return;
+      if (args.length < 2) return;
       const { infoLevel } = $page.data.config.Console;
-      args = Array.from(arguments);
+      args = Array.from(args);
       const level = args.splice(0, 1)[0];
       if (level <= infoLevel) console.log(...args);
     }
