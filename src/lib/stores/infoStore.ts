@@ -31,17 +31,6 @@ function createStore() {
     },
     {
       key: {
-        id: 'token-expired',
-        eventType: 'info:token:generate',
-        label: 'text.regenerate-expired-token',
-        reason: 'text.token-expired',
-        flag: 'flash',
-        type: 'issue'
-      },
-      test: (user: User) => isExpired(user.expires || new Date(1970))
-    },
-    {
-      key: {
         id: 'user-inactive',
         eventType: 'info:user:activate',
         label: 'text.activate-user',
@@ -50,6 +39,17 @@ function createStore() {
         type: 'issue'
       },
       test: (user: User) => !user.active
+    },
+    {
+      key: {
+        id: 'token-expired',
+        eventType: 'info:token:generate',
+        label: 'text.regenerate-expired-token',
+        reason: 'text.token-expired',
+        flag: 'flash',
+        type: 'issue'
+      },
+      test: (user: User) => user.expires && isExpired(user.expires)
     },
     {
       key: {

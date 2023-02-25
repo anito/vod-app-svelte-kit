@@ -4,8 +4,6 @@ function createStore() {
   const { subscribe, update, set } = writable(new Map(), () => {});
 
   const cache = (items: Map<any, any>, item: { id: any; params: string | number; url: any }) => {
-    console.log(item);
-
     const value =
       (items.has(item?.id) && items.get(item.id)) || Object.create({ [item.params]: item.url });
     !value[item.params] && (value[item.params] = item.url);
