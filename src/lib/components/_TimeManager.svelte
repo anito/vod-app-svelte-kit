@@ -307,7 +307,7 @@
       throw 'No id specified when trying to remove a video';
     }
     const idx = userVideos.findIndex(
-      (/** @type {{ id: string | null; }} */ itm) => itm.id === schedulingVideoId
+      (itm) => itm.id === schedulingVideoId
     );
     const _userVideos = [...userVideos.slice(0, idx), ...userVideos.slice(idx + 1)];
     const ids = _userVideos.map((v) => v.id);

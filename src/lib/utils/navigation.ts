@@ -80,19 +80,15 @@ export const afterOrBeforeNavigation = (
         try {
           if (key === FROM_SEARCH_KEY && from && (found = fn(from))) {
             ret.set(key, found);
-            // throw BreakExecption;
           }
           if (key === TO_SEARCH_KEY && to && (found = fn(to))) {
             ret.set(key, found);
-            // throw BreakExecption;
           }
           if (key === FROM_PATH_KEY && from && (found = fn(from))) {
             ret.set(key, found);
-            // throw BreakExecption;
           }
           if (key === TO_PATH_KEY && to && (found = fn(to))) {
             ret.set(key, found);
-            // throw BreakExecption;
           }
         } catch (error) {}
       });

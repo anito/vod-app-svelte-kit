@@ -14,13 +14,18 @@ async function uri(id: any, token: any, type: string, { ...options }) {
   const searchParam = buildSearchParams(options);
   const url = `u/${base}/${id}${searchParam}`;
 
-  return await api.get(`${url}`, { token }).then((res) => {
-    if (res?.success) {
-      return res.data;
-    } else {
-      throw `The Uri method was unable to fetch a mediafile type: ${type || 'unknown'}, id: ${id}`;
-    }
-  });
+  return await api
+    .get(`${url}`, { token })
+    .then((res) => {
+      if (res?.success) {
+        return res.data;
+      } else {
+        throw `The Uri method was unable to fetch a mediafile type: ${
+          type || 'unknown'
+        }, id: ${id}`;
+      }
+    })
+    .catch((reason) => console.log(reason));
 }
 
 async function getMedia(
