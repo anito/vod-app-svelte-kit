@@ -1,9 +1,7 @@
-<script>
-  // @ts-nocheck
-
+<script lang="ts">
+  import { page } from '$app/stores';
   import { onMount } from 'svelte';
   import { Container, Heading } from '$lib/components';
-  import { sitename } from '$lib/stores';
 
   onMount(() => {});
 </script>

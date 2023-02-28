@@ -13,7 +13,6 @@
     session,
     templates,
     users,
-    salutation,
     usersFoundation
   } from '$lib/stores';
   import {
@@ -241,7 +240,7 @@
       .post('sents/add/', {
         data: {
           user: { email: selectedUser?.email },
-          salutation: $salutation,
+          salutation: $session.salutation,
           ...working,
           template: {
             slug: currentTemplate?.slug,
@@ -352,7 +351,7 @@
     const { name, slug }: { name: string; slug: string } = generateName();
     const items: any[] = [];
     let template = $templates[0];
-    template.items.map((item: { field: { id: any } }) => {
+    template.items?.map((item: { field: { id: any } }) => {
       items.push({
         content: '',
         field_id: item.field.id,
@@ -374,7 +373,7 @@
 
   async function saveTemplate() {
     let items: { id: any; content: any }[] = [];
-    currentTemplate?.items.map(
+    currentTemplate?.items?.map(
       (item: { field: { name: string | number }; content: any; id: any }) => {
         let content = working?.[item.field.name];
         item.content = content;
@@ -399,7 +398,7 @@
   async function duplicateTemplate() {
     let { name, slug } = generateName(currentTemplate?.name);
     let items: any[] = [];
-    currentTemplate?.items.map((item) => {
+    currentTemplate?.items?.map((item) => {
       items.push({
         content: working?.[item.field.name],
         field_id: item.field.id,
@@ -426,7 +425,7 @@
     });
     configSnackbar(res.message);
     if (res?.success) {
-      if (currentTemplate) templates.del(currentTemplate?.id);
+      if (currentTemplate?.id) templates.del(currentTemplate?.id);
     }
     snackbar?.forceOpen();
   }

@@ -1,7 +1,6 @@
-import { redirect } from '@sveltejs/kit';
 import type { PageLoadEvent } from './$types';
 
-export async function load({ parent, fetch, url }: PageLoadEvent) {
+export async function load({ fetch, url }: PageLoadEvent) {
   /**
    * Handles a token login
    */

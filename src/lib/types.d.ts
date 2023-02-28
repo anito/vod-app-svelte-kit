@@ -117,11 +117,21 @@ export interface Mail<MailType = Record<string, any>> {
 }
 
 export interface MailTemplate<TemplateType = Record<string, any>> {
-  id: string;
+  id?: string;
   name?: string;
   slug?: string;
   protected?: boolean;
-  items: any[];
+  subject?: string;
+  ['before-content']?: string;
+  ['content']?: string;
+  ['after-content']?: string;
+  ['before-sitename']?: string;
+  ['after-sitename']?: string;
+  ['before-footer']?: string;
+  ['footer']?: string;
+  ['after-footer']?: string;
+  data?: any;
+  items?: any[];
 }
 
 export interface Framework<FrameworkType = Record<string, any>> {
@@ -144,6 +154,7 @@ export interface Session<SessionType = Record<string, any>> {
   renewed?: boolean;
   code?: number;
   locale?: string;
+  salutation?: string;
   _expires?: Date | any;
 }
 

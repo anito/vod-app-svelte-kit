@@ -2,9 +2,10 @@
   import './_tabs.scss';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
+  import { browser } from '$app/environment';
   import { onMount, getContext } from 'svelte';
   import { LoginForm } from '$lib/components';
-  import { flash, session, salutation } from '$lib/stores';
+  import { flash, session } from '$lib/stores';
   import { fly } from 'svelte/transition';
   import { processRedirect, dispatch } from '$lib/utils';
   import { _ } from 'svelte-i18n';
@@ -28,10 +29,10 @@
    * For on visabilitychange and if
    * a new session should have restarted
    */
-  $: $session.user && introendHandler();
+  $: browser && $session.user && introendHandler();
   $: ({ message, type } = $session.user
     ? {
-        message: `${$salutation}, ${$session.user.name}`,
+        message: `${$session.salutation}, ${$session.user.name}`,
         type: 'success'
       }
     : $page.url.searchParams.has('token')

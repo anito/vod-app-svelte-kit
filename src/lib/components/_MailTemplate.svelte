@@ -1,24 +1,24 @@
-<script>
-  // @ts-nocheck
-
+<script lang="ts">
   import './_textfield.scss';
   import './_button.scss';
-  import { salutation } from '$lib/stores';
+  import { page } from '$app/stores';
+  import { session } from '$lib/stores';
   import Button, { Label } from '@smui/button';
   import Textfield from '@smui/textfield';
   import { _ } from 'svelte-i18n';
-    import { page } from '$app/stores';
+  import type { User } from '$lib/classes/repos/types';
+  import type { MailTemplate } from '$lib/types';
 
-  export let template = {};
-  export let working = {};
-  export let user;
+  export let template: MailTemplate = {};
+  export let working: MailTemplate = {};
+  export let user: User;
   export let canSave;
 
   const minWidth = 100;
 
-  let id;
-  let stringified;
-  let _template = {};
+  let id: string | undefined;
+  let stringified: string;
+  let _template: any = {};
 
   $: logo = $page.data.config.Site?.logo;
   $: sitename = $page.data.config.Site?.name;
@@ -26,7 +26,7 @@
   $: canSave = JSON.stringify(working) !== stringified;
 
   export function createWorkingCopy() {
-    template.items.map((item) => {
+    template.items?.map((item) => {
       _template[item.field.name] = item.content;
     });
     id = template.id;
@@ -58,7 +58,7 @@
   </div>
   <div class="grid content main-grid-area">
     <div class="starter grid-item">
-      <span>{$salutation}, {user?.name}!</span>
+      <span>{$session.salutation}, {user?.name}!</span>
     </div>
     <div class="before-content grid-item">
       <Textfield

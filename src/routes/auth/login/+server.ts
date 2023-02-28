@@ -1,6 +1,6 @@
 import * as api from '$lib/api';
 import { error, json } from '@sveltejs/kit';
-import { parseLifetime } from '$lib/utils';
+import { parseLifetime, randomItem } from '$lib/utils';
 import type { User } from '$lib/classes/repos/types';
 import type { RequestEvent } from './$types';
 
@@ -20,12 +20,17 @@ export async function GET({ locals, url }: RequestEvent) {
 
   if (token) {
     return await api.get(`${type}?token=${token}&locale=${locale}`).then(async (res) => {
-      const lifetime = Number(locals.config.Session?.lifetime);
       await locals.session.destroy();
       if (res.success) {
+        const salutations = locals.config.Site?.salutations;
         const lifetime = Number(locals.config.Session?.lifetime);
         const _expires = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
-        await locals.session.set({ ...parseData(res.data), _expires, locale });
+        await locals.session.set({
+          ...parseData(res.data),
+          _expires,
+          salutation: randomItem(salutations),
+          locale
+        });
       }
       return json(res);
     });
@@ -43,9 +48,15 @@ export async function POST({ locals, request, url }: RequestEvent) {
     .then(async (res) => {
       await locals.session.destroy();
       if (res.success) {
+        const salutations = locals.config.Site?.salutations;
         const lifetime = Number(locals.config.Session?.lifetime);
         const _expires = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
-        await locals.session.set({ ...parseData(res.data), _expires, locale });
+        await locals.session.set({
+          ...parseData(res.data),
+          _expires,
+          salutation: randomItem(salutations),
+          locale
+        });
       }
       return json(res);
     });

@@ -1,10 +1,10 @@
-import type { MailTemplate } from '$lib/types';
 import { writable } from 'svelte/store';
+import type { MailTemplate } from '$lib/types';
 
 function createStore() {
   const { subscribe, update, set } = writable([] as MailTemplate[]);
 
-  let findIndexById = (id: string, items: MailTemplate[]) => {
+  let findIndexById = (id: string | undefined, items: MailTemplate[]) => {
     return items.findIndex((itm: any) => itm.id == id);
   };
 
@@ -18,7 +18,7 @@ function createStore() {
         const index = findIndexById(val.id, items);
         return [...items.slice(0, index), { ...items[index], ...val }, ...items.slice(index + 1)];
       }),
-    del: (id: string) => update((items) => items.filter((item: { id: string }) => item.id !== id)),
+    del: (id: string) => update((items) => items.filter((item) => item.id !== id)),
     set
   };
 }

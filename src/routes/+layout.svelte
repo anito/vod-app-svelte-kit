@@ -39,7 +39,6 @@
     fabs,
     flash,
     framework,
-    salutation,
     session,
     theme,
     ticker,
@@ -209,8 +208,6 @@
   const { getSegment }: any = getContext('segment');
   const segment = getSegment();
 
-  // salutation.update(randomItem(data.config?.Site?.salutations) || 'Hi');
-
   const afterNavigationCallback = async (
     excludes: globalThis.Map<any, any>,
     { from, to }: { from: NavigationTarget | null; to: NavigationTarget | null }
@@ -251,7 +248,7 @@
   $: root && ((isPrivileged) => root.classList.toggle('admin', isPrivileged))(hasPrivileges);
   $: root && root.classList.toggle('home', $segment === 'home');
   $: if ($session.user) {
-    loggedInButtonTextSecondLine = `${$salutation}, ${$session.user.name}`;
+    loggedInButtonTextSecondLine = `${$session.salutation}, ${$session.user.name}`;
   }
   $: searchParamsString = $page.url.searchParams.toString();
   $: search = searchParamsString && `?${searchParamsString}`;
@@ -617,7 +614,7 @@
   async function sessionValidateHandler({ detail }: CustomEvent) {
     const lifetime = $page.data.config.Session?.lifetime;
     const _expires = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
-    await post('/session/extend', { _expires, noob: detail?.noob }).then(async (res) => {
+    await post('/session/extend', { _expires }).then(async (res) => {
       if (res.success) {
         // Update session ticker
         sessionCookie.update({ _expires });

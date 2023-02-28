@@ -28,7 +28,8 @@ function createStore() {
       fromToken: false,
       success: false,
       renewed: false,
-      locale: ''
+      locale: '',
+      salutation: 'Hi'
     } // initial value
   );
 }

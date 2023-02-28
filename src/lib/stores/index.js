@@ -13,7 +13,6 @@ export { default as sents } from './sentStore';
 export { default as selection } from './selectionStore';
 export { default as sessionCookie } from './sessionCookieStore';
 export { default as session } from './sessionStore'; // derived
-export { default as salutation } from './salutationStore';
 export { default as usersFoundation } from './userFoundationStore';
 export { default as streams } from './streamStore';
 export { default as templates } from './templateStore';
