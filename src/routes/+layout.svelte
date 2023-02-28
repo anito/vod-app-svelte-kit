@@ -50,8 +50,7 @@
     streams,
     selection,
     videosAll,
-    sessionCookie,
-    config
+    sessionCookie
   } from '$lib/stores';
   import { Modal, SvgIcon, DoubleBounce } from '$lib/components';
   import {
@@ -233,7 +232,7 @@
     {
       to_searches: [],
       from_pathnames: [],
-      to_pathnames: ['/auth?/logout', '/auth?/login', '/login', '/logout', '/config']
+      to_pathnames: ['/auth?/logout', '/auth?/login', '/login', '/logout']
     },
     afterNavigationCallback
   );
@@ -271,7 +270,6 @@
     checkSession();
     initClasses();
     initStyles();
-    startPolling();
     printCopyright();
 
     isPreferredDarkMode = !window.matchMedia('(prefers-color-scheme: light)').matches;
@@ -294,14 +292,14 @@
       return;
     }
 
-    if(user && isExpired()) {
+    if (user && isExpired()) {
       dispatch('session:stop', {
         redirect: `/login`,
         callback: fadeIn
       });
       return;
     }
-    dispatch('session:success', { session: $session, callback: fadeIn });
+    dispatch('session:success', { data: $session, callback: fadeIn });
   }
 
   function fadeIn() {
@@ -366,8 +364,6 @@
       }
     };
   }
-
-  function startPolling() {}
 
   function removeListener() {
     window.removeEventListener('dropzone:initialized', dropzoneInitializedHandler);
@@ -594,15 +590,15 @@
   function handleSnackbarClosed() {}
 
   async function sessionSuccessHandler({ detail }: CustomEvent) {
-    const { session, callback } = detail;
+    const { data, callback } = detail;
     const { user, renewed, message }: { user: User; renewed: boolean; message: string } = {
-      ...session
+      ...data
     };
-    dispatch('session:validate', { noob: true });
+    await invalidateAll()
     flash.update({
       message,
       type: 'success',
-      timeout: 2000
+      timeout: 1500
     });
 
     renewed && localStorage.setItem('renewed', 'true');
@@ -619,30 +615,21 @@
   }
 
   async function sessionValidateHandler({ detail }: CustomEvent) {
-    await tick();
     const lifetime = $page.data.config.Session?.lifetime;
     const _expires = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
-    await post('/session/extend', {_expires, noob: detail?.noob }).then(async (res) => {
-      if(res.success) {
-        // update session ticker
+    await post('/session/extend', { _expires, noob: detail?.noob }).then(async (res) => {
+      if (res.success) {
+        // Update session ticker
         sessionCookie.update({ _expires });
-        if (detail?.noob || res.uid !== $session.user?.id) {
-          if (!$navigating) await invalidateAll();
-        }
+        await invalidate('app:session');
       } else {
-        if($session.user) {
+        if ($session.user) {
           dispatch('session:stop', { redirect: `/login?${createRedirectSlug($page.url)}` });
         }
       }
-    })
+    });
 
     detail?.callback?.();
-  }
-
-  async function visibilityChangeHandler() {
-    if(document.visibilityState === 'visible') {
-      dispatch('session:validate');
-    }
   }
 
   function sessionErrorHandler({ detail }: CustomEvent) {
@@ -679,6 +666,12 @@
       snackbar?.forceOpen();
       return res;
     });
+  }
+
+  function visibilityChangeHandler() {
+    if (document.visibilityState === 'visible') {
+      dispatch('session:validate');
+    }
   }
 
   function changedLocaleHandler({ detail }: CustomEvent) {

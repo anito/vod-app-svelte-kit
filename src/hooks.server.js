@@ -7,6 +7,7 @@ async function getConfig() {
   const res = await api.get(`settings`);
   return res?.success ? { ...res.data } : {};
 }
+
 export const handle = handleSession(
   {
     secret: 'ALKDSFH§%&24LKFDJSD/&$§&ÖLDKFJSDL§&%$&=&=SLKAF',

@@ -61,7 +61,7 @@
           }).then(async (res) => {
             const { success, data } = { ...res };
             if (success) {
-              dispatch('session:success', { session: { ...data } });
+              dispatch('session:success', { data });
             } else {
               dispatch('session:error', { ...data, redirect: '/login' });
             }

@@ -4,12 +4,9 @@ import { parseLifetime } from '$lib/utils';
 import type { User } from '$lib/classes/repos/types';
 import type { RequestEvent } from './$types';
 
-const parseData = (data: any, lifetime: number) => {
+const parseData = (data: any) => {
   const { id, name, email, avatar, jwt, role, groups }: User = { ...data.user, ...data };
-  lifetime = parseLifetime(lifetime);
-  const _expires = new Date(Date.now() + lifetime).toISOString();
   return {
-    _expires,
     user: { id, name, email, jwt, avatar },
     role,
     groups
@@ -26,7 +23,9 @@ export async function GET({ locals, url }: RequestEvent) {
       const lifetime = Number(locals.config.Session?.lifetime);
       await locals.session.destroy();
       if (res.success) {
-        await locals.session.set({ ...parseData(res.data, lifetime), locale });
+        const lifetime = Number(locals.config.Session?.lifetime);
+        const _expires = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
+        await locals.session.set({ ...parseData(res.data), _expires, locale });
       }
       return json(res);
     });
@@ -45,7 +44,8 @@ export async function POST({ locals, request, url }: RequestEvent) {
       await locals.session.destroy();
       if (res.success) {
         const lifetime = Number(locals.config.Session?.lifetime);
-        await locals.session.set({ ...parseData(res.data, lifetime), locale });
+        const _expires = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
+        await locals.session.set({ ...parseData(res.data), _expires, locale });
       }
       return json(res);
     });

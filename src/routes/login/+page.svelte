@@ -22,8 +22,15 @@
     setTimeout(() => resolve(1), 500);
   });
 
+  let introended = false;
+
   $: $mounted && init();
   $: loggedin = !!$session.user;
+  /**
+   * For on visabilitychange and
+   * a session should have restarted
+   */
+  $: $session.user && introended && introendHandler();
   $: ({ message, type } = $session.user
     ? {
         message: `${$salutation}, ${$session.user.name}`,
@@ -49,15 +56,16 @@
   }
 
   async function introendHandler() {
+    introended = true;
     if ($session.user) {
-      const redirect = processRedirect($page.url, $session);
-      setTimeout(() => goto(redirect), 1000);
+      const location = processRedirect($page.url, $session);
+      setTimeout(() => goto(location), 1000);
     }
   }
 
   async function loginFromToken() {
     if (data.success) {
-      dispatch('session:success', { session: { ...data.data } });
+      dispatch('session:success', { data: data.data });
     } else {
       dispatch('session:error', { ...data.data, redirect: '/login' });
     }

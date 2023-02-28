@@ -44,7 +44,7 @@
       const { success, data }: any = { ...res };
       if (success) {
         googleUser.set(data.user);
-        dispatch('session:success', { session: { ...data } });
+        dispatch('session:success', { data });
       } else {
         dispatch('session:error', { ...data, redirect: '/login' });
       }

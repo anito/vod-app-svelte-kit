@@ -79,7 +79,7 @@
         const { success, data }: any = { ...result.data };
 
         if (success) {
-          dispatch('session:success', { session: { ...data } });
+          dispatch('session:success', { data });
         } else {
           dispatch('session:error', { ...data });
 
