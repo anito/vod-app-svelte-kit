@@ -2,7 +2,7 @@
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { getContext, onMount } from 'svelte';
-  import { selection, session, sitename, currentMediaStore } from '$lib/stores';
+  import { selection, session, currentMediaStore } from '$lib/stores';
   import Dialog, { Title, Content, Actions } from '@smui/dialog';
   import Button, { Group, Label, Icon } from '@smui/button';
   import { ADMIN, dispatch, SUPERUSER } from '$lib/utils';

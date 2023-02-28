@@ -9,8 +9,7 @@ export async function load({ params, fetch, parent, setHeaders }: PageLoadEvent)
   const role = parentData.session.role;
   const hasPrivileges = role === SUPERUSER || role === ADMIN;
 
-  // load the user in question (from url)
-  // if user rights permit
+  // If user rights permit fetch unknown user
   if (hasPrivileges) {
     const $users = get(users);
     const id = params.slug;

@@ -6,7 +6,7 @@ export async function load({ parent }: PageLoadEvent) {
   const { session, config } = await parent();
   if (session.user) {
     const search = createTabSearch(config.Site.defaultAdminTab);
-    throw redirect(301, `/users/${session.user.id}${search}`);
+    throw redirect(301, `/users/${session.user.id + search}`);
   }
   return {};
 }

@@ -2,7 +2,7 @@
   import './_tabs.scss';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { onMount, getContext, tick } from 'svelte';
+  import { onMount, getContext } from 'svelte';
   import { LoginForm } from '$lib/components';
   import { flash, session, salutation } from '$lib/stores';
   import { fly } from 'svelte/transition';
@@ -22,15 +22,13 @@
     setTimeout(() => resolve(1), 500);
   });
 
-  let introended = false;
-
   $: $mounted && init();
   $: loggedin = !!$session.user;
   /**
-   * For on visabilitychange and
-   * a session should have restarted
+   * For on visabilitychange and if
+   * a new session should have restarted
    */
-  $: $session.user && introended && introendHandler();
+  $: $session.user && introendHandler();
   $: ({ message, type } = $session.user
     ? {
         message: `${$salutation}, ${$session.user.name}`,
@@ -56,10 +54,11 @@
   }
 
   async function introendHandler() {
-    introended = true;
     if ($session.user) {
       const location = processRedirect($page.url, $session);
-      setTimeout(() => goto(location), 1000);
+      setTimeout(() => {
+        if ($page.url.pathname.startsWith('/login')) goto(location);
+      }, 1000);
     }
   }
 
