@@ -83,8 +83,8 @@
   <title>{$page.data.config.Site?.name} | Login</title>
 </svelte:head>
 
-{#await promise then p}
-  {#if p}
+{#await promise then resolved}
+  {#if resolved}
     <div
       in:fly={{ x: -200, duration: 800 }}
       out:fly={{ x: 200 }}
