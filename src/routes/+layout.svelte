@@ -228,10 +228,10 @@
     afterNavigate,
     {
       to_searches: [],
-      from_pathnames: [],
+      from_pathnames: ['/logout'],
       to_pathnames: ['/auth?/logout', '/auth?/login', '/login', '/logout']
-    },
-    afterNavigationCallback
+    }
+    // afterNavigationCallback
   );
 
   beforeNavigate(({ cancel }) => {
@@ -591,7 +591,7 @@
     const { user, renewed, message }: { user: User; renewed: boolean; message: string } = {
       ...data
     };
-    await invalidateAll()
+    await invalidateAll();
     flash.update({
       message,
       type: 'success',
@@ -639,25 +639,28 @@
   }
 
   async function sessionStopHandler({ detail }: CustomEvent) {
-    await killSession();
-    const path = detail?.redirect || '/';
-    const search = createRedirectSlug($page.url);
+    await killSession(detail?.options);
+    const redirect = detail?.redirect;
+    if (redirect) {
+      const search = createRedirectSlug($page.url);
 
-    await invalidate('app:session');
-    setTimeout(
-      async () =>
-        await goto(`${path}?${search}`).then(() => {
-          const callback = detail?.callback;
-          if (typeof callback === 'function') {
-            callback();
-          }
-        }),
-      300
-    );
+      setTimeout(
+        async () =>
+          await goto(`${redirect}?${search}`).then(() => {
+            const callback = detail?.callback;
+            if (typeof callback === 'function') {
+              callback();
+            }
+          }),
+        300
+      );
+    }
+
+    await invalidateAll();
   }
 
-  async function killSession() {
-    return await post('/auth/logout').then((res) => {
+  async function killSession(options = {}) {
+    return await post('/auth/logout', { ...options }).then((res) => {
       snackbarMessage = res?.message || res.data?.message;
       configSnackbar(snackbarMessage);
       snackbar?.forceOpen();

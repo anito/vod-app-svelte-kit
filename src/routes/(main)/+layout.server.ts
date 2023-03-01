@@ -2,11 +2,8 @@ import { redirect } from '@sveltejs/kit';
 import { USER } from '$lib/utils';
 import type { LayoutServerLoadEvent } from './$types';
 
-export async function load({
-  depends,
-  locals: { session, usersRepo, videosRepo, videosAllRepo, imagesRepo },
-  cookies
-}: LayoutServerLoadEvent) {
+export async function load({ depends, locals, cookies }: LayoutServerLoadEvent) {
+  const { session, usersRepo, videosRepo, videosAllRepo, imagesRepo } = locals;
   if (!session.data.user) {
     throw redirect(301, '/');
   }

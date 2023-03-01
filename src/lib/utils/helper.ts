@@ -62,7 +62,7 @@ export function processRedirect(url: URL, session: Session) {
     return redirect;
   } else {
     const hasPrivileges = session?.role === ADMIN || session?.role === SUPERUSER;
-    const path = hasPrivileges ? '/users' : '/videos';
+    const path = session.user ? (hasPrivileges ? '/users/?foo' : '/videos') : '/';
     return path.concat(parseRedirect(url.searchParams));
   }
 }

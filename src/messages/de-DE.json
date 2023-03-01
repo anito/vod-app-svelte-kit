@@ -256,7 +256,9 @@
     "confirm-deletion": "Die ausgewählten Dateien werden permanent entfernt. Möchten Siei fortfahren?",
     "images": "Poster",
     "clear": "Aufheben",
-    "make-default": "Auswahl merken"
+    "make-default": "Auswahl merken",
+    "logging-out": "Melde {name} ab",
+    "logged-out": "{name} wurde ausgelogged"
   },
   "summary": {
     "copy-link": {

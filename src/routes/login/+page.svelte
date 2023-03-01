@@ -2,8 +2,7 @@
   import './_tabs.scss';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { browser } from '$app/environment';
-  import { onMount, getContext } from 'svelte';
+  import { getContext, onMount } from 'svelte';
   import { LoginForm } from '$lib/components';
   import { flash, session } from '$lib/stores';
   import { fly } from 'svelte/transition';
@@ -19,17 +18,10 @@
   };
   const textTransitionParams = { ...transitionParams, x: -80 };
   const { mounted }: any = getContext('mounted');
-  const promise = new Promise((resolve) => {
-    setTimeout(() => resolve(1), 500);
-  });
+  let promise: Promise<any>;
 
   $: $mounted && init();
   $: loggedin = !!$session.user;
-  /**
-   * For on visabilitychange and
-   * a new session should have been restarted (from another tab)
-   */
-  $: browser && $session.user && introendHandler();
   $: ({ message, type } = $session.user
     ? {
         message: `${$session.salutation}, ${$session.user.name}`,
@@ -45,22 +37,36 @@
         type: 'success'
       });
 
-  onMount(() => {});
+  onMount(() => {
+    document.addEventListener('visibilitychange', onVisibilitychangeHandler);
+
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibilitychangeHandler)
+    }
+  });
+
+  function onVisibilitychangeHandler() {
+    introendHandler()
+  }
 
   // listeners are ready
-  function init() {
-    if (data.fromToken) {
-      fromToken();
+  async function init() {
+    if (data.hotswap) {
+      return await goto(data.hotswap);
     }
+    if (data.fromToken) {
+      return (promise = new Promise((resolve) => resolve(fromToken())));
+    }
+    promise = new Promise((resolve) => resolve(1));
   }
 
   async function introendHandler() {
-    if ($session.user) {
-      const location = processRedirect($page.url, $session);
-      setTimeout(() => {
+    setTimeout(() => {
+      if ($session.user) {
+        const location = processRedirect($page.url, $session);
         if ($page.url.pathname.startsWith('/login')) goto(location);
-      }, 2000);
-    }
+      }
+    }, 2500);
   }
 
   async function fromToken() {
@@ -69,6 +75,7 @@
     } else {
       dispatch('session:error', { ...data.data, redirect: '/login' });
     }
+    return true;
   }
 </script>
 
@@ -76,35 +83,43 @@
   <title>{$page.data.config.Site?.name} | Login</title>
 </svelte:head>
 
-<div in:fly={{ x: -200, duration: 800 }} out:fly={{ x: 200 }} class="flex flex-1 justify-center">
-  <div class="wrapper">
-    <div style="margin-top: calc(100vh / 6);">
-      <div class="flyer flex">
-        {#if $flash.message}
-          <div
-            class="flex justify-center items-center message {$flash.type}"
-            in:fly={textTransitionParams}
-          >
-            <h5 class="m-2 mdc-typography--headline5 headline">
-              {$flash.message}
-            </h5>
+{#await promise then p}
+  {#if p}
+    <div
+      in:fly={{ x: -200, duration: 800 }}
+      out:fly={{ x: 200 }}
+      class="flex flex-1 justify-center"
+    >
+      <div class="wrapper">
+        <div style="margin-top: calc(100vh / 6);">
+          <div class="flyer flex">
+            {#if $flash.message}
+              <div
+                class="flex justify-center items-center message {$flash.type}"
+                in:fly={textTransitionParams}
+              >
+                <h5 class="m-2 mdc-typography--headline5 headline">
+                  {$flash.message}
+                </h5>
+              </div>
+            {:else}
+              <div
+                class="flex justify-center items-center message {type}"
+                in:fly={textTransitionParams}
+                on:introend={introendHandler}
+              >
+                <h5 class="m-2 mdc-typography--headline5 headline">{message}</h5>
+              </div>
+            {/if}
           </div>
-        {:else}
-          <div
-            class="flex justify-center items-center message {type}"
-            in:fly={textTransitionParams}
-            on:introend={introendHandler}
-          >
-            <h5 class="m-2 mdc-typography--headline5 headline">{message}</h5>
+          <div class="login-form loggedin" class:loggedin>
+            <LoginForm />
           </div>
-        {/if}
-      </div>
-      <div class="login-form loggedin" class:loggedin>
-        <LoginForm />
+        </div>
       </div>
     </div>
-  </div>
-</div>
+  {/if}
+{/await}
 
 <style>
   .login-form {

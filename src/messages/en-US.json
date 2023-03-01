@@ -256,7 +256,9 @@
     "confirm-deletion": "You are about to permanently delete selected media files. Do you want to proceed? ",
     "images": "Images",
     "clear": "Clear",
-    "make-default": "Remember selection"
+    "make-default": "Remember selection",
+    "logging-out": "Logging out {name}",
+    "logged-out": "{name} has been logged out"
   },
   "summary": {
     "copy-link": {
