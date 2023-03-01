@@ -66,7 +66,7 @@
         const location = processRedirect($page.url, $session);
         if ($page.url.pathname.startsWith('/login')) goto(location);
       }
-    }, 2500);
+    }, 1000);
   }
 
   async function fromToken() {

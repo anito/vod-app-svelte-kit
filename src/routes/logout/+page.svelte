@@ -19,7 +19,7 @@
   });
 </script>
 
-<div class="flex flex-1 justify-center container">
+<div class="flex flex-1 justify-center outer">
   <div class="wrapper">
     <div class="message">
       {#if !$session.user}
@@ -35,7 +35,7 @@
 </div>
 
 <style>
-  .container {
+  .outer {
     width: 100vw;
     height: 100vh;
   }
@@ -50,8 +50,8 @@
 
   .message {
     border-left: 1px solid var(--ink-color);
-    padding: 0 0 0 1rem;
-    margin: 0 0 0 1rem;
+    padding: 0;
+    margin: 0;
     min-height: 2.5rem;
     display: flex;
     align-items: center;
