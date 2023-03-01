@@ -29,8 +29,7 @@ export async function GET({ locals, url }: RequestEvent) {
           ...parseData(res.data),
           _expires,
           salutation: randomItem(salutations),
-          locale,
-          pending: false
+          locale
         });
       }
       return json(res);

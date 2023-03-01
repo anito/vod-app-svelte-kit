@@ -8,7 +8,7 @@
   export { wrapperClassName as wrapperClass };
   export let style = '';
   export let wrapperStyle = '';
-  export let inkColor = '' as 'on-primary' | 'on-secondary' | '';
+  export let inkColor = '' as 'on-primary' | 'on-secondary' | 'on-surface';
 
   let className = '';
   let wrapperClassName = '';
