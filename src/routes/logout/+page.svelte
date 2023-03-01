@@ -27,12 +27,19 @@
 
 <div class="flex flex-1 justify-center outer">
   <div class="wrapper">
-    {#if !$session.user}
-      <div in:fly={{ x: -30, duration: 300, opacity: 0 }}>
+    {#if $session.user}
+      <div in:fly={{ x: -30, duration: 300 }}>
+        <Heading mdc h="6" inkColor={'on-surface'}>
+          {$_('text.one-moment')}
+        </Heading>
+      </div>
+    {:else}
+      <div in:fly={{ x: -30, duration: 300 }}>
         <Heading mdc h="6" inkColor={'on-surface'}>
           {$_('text.logged-out', { values: { name } })}
         </Heading>
       </div>
+
     {/if}
   </div>
 </div>

@@ -41,23 +41,24 @@
     document.addEventListener('visibilitychange', onVisibilitychangeHandler);
 
     return () => {
-      document.removeEventListener('visibilitychange', onVisibilitychangeHandler)
-    }
+      document.removeEventListener('visibilitychange', onVisibilitychangeHandler);
+    };
   });
 
   function onVisibilitychangeHandler() {
-    introendHandler()
+    introendHandler();
   }
 
   // listeners are ready
   async function init() {
     if (data.hotswap) {
-      return await goto(data.hotswap);
+      setTimeout(async () => await goto(data.hotswap), 200);
+      return;
     }
     if (data.fromToken) {
-      return (promise = new Promise((resolve) => resolve(fromToken())));
+      fromToken()
     }
-    promise = new Promise((resolve) => resolve(1));
+    promise = new Promise((resolve) => setTimeout(() => resolve(1), 500));
   }
 
   async function introendHandler() {
