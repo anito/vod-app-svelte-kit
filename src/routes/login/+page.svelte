@@ -26,8 +26,8 @@
   $: $mounted && init();
   $: loggedin = !!$session.user;
   /**
-   * For on visabilitychange and if
-   * a new session should have restarted
+   * For on visabilitychange and
+   * a new session should have been restarted (from another tab)
    */
   $: browser && $session.user && introendHandler();
   $: ({ message, type } = $session.user
@@ -50,7 +50,7 @@
   // listeners are ready
   function init() {
     if (data.fromToken) {
-      loginFromToken();
+      fromToken();
     }
   }
 
@@ -59,11 +59,11 @@
       const location = processRedirect($page.url, $session);
       setTimeout(() => {
         if ($page.url.pathname.startsWith('/login')) goto(location);
-      }, 1000);
+      }, 2000);
     }
   }
 
-  async function loginFromToken() {
+  async function fromToken() {
     if (data.success) {
       dispatch('session:success', { data: data.data });
     } else {
@@ -77,35 +77,33 @@
 </svelte:head>
 
 <div in:fly={{ x: -200, duration: 800 }} out:fly={{ x: 200 }} class="flex flex-1 justify-center">
-  {#await promise then}
-    <div class="wrapper">
-      <div style="margin-top: calc(100vh / 6);">
-        <div class="flyer flex">
-          {#if $flash.message}
-            <div
-              class="flex justify-center items-center message {$flash.type}"
-              in:fly={textTransitionParams}
-            >
-              <h5 class="m-2 mdc-typography--headline5 headline">
-                {$flash.message}
-              </h5>
-            </div>
-          {:else}
-            <div
-              class="flex justify-center items-center message {type}"
-              in:fly={textTransitionParams}
-              on:introend={introendHandler}
-            >
-              <h5 class="m-2 mdc-typography--headline5 headline">{message}</h5>
-            </div>
-          {/if}
-        </div>
-        <div class="login-form loggedin" class:loggedin>
-          <LoginForm />
-        </div>
+  <div class="wrapper">
+    <div style="margin-top: calc(100vh / 6);">
+      <div class="flyer flex">
+        {#if $flash.message}
+          <div
+            class="flex justify-center items-center message {$flash.type}"
+            in:fly={textTransitionParams}
+          >
+            <h5 class="m-2 mdc-typography--headline5 headline">
+              {$flash.message}
+            </h5>
+          </div>
+        {:else}
+          <div
+            class="flex justify-center items-center message {type}"
+            in:fly={textTransitionParams}
+            on:introend={introendHandler}
+          >
+            <h5 class="m-2 mdc-typography--headline5 headline">{message}</h5>
+          </div>
+        {/if}
+      </div>
+      <div class="login-form loggedin" class:loggedin>
+        <LoginForm />
       </div>
     </div>
-  {/await}
+  </div>
 </div>
 
 <style>

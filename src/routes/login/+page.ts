@@ -2,7 +2,7 @@ import type { PageLoadEvent } from './$types';
 
 export async function load({ fetch, url }: PageLoadEvent) {
   /**
-   * Handles a token login
+   * Handles token login
    */
   const token = url.searchParams.get('token');
   if (token) {
