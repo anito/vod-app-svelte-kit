@@ -5,8 +5,8 @@
   import { onMount } from 'svelte';
   import { dispatch } from '$lib/utils';
   import { session } from '$lib/stores';
+  import { Heading } from '$lib/components';
   import { _ } from 'svelte-i18n';
-    import { Heading } from '$lib/components';
 
   let name = '';
 
