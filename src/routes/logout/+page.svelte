@@ -1,14 +1,13 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { goto, invalidate, invalidateAll } from '$app/navigation';
+  import { goto } from '$app/navigation';
+  import { fly } from 'svelte/transition';
   import { onMount } from 'svelte';
+  import { dispatch } from '$lib/utils';
   import { session } from '$lib/stores';
   import { _ } from 'svelte-i18n';
-  import type { PageData } from './$types';
-  import { fly } from 'svelte/transition';
-  import { dispatch } from '$lib/utils';
+    import { Heading } from '$lib/components';
 
-  export let data: PageData;
   let name = '';
 
   $: hotswap = $page.url.searchParams.get('hotswap') || '/login';
@@ -20,40 +19,33 @@
   });
 </script>
 
-<div class="flex flex-1 justify-center error-container">
-  <div class="error">
-    <span class="status" />
+<div class="flex flex-1 justify-center container">
+  <div class="wrapper">
     <div class="message">
-      {#if $session.user}
-        <h1>{$_('text.logging-out', { values: { name } })}</h1>
-      {:else}
-        <h1 in:fly={{ x: 200, duration: 800 }}>{$_('text.logged-out', { values: { name } })}</h1>
+      {#if !$session.user}
+        <div in:fly={{ y: -30, duration: 300, opacity: 0 }}>
+          <Heading mdc h="5">
+            {$_('text.logged-out', { values: { name } })}
+          </Heading>
+        </div>
+          
       {/if}
     </div>
   </div>
 </div>
 
 <style>
-  .error-container {
-    --ink-color: #202020;
+  .container {
     width: 100vw;
     height: 100vh;
   }
 
-  .error {
+  .wrapper {
     display: flex;
     align-items: center;
     max-width: 32rem;
     margin: 0 1rem;
     color: var(--ink-color);
-  }
-
-  .status {
-    font-weight: 200;
-    font-size: 3rem;
-    line-height: 1;
-    position: relative;
-    top: -0.05rem;
   }
 
   .message {
@@ -63,11 +55,5 @@
     min-height: 2.5rem;
     display: flex;
     align-items: center;
-  }
-
-  .message h1 {
-    font-weight: 400;
-    font-size: 1em;
-    margin: 0;
   }
 </style>
