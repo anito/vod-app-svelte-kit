@@ -35,15 +35,9 @@ export function formatter(d: number) {
 export function createRedirectSlug(url: URL, searchMap = new Map()) {
   let searchParams: URLSearchParams;
   let path;
-  const ignored = ['login'];
+  const ignored = ['login', 'redirect'];
 
-  if (typeof url === 'string') {
-    let urlString = url;
-    url = new URL(urlString, window.location.hostname);
-    searchParams = new URLSearchParams(urlString);
-  } else {
-    searchParams = url.searchParams;
-  }
+  searchParams = url.searchParams;
   searchMap.forEach((val, name) => {
     !searchParams.has(name) && searchParams.append(name, val);
   });
@@ -62,7 +56,7 @@ export function processRedirect(url: URL, session: Session) {
     return redirect;
   } else {
     const hasPrivileges = session?.role === ADMIN || session?.role === SUPERUSER;
-    const path = session.user ? (hasPrivileges ? '/users/?foo' : '/videos') : '/';
+    const path = session.user ? (hasPrivileges ? '/users' : '/videos') : '/';
     return path.concat(parseRedirect(url.searchParams));
   }
 }

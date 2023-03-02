@@ -28,7 +28,7 @@
     <a href="/">home</a>
     {#each bits as bit}
       <span class="separator">/</span>
-      <a data-sveltekit-prefetch href={`/${bit}`}>{bit}</a>
+      <a data-sveltekit-preload-data href={`/${bit}`}>{bit}</a>
     {/each}
     <span class="separator">/</span>
     <span class="label">{slug}</span>

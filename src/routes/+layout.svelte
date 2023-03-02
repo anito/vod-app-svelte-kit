@@ -22,7 +22,6 @@
   import Snackbar, { Actions as SnackbarActions } from '@smui/snackbar';
   import { Label } from '@smui/common';
   import {
-    createRedirectSlug,
     createTabSearch,
     post,
     dispatch,
@@ -201,7 +200,7 @@
       `${(!isNaN(val) && (val / 1000).toHHMMSS()) || '--'}`
     );
     if (val === 0) {
-      dispatch('session:stop', { redirect: '/' });
+      dispatch('session:stop');
     }
   });
 
@@ -291,7 +290,6 @@
 
     if (user && isExpired()) {
       dispatch('session:stop', {
-        redirect: `/login`,
         callback: fadeIn
       });
       return;
@@ -308,6 +306,7 @@
   }
 
   function initListener() {
+    removeListener();
     window.addEventListener('dropzone:initialized', dropzoneInitializedHandler);
     window.addEventListener('session:success', sessionSuccessHandler);
     window.addEventListener('session:error', sessionErrorHandler);
@@ -614,18 +613,13 @@
   async function sessionValidateHandler({ detail }: CustomEvent) {
     const lifetime = $page.data.config.Session?.lifetime;
     const _expires = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
-    await post('/session/extend', { _expires }).then(async (res) => {
-      if (res.success) {
-        // Update session ticker
-        sessionCookie.update({ _expires });
-        await invalidate('app:session');
-      } else {
+    await post('/session/validate', { _expires }).then(async (res) => {
+      if (res.success === false) {
         if ($session.user) {
-          dispatch('session:stop', { redirect: `/login?${createRedirectSlug($page.url)}` });
+          dispatch('session:stop');
         }
       }
     });
-
     detail?.callback?.();
   }
 
@@ -640,23 +634,8 @@
 
   async function sessionStopHandler({ detail }: CustomEvent) {
     await killSession(detail?.options);
-    const redirect = detail?.redirect;
-    if (redirect) {
-      const search = createRedirectSlug($page.url);
-
-      setTimeout(
-        async () =>
-          await goto(`${redirect}?${search}`).then(() => {
-            const callback = detail?.callback;
-            if (typeof callback === 'function') {
-              callback();
-            }
-          }),
-        300
-      );
-    }
-
     await invalidateAll();
+    detail?.callback?.();
   }
 
   async function killSession(options = {}) {
@@ -692,7 +671,7 @@
   }
 
   function makeEditable(event: MouseEvent, id: string) {
-    // Todo
+    // TODO
   }
 
   function printCopyright(color?: string) {
@@ -730,14 +709,13 @@
             return async ({ result }) => {
               if (actionParam === 'reload') {
                 if (result.type === 'success') {
-                  // TODO
                   invalidate('app:session');
                 }
               }
               if (actionParam === 'logout') {
                 loggedInButtonTextSecondLine = $_('text.one-moment');
                 if ((result.type = 'success')) {
-                  dispatch('session:stop', { redirect: '/login' });
+                  dispatch('session:stop');
                 }
               }
             };
@@ -818,13 +796,13 @@
               </NavItem>
             {:else}
               <NavItem title="Avatar" class="hide-if-mobile">
-                <UserGraphic
-                  borderSize={3}
-                  borderColor="--primary"
-                  dense
-                  size={40}
-                  fallback={person}
-                />
+                <span style="min-width: 40px;">
+                  <SvgIcon
+                    name="person"
+                    size={40}
+                    style="border: 1px solid; border-radius: 99px;"
+                  />
+                </span>
               </NavItem>
             {/if}
 
@@ -896,16 +874,16 @@
                     ripple={false}
                   >
                     <span style="display: flex; flex: 1 0 100%; align-items: center">
-                      <SvgIcon name={colorSchema?.requested.icon} class="mr-2" fillColor="none" />
+                      <SvgIcon name={colorSchema?.requested.icon} class="mr-2" />
                       <Label>{colorSchema?.requested.label}</Label>
                     </span>
                   </Button>
                 </Item>
                 <Separator />
-                {#if $session.role === SUPERUSER}
+                {#if $session.role !== SUPERUSER}
                   <Item class="justify-start">
                     <Button formaction="/config?/reload" class="link-button" ripple={false}>
-                      <SvgIcon name="sync" class="mr-2" fillColor="none" />
+                      <SvgIcon name="sync" class="mr-2" />
                       <Label>Reload Config</Label>
                     </Button>
                   </Item>
@@ -919,7 +897,7 @@
                     class="link-button"
                     ripple={false}
                   >
-                    <SvgIcon name="settings" class="mr-2" fillColor="none" />
+                    <SvgIcon name="settings" class="mr-2" />
                     <Label style="">Settings</Label>
                   </Button>
                 </Item>

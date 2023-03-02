@@ -5,7 +5,7 @@
   import type { Avatar, Image, Video } from '$lib/classes/repos/types';
 
   export let fallback = `https://placehold.co/100x100?text=`;
-  export let media: Video | Image | Avatar;
+  export let media: Video | Image | Avatar | null;
 
   const settings = {
     width: 400,

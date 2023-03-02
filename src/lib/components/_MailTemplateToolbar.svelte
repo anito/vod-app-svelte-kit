@@ -1,11 +1,9 @@
-<script>
-	// @ts-nocheck
-
+<script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import { Group } from '@smui/button';
 	import IconButton from '@smui/icon-button';
 
-	export let canSave;
+	export let canSave: boolean;
 
 	const dispatch = createEventDispatcher();
 </script>
@@ -15,7 +13,6 @@
 		<IconButton
 			class="material-icons"
 			on:click={() => dispatch('template:save')}
-			variant="outlined"
 			color="primary"
 			disabled={!canSave}
 		>
@@ -24,7 +21,6 @@
 		<IconButton
 			class="material-icons"
 			on:click={() => dispatch('template:reset')}
-			variant="outlined"
 			color="primary"
 			disabled={!canSave}
 		>

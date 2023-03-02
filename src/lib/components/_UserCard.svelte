@@ -1,8 +1,4 @@
-<script>
-  // @ts-nocheck
-
-  import * as api from '$lib/api';
-
+<script lang="ts">
   import MediaImagePreview from './_MediaImagePreview.svelte';
   import Card, { Content, PrimaryAction, Actions, ActionButtons, ActionIcons } from '@smui/card';
   import Button, { Label } from '@smui/button';
@@ -11,13 +7,14 @@
   import List, { Item, Separator, Text, PrimaryText, SecondaryText, Graphic } from '@smui/list';
   import { dispatch } from '$lib/utils';
   import { _ } from 'svelte-i18n';
+  import type { Avatar, Image, User, Video } from '$lib/classes/repos/types';
 
-  export let image = null;
-  export let user;
+  export let image: Video | Image | Avatar | null = null;
+  export let user: User;
   export { className as class };
 
   let className = '';
-  let userMenu;
+  let userMenu: Menu;
 </script>
 
 <Card class="flex content-between {className}" style="width: var(--poster-w);">

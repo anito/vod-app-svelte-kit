@@ -1,6 +1,4 @@
-<script>
-  // @ts-nocheck
-
+<script lang="ts">
   import './_fbButton.scss';
   import transparent from 'assets/images/transparent.png';
   import Button from '@smui/button';
@@ -10,17 +8,27 @@
   import { flash } from '$lib/stores';
   import { _ } from 'svelte-i18n';
 
-  /** @type {string}*/
-  export let appId;
+  type FbResponse = {
+    authResponse: AuthResponse;
+    status: string;
+  }
+  type AuthResponse = {
+    userID: string;
+  }
+  type FbUser = {
+    id: string;
+    email: string;
+    name: string;
+  }
 
-  /** @type {any | null} */
-  let authResponse = null;
-  /** @type {any | null} */
-  let src = null;
-  let status = '';
-  let id = '';
-  let name = '';
-  let email = '';
+  export let appId: string;
+
+  let authResponse: AuthResponse | null = null;
+  let src: null | string = null;
+  let status: string | null = '';
+  let id: string | null = '';
+  let name: string | null = '';
+  let email: string | null = '';
 
   $: connected = status === 'connected';
 
@@ -29,28 +37,28 @@
   });
 
   const init = () => {
-    FB.init({
+    window.FB.init({
       appId,
       cookie: true, // Enable cookies to allow the server to access the session.
       xfbml: true, // Parse social plugins on this webpage.
       version: 'v14.0'
     });
 
-    FB.getLoginStatus((response) => {
+    window.FB.getLoginStatus((response: FbResponse) => {
       statusChangeHandler(response);
     });
   };
 
-  function statusChangeHandler(response) {
+  function statusChangeHandler(response: FbResponse) {
     ({ authResponse, status } = response);
     authResponse && fbAPI({ ...authResponse, redirect: connected });
   }
 
-  function fbAPI({ userID, redirect }) {
-    FB.api(`/${userID}?fields=id,name,email`, async (user) => {
+  function fbAPI({ userID, redirect }: any) {
+    window.FB.api(`/${userID}?fields=id,name,email`, async (user: FbUser) => {
       ({ email, id, name } = user); // User attributes
-      FB.api(`/${userID}/picture`, 'GET', { type: 'large', redirect: false }, async ({ data }) => {
-        ({ url: src } = { ...data }); // The src attribute for login buttton
+      window.FB.api(`/${userID}/picture`, 'GET', { type: 'large', redirect: false }, async ({ data }: {data: {url: string}}) => {
+        ({ url: src } = data); // The src attribute for login buttton
         if (id && redirect) {
           flash.update({ message: $_('text.authenticating') });
           await post(`/auth/login?type=facebook`, {
@@ -59,7 +67,7 @@
             name,
             picture: { ...data }
           }).then(async (res) => {
-            const { success, data } = { ...res };
+            const { success, data }: any = { ...res };
             if (success) {
               dispatch('session:success', { data });
             } else {
@@ -71,7 +79,7 @@
     });
   }
 
-  function handleLogin(e) {
+  function handleLogin(e: CustomEvent) {
     e.preventDefault();
     e.stopPropagation();
     fbAPI({ ...authResponse, redirect: true });
@@ -79,8 +87,8 @@
   }
 
   function login() {
-    FB.login(
-      (response) => {
+    window.FB.login(
+      (response: FbResponse) => {
         ({ authResponse, status } = { ...response });
         fbAPI({ ...authResponse, redirect: true });
       },
@@ -89,7 +97,7 @@
   }
 
   function logout() {
-    FB.logout((response) => {
+    window.FB.logout((response: FbResponse) => {
       ({ status } = { ...response });
       src = null;
       name = null;
@@ -104,7 +112,7 @@
       ? 'connected'
       : 'flex-row-reverse'}"
     style="height: 41px;"
-    on:click={(e) => handleLogin(e)}
+    on:click={handleLogin}
   >
     <div class="flex justify-center" style="width: 80%;">
       {#if connected}

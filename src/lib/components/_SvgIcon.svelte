@@ -7,7 +7,8 @@
 -->
 <script lang="ts">
   export let name: string = '';
-  export let fillColor = 'none';
+  export let fillColor = 'currentColor';
+  export let strokeWidth = '0';
   export let size = 20;
   export let style = '';
   export { className as class };
@@ -16,7 +17,7 @@
 </script>
 
 {#if name}
-  <svg class={className} width={size} height={size} style={`fill: ${fillColor}; ${style}`}>
+  <svg class={className} width={size} height={size} style={`fill: ${fillColor}; stroke-width: ${strokeWidth}; ${style}`} style:--icon-size={size}>
     <use xlink:href="#{name}" />
   </svg>
 {/if}

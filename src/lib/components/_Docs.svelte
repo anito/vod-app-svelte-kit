@@ -1,20 +1,19 @@
-<script>
-  // @ts-nocheck
-
+<script lang="ts">
   import { onMount } from 'svelte';
   import GuideContents from './_GuideContents.svelte'; // TODO rename
   import SvgIcon from './_SvgIcon.svelte';
   import { getFragment } from '../utils/navigation';
+    import type { Section } from '$lib/types';
 
   export let owner = 'sveltejs';
   export let project = 'svelte';
   export let path = '/site/content';
   export let dir = 'docs';
   export let edit_title = 'edit this section';
-  export let sections;
-  let active_section;
+  export let sections: Section[];
+  let active_section: any;
 
-  let container;
+  let container: HTMLDivElement;
   let aside;
   let show_contents = false;
 
@@ -22,11 +21,11 @@
     // don't update `active_section` for headings above level 4, see _sections.js
     const anchors = container.querySelectorAll('[id]:not([data-scrollignore])');
 
-    let positions;
+    let positions: any[];
 
     const onresize = () => {
       const { top } = container.getBoundingClientRect();
-      positions = [].map.call(anchors, (anchor) => {
+      positions = [].map.call(anchors, (anchor: Element) => {
         return anchor.getBoundingClientRect().top - top;
       });
     };
@@ -96,7 +95,7 @@
 </div>
 
 <aside bind:this={aside} class="sidebar-container" class:open={show_contents}>
-  <div class="sidebar" on:click={() => (show_contents = false)}>
+  <div class="sidebar" on:click={() => (show_contents = false)} on:keydown>
     <!-- scroll container -->
     <GuideContents {sections} {active_section} {show_contents} />
   </div>

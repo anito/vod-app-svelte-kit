@@ -201,59 +201,65 @@
         d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"
       />
     </symbol>
-  </svg>
-  <svg
-    id="animated-loader-3"
-    xmlns:xlink="http://www.w3.org/1999/xlink"
-    x="0px"
-    y="0px"
-    viewBox="0 0 100 100"
-    enable-background="new 0 0 0 0"
-    xml:space="preserve"
-  >
-    <circle fill="" stroke="none" cx="6" cy="50" r="6">
-      <animateTransform
-        attributeName="transform"
-        dur="1s"
-        type="translate"
-        values="0 15 ; 0 -15; 0 15"
-        repeatCount="indefinite"
-        begin="0.1"
-      />
-    </circle>
-    <circle fill="" stroke="none" cx="30" cy="50" r="6">
-      <animateTransform
-        attributeName="transform"
-        dur="1s"
-        type="translate"
-        values="0 10 ; 0 -10; 0 10"
-        repeatCount="indefinite"
-        begin="0.2"
-      />
-    </circle>
-    <circle fill="" stroke="none" cx="54" cy="50" r="6">
-      <animateTransform
-        attributeName="transform"
-        dur="1s"
-        type="translate"
-        values="0 5 ; 0 -5; 0 5"
-        repeatCount="indefinite"
-        begin="0.3"
-      />
-    </circle>
-  </svg>
 
-  <symbol id="ondemand_video" class="icon" viewBox="0 0 24 24">
-    <path
-      stroke="none"
-      d="M9 7v8l7-4zm12-4H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"
-    />
-  </symbol>
+    <symbol
+      id="animated-loader-3"
+      viewBox="0 0 100 100"
+      x="0px"
+      y="0px"
+      enable-background="new 0 0 0 0"
+      xml:space="preserve"
+    >
+      <circle fill="" stroke="none" cx="6" cy="50" r="6">
+        <animateTransform
+          attributeName="transform"
+          dur="1s"
+          type="translate"
+          values="0 15 ; 0 -15; 0 15"
+          repeatCount="indefinite"
+          begin="0.1"
+        />
+      </circle>
+      <circle fill="" stroke="none" cx="30" cy="50" r="6">
+        <animateTransform
+          attributeName="transform"
+          dur="1s"
+          type="translate"
+          values="0 10 ; 0 -10; 0 10"
+          repeatCount="indefinite"
+          begin="0.2"
+        />
+      </circle>
+      <circle fill="" stroke="none" cx="54" cy="50" r="6">
+        <animateTransform
+          attributeName="transform"
+          dur="1s"
+          type="translate"
+          values="0 5 ; 0 -5; 0 5"
+          repeatCount="indefinite"
+          begin="0.3"
+        />
+      </circle>
+    </symbol>
 
-  <symbol id="image" class="icon" viewBox="0 0 24 24">
-    <path
-      stroke="none"
-      d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4.86 8.86l-3 3.87L9 13.14 6 17h12l-3.86-5.14z"
-    />
-  </symbol>
+    <symbol id="person" class="icon" viewBox="0 0 24 24">
+      <path
+        d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+      />
+    </symbol>
+
+    <symbol id="ondemand_video" class="icon" viewBox="0 0 24 24">
+      <path
+        stroke="none"
+        d="M9 7v8l7-4zm12-4H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"
+      />
+    </symbol>
+
+    <symbol id="image" class="icon" viewBox="0 0 24 24">
+      <path
+        stroke="none"
+        d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4.86 8.86l-3 3.87L9 13.14 6 17h12l-3.86-5.14z"
+      />
+    </symbol>
+  </svg>
 </div>

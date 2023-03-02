@@ -1,13 +1,10 @@
 import type { Actions } from '@sveltejs/kit';
 
 export const actions = {
-  reload: async ({ fetch, locals }) => {
-    return await fetch(`/config`, {
+  reload: async ({ fetch }) => {
+    await fetch(`/getconfig`, {
       method: 'GET'
-    })
-      .then(async (res) => await res.json())
-      .then((res) => (locals.config = res))
-      .catch((reason) => console.error('[ACTIONS]', reason));
+    }).catch((reason) => console.error('[ACTIONS]', reason));
   },
   mode: async ({ request, locals }) => {
     const url = new URL(request.url);

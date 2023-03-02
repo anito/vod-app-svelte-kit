@@ -1,11 +1,8 @@
-<script>
-	// @ts-nocheck
-
-	import { page } from '$app/stores';
+<script lang="ts">
 	import { GridItem, LayoutGrid } from '$lib/components';
 	import { Legal } from '$lib/components';
 
-	export let segment;
+	export let segment: string;
 </script>
 
 <LayoutGrid {segment}>

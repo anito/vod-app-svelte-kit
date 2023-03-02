@@ -67,6 +67,7 @@
   $: style = ((style) => style.trim().replace(/ +(?= )/g, ''))(
     `${style} ${sizeVar} ${overlayVars}`
   );
+  $: userGraphicTitle = user ? `${user?.name} (${$session?.role})` : '';
   $: (async (user) => {
     const getSource = async (user: User | null) => {
       if (user?.avatar?.src?.startsWith('http')) {
@@ -92,14 +93,14 @@
   {#if src}
     <Graphic
       class="user-graphics relative"
-      title={`${user?.name} (${user?.role || $session.role})`}
+      title={userGraphicTitle}
       style="
         display: inline-flex;
         vertical-align: middle;
-        width: {width}px;
-        height: {height}px;
-        box-shadow: inset 0px 0px 0px {borderSize}px {borderColor} {extendedBorderSize
-        ? `, 0px 0px 0px ${extendedBorderSize}px ${extendedBorderColor}`
+        width: {width + borderSize}px;
+        height: {height + borderSize}px;
+        box-shadow: 0px 0px 0px var(--graphic-border-size, {borderSize}px) {borderColor} {extendedBorderSize
+        ? `, 0px 0px 0px var(--extended-graphic-border-size, ${extendedBorderSize}px) ${extendedBorderColor}`
         : ''};
         background-image: url('{src}');
         background-size: cover;

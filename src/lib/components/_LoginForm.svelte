@@ -10,7 +10,7 @@
   import { flash } from '$lib/stores';
   import Button from '@smui/button';
   import TabBar from '@smui/tab-bar';
-  import Tab, { Label as TabLabel, Icon as LabelIcon } from '@smui/tab';
+  import Tab, { Icon as TabIcon } from '@smui/tab';
   import Textfield from '@smui/textfield';
   import Icon from '@smui/textfield/icon';
   import { Label } from '@smui/common';
@@ -121,7 +121,7 @@
   <div class="mb-5">
     <TabBar tabs={tabNames} let:tab bind:active={activeTab}>
       <Tab {tab}>
-        <LabelIcon class="material-icons">{tabs.icon(tab)}</LabelIcon>
+        <TabIcon class="material-icons">{tabs.icon(tab)}</TabIcon>
         <Label>{tabs.text(tab)}</Label>
       </Tab>
     </TabBar>
@@ -209,7 +209,7 @@
       {/if}
       {#if activeTab === tabNames[2]}
         <div class="one flex relative justify-center">
-          <FacebookLoginButton {appId} />
+          <FacebookLoginButton appId={appId} />
         </div>
         <div class="two flex relative justify-center">
           <GoogleLoginButton {client_id} />

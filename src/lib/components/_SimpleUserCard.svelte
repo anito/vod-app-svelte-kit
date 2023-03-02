@@ -12,6 +12,8 @@
   export let user: User | undefined;
   export let id: string;
 
+  const graphicBorderSize = 1;
+
   $: _infos = $infos as Map<string, { issues: Issue[] }>;
   $: userInfos =
     ((user) => {
@@ -33,8 +35,8 @@
 {#if user}
   <Item {id} class="usercard-item" selected={selectionUserId == user?.id}>
     <a on:focus={() => focusHandler()} {href} class="flex flex-1 item-inner">
-      <span class="grafic-box usercard-box">
-        <UserGraphic size={40} {user} {badge} borderSize={1} borderColor="#c5c5c5" />
+      <span class="grafic-box usercard-box" style:--graphic-border-size={'1px'}>
+        <UserGraphic size={40} {user} {badge} borderColor="#c5c5c5" />
       </span>
       <span class="content-box usercard-box">
         <Text>
@@ -86,6 +88,9 @@
     display: flex;
     align-self: center;
     height: 100%;
+  }
+  .grafic-box {
+    padding-left: var(--graphic-border-size, 1px);
   }
   .grafic-box.usercard-box {
     align-items: center;

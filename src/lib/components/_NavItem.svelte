@@ -1,17 +1,16 @@
-<script>
-  // @ts-nocheck
-
+<script lang="ts">
   import { page } from '$app/stores';
   import { getContext } from 'svelte';
+  import type { Readable } from 'svelte/store';
 
-  export let segment = '';
-  export let external = null;
+  export let segment: string = '';
+  export let external: string | null = null;
   export let href = '';
   export let title = '';
   export let style = '';
   export { className as class };
 
-  const current = getContext('nav');
+  const current: Readable<any> = getContext('nav');
   let className = '';
 
   $: active = segment && $current === segment;
@@ -24,7 +23,7 @@
 {:else}
   <li class:active class="nav-item {className}">
     {#if href}
-      <a data-sveltekit-prefetch aria-current={$page.url.pathname === href} {style} {href} {title}
+      <a data-sveltekit-preload-data aria-current={$page.url.pathname === href} {style} {href} {title}
         ><slot /></a
       >
     {:else}

@@ -414,11 +414,12 @@
             {#if selectedUser}
               <span class="flex">
                 <UserGraphic
-                  size={60}
+                  size={50}
+                  borderSize={2}
                   user={selectedUser}
                   badge={hasSelectedUserPrivileges ? badge : false}
-                  borderSize={2}
                   borderColor="#c5c5c5"
+                  style="padding: 2px;"
                 />
               </span>
               <span class="header-name pr-5 self-center">{name}</span>

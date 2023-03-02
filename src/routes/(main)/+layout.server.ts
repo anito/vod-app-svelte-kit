@@ -1,13 +1,13 @@
 import { redirect } from '@sveltejs/kit';
-import { USER } from '$lib/utils';
+import { createRedirectSlug, USER } from '$lib/utils';
 import type { LayoutServerLoadEvent } from './$types';
 
-export async function load({ depends, locals, cookies }: LayoutServerLoadEvent) {
+export async function load({ depends, locals, cookies, url }: LayoutServerLoadEvent) {
   const { session, usersRepo, videosRepo, videosAllRepo, imagesRepo } = locals;
   if (!session.data.user) {
-    throw redirect(301, '/');
+    const logoutredirect = locals.config.Session.logoutredirect || '/';
+    throw redirect(301, `${logoutredirect}?${createRedirectSlug(url)}`);
   }
-
   const { role = USER, user: sessionUser } = session.data;
   const id = sessionUser?.id;
   const token = sessionUser?.jwt;

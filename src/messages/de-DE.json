@@ -259,7 +259,8 @@
     "make-default": "Auswahl merken",
     "logging-out": "Melde {name} ab",
     "logged-out": "{name} wurde ausgelogged",
-    "mailbox-not-found": "Mailbox [{name}] nicht gefunden"
+    "mailbox-not-found": "Mailbox [{name}] nicht gefunden",
+    "about-header": "Über diese Seite"
   },
   "summary": {
     "copy-link": {

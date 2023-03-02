@@ -1,12 +1,10 @@
-<script>
-	// @ts-nocheck
-
+<script lang="ts">
 	import ParallaxLogo from './_ParallaxLogo.svelte';
 
-	export let title;
-	export let tagline;
-	export let logotype;
-	export let outline;
+	export let title: string;
+	export let tagline: string;
+	export let logotype: string;
+	export let outline: string;
 </script>
 
 <ParallaxLogo alt="{title} logo" src={outline} />

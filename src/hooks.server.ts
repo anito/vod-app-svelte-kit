@@ -10,7 +10,7 @@ async function getConfig(): Promise<any> {
   return res?.success ? { ...res.data } : {};
 }
 
-let config: Config;
+let config: Config | null = null;
 
 export const handle = handleSession(
   {
@@ -21,9 +21,13 @@ export const handle = handleSession(
   async ({ event, resolve }) => {
     dev && (process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0');
 
+    // Forcing config to reload
+    if (event.url.pathname.startsWith('/getconfig')) {
+      config = null;
+    }
     event.locals = {
       ...event.locals, // session
-      config: config ?? (config = await getConfig()),
+      config: config || (await getConfig()),
       usersRepo: UsersRepo.getInstance(),
       videosRepo: VideosRepo.getInstance(),
       videosAllRepo: VideosAllRepo.getInstance(),

@@ -1,4 +1,7 @@
 declare global {
+  interface Window {
+    FB: any;
+  }
   interface WindowEventMap {
     'dropzone:initialized': CustomEvent;
     'info:user:activate': CustomEvent;
@@ -188,6 +191,7 @@ export interface ConsoleConfig<ConsoleConfigType = Record<string, any>> {
 
 export interface SessionConfig<SessionConfigType = Record<string, any>> {
   lifetime: string;
+  logoutredirect: string;
 }
 
 export interface Error<ErrorType = Record<string, any>> {
@@ -231,4 +235,20 @@ export interface DropzoneOptions<DropzoneOptionsType = Record<string, any>> {
   previewTemplate?: any;
   previewsContainer?: string;
   init?: () => void;
+}
+
+export interface Section {
+  metadata: Metadata;
+  html: string;
+  slug: string;
+  file: string;
+  subsections: Subsection[];
+}
+export interface Subsection {
+  slug: string;
+  title: string;
+  level: number;
+}
+export interface Metadata {
+  title: string;
 }
