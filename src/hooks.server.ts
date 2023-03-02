@@ -7,7 +7,6 @@ import type { Config } from '$lib/types';
 
 async function getConfig() {
   const res = await api.get(`settings`);
-  console.log('getting config...', res);
   return res?.success ? { ...res.data } : {};
 }
 
