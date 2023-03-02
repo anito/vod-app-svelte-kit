@@ -6,8 +6,12 @@ interface RepoGetAllOptions {
 }
 
 export interface Repo<RepoType = Record<string, void>> {
-  get: (id: string, { token: string }) => User;
-  getAll: ({}: RepoGetAllOptions) => { success: boolean; data: never[]; pagination: Pagination };
+  get: (id: string, { token: string }) => unknown;
+  getAll: ({}: RepoGetAllOptions) => Promise<{
+    success: boolean;
+    data: never[];
+    pagination: Pagination;
+  }>;
   setToken: (token: string) => void;
 }
 

@@ -230,8 +230,8 @@
       to_searches: [],
       from_pathnames: ['/logout'],
       to_pathnames: ['/auth?/logout', '/auth?/login', '/login', '/logout']
-    }
-    // afterNavigationCallback
+    },
+    afterNavigationCallback
   );
 
   beforeNavigate(({ cancel }) => {
@@ -730,9 +730,8 @@
             return async ({ result }) => {
               if (actionParam === 'reload') {
                 if (result.type === 'success') {
-                  console.log(result.data);
-                  // settings.update(parseConfigData(result.data));
-                  // invalidate('app:session');
+                  // TODO
+                  invalidate('app:session');
                 }
               }
               if (actionParam === 'logout') {

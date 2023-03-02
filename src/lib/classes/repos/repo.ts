@@ -32,7 +32,7 @@ export class Repo {
     limit?: number;
     token: string;
     match?: Record<string, string>;
-  }): Promise<Response> => {
+  }): Promise<any> => {
     let {
       page = 1,
       limit = this.limit,

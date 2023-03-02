@@ -166,7 +166,7 @@ export interface Inbox<InboxType = Record<string, any>> {
   id: string;
 }
 
-export interface Config<ConfigType> {
+export interface Config<ConfigType = Record<string, any>> {
   Session: SessionConfig;
   Site: SiteConfig;
   Console: ConsoleConfig;
