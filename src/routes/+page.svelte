@@ -13,7 +13,8 @@
   import Button, { Icon } from '@smui/button';
   import { ADMIN, SUPERUSER } from '$lib/utils';
   import { _ } from 'svelte-i18n';
-    import type Snackbar from '@smui/snackbar';
+  import type Snackbar from '@smui/snackbar';
+    import type { ActionResult } from '@sveltejs/kit';
 
   const { getSnackbar, configSnackbar }: any = getContext('snackbar');
   const void0 = void 0;
@@ -62,6 +63,25 @@
     snackbar = getSnackbar();
   });
 
+  const sendMail = () => {
+    return ({result}: {result: ActionResult}) => {
+      let message;
+      if (result.type === 'success') {
+        const success = result.data?.success;
+        if (success) {
+          message = $_('text.thank-you-for-your-message');
+          reset();
+        } else {
+          message = $_('text.message-sent-failed');
+        }
+      } else {
+        message = $_('text.message-sent-failed');
+      }
+      configSnackbar(message);
+      snackbar?.forceOpen();
+    };
+  };
+
   function reset() {
     selected = null;
     message = '';
@@ -99,22 +119,7 @@
         method="POST"
         action="/?/send"
         class="user-info-form flex-col justify-between"
-        use:enhance={() => {
-          return ({ result }) => {
-            if (result.type === 'success') {
-              const success = result.data?.sucess;
-              if (success) {
-                configSnackbar($_('text.thank-you-for-your-message'));
-                reset();
-              } else {
-                configSnackbar($_('text.message-sent-failed'));
-              }
-            } else {
-              configSnackbar($_('text.message-sent-failed'));
-            }
-            snackbar?.forceOpen();
-          };
-        }}
+        use:enhance={sendMail}
       >
         {#if selected}
           <input type="hidden" name="subject" value={subject} />
