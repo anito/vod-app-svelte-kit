@@ -9,8 +9,8 @@
   import type { Mail } from '$lib/types';
   import type { User } from '$lib/classes/repos/types';
 
-  export let mail: Mail;
-  export let type: string;
+  export let mail: Mail | undefined;
+  export let type: string | null;
   export { className as class };
   export let selected = false;
 
@@ -25,14 +25,14 @@
   $: unread = !mail?._read;
   $: dateFormat =
     $locale?.indexOf('de') != -1
-      ? isToday(mail?.created)
+      ? isToday(mail?.created || new Date(1970))
         ? 'HH:mm'
         : 'dd.MM yy HH:mm'
-      : isToday(mail?.created)
+      : isToday(mail?.created || new Date(1970))
       ? 'hh:mm a'
       : 'yy-MM-dd hh:mm a';
 
-  $: created = localeFormat(new Date(mail?.created), dateFormat);
+  $: created = localeFormat(new Date(mail?.created || 1970), dateFormat);
 
   onMount(() => {
     userItems = type === INBOX ? mail?._from : type === SENT ? mail?._to : [];

@@ -258,7 +258,8 @@
     "clear": "Aufheben",
     "make-default": "Auswahl merken",
     "logging-out": "Melde {name} ab",
-    "logged-out": "{name} wurde ausgelogged"
+    "logged-out": "{name} wurde ausgelogged",
+    "mailbox-not-found": "Mailbox [{name}] nicht gefunden"
   },
   "summary": {
     "copy-link": {

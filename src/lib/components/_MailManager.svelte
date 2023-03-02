@@ -6,15 +6,7 @@
   import { writable } from 'svelte/store';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import {
-    fabs,
-    sents,
-    inboxes,
-    session,
-    templates,
-    users,
-    usersFoundation
-  } from '$lib/stores';
+  import { fabs, sents, inboxes, session, templates, users, usersFoundation } from '$lib/stores';
   import {
     MailViewer,
     MailList,
@@ -191,7 +183,7 @@
       .then(() => {
         // show loading spinner
         return new Promise((resolve, reject) => {
-          setTimeout(() => resolve(1), 800);
+          setTimeout(() => resolve(1), 500);
         });
       });
 
@@ -221,10 +213,14 @@
 
   async function getMail(name: string | undefined) {
     const endpoint = validateMailboxName(name);
-    if (!endpoint) return new Promise((res, rej) => rej(`The mailbox "${endpoint}" doesn't exist`));
+    // if (!endpoint) return new Promise((res, rej) => rej(`The mailbox "${endpoint}" doesn't exist`));
+    if (!endpoint)
+      return new Promise((res, rej) =>
+        rej($_('text.mailbox-not-found', { values: { name: endpoint } }))
+      );
 
     const validUser = validateUser();
-    if (!validUser) return new Promise((res, rej) => rej(`This user doesn't exist`));
+    if (!validUser) return new Promise((res, rej) => rej($_('text.user-not-found')));
 
     return await api
       .get(`${endpoint}/get/${selectedUser?.id}`, { token: $session.user?.jwt })

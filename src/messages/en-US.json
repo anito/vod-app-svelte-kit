@@ -258,7 +258,8 @@
     "clear": "Clear",
     "make-default": "Remember selection",
     "logging-out": "Logging out {name}",
-    "logged-out": "{name} has been logged out"
+    "logged-out": "{name} has been logged out",
+    "mailbox-not-found": "Mailbox [{name}] not found"
   },
   "summary": {
     "copy-link": {

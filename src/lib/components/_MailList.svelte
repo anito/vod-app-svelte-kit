@@ -1,15 +1,15 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
   import { getContext, onMount, SvelteComponent, tick, type ComponentType } from 'svelte';
   import { usersFoundation } from '$lib/stores';
   import { ASC, DESC, INBOX, SENT } from '$lib/utils';
+  import { FlexContainer, SimpleMailCard, SvgIcon } from '$lib/components';
   import List from '@smui/list';
-  import { SimpleMailCard, SvgIcon } from '$lib/components';
   import { _ } from 'svelte-i18n';
-  import { goto } from '$app/navigation';
+  import type { SmuiElementMap } from '@smui/common';
   import type { Mail } from '$lib/types';
   import type { UserFoundation } from '$lib/classes/repos/types';
-  import type { SmuiElementMap } from '@smui/common';
 
   export let selection: Mail | undefined;
   export let sort = DESC;
@@ -38,7 +38,7 @@
 
   const parseUsernames = (sender: string[]) => {
     let item;
-    let items: string[] = [];
+    let items: ({ email: string } | UserFoundation)[] = [];
     sender.forEach((email) => {
       item = $usersFoundation?.find((user: UserFoundation) => user.email === email);
       items.push(item ? { ...item } : { email });
@@ -113,19 +113,19 @@
   {:then}
     <List
       bind:this={list}
-      class="mails-list list-{activeItem}"
-      on:SMUIList:mount={receiveListMethods}
       bind:selectedIndex={selectionIndex}
+      on:SMUIList:mount={receiveListMethods}
+      class="mails-list list-{activeItem}"
       twoLine
       avatarList
       singleSelection
     >
       {#each sort && $mailStore.sort(sortByDate) as mail (mail.id)}
         <SimpleMailCard
+          bind:selection
           on:mail:delete
           on:mail:toggleRead
           on:mail:destroyed={mailDestroyedHandler}
-          bind:selection
           selected={mail.id === selectionMailId}
           mail={parseMail(mail)}
           type={activeItem}
@@ -133,7 +133,9 @@
       {/each}
     </List>
   {:catch reason}
-    {reason}
+    <FlexContainer style="grid-area: one;">
+      {reason}
+    </FlexContainer>
   {/await}
 {/if}
 
