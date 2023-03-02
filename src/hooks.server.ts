@@ -5,7 +5,7 @@ import { UsersRepo, VideosRepo, ImagesRepo, VideosAllRepo } from '$lib/classes';
 import type { HandleFetch, HandleServerError } from '@sveltejs/kit';
 import type { Config } from '$lib/types';
 
-async function getConfig() {
+async function getConfig(): Promise<any> {
   const res = await api.get(`settings`);
   return res?.success ? { ...res.data } : {};
 }
