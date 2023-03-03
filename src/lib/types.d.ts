@@ -1,3 +1,5 @@
+import type { User } from './classes/repos/types';
+
 declare global {
   interface Window {
     FB: any;

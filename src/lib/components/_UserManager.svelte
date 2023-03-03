@@ -45,6 +45,12 @@
   const userActions = [EDIT, PASS];
   const setCopyButton = (node: any) => (copyButton = node);
   const setMagicLinkInput = (node: any) => (inputElementMagicLink = node);
+  const actionsLookup = new Set([
+    { name: EDIT, i18n: 'text.edit-user', formAction: 'edit' },
+    { name: PASS, i18n: 'text.edit-password', formAction: 'edit' },
+    { name: DEL, i18n: 'text.delete-user', formAction: 'del' },
+    { name: ADD, i18n: 'text.add-user', formAction: 'add' }
+  ]);
 
   export let selectionUserId = '';
   export let selectedMode = EDIT;
@@ -72,10 +78,6 @@
   let mode = EDIT;
 
   $: token = $session.user?.jwt;
-  $: root?.classList.toggle('user-add-view', selectedMode === ADD);
-  $: root?.classList.toggle('user-edit-view', selectedMode === EDIT);
-  $: root?.classList.toggle('user-password-view', selectedMode === PASS);
-  $: root?.classList.toggle('user-delete-view', selectedMode === DEL);
   $: groups = $session.groups || [];
   $: selectedUser = ((id) => {
     const user = $users.find((usr) => usr?.id === id) as User | undefined;
@@ -131,16 +133,13 @@
     protectedLabel = (__protected && $_('text.unprotect-user')) || $_('text.protect-user');
   })(selectedUser);
   $: magicLink = (jwt && `${$page.url.origin}/login?token=${jwt}`) || '';
-  $: actionsLookup = new Set([
-    { name: EDIT, i18n: 'text.edit-user', formAction: 'edit' },
-    { name: PASS, i18n: 'text.edit-password', formAction: 'edit' },
-    { name: DEL, i18n: 'text.delete-user', formAction: 'del' },
-    { name: ADD, i18n: 'text.add-user', formAction: 'add' }
-  ]);
   $: formAction = [...actionsLookup].find((action) => action.name === selectedMode)?.formAction;
-  $: selectedMode =
-    ($page.url.searchParams.has('mode') && $page.url.searchParams.get('mode')) || (mode = EDIT);
+  $: selectedMode = $page.url.searchParams.get('mode') || (mode = EDIT);
   $: ((mode) => {
+    root?.classList.toggle('user-add-view', mode === ADD);
+    root?.classList.toggle('user-edit-view', mode === EDIT);
+    root?.classList.toggle('user-password-view', mode === PASS);
+    root?.classList.toggle('user-delete-view', mode === DEL);
     if (hasPrivileges && mode !== ADD) {
       setFab('add-user');
     } else {
@@ -148,12 +147,13 @@
       setFab();
     }
   })(selectedMode);
+  $: setMode(mode);
 
   onMount(() => {
     root = document.documentElement;
     root.classList.add('usermanager--open');
     snackbar = getSnackbar();
-    setMode(EDIT);
+    mode = EDIT;
 
     return () => {
       root.classList.remove(
