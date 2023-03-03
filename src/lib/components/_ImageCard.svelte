@@ -8,9 +8,9 @@
   import Menu from '@smui/menu';
   import Tooltip, { Wrapper } from '@smui/tooltip';
   import List, { Item, Text } from '@smui/list';
-  import { _ } from 'svelte-i18n';
   import { SvgIcon } from '.';
-  import { dispatch } from '$lib/utils';
+  import { emit } from '$lib/utils';
+  import { _ } from 'svelte-i18n';
   import type { Image } from '$lib/classes/repos/types';
 
   export let image: Image;
@@ -72,7 +72,7 @@
               ripple={false}
               class="error-on-background"
               on:SMUI:action={() =>
-                dispatch('media:delete', { type: 'images', id: image.id, show: true })}
+                emit('media:delete', { type: 'images', id: image.id, show: true })}
             >
               <Text>{$_('text.delete-poster')}</Text>
             </Item>

@@ -5,7 +5,7 @@
   import { selection, session, currentMediaStore } from '$lib/stores';
   import Dialog, { Title, Content, Actions } from '@smui/dialog';
   import Button, { Group, Label, Icon } from '@smui/button';
-  import { ADMIN, dispatch, SUPERUSER } from '$lib/utils';
+  import { emit, ADMIN, SUPERUSER } from '$lib/utils';
   import { VideoManager, ImageManager, Container, Heading } from '$lib/components';
   import { _ } from 'svelte-i18n';
 
@@ -147,7 +147,7 @@
   aria-describedby="info-content"
   on:SMUIDialog:closed={({ detail }) => {
     if (detail.action === 'accept') {
-      dispatch('media:deleteMany', {
+      emit('media:deleteMany', {
         endpoint: tab,
         show: true,
         oncompleted: () => selection.reset()

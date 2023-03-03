@@ -112,7 +112,7 @@ export let convert = (() => {
   };
 })();
 
-export const dispatch = function (eventType: string, detail?: any, target?: Window) {
+export const emit = function (eventType: string, detail?: any, target?: Window) {
   eventType = typeof eventType === 'string' ? eventType : detail?.eventType;
   target = typeof window !== 'undefined' ? window : target;
   if (target) {

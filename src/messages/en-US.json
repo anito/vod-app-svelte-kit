@@ -260,7 +260,9 @@
     "logging-out": "Logging out {name}",
     "logged-out": "{name} has been logged out",
     "mailbox-not-found": "Mailbox [{name}] not found",
-    "about-header": "About this site"
+    "about-header": "About this site",
+    "closing-current-session": "Terminating current session",
+    "session-terminated": "Session terminated"
   },
   "summary": {
     "copy-link": {

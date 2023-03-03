@@ -4,7 +4,7 @@
   import Button from '@smui/button';
   import { onMount } from 'svelte';
   import SvgIcon from './_SvgIcon.svelte';
-  import { post, dispatch } from '$lib/utils';
+  import { post, emit } from '$lib/utils';
   import { flash } from '$lib/stores';
   import { _ } from 'svelte-i18n';
 
@@ -69,9 +69,9 @@
           }).then(async (res) => {
             const { success, data }: any = { ...res };
             if (success) {
-              dispatch('session:success', { data });
+              emit('session:success', { data });
             } else {
-              dispatch('session:error', { ...data, redirect: '/login' });
+              emit('session:error', { ...data, redirect: '/login' });
             }
           });
         }

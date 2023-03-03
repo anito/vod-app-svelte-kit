@@ -28,3 +28,7 @@ export const DESC = 'DESC';
 export const ASC = 'ASC';
 export const TABS = ['time', 'profile', 'mail'];
 export const DEFAULT_ADMIN_TAB = TABS[0];
+export const EDIT = 'edit';
+export const ADD = 'add';
+export const DEL = 'del';
+export const PASS = 'pass';

@@ -5,7 +5,7 @@
   import { session, videos, users } from '$lib/stores';
   import { FlexContainer } from '$lib/components';
   import VideoPlayer, { mute } from '$lib/components/Video';
-  import { ADMIN, SUPERUSER, USER, getMediaImage, getMediaVideo, dispatch } from '$lib/utils';
+  import { ADMIN, SUPERUSER, USER, getMediaImage, getMediaVideo, emit } from '$lib/utils';
   import type { PageData } from './$types';
   import type { User, Video } from '$lib/classes/repos/types';
   import { _ } from 'svelte-i18n';
@@ -22,7 +22,7 @@
   let src: string | undefined;
 
   $: if (data.video) videos.add([data.video]);
-  $: user = $users.find((user) => user.id === $session.user?.id);
+  $: user = $users?.find((user) => user.id === $session.user?.id);
   $: user && (canplay = false);
   $: video = $videos.find((v) => v.id === $page.params.slug);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
@@ -95,7 +95,7 @@
     if (!canplay) return;
     if (hasPrivileges) {
       if (Math.round(video?.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
-      dispatch('video:save', {
+      emit('video:save', {
         data: { id: video?.id, playhead }
       });
     } else if ($session.role === USER) {
@@ -114,7 +114,7 @@
         ]
       };
 
-      dispatch('user:save', { data });
+      emit('user:save', { data });
     }
   }
 </script>

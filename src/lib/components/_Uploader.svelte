@@ -8,7 +8,7 @@
   import { base, version } from '$lib/api';
   import { _ } from 'svelte-i18n';
   import type { DropzoneOptions } from '$lib/types';
-  import { dispatch } from '$lib/utils';
+  import { emit } from '$lib/utils';
 
   export { className as class };
   export let path;
@@ -87,7 +87,7 @@
 
   const init = function () {
     dropzone = this;
-    dispatch('dropzone:initialized', dropzone);
+    emit('dropzone:init', dropzone);
   };
 
   let options: DropzoneOptions = {

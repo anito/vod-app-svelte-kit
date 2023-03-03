@@ -19,8 +19,8 @@
     SUPERUSER,
     posterCreatedHandler,
     posterRemoveHandler,
-    posterSelectedHandler,
-    dispatch
+    posterSaveHandler,
+    emit
   } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import type Snackbar from '@smui/snackbar';
@@ -121,7 +121,7 @@
 
     if (success) {
       uploadedData = data;
-      dispatch('video:add', { data });
+      emit('video:add', { data });
       close$uploader();
     }
   }
@@ -150,9 +150,9 @@
       {#each $videos.sort(sortAZ) as video (video.id)}
         <li class="list-item relative">
           <VideoCard
-            on:video:posterCreated={(event) => posterCreatedHandler(event, video.id)}
-            on:video:selectedPoster={(event) => posterSelectedHandler(event.detail, video.id)}
-            on:video:removePoster={() => posterRemoveHandler(video.id)}
+            on:video:postercreated={(event) => posterCreatedHandler(event, video.id)}
+            on:video:saveposter={(event) => posterSaveHandler(event.detail, video.id)}
+            on:video:removeposter={() => posterRemoveHandler(video.id)}
             {video}
           />
         </li>

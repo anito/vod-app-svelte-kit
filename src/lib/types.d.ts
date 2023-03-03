@@ -3,7 +3,7 @@ declare global {
     FB: any;
   }
   interface WindowEventMap {
-    'dropzone:initialized': CustomEvent;
+    'dropzone:init': CustomEvent;
     'info:user:activate': CustomEvent;
     'info:token:generate': CustomEvent;
     'player:loadstart': CustomEvent;

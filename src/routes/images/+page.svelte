@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { onMount, getContext } from 'svelte';
   import { fly } from 'svelte/transition';
@@ -7,7 +8,7 @@
   import Paper, { Title, Subtitle, Content } from '@smui/paper';
   import { Info, ImageCard, MediaUploader } from '$lib/components';
   import { Heading } from '$lib/components';
-  import { fabs, session, sitename, images, currentVideo } from '$lib/stores';
+  import { fabs, session, images, currentVideo } from '$lib/stores';
   import { _ } from 'svelte-i18n';
   import type { PageData } from './$types';
 

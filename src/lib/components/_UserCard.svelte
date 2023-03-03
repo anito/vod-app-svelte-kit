@@ -5,7 +5,7 @@
   import IconButton, { Icon } from '@smui/icon-button';
   import Menu from '@smui/menu';
   import List, { Item, Separator, Text, PrimaryText, SecondaryText, Graphic } from '@smui/list';
-  import { dispatch } from '$lib/utils';
+  import { emit } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import type { Avatar, Image, User, Video } from '$lib/classes/repos/types';
 
@@ -42,7 +42,7 @@
             <Item
               ripple={false}
               class="error-on-background"
-              on:SMUI:action={() => dispatch('user:delete', { id: user.id })}
+              on:SMUI:action={() => emit('user:delete', { id: user.id })}
             >
               <Text>{$_('text.delete-user')}</Text>
             </Item>

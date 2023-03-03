@@ -14,6 +14,7 @@ $border-radius: 3px;
       .primary-action,
       .card-actions {
         color: var(--on-primary);
+        background-color: var(--primary);
         .mdc-icon-button {
           color: var(--on-primary);
         }
@@ -21,9 +22,10 @@ $border-radius: 3px;
     }
     &.secondary {
       @include fill-color(var(--secondary));
-      .primary-action,
+      .card-content,
       .card-actions {
         color: var(--on-secondary);
+        background-color: var(--secondary);
         .mdc-icon-button {
           color: var(--on-secondary);
         }
@@ -43,12 +45,16 @@ $border-radius: 3px;
     .card {
       padding: var(--select-border-w);
       @include fill-color(rgba(255, 255, 255, 0.192));
+      .primary-action,
+      .card-actions {
+        z-index: 2;
+      }
       &[selected='true']::after {
         content: '';
         background: var(--secondary);
       }
-      .card-actions {
-        display: none;
+      .card-content, .card-actions {
+        opacity: 0.4;
       }
     }
     .card::after {
@@ -69,7 +75,7 @@ $border-radius: 3px;
       left: var(--select-border-w);
       height: calc(100% - 2 * var(--select-border-w));
       border-radius: $border-radius;
-      z-index: 1;
+      z-index: 0;
     }
     .card-outer::after {
       content: '';

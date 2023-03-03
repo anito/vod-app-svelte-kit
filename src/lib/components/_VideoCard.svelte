@@ -7,12 +7,12 @@
   import { currentVideo, images, selection, session } from '$lib/stores';
   import { getMediaImage } from '$lib/utils/media';
   import {
+    emit,
     ADMIN,
-    DateTimeFormatOptions,
-    DEFAULT_LOCALE,
+    SUPERUSER,
     LOCALESTORE,
-    dispatch,
-    SUPERUSER
+    DEFAULT_LOCALE,
+    DateTimeFormatOptions
   } from '$lib/utils';
   import { VideoMedia, MediaUploader, Paginator } from '$lib/components';
   import Card, { Content, PrimaryAction, Actions, ActionButtons, ActionIcons } from '@smui/card';
@@ -24,7 +24,7 @@
   import List, { Item, Separator, Text } from '@smui/list';
   import emptyPoster from '/src/assets/images/empty-poster.jpg';
   import { _, locale } from 'svelte-i18n';
-  import type { Video } from '$lib/classes/repos/types';
+  import type { Video, Image as ImageType } from '$lib/classes/repos/types';
 
   export let video: Video;
   export { className as class };
@@ -44,6 +44,7 @@
   let title: string;
   let description: string;
   let isImageListOpen = false;
+  let imagesCopy: ImageType[] = [];
 
   $: pagination = $page.data.pagination?.images;
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
@@ -58,27 +59,27 @@
   $: selected = !!$selection.find((id: string) => id === video.id) || false;
 
   function save() {
-    dispatch('video:save', {
+    isEditMode = false;
+    if (!canSave) return;
+    emit('video:save', {
       data: { id: video.id, title, description },
       show: true
     });
-    isEditMode = false;
-    return false;
   }
 
   function edit() {
+    isEditMode = true;
     title = video.title || '';
     description = video.description || '';
-    return true;
   }
 
   function setDeleteMenuOpen(open: boolean) {
+    isEditMode = false;
     deleteMenu?.setOpen(open);
-    return false;
   }
 
   function remove() {
-    dispatch('media:delete', {
+    emit('media:delete', {
       id: video.id,
       type: 'videos',
       show: true,
@@ -120,11 +121,12 @@
   }
 
   function uploadSuccessHandler({ detail }: CustomEvent) {
-    dispatch('video:posterCreated', detail);
+    dispatch('video:postercreated', detail);
     close();
   }
 
   function imageListOpenedHandler() {
+    copyImages();
     isImageListOpen = true;
   }
 
@@ -142,12 +144,24 @@
     selected = !selected;
     selected ? selection.add(video.id) : selection.remove(video.id);
   }
+
+  function copyImages() {
+    imagesCopy = $images.slice();
+  }
 </script>
 
 <Card class="card {className} primary" {selected} variant="raised">
   <PrimaryAction class="primary-action" onclick={() => currentVideo.set(video)}>
-    <VideoMedia {video} bind:title bind:description {isEditMode} {emptyPoster} />
-    <Content>
+    <VideoMedia
+      on:key:enter={() => save()}
+      on:key:escape={() => (isEditMode = false)}
+      bind:title
+      bind:description
+      {video}
+      {isEditMode}
+      {emptyPoster}
+    />
+    <Content class="card-content">
       <div class="wrapper flex flex-row justify-between">
         <div class="flex flex-col" style="flex-basis: 50%; max-width: 50%">
           <div class="text-xs text-inherit inline-flex">
@@ -202,29 +216,29 @@
     <Actions class="card-actions">
       <ActionButtons class="action-buttons" style="flex: 1 0 auto;">
         <Button
+          on:click={() => (isEditMode ? save() : edit())}
           class="action-button"
           color="primary"
           variant="unelevated"
           disabled={isEditMode && !canSave}
-          on:click={() => (isEditMode = !isEditMode && edit()) || save()}
         >
           <Label>{leftButton.label}</Label>
           <Icon class="material-icons">{leftButton.icon}</Icon>
         </Button>
         <div bind:this={deleteMenuAnchor} use:Anchor>
           <Button
+            on:click={() => (isEditMode ? (isEditMode = false) : setDeleteMenuOpen(true))}
             class="action-button"
             color="primary"
             variant="unelevated"
-            on:click={() => (isEditMode = !isEditMode && setDeleteMenuOpen(true))}
           >
             <Label>{rightButton.label}</Label>
             <Icon class="material-icons">{rightButton.icon}</Icon>
           </Button>
           <Menu
             bind:this={deleteMenu}
-            anchor={false}
             bind:anchorElement={deleteMenuAnchor}
+            anchor={false}
             anchorCorner="TOP_RIGHT"
           >
             <List>
@@ -237,16 +251,16 @@
         <ActionIcons>
           <div bind:this={menuAnchor} use:Anchor>
             <IconButton
-              class="material-icons"
               on:click={() => cardMenu?.setOpen(true)}
+              class="material-icons"
               aria-label={$_('text.more-options')}
               title={$_('text.more-options')}>more_vert</IconButton
             >
             <Menu
-              bind:this={cardMenu}
               on:MDCMenuSurface:opened={cardMenuOpenedHandler}
-              anchor={false}
+              bind:this={cardMenu}
               bind:anchorElement={menuAnchor}
+              anchor={false}
               anchorCorner="BOTTOM_LEFT"
               style="left: -112px;"
             >
@@ -260,7 +274,7 @@
                 <Separator />
                 <Item
                   disabled={!video.image_id}
-                  on:SMUI:action={() => dispatch('video:removePoster', video.image_id)}
+                  on:SMUI:action={() => dispatch('video:removeposter', video.image_id)}
                 >
                   <Text>{$_('text.remove-poster')}</Text>
                 </Item>
@@ -283,13 +297,13 @@
         >
           <ImageList class="menu-surface-image-list">
             {#if isImageListOpen}
-              {#each $images as image, i (image.id)}
+              {#each imagesCopy as image, i (image.id)}
                 {#await getCachedImage(image.id) then src}
                   <ImageListItem>
                     <ImageAspectContainer>
                       <Image
                         class="preview-image"
-                        on:click={() => dispatch('video:selectedPoster', image.id)}
+                        on:click={() => dispatch('video:saveposter', image.id)}
                         {src}
                       />
                     </ImageAspectContainer>
@@ -304,8 +318,9 @@
             store={images}
             id="images-paginator"
             action="/videos?/more_images"
-            type='label'
+            type="label"
             style="--fontSize: 0.6em;"
+            on:paginator:loaded={copyImages}
           />
         </MenuSurface>
       </div>

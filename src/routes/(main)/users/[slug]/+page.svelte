@@ -6,14 +6,14 @@
   import { UserManager, TimeManager, MailManager, UserGraphic } from '$lib/components';
   import Button, { Group, Label, Icon } from '@smui/button';
   import { users, usersFoundation, session } from '$lib/stores';
-  import { dispatch, INBOX, ADMIN, SUPERUSER, TABS, createTabSearch } from '$lib/utils';
+  import { emit, INBOX, ADMIN, SUPERUSER, TABS, createTabSearch, EDIT, ADD } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import type { PageData } from './$types';
   import type { User } from '$lib/classes/repos/types';
 
   export let data: PageData;
 
-  let selectedMode = 'edit';
+  let selectedMode = EDIT;
   let userExpires;
   let hasExpired;
   let jwt;
@@ -68,11 +68,7 @@
 
   async function addUserHandler() {
     const searchParams = new URLSearchParams($page.url.searchParams.toString());
-    if (!searchParams.has('mode')) {
-      searchParams.append('mode', 'add');
-    } else {
-      searchParams.set('mode', 'add');
-    }
+    searchParams.set('mode', ADD);
     await goto(`${$page.url.pathname}?${searchParams.toString()}`);
   }
 
@@ -121,7 +117,7 @@
     </Group>
     <div class="flex mr-2" class:hidden>
       <Button
-        on:click={() => dispatch('info:token:redirect')}
+        on:click={() => emit('info:token:redirect')}
         disabled={!magicLink}
         variant="unelevated"
       >

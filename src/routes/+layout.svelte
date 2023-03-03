@@ -24,7 +24,7 @@
   import {
     createTabSearch,
     post,
-    dispatch,
+    emit,
     svg,
     ADMIN,
     SUPERUSER,
@@ -200,7 +200,7 @@
       `${(!isNaN(val) && (val / 1000).toHHMMSS()) || '--'}`
     );
     if (val === 0) {
-      dispatch('session:stop');
+      emit('session:stop');
     }
   });
 
@@ -219,7 +219,7 @@
         excludes
       );
     } else {
-      dispatch('session:validate');
+      emit('session:validate');
     }
   };
 
@@ -240,7 +240,6 @@
   });
 
   $: printDiff($page.data, { store: 'page' });
-  $: person = svg(svg_manifest.person, $theme.primary);
   $: logo = svg(svg_manifest.logo_vod, $theme.primary);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: root && ((user) => root.classList.toggle('loggedin', user))(!!$session.user);
@@ -289,12 +288,12 @@
     }
 
     if (user && isExpired()) {
-      dispatch('session:stop', {
+      emit('session:stop', {
         callback: fadeIn
       });
       return;
     }
-    dispatch('session:success', { data: $session, callback: fadeIn });
+    emit('session:success', { data: $session, callback: fadeIn });
   }
 
   function fadeIn() {
@@ -306,18 +305,17 @@
   }
 
   function initListener() {
-    removeListener();
-    window.addEventListener('dropzone:initialized', dropzoneInitializedHandler);
+    window.addEventListener('session:validate', sessionValidateHandler);
     window.addEventListener('session:success', sessionSuccessHandler);
     window.addEventListener('session:error', sessionErrorHandler);
     window.addEventListener('session:stop', sessionStopHandler);
-    window.addEventListener('session:validate', sessionValidateHandler);
     window.addEventListener('video:save', videoSaveHandler);
     window.addEventListener('video:add', videoAddHandler);
-    window.addEventListener('media:delete', mediaDeleteHandler);
-    window.addEventListener('media:deleteMany', mediaDeleteManyHandler);
     window.addEventListener('user:save', userSaveHandler);
     window.addEventListener('user:delete', userDeleteHandler);
+    window.addEventListener('media:delete', mediaDeleteHandler);
+    window.addEventListener('media:deleteMany', mediaDeleteManyHandler);
+    window.addEventListener('dropzone:init', dropzoneInitializedHandler);
     document.addEventListener('visibilitychange', visibilityChangeHandler);
   }
 
@@ -362,17 +360,17 @@
   }
 
   function removeListener() {
-    window.removeEventListener('dropzone:initialized', dropzoneInitializedHandler);
+    window.removeEventListener('session:validate', sessionValidateHandler);
     window.removeEventListener('session:success', sessionSuccessHandler);
     window.removeEventListener('session:error', sessionErrorHandler);
     window.removeEventListener('session:stop', sessionStopHandler);
-    window.removeEventListener('session:validate', sessionValidateHandler);
     window.removeEventListener('video:save', videoSaveHandler);
     window.removeEventListener('video:add', videoAddHandler);
-    window.removeEventListener('media:delete', mediaDeleteHandler);
-    window.removeEventListener('media:deleteMany', mediaDeleteManyHandler);
     window.removeEventListener('user:save', userSaveHandler);
     window.removeEventListener('user:delete', userDeleteHandler);
+    window.removeEventListener('media:delete', mediaDeleteHandler);
+    window.removeEventListener('media:deleteMany', mediaDeleteManyHandler);
+    window.removeEventListener('dropzone:init', dropzoneInitializedHandler);
     document.removeEventListener('visibilitychange', visibilityChangeHandler);
   }
 
@@ -616,7 +614,7 @@
     await post('/session/validate', { _expires }).then(async (res) => {
       if (res.success === false) {
         if ($session.user) {
-          dispatch('session:stop');
+          emit('session:stop');
         }
       }
     });
@@ -647,14 +645,15 @@
     });
   }
 
-  function visibilityChangeHandler() {
+  async function visibilityChangeHandler() {
     if (document.visibilityState === 'visible') {
-      dispatch('session:validate');
+      await invalidate('app:session');
+      await invalidate('app:main');
     }
   }
 
   function changedLocaleHandler({ detail }: CustomEvent) {
-    dispatch('session:validate');
+    emit('session:validate');
 
     const locale = detail.locale;
     configSnackbar($_('text.language_is_now', { values: { locale } }));
@@ -715,7 +714,7 @@
               if (actionParam === 'logout') {
                 loggedInButtonTextSecondLine = $_('text.one-moment');
                 if ((result.type = 'success')) {
-                  dispatch('session:stop');
+                  emit('session:stop');
                 }
               }
             };
@@ -783,10 +782,10 @@
               <NavItem title="Avatar" href="/users/{$session.user?.id}?tab=profile">
                 <UserGraphic
                   size={40}
-                  borderSize={3}
-                  borderColor="--primary"
+                  borderSize={2}
+                  borderColor={'--primary'}
                   dense
-                  user={$session.user}
+                  user={$users?.find((user) => user.id === $session.user?.id)}
                   badge={{
                     icon: 'settings',
                     color: '--primary',
@@ -917,9 +916,7 @@
   bind:this={deletingMediaDialog}
   aria-labelledby="info-title"
   aria-describedby="info-content"
-  on:SMUIDialog:closed={async () => {
-    media = undefined;
-  }}
+  on:SMUIDialog:closed={() => (media = undefined)}
 >
   <DialogTitle id="info-title">{$_('text.deleting-media')}</DialogTitle>
   <Content>

@@ -11,7 +11,7 @@
   import { getContext, onMount } from 'svelte';
   import { fly } from 'svelte/transition';
   import { session, users } from '$lib/stores';
-  import { dispatch, ADMIN, SUPERUSER, post, parseLifetime } from '$lib/utils';
+  import { emit, ADMIN, SUPERUSER, post, parseLifetime, EDIT, PASS, DEL, ADD } from '$lib/utils';
   import Textfield from '@smui/textfield';
   import TextfieldIcon from '@smui/textfield/icon';
   import HelperText from '@smui/textfield/helper-text';
@@ -41,10 +41,6 @@
   const { open, close }: any = getContext('default-modal');
   const { getSnackbar, configSnackbar }: any = getContext('snackbar');
 
-  const EDIT = 'edit';
-  const ADD = 'add';
-  const DEL = 'del';
-  const PASS = 'pass';
   const privilegedActions = [EDIT, PASS, DEL];
   const userActions = [EDIT, PASS];
   const setCopyButton = (node: any) => (copyButton = node);
@@ -76,17 +72,6 @@
   let mode = EDIT;
 
   $: token = $session.user?.jwt;
-  $: redirectMode(mode);
-  $: selectedMode =
-    ($page.url.searchParams.has('mode') && $page.url.searchParams.get('mode')) || (mode = EDIT);
-  $: ((mode) => {
-    if (hasPrivileges && mode !== ADD) {
-      setFab('add-user');
-    } else {
-      setTimeout(() => reset(), 100);
-      setFab();
-    }
-  })(selectedMode);
   $: root?.classList.toggle('user-add-view', selectedMode === ADD);
   $: root?.classList.toggle('user-edit-view', selectedMode === EDIT);
   $: root?.classList.toggle('user-password-view', selectedMode === PASS);
@@ -108,7 +93,7 @@
   $: notFound =
     selectedMode !== ADD &&
     selectionUserId &&
-    undefined === $users.find((user) => user.id === selectionUserId);
+    undefined === $users?.find((user) => user.id === selectionUserId);
   $: _name = ((user) => user?.name || '')(selectedMode !== ADD ? selectedUser : undefined);
   $: _active = ((usr) => usr?.active || false)(selectedMode !== ADD ? selectedUser : undefined);
   $: _protected = ((usr) => usr?.protected || false)(
@@ -153,11 +138,22 @@
     { name: ADD, i18n: 'text.add-user', formAction: 'add' }
   ]);
   $: formAction = [...actionsLookup].find((action) => action.name === selectedMode)?.formAction;
+  $: selectedMode =
+    ($page.url.searchParams.has('mode') && $page.url.searchParams.get('mode')) || (mode = EDIT);
+  $: ((mode) => {
+    if (hasPrivileges && mode !== ADD) {
+      setFab('add-user');
+    } else {
+      setTimeout(() => reset(), 100);
+      setFab();
+    }
+  })(selectedMode);
 
   onMount(() => {
     root = document.documentElement;
     root.classList.add('usermanager--open');
     snackbar = getSnackbar();
+    setMode(EDIT);
 
     return () => {
       root.classList.remove(
@@ -196,12 +192,10 @@
     );
   };
 
-  function redirectMode(m = EDIT) {
-    if (browser) {
-      mode = m;
-      $page.url.searchParams.set('mode', mode);
-      goto(`${$page.url.pathname}${$page.url.search}`);
-    }
+  function setMode(mode: string) {
+    const searchParams = new URLSearchParams($page.url.search);
+    searchParams.set('mode', mode);
+    goto(`${$page.url.pathname}?${searchParams.toString()}`);
   }
 
   async function uploadSuccessHandler({ detail }: CustomEvent) {
@@ -330,10 +324,6 @@
     }
   }
 
-  async function closeAddUserHandler() {
-    redirectMode(EDIT);
-  }
-
   function formHandler({ cancel }: { cancel: any }) {
     switch (formAction) {
       case 'del': {
@@ -355,7 +345,7 @@
   async function actionResultHandler({ result }: { result: ActionResult }) {
     if (result.type === 'success') {
       if (result.data) {
-        const { success, message: message$1, data: user }: any= { ...result.data };
+        const { success, message: message$1, data: user }: any = { ...result.data };
         const { message: message$2 }: any = { ...user };
         switch (formAction) {
           case 'add': {
@@ -371,12 +361,15 @@
           case 'edit': {
             if (success) {
               users.put(user);
-              if($session.user?.id === user.id) {
+              if ($session.user?.id === user.id) {
                 const { id, name, email, avatar, jwt, role, groups }: User = user;
                 const lifetime = parseLifetime($page.data.config?.Session.lifetime);
                 const _expires = new Date(Date.now() + lifetime).toISOString();
                 await post('/session', {
-                  user: { id, name, email, jwt, avatar }, role, groups, _expires
+                  user: { id, name, email, jwt, avatar },
+                  role,
+                  groups,
+                  _expires
                 });
                 await invalidate('app:session');
               }
@@ -404,16 +397,18 @@
     <div class="grid-item user" style="height: 100%;">
       <Container density="sm" extended variant="primary">
         <div slot="header">
-          <Heading mdc h="5" style="padding-right: 12rem;">
+          <span class="flex">
+            <Heading mdc h="5" class="ml-2">
+              {#if selectedMode === ADD}
+                {$_('text.create-new-user')}
+              {:else if selectedUser}
+                {selectedUser?.name}
+              {/if}
+            </Heading>
             {#if selectedMode === ADD}
-              {$_('text.create-new-user')}
-              <button on:click={closeAddUserHandler} class="button-close">
-                <Icon class="material-icons" style="vertical-align: middle;">close</Icon>
-              </button>
-            {:else if selectedUser}
-              {selectedUser?.name}
+              <button on:click={() => setMode(EDIT)} class="button-close" />
             {/if}
-          </Heading>
+          </span>
         </div>
         <div class="flex flex-shrink flex-wrap height-100" style="height: 100%;">
           {#if notFound}
@@ -668,7 +663,7 @@
                         variant="raised"
                         disabled={isProtected}
                         on:click={() =>
-                          !isProtected && dispatch('info:token:generate', { open: !!jwt })}
+                          !isProtected && emit('info:token:generate', { open: !!jwt })}
                       >
                         <Icon class="material-icons">link</Icon>
                         <Label class="token-button-label">
@@ -679,8 +674,7 @@
                         disabled={isProtected || !jwt}
                         label={$_('text.can-not-remove-admin-token')}
                         variant="raised"
-                        on:click={() =>
-                          !isProtected && dispatch('info:token:remove', { open: true })}
+                        on:click={() => !isProtected && emit('info:token:remove', { open: true })}
                       >
                         <Icon class="material-icons">link_off</Icon>
                         <Label class="token-button-label">{$_('text.remove-token')}</Label>
@@ -702,7 +696,7 @@
                           <Button
                             disabled={isProtected || hidden}
                             class="action-magic-link"
-                            on:click={() => !isProtected && dispatch('info:token:redirect')}
+                            on:click={() => !isProtected && emit('info:token:redirect')}
                             variant="outlined"
                           >
                             <Icon class="material-icons">link</Icon>
@@ -777,7 +771,7 @@
                     <a
                       href="."
                       class="item"
-                      on:click|preventDefault={() => dispatch('info:open:help-dialog')}
+                      on:click|preventDefault={() => emit('info:open:help-dialog')}
                     >
                       {$_('summary.howDoesItWork.text')}
                     </a>
@@ -932,9 +926,8 @@
   :global(.user-add-view) .button-close {
     display: block;
     position: absolute;
-    right: 20px;
     top: 50%;
-    transform: translate(50%, -50%);
+    transform: translate(0, -50%);
   }
   .alert-box {
     display: table;

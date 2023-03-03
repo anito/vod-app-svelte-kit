@@ -13,7 +13,7 @@ import {
   placeholderDotComAvatar,
   printDiff,
   processRedirect,
-  dispatch,
+  emit,
   randomItem,
   searchParams,
   slugify,
@@ -24,15 +24,19 @@ import {
 } from './helper';
 import { key, players } from './module-vars';
 import {
+  ADD,
   ADMIN,
   ASC,
   DateTimeFormatOptions,
   DEFAULT_LOCALE,
   DEFAULT_ADMIN_TAB,
+  DEL,
   DESC,
   DIFFSTORES,
+  EDIT,
   INBOX,
   LOCALESTORE,
+  PASS,
   SENT,
   SUPERUSER,
   TABS,
@@ -52,7 +56,7 @@ import { getExt, getMediaAvatar, getMediaImage, getMediaVideo } from './media';
 import { localeFormat } from './locale-format';
 import { get, post, put, del, getBlob } from './http';
 import { getAuxSession } from './auxSession';
-import { posterCreatedHandler, posterSelectedHandler, posterRemoveHandler } from './video';
+import { posterCreatedHandler, posterSaveHandler, posterRemoveHandler } from './video';
 import read from './reader';
 
 export {
@@ -88,9 +92,9 @@ export {
   post,
   posterCreatedHandler,
   posterRemoveHandler,
-  posterSelectedHandler,
+  posterSaveHandler,
   printDiff,
-  dispatch,
+  emit,
   put,
   processRedirect,
   randomItem,
@@ -104,15 +108,19 @@ export {
   toLocalDate,
   toLocalTime,
   windowSize,
+  ADD,
   ADMIN,
   ASC,
   DateTimeFormatOptions,
   DEFAULT_ADMIN_TAB,
   DEFAULT_LOCALE,
+  DEL,
   DESC,
   DIFFSTORES,
+  EDIT,
   INBOX,
   LOCALESTORE,
+  PASS,
   SENT,
   SUPERUSER,
   TABS,

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { flash, googleUser } from '$lib/stores';
-  import { get, dispatch } from '$lib/utils';
+  import { get, emit } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import type { GoogleUser } from '$lib/types';
 
@@ -44,9 +44,9 @@
       const { success, data }: any = { ...res };
       if (success) {
         googleUser.set(data.user);
-        dispatch('session:success', { data });
+        emit('session:success', { data });
       } else {
-        dispatch('session:error', { ...data, redirect: '/login' });
+        emit('session:error', { ...data, redirect: '/login' });
       }
       globalGoogle.accounts.id.prompt(); // display the One Tap dialog
     });

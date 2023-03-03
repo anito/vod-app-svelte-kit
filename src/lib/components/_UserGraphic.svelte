@@ -6,7 +6,7 @@
   import type { Badge } from '$lib/types';
   import type { User } from '$lib/classes/repos/types';
 
-  export let user: User | null = null;
+  export let user: User | undefined;
   export let dense = false;
   export let inactive = false;
   export let size = 24;
@@ -48,7 +48,7 @@
     ? `var(${borderColor})`
     : borderColor
     ? borderColor
-    : 'transparent';
+    : 'currentColor';
   extendedBorderColor = extendedBorderColor.startsWith('--')
     ? `var(${extendedBorderColor})`
     : extendedBorderColor
@@ -67,33 +67,38 @@
   $: style = ((style) => style.trim().replace(/ +(?= )/g, ''))(
     `${style} ${sizeVar} ${overlayVars}`
   );
-  $: userGraphicTitle = user ? `${user?.name} (${$session?.role})` : '';
-  $: (async (user) => {
-    const getSource = async (user: User | null) => {
-      if (user?.avatar?.src?.startsWith('http')) {
-        return user.avatar.src;
-      } else if (user?.avatar) {
-        return await getMediaAvatar(user?.avatar?.id, $session.user?.jwt, {
-          width,
-          height,
-          square: 1,
-          quality: 100
-        });
-      } else if (fallback) {
-        return fallback;
-      } else {
-        return placeholderDotComAvatar(user?.email?.split('@').join(' '));
-      }
-    };
-    src = await getSource(user);
-  })(user);
+  $: titleAttr = user ? `[${user?.role}] ${user?.name}` : '';
+  $: (async (usr) => await getSource(usr).then((res) => (src = res)))(user);
+
+  const getSource = async (user: User | undefined) => {
+    if (user?.avatar?.src?.startsWith('http')) {
+      return user.avatar.src;
+    } else if (user?.avatar) {
+      return await getMediaAvatar(user?.avatar?.id, $session.user?.jwt, {
+        width,
+        height,
+        square: 1,
+        quality: 100
+      });
+    } else if (fallback) {
+      return fallback;
+    } else {
+      return placeholderDotComAvatar(user?.email?.split('@').join(' '));
+    }
+  };
 </script>
 
-<span use:addClass={className} class="user-graphics-outer {className}" class:inactive class:dense {style}>
+<span
+  use:addClass={className}
+  class="user-graphics-outer {className}"
+  class:inactive
+  class:dense
+  {style}
+>
   {#if src}
     <Graphic
       class="user-graphics relative"
-      title={userGraphicTitle}
+      title={titleAttr}
       style="
         display: inline-flex;
         vertical-align: middle;

@@ -74,7 +74,7 @@
     "new-poster": "Neues Poster",
     "remove-poster": "Poster entfernen",
     "resolve-conflicts": "Konflikte jetzt lösen",
-    "done": "Ferig",
+    "done": "Fertig",
     "continue-anyways": "Trotzdem versuchen",
     "delete-token-and-deactivate-account": "Token löschen & Account deaktivieren",
     "switch-user": "Ja, Benutzer wechseln",
@@ -253,14 +253,16 @@
     "deleting-media-title": "Entferne {title}",
     "errors-occured": "{count} {type} konnten nicht entfernt werden. Bitte erneut versuchen.",
     "all-media-deleted": "{count} {type} wurden entfernt",
-    "confirm-deletion": "Die ausgewählten Dateien werden permanent entfernt. Möchten Siei fortfahren?",
+    "confirm-deletion": "Die ausgewählten Dateien werden permanent entfernt. Möchten Sie fortfahren?",
     "images": "Poster",
     "clear": "Aufheben",
     "make-default": "Auswahl merken",
     "logging-out": "Melde {name} ab",
     "logged-out": "{name} wurde ausgelogged",
     "mailbox-not-found": "Mailbox [{name}] nicht gefunden",
-    "about-header": "Über diese Seite"
+    "about-header": "Über diese Seite",
+    "closing-current-session": "Beende aktuelle Sitzung",
+    "session-terminated": "Sitzung beendet"
   },
   "summary": {
     "copy-link": {

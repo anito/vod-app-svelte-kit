@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { onDestroy, onMount, getContext } from 'svelte';
+  import { onDestroy, onMount, getContext, createEventDispatcher } from 'svelte';
   import { fly } from 'svelte/transition';
   import { Media, MediaContent } from '@smui/card';
   import Textfield, { Textarea } from '@smui/textfield';
   import VideoPlayer, { mute } from '$lib/components/Video';
-  import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, dispatch } from '$lib/utils';
+  import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, emit } from '$lib/utils';
   import { session, users } from '$lib/stores';
   import dummyPoster from '/src/assets/images/empty-poster.jpg';
   import { _ } from 'svelte-i18n';
@@ -23,9 +23,10 @@
   let canplay = false;
   let paused = true;
 
+  const dispatch = createEventDispatcher();
   const { info }: any = getContext('logger');
 
-  $: user = $users.find((user) => user?.id === $session.user?.id);
+  $: user = $users?.find((user) => user?.id === $session.user?.id);
   $: user && (canplay = false);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: joinData = $users
@@ -65,7 +66,7 @@
     if (!canplay) return;
     if (hasPrivileges) {
       // if (Math.round(video?.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
-      dispatch('video:save', {
+      emit('video:save', {
         data: { id: video.id, playhead }
       });
     } else {
@@ -81,7 +82,7 @@
         ]
       };
 
-      dispatch('user:save', {
+      emit('user:save', {
         data
       });
     }
@@ -134,6 +135,16 @@
     inputEl?.focus();
     inputEl?.select();
   }
+
+  function dispatchEnter(event: CustomEvent) {
+    const e = event as unknown as KeyboardEvent
+    if(e.code == 'Enter') {
+      dispatch('key:enter')
+    }
+    if(e.code == 'Escape') {
+      dispatch('key:escape')
+    }
+  }
 </script>
 
 <Media aspectRatio="16x9">
@@ -145,15 +156,16 @@
             class="mb-3"
             variant="outlined"
             use={[setFocus]}
-            bind:value={title}
             label="Title"
+            bind:value={title}
+            on:keydown={dispatchEnter}
           />
           <Textfield
             class="flex-1"
             textarea
             variant="outlined"
-            bind:value={description}
             label="Description"
+            bind:value={description}
           />
         </div>
       </div>

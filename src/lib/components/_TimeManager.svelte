@@ -26,7 +26,7 @@
   import { endOfWeek, startOfYear, endOfYear, addYears, subYears, parseISO } from 'date-fns';
   import {
     toISODate,
-    dispatch,
+    emit,
     sortByEndDate,
     createRedirectSlug,
     filterByModelKeys,
@@ -148,14 +148,6 @@
       }
     }) || [];
   $: noneUserVideos = hasPrivileges ? $videos : $videosAll;
-  // : $videosAll?.filter(
-  //     (video) =>
-  //       !userVideos?.find((uv) => {
-  //         return (
-  //           video.id === uv.id && (!uv._joinData.end || new Date(uv._joinData.end) > new Date())
-  //         );
-  //       })
-  //   );
   $: if (search.length >= minSearchChars) {
     (async (s) => {
       let res: any;
@@ -248,7 +240,7 @@
     if (!videoExists) {
       await fetch(`/repos/videos?id=${id}`)
         .then(async (res) => await res.json())
-        .then((res) => dispatch('video:add', { data: [res] }));
+        .then((res) => emit('video:add', { data: [res] }));
     }
     scrollIntoView(event);
   }
@@ -292,7 +284,7 @@
       startDate = startDate;
       if (res) handleError(res);
     };
-    dispatch('user:save', { data, onsuccess, onerror });
+    emit('user:save', { data, onsuccess, onerror });
   }
 
   function timeRemaining(video: Video) {
@@ -306,9 +298,7 @@
     if (!schedulingVideoId) {
       throw 'No id specified when trying to remove a video';
     }
-    const idx = userVideos.findIndex(
-      (itm) => itm.id === schedulingVideoId
-    );
+    const idx = userVideos.findIndex((itm) => itm.id === schedulingVideoId);
     const _userVideos = [...userVideos.slice(0, idx), ...userVideos.slice(idx + 1)];
     const ids = _userVideos.map((v) => v.id);
     const data = { id: selectedUser?.id, videos: { _ids: [...ids] } };
@@ -320,7 +310,7 @@
     const onerror = (res: any) => {
       if (res) handleError(res);
     };
-    dispatch('user:save', { data, onsuccess, onerror });
+    emit('user:save', { data, onsuccess, onerror });
   }
 
   function handleSuccess(res: { data: User; message: any }, msg: string) {
@@ -583,13 +573,11 @@
     >
       <Container density="sm">
         <div slot="header">
-          <div>
-            <span class="flex">
-              <Icon class="material-icons">date_range</Icon>
-              <Heading mdc h="5" class="ml-2">{readout}</Heading>
-            </span>
-            <button on:click={() => toggleDatePicker(selectionVideoId)} class="button-close" />
-          </div>
+          <span class="flex">
+            <Icon class="material-icons">date_range</Icon>
+            <Heading mdc h="5" class="ml-2">{readout}</Heading>
+          </span>
+          <button on:click={() => toggleDatePicker(selectionVideoId)} class="button-close" />
         </div>
         {#if $locale}
           <DateRangePicker
@@ -656,10 +644,7 @@
           </p>
           <div class="reasons">
             {#each userInfos as issue}
-              <Button
-                variant="raised"
-                on:click={() => dispatch(issue.eventType, { silent: true })}
-              >
+              <Button variant="raised" on:click={() => emit(issue.eventType, { silent: true })}>
                 <Label>{$_(issue.label)}</Label>
               </Button>
             {/each}

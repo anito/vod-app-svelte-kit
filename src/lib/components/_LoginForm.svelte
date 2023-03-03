@@ -6,7 +6,7 @@
   import { browser, dev } from '$app/environment';
   import { enhance } from '$app/forms';
   import { onMount } from 'svelte';
-  import { dispatch } from '$lib/utils';
+  import { emit } from '$lib/utils';
   import { flash } from '$lib/stores';
   import Button from '@smui/button';
   import TabBar from '@smui/tab-bar';
@@ -79,9 +79,9 @@
         const { success, data }: any = { ...result.data };
 
         if (success) {
-          dispatch('session:success', { data });
+          emit('session:success', { data });
         } else {
-          dispatch('session:error', { ...data });
+          emit('session:error', { ...data });
 
           /**
            * Show dialog after 3 fails

@@ -19,7 +19,7 @@
     UserGraphic,
     VideoEditorList
   } from '$lib/components';
-  import { dispatch, filterByModelKeys, USER } from '$lib/utils';
+  import { emit, filterByModelKeys, USER } from '$lib/utils';
   import Button, { Icon as ButtonIcon } from '@smui/button';
   import Fab, { Label } from '@smui/fab';
   import Icon from '@smui/textfield/icon';
@@ -86,7 +86,7 @@
     })(search);
   }
   $: filteredUsers = ((users) => filterByModelKeys(search, users, modelSearchKeys))(
-    $users.filter((user) => user.id !== $session.user?.id)
+    $users?.filter((user) => user.id !== $session.user?.id)
   );
   $: filteredUsers.sortBy('name');
   $: _infos = $infos as Map<string, { issues: Issue[] }>;
@@ -127,7 +127,7 @@
   users.subscribe(() => usersFoundation.set(null));
 
   async function addUser() {
-    dispatch('user:add');
+    emit('user:add');
   }
 
   async function generateToken(constrained?: boolean) {
@@ -184,7 +184,7 @@
 
   function resolveAll() {
     for (const info of userInfos) {
-      dispatch(info.eventType, { silent: true });
+      emit(info.eventType, { silent: true });
     }
   }
 
@@ -313,7 +313,7 @@
 
     if (success) {
       uploadedData = data;
-      dispatch('video:add', { data });
+      emit('video:add', { data });
       close$default();
     }
   }
@@ -378,7 +378,7 @@
         <SimpleUserCard
           id={$session.user?.id}
           {selectionUserId}
-          user={$users.find((user) => user.id === $session.user?.id) || undefined}
+          user={$users?.find((user) => user.id === $session.user?.id) || undefined}
           ><div class="my-badge">
             <Icon class="material-icons">contact_page</Icon>
           </div>
@@ -597,7 +597,7 @@
             <Button
               variant="raised"
               on:click={() => {
-                dispatch(issue.eventType, { silent: true });
+                emit(issue.eventType, { silent: true });
               }}
             >
               <Label>{$_(issue.label)}</Label>
@@ -636,7 +636,7 @@
         extendedBorderSize={6}
         dense
         extendedBorderColor="--surface"
-        user={$session.user}
+        user={$users?.find(user => user.id === $session.user?.id)}
       />
     </div>
   </Content>

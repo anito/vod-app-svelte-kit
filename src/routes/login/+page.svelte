@@ -6,7 +6,7 @@
   import { LoginForm } from '$lib/components';
   import { flash, session } from '$lib/stores';
   import { fly } from 'svelte/transition';
-  import { processRedirect, dispatch } from '$lib/utils';
+  import { processRedirect, emit } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import type { PageData } from './$types';
 
@@ -72,9 +72,9 @@
 
   async function fromToken() {
     if (data.success) {
-      dispatch('session:success', { data: data.data });
+      emit('session:success', { data: data.data });
     } else {
-      dispatch('session:error', { ...data.data, redirect: '/login' });
+      emit('session:error', { ...data.data, redirect: '/login' });
     }
     return true;
   }

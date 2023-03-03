@@ -12,7 +12,7 @@
     FlexContainer,
     SearchTextField
   } from '$lib/components';
-  import { dynamicUrl, filterByModelKeys, dispatch } from '$lib/utils';
+  import { dynamicUrl, filterByModelKeys, emit } from '$lib/utils';
   import { videos } from '$lib/stores';
   import emptyPoster from '/src/assets/images/empty-poster.jpg';
   import { _ } from 'svelte-i18n';
@@ -35,7 +35,7 @@
     (async (s) => {
       const { success, data } = await searchVideos({ keys: modelSearchKeys, search: s });
       if (success) {
-        dispatch('video:add', { data });
+        emit('video:add', { data });
       }
     })(search);
   }
