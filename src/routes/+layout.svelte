@@ -879,15 +879,13 @@
                   </Button>
                 </Item>
                 <Separator />
-                {#if $session.role !== SUPERUSER}
-                  <Item class="justify-start">
-                    <Button formaction="/config?/reload" class="link-button" ripple={false}>
-                      <SvgIcon name="sync" class="mr-2" />
-                      <Label>Reload Config</Label>
-                    </Button>
-                  </Item>
-                  <Separator />
-                {/if}
+                <Item class="justify-start">
+                  <Button formaction="/config?/reload" class="link-button" ripple={false}>
+                    <SvgIcon name="sync" class="mr-2" />
+                    <Label>Reload Config</Label>
+                  </Button>
+                </Item>
+                <Separator />
                 <Item class="justify-start">
                   <Button
                     href={`${$page.url.pathname}${buildSearchParams($page.url.searchParams, {
