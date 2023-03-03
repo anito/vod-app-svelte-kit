@@ -7,7 +7,7 @@ import type { RequestEvent } from './$types';
 const parseData = (data: any) => {
   const { id, name, email, avatar, jwt, role, groups }: User = { ...data.user, ...data };
   return {
-    user: { id, name, email, jwt, avatar },
+    user: { id, name, email, jwt, avatar, role },
     role,
     groups
   };

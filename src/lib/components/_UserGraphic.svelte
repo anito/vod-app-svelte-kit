@@ -67,7 +67,7 @@
   $: style = ((style) => style.trim().replace(/ +(?= )/g, ''))(
     `${style} ${sizeVar} ${overlayVars}`
   );
-  $: titleAttr = user ? `[${user?.role}] ${user?.name}` : '';
+  $: titleAttr = user ? `${user?.name} (${user?.role})` : '';
   $: (async (usr) => await getSource(usr).then((res) => (src = res)))(user);
 
   const getSource = async (user: User | undefined) => {

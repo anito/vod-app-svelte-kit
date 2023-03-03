@@ -636,7 +636,7 @@
         extendedBorderSize={6}
         dense
         extendedBorderColor="--surface"
-        user={$users?.find(user => user.id === $session.user?.id)}
+        user={$session.user}
       />
     </div>
   </Content>

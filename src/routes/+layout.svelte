@@ -785,7 +785,7 @@
                   borderSize={2}
                   borderColor={'--primary'}
                   dense
-                  user={$users?.find((user) => user.id === $session.user?.id)}
+                  user={$session.user}
                   badge={{
                     icon: 'settings',
                     color: '--primary',
