@@ -434,12 +434,12 @@
                     borderColor="--primary"
                     extendedBorderColor="--background-intense"
                     extendedBorderSize={10}
-                    badge={{
-                      icon: hasCurrentPrivileges ? 'admin_panel_settings' : '',
+                    badge={ hasCurrentPrivileges ? {
+                      icon:  'admin_panel_settings',
                       color: isCurrentSuperuser ? 'rgb(26, 4, 4)' : 'rgb(206, 4, 4)',
                       size: 'large',
                       position: 'BOTTOM_RIGHT'
-                    }}
+                    } : false }
                   />
                   <Menu
                     bind:this={avatarMenu}
