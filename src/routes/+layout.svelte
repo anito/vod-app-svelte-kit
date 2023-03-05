@@ -251,7 +251,7 @@
   $: searchParamsString = $page.url.searchParams.toString();
   $: search = searchParamsString && `?${searchParamsString}`;
   $: settingsDialog?.setOpen($page.url.searchParams.get('modal') === 'settings');
-  $: $locale && setMode(colorSchema?.current.mode);
+  $: $locale && setTheme(colorSchema?.current.mode);
   $: $mounted &&
     (loaderBackgroundColor = colorSchema.current.mode === DARK ? '#000000' : '#ffffff');
   $: currentStore = $currentMediaStore;
@@ -269,7 +269,7 @@
 
     isPreferredDarkMode = !window.matchMedia('(prefers-color-scheme: light)').matches;
     const mode = isPreferredDarkMode ? DARK : LIGHT;
-    setMode(mode);
+    setTheme(mode);
 
     $mounted = true;
     return () => {
@@ -278,22 +278,8 @@
     };
   });
 
-  const isExpired = () => new Date() > new Date($session._expires);
-
   async function checkSession() {
-    const { user, fromToken } = { ...$session };
-    if (!user || fromToken) {
-      fadeIn();
-      return;
-    }
-
-    if (user && isExpired()) {
-      emit('session:stop', {
-        callback: fadeIn
-      });
-      return;
-    }
-    emit('session:success', { data: $session, callback: fadeIn });
+    emit('session:validate', { callback: fadeIn });
   }
 
   function fadeIn() {
@@ -335,7 +321,7 @@
     });
   }
 
-  function setMode(mode: string | undefined) {
+  function setTheme(mode: string | undefined) {
     colorSchema = setColorSchema(mode);
     root?.classList.toggle(DARK, mode === DARK);
     mediaMode = mode;
@@ -385,7 +371,7 @@
 
   async function mediaChangedHandler({ matches }: any) {
     const mode = matches ? LIGHT : DARK;
-    setMode(mode);
+    setTheme(mode);
   }
 
   async function videoSaveHandler({ detail }: CustomEvent) {
@@ -868,7 +854,7 @@
                 <Separator />
                 <Item class="justify-start">
                   <Button
-                    on:click$preventDefault={() => setMode(colorSchema?.requested.mode)}
+                    on:click$preventDefault={() => setTheme(colorSchema?.requested.mode)}
                     class="link-button"
                     ripple={false}
                   >

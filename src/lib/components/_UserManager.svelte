@@ -147,7 +147,7 @@
       setFab();
     }
   })(selectedMode);
-  $: setMode(mode);
+  $: browser && setMode(mode);
 
   onMount(() => {
     root = document.documentElement;
