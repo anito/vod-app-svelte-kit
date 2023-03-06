@@ -633,6 +633,7 @@
 
   async function visibilityChangeHandler() {
     if (document.visibilityState === 'visible') {
+      await invalidate('session:validate');
       await invalidate('app:session');
       await invalidate('app:main');
     }
