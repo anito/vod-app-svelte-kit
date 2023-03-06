@@ -594,17 +594,23 @@
     }
   }
 
+  function validateSession() {
+    return sessionValidateHandler(new CustomEvent('session:validate'));
+  }
+
   async function sessionValidateHandler({ detail }: CustomEvent) {
     const lifetime = $page.data.config.Session?.lifetime;
     const _expires = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
-    await post('/session/validate', { _expires }).then(async (res) => {
+    return await post('/session/validate', { _expires }).then(async (res) => {
       if (res.success === false) {
         if ($session.user) {
           emit('session:stop');
+          return false;
         }
       }
+      detail?.callback?.();
+      return true;
     });
-    detail?.callback?.();
   }
 
   function sessionErrorHandler({ detail }: CustomEvent) {
@@ -633,9 +639,10 @@
 
   async function visibilityChangeHandler() {
     if (document.visibilityState === 'visible') {
-      await invalidate('session:validate');
-      await invalidate('app:session');
-      await invalidate('app:main');
+      if (await validateSession()) {
+        await invalidate('app:session');
+        await invalidate('app:main');
+      }
     }
   }
 
