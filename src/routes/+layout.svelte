@@ -592,10 +592,6 @@
     callback?.();
   }
 
-  function validateSession() {
-    return sessionValidateHandler(new CustomEvent('session:validate'));
-  }
-
   async function visibilityChangeHandler() {
     const callback = async ({ success }: { success: boolean }) => {
       if (success) {
