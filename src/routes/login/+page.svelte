@@ -46,7 +46,9 @@
   });
 
   function onVisibilitychangeHandler() {
-    introendHandler();
+    if (document.visibilityState === 'visible') {
+      introendHandler();
+    }
   }
 
   // listeners are ready
