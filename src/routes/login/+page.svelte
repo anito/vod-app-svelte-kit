@@ -37,19 +37,7 @@
         type: 'success'
       });
 
-  onMount(() => {
-    document.addEventListener('visibilitychange', onVisibilitychangeHandler);
-
-    return () => {
-      document.removeEventListener('visibilitychange', onVisibilitychangeHandler);
-    };
-  });
-
-  function onVisibilitychangeHandler() {
-    if (document.visibilityState === 'visible') {
-      introendHandler();
-    }
-  }
+  onMount(() => { });
 
   // listeners are ready
   async function init() {
