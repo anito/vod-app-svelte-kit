@@ -24,7 +24,7 @@
   const pathnames: string[] = [];
 
   let root: HTMLElement;
-  let timeoutId: string | number | NodeJS.Timeout | undefined;
+  let timeoutId: number | undefined;
 
   let disabled = false;
   const omitt = new Map([

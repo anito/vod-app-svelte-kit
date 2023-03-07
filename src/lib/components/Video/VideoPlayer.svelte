@@ -4,12 +4,12 @@
 
 <script lang="ts">
   import { page } from '$app/stores';
-  import { Video, mute } from '.';
+  import { Video } from '.';
   import { onMount } from 'svelte';
   import { getExt } from '$lib/utils';
+  import { players } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import type { Video as VideoType } from '$lib/classes/repos/types';
-  import { players } from '$lib/utils';
 
   let now = new Date().getTime();
 
@@ -50,6 +50,9 @@
       }
     })(!paused);
 
+  /**
+   * Only one player playing at a time
+   */
   function pausePlayers() {
     players.forEach((player) => {
       if (player.videoElement !== videoElement) {
@@ -61,22 +64,18 @@
       }
     });
   }
-
-  /**
-   * only one player active at a time
-   */
   function limitStreamsOnChrome() {
     if (browserName !== 'Chrome') return;
-    var _player, _players;
-    _players = Array.from(players);
-    _players = _players.filter((player) => player.timestamp > now && player.videoElement.paused);
-    _player = _players
+    var lastPlayer, playersArr;
+    playersArr = Array.from(players);
+    playersArr = playersArr.filter((player) => player.timestamp > now && player.videoElement.paused);
+    lastPlayer = playersArr
       .sort((a, b) => b.timestamp - a.timestamp)
       .slice(MAXSTREAMS - 1)
       .shift();
-    if (_player) {
-      _player.videoElement.src = '';
-      _player.videoElement.promise = void 0;
+    if (lastPlayer) {
+      lastPlayer.videoElement.src = '';
+      lastPlayer.videoElement.promise = void 0;
     }
   }
 </script>
@@ -101,9 +100,9 @@
   </div>
 {/if}
 {#if !canplay && video.duration}
-    <div class="duration">
-      {video.duration?.toHHMMSS()}
-    </div>
+  <div class="duration">
+    {video.duration?.toHHMMSS()}
+  </div>
 {/if}
 <Video
   class={className}
@@ -111,7 +110,8 @@
   bind:videoElement
   bind:playhead
   on:player:paused
-  on:player:canplay={() => canplay = true}
+  on:player:canplay={() => (canplay = true)}
+  on:player:canplay
   on:player:emptied
   on:player:aborted
   on:player:loadeddata
@@ -189,7 +189,8 @@
   }
   .duration {
     display: inline-block;
-    font-family: -apple-system, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji';
+    font-family: -apple-system, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans',
+      'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji';
     font-size: 11px;
     position: absolute;
     z-index: 1;

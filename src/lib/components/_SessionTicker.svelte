@@ -14,7 +14,7 @@
 
   let className = '';
   let last: string;
-  let timeoutId: string | number | NodeJS.Timeout | undefined;
+  let timeoutId: number | undefined;
   let fails = Fails;
   let forced = false;
   let fadeoutTimeMs = 2000;

@@ -8,7 +8,7 @@
   const scrubStart = { x: 0, y: 0, playhead: 0 };
 
   let duration: number;
-  let controlsTimeout: string | number | NodeJS.Timeout | undefined;
+  let controlsTimeout: number | undefined;
   let className = '';
   let hydrated = false;
   let hydrating = false;

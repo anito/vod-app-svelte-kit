@@ -68,7 +68,7 @@
   let activeLabel = '';
   let protectedLabel = '';
   let inputElementMagicLink: HTMLInputElement;
-  let copyTimeoutId: string | number | NodeJS.Timeout | undefined;
+  let copyTimeoutId: number | undefined;
   let copyButton: HTMLButtonElement;
   let group_id: string;
   let name = '';

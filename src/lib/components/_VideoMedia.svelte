@@ -43,7 +43,14 @@
     if (paused && canplay) {
       let pausedTime = time;
       clearTimeout(timeoutId);
-      timeoutId = setTimeout((saved) => saved === time && savePlayhead(), 200, pausedTime);
+      timeoutId = setTimeout(
+        (pausedAtTime: number) => {
+          if(pausedAtTime === time) savePlayhead()
+          else console.log(time, pausedAtTime);
+        },
+        200,
+        pausedTime
+      );
     }
   })(playhead);
 
@@ -137,12 +144,12 @@
   }
 
   function dispatchEnter(event: CustomEvent) {
-    const e = event as unknown as KeyboardEvent
-    if(e.code == 'Enter') {
-      dispatch('key:enter')
+    const e = event as unknown as KeyboardEvent;
+    if (e.code == 'Enter') {
+      dispatch('key:enter');
     }
-    if(e.code == 'Escape') {
-      dispatch('key:escape')
+    if (e.code == 'Escape') {
+      dispatch('key:escape');
     }
   }
 </script>
