@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import { ADMIN, createTabSearch, DEFAULT_TAB, SUPERUSER } from '$lib/utils';
 import type { PageLoadEvent } from './$types';
 
-export async function load({ url, parent }: PageLoadEvent) {
+export async function load({ parent }: PageLoadEvent) {
   const { session, config } = await parent();
   if (session.user) {
     const hasPrivileges = session.role === ADMIN || session.role === SUPERUSER;
