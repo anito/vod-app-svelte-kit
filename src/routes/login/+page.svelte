@@ -2,13 +2,14 @@
   import './_tabs.scss';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { getContext, onMount } from 'svelte';
+  import { getContext } from 'svelte';
   import { LoginForm } from '$lib/components';
   import { flash, session } from '$lib/stores';
   import { fly } from 'svelte/transition';
   import { processRedirect, emit } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import type { PageData } from './$types';
+  import { browser } from '$app/environment';
 
   export let data: PageData;
 
@@ -32,15 +33,21 @@
         message: $_('text.authenticating'),
         type: 'success'
       }
-    : {
-        message: $_('text.login-text'),
-        type: 'success'
-      });
-
-  onMount(() => {
-    document.addEventListener('visibilitychange', visibilityChangeHandler);
-    return () => document.removeEventListener('visibilitychange', visibilityChangeHandler);
-  });
+    : {});
+  $: userPromise =
+    browser &&
+    (new Promise((resolve, reject) => {
+      if ($session.user)
+        resolve({
+          message: `${$session.salutation}, ${$session.user.name}`,
+          type: 'success'
+        });
+      else
+        reject({
+          message: $_('text.login-text'),
+          type: 'success'
+        });
+    }).catch() as Promise<{ message: string; type: string }>);
 
   // listeners are ready
   async function init() {
@@ -49,23 +56,15 @@
       return;
     }
     if (data.fromToken) {
-      fromToken()
+      fromToken();
     }
     promise = new Promise((resolve) => setTimeout(() => resolve(1), 500));
   }
 
-  async function visibilityChangeHandler() {
-    if (document.visibilityState === 'visible') {
-      introendHandler();
-    }
-  }
-
-  async function introendHandler() {
-    setTimeout(() => {
-      if ($session.user) {
-        const location = processRedirect($page.url, $session);
-        if ($page.url.pathname.startsWith('/login')) goto(location);
-      }
+  function introendHandler() {
+    setTimeout(async () => {
+      const location = processRedirect($page.url, $session);
+      await goto(location);
     }, 1000);
   }
 
@@ -102,14 +101,25 @@
                   {$flash.message}
                 </h5>
               </div>
-            {:else if message}
-              <div
-                class="flex justify-center items-center message {type}"
-                in:fly={textTransitionParams}
-                on:introend={introendHandler}
-              >
-                <h5 class="m-2 mdc-typography--headline5 headline">{message}</h5>
-              </div>
+            {:else}
+              {#await userPromise then promise}
+                {#if promise}
+                  <div
+                    class="flex justify-center items-center message {promise.type}"
+                    in:fly={textTransitionParams}
+                    on:introend={introendHandler}
+                  >
+                    <h5 class="m-2 mdc-typography--headline5 headline">{promise.message}</h5>
+                  </div>
+                {/if}
+              {:catch reason}
+                <div
+                  class="flex justify-center items-center message {reason.type}"
+                  in:fly={textTransitionParams}
+                >
+                  <h5 class="m-2 mdc-typography--headline5 headline">{reason.message}</h5>
+                </div>
+              {/await}
             {/if}
           </div>
           <div class="login-form loggedin" class:loggedin>
