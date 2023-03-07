@@ -37,7 +37,10 @@
         type: 'success'
       });
 
-  onMount(() => { });
+  onMount(() => {
+    document.addEventListener('visibilitychange', visibilityChangeHandler);
+    return () => document.removeEventListener('visibilitychange', visibilityChangeHandler);
+  });
 
   // listeners are ready
   async function init() {
@@ -49,6 +52,12 @@
       fromToken()
     }
     promise = new Promise((resolve) => setTimeout(() => resolve(1), 500));
+  }
+
+  async function visibilityChangeHandler() {
+    if (document.visibilityState === 'visible') {
+      introendHandler();
+    }
   }
 
   async function introendHandler() {
@@ -93,7 +102,7 @@
                   {$flash.message}
                 </h5>
               </div>
-            {:else}
+            {:else if message}
               <div
                 class="flex justify-center items-center message {type}"
                 in:fly={textTransitionParams}
