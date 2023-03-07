@@ -81,7 +81,7 @@
   let snackbarMessage = '';
   let actionLink: string;
   let actionLabel: string;
-  let timeoutId: string | number | NodeJS.Timeout | undefined;
+  let timeoutId: number | undefined;
   let pollId;
   let loggedInButtonTextSecondLine: string;
   let emphasize: string;
