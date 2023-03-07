@@ -63,7 +63,7 @@
   import { svg_manifest } from '$lib/svg_manifest';
   import { _, locale } from 'svelte-i18n';
   import Dialog, { Title as DialogTitle, Content, Actions as DialogActions } from '@smui/dialog';
-  import { IMAGE, VIDEO } from '$lib/utils/const';
+  import { DEFAULT_TAB, IMAGE, VIDEO } from '$lib/utils/const';
   import { inject } from '@vercel/analytics';
   import type { NavigationTarget } from '@sveltejs/kit';
   import type { Dropzone } from '$lib/components/Dropzone/type';
@@ -724,7 +724,7 @@
             {#if hasPrivileges}
               <NavItem
                 href={`/users/${$session.user?.id}${createTabSearch(
-                  $page.data.config.Site.defaultAdminTab
+                  $page.data.config.Site.defaultadmintab || DEFAULT_TAB
                 )}`}
                 title="Administration"
                 segment="users"

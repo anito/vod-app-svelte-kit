@@ -178,7 +178,8 @@ export interface Config<ConfigType = Record<string, any>> {
 }
 
 export interface SiteConfig<SiteConfigType = Record<string, any>> {
-  defaultAdminTab: string;
+  defaultadmintab: string;
+  defaultusertab: string;
   salutation: string;
   salutations: Array;
   name: string;

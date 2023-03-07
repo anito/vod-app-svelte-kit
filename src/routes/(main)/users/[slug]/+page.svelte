@@ -6,7 +6,7 @@
   import { UserManager, TimeManager, MailManager, UserGraphic } from '$lib/components';
   import Button, { Group, Label, Icon } from '@smui/button';
   import { users, usersFoundation, session } from '$lib/stores';
-  import { emit, INBOX, ADMIN, SUPERUSER, TABS, createTabSearch, EDIT, ADD } from '$lib/utils';
+  import { emit, INBOX, ADMIN, SUPERUSER, TABS, createTabSearch, EDIT, ADD, DEFAULT_TAB } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import type { PageData } from './$types';
   import type { User } from '$lib/classes/repos/types';
@@ -57,9 +57,13 @@
 
   onMount(() => {
     window.addEventListener('user:add', addUserHandler);
-    if(!tab) {
-      const search = createTabSearch($page.data.config.Site.defaultAdminTab)
-      setTimeout(() => goto($page.url.pathname+search), 200)
+    if (!tab) {
+      const hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
+      const tab = hasPrivileges
+        ? $page.data.config.Site.defaultadmintab
+        : $page.data.config.Site.defaultusertab;
+      const search = createTabSearch(tab || DEFAULT_TAB);
+      setTimeout(() => goto($page.url.pathname + search), 200);
     }
     return () => {
       window.removeEventListener('user:add', addUserHandler);
