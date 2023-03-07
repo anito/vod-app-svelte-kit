@@ -48,7 +48,7 @@
     streams,
     selection,
     videosAll,
-    sessionCookie
+    sessionHelper
   } from '$lib/stores';
   import { Modal, SvgIcon, DoubleBounce } from '$lib/components';
   import {
@@ -608,7 +608,9 @@
     const lifetime = $page.data.config.Session?.lifetime;
     const _expires = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
     return await post('/session/validate', { _expires }).then(async (res) => {
-      if (res.success === false) {
+      if (res.success === true) {
+        sessionHelper.update({ _expires });
+      } else if (res.success === false) {
         if ($session.user) {
           emit('session:stop');
         }

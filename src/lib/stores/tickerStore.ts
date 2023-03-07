@@ -9,19 +9,15 @@ function createStore() {
   let intervalId: string | number | NodeJS.Timeout | undefined;
 
   return derived(
-    [session, page],
-    ([$session, $page], set) => {
-      if (!$session.user) return;
-
-      const expires = () => {
-        return {
-          SESSION: new Date($session._expires).getTime(),
-          CONFIG: new Date().getTime() + parseLifetime($page.data.config.Session?.lifetime)
-        };
-      };
-      const { CONFIG, SESSION } = expires();
-
-      const _expires = CONFIG;
+    /**
+     * We do need sessionStore here as well (although never used elsewhere in this code),
+     * in order to reflect changes made on sessionHelperStore which sessionStore depends on
+     * - sessionHelperStore is a store that just holds the _expired value from our cookie-session
+     */
+    [page, session],
+    ([$page], set) => {
+      if (!$page.data.session.user) return;
+      const _expires = new Date().getTime() + parseLifetime($page.data.config.Session?.lifetime);
       if (isNaN(_expires)) {
         return;
       }
