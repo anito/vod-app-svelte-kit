@@ -28,13 +28,14 @@
   const dispatch = createEventDispatcher();
 
   interface DateRecord {
-    value: Date; text: string
+    value: Date;
+    text: string;
   }
 
   let selectedMonth: DateRecord;
   let selectedYear: DateRecord;
 
-  $: months = locale && buildMonthDropdown(month, monthFormat) || [];
+  $: months = (locale && buildMonthDropdown(month, monthFormat)) || [];
   $: years = months && buildYearDropdown(minDate, maxDate, pageNum);
   $: prevMonth = subMonths(month, 1);
   $: nextMonth = addMonths(month, 1);
@@ -47,27 +48,27 @@
     (!isSameMonth(mo, minDate) && isAfter(mo, maxDate));
 
   function isSelectedMonth(mo: DateRecord) {
-    if(isSameMonth(mo.value, month)) {
-      setSelectedMonth(mo)
-      return true
+    if (isSameMonth(mo.value, month)) {
+      setSelectedMonth(mo);
+      return true;
     }
-    return false
+    return false;
   }
 
   function isSelectedYear(yr: DateRecord) {
-    if(isSameYear(yr.value, month)) {
-      setSelectedYear(yr)
-      return true
+    if (isSameYear(yr.value, month)) {
+      setSelectedYear(yr);
+      return true;
     }
-    return false
+    return false;
   }
 
-  function setSelectedMonth(month: DateRecord) {
-    selectedMonth = month
+  async function setSelectedMonth(month: DateRecord) {
+    setTimeout(() => (selectedMonth = month));
   }
 
-  function setSelectedYear(year: DateRecord) {
-    selectedYear = year
+  async function setSelectedYear(year: DateRecord) {
+    setTimeout(() => (selectedYear = year));
   }
 </script>
 
@@ -97,11 +98,7 @@
         }}
       >
         {#each months as mo}
-          <option
-            disabled={isOptionDisabled(mo.value)}
-            selected={isSelectedMonth(mo)}
-            value={mo}
-          >
+          <option disabled={isOptionDisabled(mo.value)} selected={isSelectedMonth(mo)} value={mo}>
             {mo.text}
           </option>
         {/each}
@@ -120,11 +117,7 @@
           })}
       >
         {#each years as yr}
-          <option
-            disabled={isOptionDisabled(yr.value)}
-            selected={isSelectedYear(yr)}
-            value={yr}
-          >
+          <option disabled={isOptionDisabled(yr.value)} selected={isSelectedYear(yr)} value={yr}>
             {yr.text}
           </option>
         {/each}
