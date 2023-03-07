@@ -23,17 +23,6 @@
 
   $: $mounted && init();
   $: loggedin = !!$session.user;
-  $: ({ message, type } = $session.user
-    ? {
-        message: `${$session.salutation}, ${$session.user.name}`,
-        type: 'success'
-      }
-    : $page.url.searchParams.has('token')
-    ? {
-        message: $_('text.authenticating'),
-        type: 'success'
-      }
-    : {});
   $: userPromise =
     browser &&
     (new Promise((resolve, reject) => {
@@ -44,7 +33,9 @@
         });
       else
         reject({
-          message: $_('text.login-text'),
+          message: $page.url.searchParams.has('token')
+            ? $_('text.one-moment')
+            : $_('text.login-text'),
           type: 'success'
         });
     }).catch() as Promise<{ message: string; type: string }>);
