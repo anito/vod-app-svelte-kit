@@ -8,6 +8,8 @@
   import { emit, ADMIN, SUPERUSER } from '$lib/utils';
   import { VideoManager, ImageManager, Container, Heading } from '$lib/components';
   import { _ } from 'svelte-i18n';
+    import SvgIcon from '$lib/components/_SvgIcon.svelte';
+    import { id } from 'date-fns/locale';
 
   const TABS = ['videos', 'images'];
 
@@ -125,13 +127,16 @@
     <div class="flex flex-1">
       <div class="grid-inner">
         <div class="media-grid non-admin">
-          <div class="grid-item toolbar pl-8">
-            <Heading
-              h="5"
-              mdc
-              wrapperStyle="
-            padding: 10px 10px 0;">{@html $_('text.your-videos')}</Heading
-            >
+          <div class="grid-item pl-8 pt-3 flex items-center">
+            <span class="pr-3"><SvgIcon name='ondemand_video' /></span>
+            <span>
+              <Heading
+                h="5"
+                mdc
+                wrapperStyle="
+              color: currentColor; padding: 10px 10px 10px 0;">{@html $_('text.enjoy-your-videos')}</Heading
+              >
+            </span>
           </div>
           <div class="frame grid-item one">
             <VideoManager />

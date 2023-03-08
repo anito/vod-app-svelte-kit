@@ -226,7 +226,6 @@
     "new-message-from-user": "Neue Nachricht von <strong>{name}</strong>",
     "one-moment": "Einen Moment...",
     "welcome": "Willkommen",
-    "change-account": "Konto wechseln",
     "empty-edit-mode": "Kein Bearbeitungsmodus ausgewählt",
     "video-poster": "Video-Poster",
     "image": "Poster",
@@ -242,7 +241,6 @@
     "load-more": "Mehr laden",
     "paginator-indicator": "nächste {next_count} ({loaded_count}/{count})",
     "posters": "Poster",
-    "your-videos": "Deine Videos",
     "dark_mode": "Lichter aus",
     "type-min-char-count": "Tippe {count} oder mehr Zeichen für Serversuche",
     "you-will-be-logged-out": "Aktuelle Sitzung beenden und als <strong>{name}</strong> anmelden?",
@@ -262,7 +260,9 @@
     "about-header": "Über diese Seite",
     "closing-current-session": "Beende aktuelle Sitzung",
     "session-terminated": "Sitzung beendet",
-    "permanently-deleting-media": "Entferne unwiderruflich {title}"
+    "permanently-deleting-media": "Entferne unwiderruflich {title}",
+    "switch-account": "Konto wechseln",
+    "enjoy-your-videos": "Deine Videos"
   },
   "summary": {
     "copy-link": {

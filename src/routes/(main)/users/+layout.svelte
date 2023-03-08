@@ -584,7 +584,7 @@
   on:SMUIDialog:closed={tokenRedirectDialogCloseHandler}
   class="redirect-dialog"
 >
-  <DialogTitle id="event-title">{$_('text.change-account')}</DialogTitle>
+  <DialogTitle id="event-title">{$_('text.switch-account')}</DialogTitle>
   <Content id="event-content">
     {#if userIssues.length}
       <p>

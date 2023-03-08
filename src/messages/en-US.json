@@ -226,7 +226,6 @@
     "new-message-from-user": "New message from <strong>{name}</strong>",
     "one-moment": "One Moment...",
     "welcome": "Welcome",
-    "change-account": "Change account",
     "empty-edit-mode": "No mode selected",
     "video-poster": "Poster",
     "image": "Poster",
@@ -242,7 +241,6 @@
     "load-more": "Load more",
     "paginator-indicator": "next {next_count} ({loaded_count}/{count})",
     "posters": "Posters",
-    "your-videos": "Your videos",
     "dark_mode": "Lights Off",
     "type-min-char-count": "Type {count} or more characters to lookup server results",
     "you-will-be-logged-out": "Terminate current session and sign in as <strong>{name}</strong>?",
@@ -262,7 +260,9 @@
     "about-header": "About this site",
     "closing-current-session": "Terminating current session",
     "session-terminated": "Session terminated",
-    "permanently-deleting-media": "Permanently deleting {title}"
+    "permanently-deleting-media": "Permanently deleting {title}",
+    "switch-account": "Switch account",
+    "enjoy-your-videos": "Enjoy your videos"
   },
   "summary": {
     "copy-link": {

@@ -133,7 +133,7 @@
           style="margin-right: 10px;"
           user={selectedUser}
         />
-        <Label>{$_('text.change-account')}</Label>
+        <Label>{$_('text.switch-account')}</Label>
       </Button>
     </div>
   </div>
