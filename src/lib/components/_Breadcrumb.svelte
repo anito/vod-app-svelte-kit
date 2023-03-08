@@ -18,7 +18,7 @@
 <div class="breadcrumb text-xs {className}" class:simple>
   {#if simple}
     <span class="flex simple-breadcrumb">
-      <Button on:click={() => goto(`/${simple_bit}`)} class="unelevated">
+      <Button href={`/${simple_bit}`} class="unelevated">
         <Icon class="material-icons">navigate_before</Icon>
         <Label class="label">{simple_bit || 'home'}</Label>
       </Button>

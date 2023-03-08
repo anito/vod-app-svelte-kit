@@ -14,9 +14,8 @@ async function uri(id: any, token: any, type: string, { ...options }) {
   const searchParam = buildSearchParams(options);
   const url = `u/${base}/${id}${searchParam}`;
 
-  return await api
-    .get(`${url}`, { token })
-    .then((res) => {
+  return await api.get(`${url}`, { token }).then((res) => {
+    try {
       if (res?.success) {
         return res.data;
       } else {
@@ -24,8 +23,10 @@ async function uri(id: any, token: any, type: string, { ...options }) {
           type || 'unknown'
         }, id: ${id}`;
       }
-    })
-    .catch((reason) => console.log(reason));
+    } catch (error) {
+      console.error('[FETCH MEDIA]', error);
+    }
+  });
 }
 
 async function getMedia(
@@ -44,8 +45,10 @@ async function getMedia(
 
     if (!cached) {
       url = await uri(id, token, type, params).then((res) => {
-        urls.add(res);
-        return res['url'];
+        if (res) {
+          urls.add(res);
+          return res['url'];
+        }
       });
     }
     if (url) return `${url}/?token=${token}`;

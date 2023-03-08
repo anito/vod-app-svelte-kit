@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onDestroy, onMount, getContext, createEventDispatcher } from 'svelte';
+  import { onDestroy, onMount, getContext, createEventDispatcher, tick } from 'svelte';
   import { fly } from 'svelte/transition';
   import { Media, MediaContent } from '@smui/card';
   import Textfield, { Textarea } from '@smui/textfield';
@@ -72,12 +72,10 @@
   async function savePlayhead() {
     if (!canplay) return;
     if (hasPrivileges) {
-      // if (Math.round(video?.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
       emit('video:save', {
         data: { id: video.id, playhead }
       });
     } else {
-      // if (Math.round(joinData?.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
       const data = {
         id: user?.id,
         videos: [

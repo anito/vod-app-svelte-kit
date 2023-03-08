@@ -250,7 +250,6 @@
     "files-in-queue": "Es befinde{plural} sich noch {count} {files} in der Warteschlange!",
     "select": "Auswählen",
     "deleting-media": "{count} {media} löschen",
-    "deleting-media-title": "Entferne {title}",
     "errors-occured": "{count} {type} konnten nicht entfernt werden. Bitte erneut versuchen.",
     "all-media-deleted": "{count} {type} wurden entfernt",
     "confirm-deletion": "Die ausgewählten Dateien werden permanent entfernt. Möchten Sie fortfahren?",
@@ -262,7 +261,8 @@
     "mailbox-not-found": "Mailbox [{name}] nicht gefunden",
     "about-header": "Über diese Seite",
     "closing-current-session": "Beende aktuelle Sitzung",
-    "session-terminated": "Sitzung beendet"
+    "session-terminated": "Sitzung beendet",
+    "permanently-deleting-media": "Entferne unwiderruflich {title}"
   },
   "summary": {
     "copy-link": {

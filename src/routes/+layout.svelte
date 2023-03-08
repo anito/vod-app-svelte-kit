@@ -385,8 +385,8 @@
 
     if (res?.success) {
       videos.put(data);
-      // We must reload relational images repo in order to reflect poster changes
-      await fetch(`/repos/images?auto=true`)
+      // Reload relational images repo in order to reflect poster changes
+      await fetch(`/repos/images?autolimit=true`)
         .then(async (res) => await res.json())
         .then((res) => {
           if (res.success) {
@@ -432,7 +432,7 @@
     if (res?.success) {
       urls.del(id);
       store.del(id);
-      await fetch(`${relatedEndpoint}?auto=true`)
+      await fetch(`${relatedEndpoint}?autolimit=true`)
         .then(async (res) => await res.json())
         .then((res) => {
           if (res.success) {
@@ -723,9 +723,7 @@
 
             {#if hasPrivileges}
               <NavItem
-                href={`/users/${$session.user?.id}${createTabSearch(
-                  $page.data.config.Site.defaultadmintab || DEFAULT_TAB
-                )}`}
+                href={$page.url.pathname.startsWith('/users') ? $page.url.href : `/users`}
                 title="Administration"
                 segment="users"
               >
@@ -909,7 +907,9 @@
 >
   <DialogTitle id="info-title">{$_('text.deleting-media')}</DialogTitle>
   <Content>
-    <div class="">{$_('text.deleting-media-title', { values: { title: media?.title } })}</div>
+    <div class="">
+      {$_('text.permanently-deleting-media', { values: { title: media?.title || '' } })}
+    </div>
   </Content>
 </Dialog>
 <Dialog

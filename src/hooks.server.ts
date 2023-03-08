@@ -21,8 +21,8 @@ export const handle = handleSession(
   async ({ event, resolve }) => {
     dev && (process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0');
 
-    // Forcing config to reload
-    if (event.url.pathname.startsWith('/getconfig')) {
+    // Force config to reload
+    if (event.url.pathname.startsWith('/resetconfig')) {
       config = null;
     }
     event.locals = {

@@ -13,7 +13,6 @@
 
 <style>
   .error-container {
-    --ink-color: #202020;
     width: 100vw;
     height: 100vh;
   }
@@ -23,7 +22,7 @@
     align-items: center;
     max-width: 32rem;
     margin: 0 1rem;
-    color: var(--ink-color);
+    color: inherit;
   }
 
   .status {
@@ -35,7 +34,7 @@
   }
 
   .message {
-    border-left: 1px solid var(--ink-color);
+    border-left: 1px solid currentColor;
     padding: 0 0 0 1rem;
     margin: 0 0 0 1rem;
     min-height: 2.5rem;
