@@ -94,7 +94,7 @@
     scrubbing = true;
   }
 
-  function handlePlayPause() {
+  async function handlePlayPause() {
     // if we have switched off preload, load first
     if (!duration || !videoElement.getAttribute('src')) {
       setSourceAndLoad();
@@ -103,7 +103,7 @@
       playhead && (videoElement.currentTime = playhead);
       promise = videoElement.play();
     } else {
-      promise
+      await promise
         .then(() => {
           // playback started so we can safely pause
           videoElement.pause();
