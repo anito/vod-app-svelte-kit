@@ -113,16 +113,6 @@
         active !== _active ||
         group_id !== _group_id ||
         __protected !== _protected;
-  $: if(selectedMode === ADD) {
-    console.log('name', name);
-    console.log('email', email, _email);
-    console.log('active', active, _active);
-    console.log('group_id', group_id);
-    console.log('_group_id', _group_id);
-    console.log('protected', __protected, _protected);
-    console.log('password', !!password);
-    console.log('repeated password', !!repeatedPassword);
-  }
   $: canReset =
     name !== _name ||
     email !== _email ||
