@@ -22,6 +22,7 @@
 
   export let allowScrubbing = false;
   export let videoElement: HTMLVideoElement;
+  export let promise: Promise<any> = new Promise(()=> {});
   export let src: string | undefined;
   export let video: Video;
   export let autoplay: boolean;
@@ -100,9 +101,9 @@
     }
     if (paused) {
       playhead && (videoElement.currentTime = playhead);
-      videoElement.promise = videoElement.play();
+      promise = videoElement.play();
     } else {
-      videoElement.promise
+      promise
         .then(() => {
           // playback started so we can safely pause
           videoElement.pause();

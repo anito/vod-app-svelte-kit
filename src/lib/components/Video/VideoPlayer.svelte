@@ -12,6 +12,7 @@
   import type { Video as VideoType } from '$lib/classes/repos/types';
 
   let now = new Date().getTime();
+  let promise: Promise<any> = new Promise(()=> {})
 
   export let poster = '';
   export let video: VideoType;
@@ -56,8 +57,8 @@
   function pausePlayers() {
     players.forEach((player) => {
       if (player.videoElement !== videoElement) {
-        if (player.videoElement.promise !== void 0) {
-          player.videoElement.promise.then(() => player.videoElement.pause());
+        if (promise !== void 0) {
+          promise.then(() => player.videoElement.pause());
         }
       } else {
         player.timestamp = new Date().getTime();
@@ -75,7 +76,6 @@
       .shift();
     if (lastPlayer) {
       lastPlayer.videoElement.src = '';
-      lastPlayer.videoElement.promise = void 0;
     }
   }
 </script>
@@ -109,6 +109,7 @@
   bind:paused
   bind:videoElement
   bind:playhead
+  bind:promise
   on:player:paused
   on:player:canplay={() => (canplay = true)}
   on:player:canplay
