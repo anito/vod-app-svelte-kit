@@ -131,7 +131,7 @@
       const { infoLevel } = $page.data.config.Console;
       args = Array.from(args);
       const level = args.splice(0, 1)[0];
-      if (level <= infoLevel) console.log(...args);
+      if (level <= Number(infoLevel)) console.log(...args);
     }
   });
 

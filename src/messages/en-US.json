@@ -120,7 +120,6 @@
     "sign-in-now": "Sign in now",
     "no-content-available": "No content available",
     "no-description": "no description",
-    "your-classes": "The following online classes are available for you:",
     "mail": "Mail",
     "templates": "Templates",
     "general": "General",
@@ -262,7 +261,8 @@
     "session-terminated": "Session terminated",
     "permanently-deleting-media": "Permanently deleting {title}",
     "switch-account": "Switch account",
-    "enjoy-your-videos": "Enjoy your videos"
+    "enjoy-your-videos": "Enjoy your videos",
+    "your-library": "Your videos library"
   },
   "summary": {
     "copy-link": {

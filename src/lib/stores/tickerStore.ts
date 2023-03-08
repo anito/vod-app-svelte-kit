@@ -30,14 +30,9 @@ function createStore() {
       // no more subscribers or when callback runs
       return () => {
         clearInterval(intervalId);
-
-        console.log(
-          '%c PAGE DATA RECEIVED ',
-          'background: #8bc34a; color: #000000; padding:4px 6px 3px 0;'
-        );
       };
     },
-    60 * 1000 // initial value
+    60 * 1000 // initial value 60s
   );
 }
 

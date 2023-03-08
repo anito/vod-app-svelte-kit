@@ -120,7 +120,6 @@
     "sign-in-now": "Jetzt anmelden",
     "no-content-available": "Keine Inhalte verfügbar",
     "no-description": "keine Beschreibung",
-    "your-classes": "Die folgenden Online-Videokurse stehen für Sie bereit:",
     "mail": "E-Mail",
     "templates": "Vorlagen",
     "general": "Allgemein",
@@ -262,7 +261,8 @@
     "session-terminated": "Sitzung beendet",
     "permanently-deleting-media": "Entferne unwiderruflich {title}",
     "switch-account": "Konto wechseln",
-    "enjoy-your-videos": "Deine Videos"
+    "enjoy-your-videos": "Deine Videos",
+    "your-library": "Deine Video Bibliothek"
   },
   "summary": {
     "copy-link": {
