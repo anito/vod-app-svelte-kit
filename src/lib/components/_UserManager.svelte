@@ -113,12 +113,22 @@
         active !== _active ||
         group_id !== _group_id ||
         __protected !== _protected;
+  $: if(selectedMode === ADD) {
+    console.log('name', name);
+    console.log('email', email, _email);
+    console.log('active', active, _active);
+    console.log('group_id', group_id);
+    console.log('_group_id', _group_id);
+    console.log('protected', __protected, _protected);
+    console.log('password', !!password);
+    console.log('repeated password', !!repeatedPassword);
+  }
   $: canReset =
     name !== _name ||
     email !== _email ||
     active !== _active ||
-    group_id !== _group_id ||
-    __protected !== _protected ||
+    group_id != _group_id ||
+    __protected != _protected ||
     password ||
     repeatedPassword;
   $: selectionUserId && resetPassword();
@@ -434,12 +444,14 @@
                     borderColor="--primary"
                     extendedBorderColor="--background-intense"
                     extendedBorderSize={10}
-                    badge={ hasCurrentPrivileges ? {
-                      icon:  'admin_panel_settings',
-                      color: isCurrentSuperuser ? 'rgb(26, 4, 4)' : 'rgb(206, 4, 4)',
-                      size: 'large',
-                      position: 'BOTTOM_RIGHT'
-                    } : false }
+                    badge={hasCurrentPrivileges
+                      ? {
+                          icon: 'admin_panel_settings',
+                          color: isCurrentSuperuser ? 'rgb(26, 4, 4)' : 'rgb(206, 4, 4)',
+                          size: 'large',
+                          position: 'BOTTOM_RIGHT'
+                        }
+                      : false}
                   />
                   <Menu
                     bind:this={avatarMenu}
@@ -558,6 +570,7 @@
                       <input type="hidden" name="group_id" bind:value={group_id} />
                       <SelectIcon slot="leadingIcon" class="material-icons">contact_page</SelectIcon
                       >
+                      <Option selected={true}>{$_('text.please-select')}</Option>
                       {#each groups as group}
                         <Option value={group.id} selected={group_id === group.id}>
                           {$_(group.name)}
