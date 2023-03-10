@@ -224,6 +224,7 @@
       {duration}
       {paused}
       {buffered}
+      {loaded}
       id={video.id}
     />
   {/if}

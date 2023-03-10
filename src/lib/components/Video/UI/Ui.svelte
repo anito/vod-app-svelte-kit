@@ -5,7 +5,8 @@
 
   export let id: string;
   export let time = 0;
-  export let duration: number | null;
+  export let loaded: boolean;
+  export let duration: number;
   export let paused: boolean;
   export let buffered;
 
@@ -42,11 +43,11 @@
   let controlsTimeout: number | undefined;
   let controls: boolean;
 
-  $: duration && (percentageTime = (time * 100) / duration);
-  $: duration &&
-    (percentageBuffer =
-      (buffered?.length && (buffered[buffered.length - 1].end * 100) / duration) || 0);
-  $: id && (duration = null)
+  $: if (duration) {
+    percentageTime = (time * 100) / duration;
+    percentageBuffer =
+      (buffered?.length && (buffered[buffered.length - 1].end * 100) / duration) || 0;
+  }
 
   function showControls() {
     controls = true;
@@ -111,23 +112,7 @@
 
 <div class="media-controls-container" style="z-index: 2;" {id}>
   <div class="visible-controls-bar" style="display: none; stroke-width: 0px;" />
-  {#if !duration}
-    <button
-      on:mousedown={dispatchMousedown}
-      class="play-pause play-pause-controllable center"
-      class:paused
-      aria-label={$_('text.playback')}
-      style="position: absolute; padding: 0; left: 0px; width: 11px; height: 13px;"
-    >
-      <div class="background-tint">
-        <div class="blur" />
-        <div class="tint" />
-      </div>
-      <picture
-        style="-webkit-mask-image: url({data_play_not_loaded}); width: 11px; height: 13px;"
-      />
-    </button>
-  {:else}
+  {#if loaded}
     <div
       class="media-controls play-pause-controllable inline"
       class:faded={!controls}
@@ -259,6 +244,22 @@
         </div>
       </div>
     </div>
+  {:else}
+    <button
+      on:mousedown={dispatchMousedown}
+      class="play-pause play-pause-controllable center"
+      class:paused
+      aria-label={$_('text.playback')}
+      style="position: absolute; padding: 0; left: 0px; width: 11px; height: 13px;"
+    >
+      <div class="background-tint">
+        <div class="blur" />
+        <div class="tint" />
+      </div>
+      <picture
+        style="-webkit-mask-image: url({data_play_not_loaded}); width: 11px; height: 13px;"
+      />
+    </button>
   {/if}
 </div>
 
