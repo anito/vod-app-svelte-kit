@@ -33,7 +33,7 @@
 
   onMount(() => {
     window.addEventListener('video:poster:changed', videoPosterChangedHandler);
-  })
+  });
 
   async function playPauseHandler() {
     setSource();
@@ -49,9 +49,9 @@
     }
   }
 
-  function videoPosterChangedHandler({detail}: CustomEvent) {
-    if(detail.video_id === video.id) {
-      reload()
+  function videoPosterChangedHandler({ detail }: CustomEvent) {
+    if (detail.video_id === video.id) {
+      reload();
     }
   }
 
@@ -61,11 +61,11 @@
     }
   }
 
-  async function reload () {
+  async function reload() {
     await tick();
     videoElement.pause();
     // Take a breath to save playhead
-    setTimeout(() => videoElement.src = '', 200);
+    setTimeout(() => (videoElement.src = ''), 200);
   }
   function mousemoveHandler(event: Event) {
     scrub && doScrub(event as MouseEvent);
@@ -73,7 +73,7 @@
 
   function doScrub(event: MouseEvent) {
     if (!(event.buttons & 1)) return; // mouse not down
-    if (!loaded) return; 
+    if (!loaded) return;
 
     const { left, right } = videoElement && videoElement.getBoundingClientRect();
     if (left === undefined || right === undefined) return;
@@ -151,34 +151,34 @@
   }
 
   function canPlayHandler() {
-    dispatch('player:canplay', { ...video });
+    dispatch('player:canplay', video);
   }
 
   function loadstartHandler() {
-    dispatch('player:loadstart', { ...video });
+    dispatch('player:loadstart', video);
   }
 
   function loadedDataHandler() {
     loaded = true;
     srcAttr = videoElement.getAttribute('src');
-    dispatch('player:loadeddata', { ...video });
+    dispatch('player:loadeddata', video);
   }
 
   function emptiedHandler() {
     loaded = false;
-    dispatch('player:emptied', { ...video });
+    dispatch('player:emptied', video);
   }
 
   function abortedHandler() {
-    dispatch('player:aborted', { ...video });
+    dispatch('player:aborted', video);
   }
 
   function pictureInPictureHandler() {
-    if (document.pictureInPictureElement) document.exitPictureInPicture().catch((e) => {});
-    else videoElement && videoElement.requestPictureInPicture().catch((e) => {});
+    if (document.pictureInPictureElement) document.exitPictureInPicture().catch(() => {});
+    else videoElement?.requestPictureInPicture().catch(() => {});
   }
 
-  function handleFullscreen() {
+  function fullscreenHandler() {
     if (document.fullscreenElement) document.exitFullscreen().catch((e) => {});
     else if (videoElement?.requestFullscreen) videoElement.requestFullscreen();
   }
@@ -217,7 +217,7 @@
       on:ui:touchstart={mousedownHandler}
       on:ui:mousedown={mousedownHandler}
       on:ui:pip={pictureInPictureHandler}
-      on:fullscreen={handleFullscreen}
+      on:fullscreen={fullscreenHandler}
       on:play-pause={playPauseHandler}
       on:rwd={rewindHandler}
       on:fwd={forewardHandler}
