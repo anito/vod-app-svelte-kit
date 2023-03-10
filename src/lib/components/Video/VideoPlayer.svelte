@@ -24,6 +24,7 @@
 
   const isChrome = $page.data.ua.name === 'Chrome';
 
+  let player: { element: HTMLVideoElement; promise: Promise<any>; };
   let canplay = false;
   let element: HTMLVideoElement;
   let className = '';
@@ -31,9 +32,10 @@
   export { className as class };
 
   onMount(() => {
-    players.add(element);
+    player = {element, promise}
+    players.add({element, promise});
     return () => {
-      players.delete(element);
+      players.delete(player);
     };
   });
 
@@ -46,9 +48,9 @@
    * Only one player should be playing at a time
    */
   function pausePlayers() {
-    players.forEach(async (player) => {
-      if (player !== element) {
-        await promise.then(() => player.pause());
+    players.forEach(async (plr) => {
+      if (plr !== player) {
+        await plr.promise.then(() => plr.element.pause());
       } else {
         buffer.add(element);
       }
@@ -56,7 +58,7 @@
   }
   /**
    * Chrome has a limitation on how many media players can be loaded
-   * Unload the the first loaded players
+   * Unload the oldest
    */
   function unloadStreams(limit: number) {
     buffer.forEach((item, key, set) => {
