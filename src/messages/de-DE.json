@@ -262,7 +262,11 @@
     "permanently-deleting-media": "Entferne unwiderruflich {title}",
     "switch-account": "Konto wechseln",
     "enjoy-your-videos": "Deine Videos",
-    "your-library": "Deine Video Bibliothek"
+    "your-library": "Deine Video Bibliothek",
+    "remaining": "Verbleibend",
+    "start-pip": "Starte Bild-in-Bild",
+    "playback": "Wiedergeben",
+    "library": "Bibliothek"
   },
   "summary": {
     "copy-link": {

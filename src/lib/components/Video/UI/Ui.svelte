@@ -1,13 +1,15 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
-  import { mute } from '.';
+  import { mute } from '..';
+  import { _ } from 'svelte-i18n';
 
-  let dispatch = createEventDispatcher();
-  let pipButton;
-  let fullscreenButton;
-  let mediaControls: HTMLDivElement;
-  let listeners = 0;
+  export let id: string;
+  export let time = 0;
+  export let duration: number | null;
+  export let paused: boolean;
+  export let buffered;
 
+  const dispatch = createEventDispatcher();
   const data_play_not_loaded =
     'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMTFweCIgaGVpZ2h0PSIxM3B4IiB2aWV3Qm94PSIwIDAgMTEgMTMiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDQzLjEgKDM5MDEyKSAtIGh0dHA6Ly93d3cuYm9oZW1pYW5jb2RpbmcuY29tL3NrZXRjaCAtLT4KICAgIDx0aXRsZT5fQXNzZXRzL0lubGluZS9QbGF5PC90aXRsZT4KICAgIDxkZXNjPkNyZWF0ZWQgd2l0aCBTa2V0Y2guPC9kZXNjPgogICAgPGRlZnM+PC9kZWZzPgogICAgPGcgaWQ9Ik1lZGlhLUNvbnRyb2wtU3ltYm9scyIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9Il9Bc3NldHMvSW5saW5lL1BsYXkiIGZpbGw9IiMwMDAwMDAiPgogICAgICAgICAgICA8cGF0aCBkPSJNMCwwLjYwNTA2ODY5MiBDMCwwLjA1ODE3MzcxMjEgMC4zODI1MTY0ODgsLTAuMTU2MTA0Nzg5IDAuODY0MTIyNjUsMC4xMzIzMDE4ODcgTDEwLjYzMjU5ODUsNS45ODIwODkyOCBDMTEuMTA5ODQwMyw2LjI2Nzg4MjM3IDExLjExNDIwNDcsNi43Mjg2MTkxMyAxMC42MzI1OTg1LDcuMDE3MDEwOTcgTDAuODY0MTIyNjUsMTIuODY2NDk3NSBDMC4zODY4ODA4ODksMTMuMTUyMjc1OSAwLDEyLjk0MTQxNjYgMCwxMi4zOTM3MDQxIEwwLDAuNjA1MDY4NjkyIFoiIGlkPSJSZWN0YW5nbGUiPjwvcGF0aD4KICAgICAgICA8L2c+CiAgICA8L2c+Cjwvc3ZnPg==';
   const data_play =
@@ -31,15 +33,26 @@
   const data_full_exit =
     'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iYmxhY2siIHdpZHRoPSIxOHB4IiBoZWlnaHQ9IjE4cHgiPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNNSAxNmgzdjNoMnYtNUg1djJ6bTMtOEg1djJoNVY1SDh2M3ptNiAxMWgydi0zaDN2LTJoLTV2NXptMi0xMVY1aC0ydjVoNVY4aC0zeiIvPjwvc3ZnPg==';
 
-  export let time = 0;
-  export let duration: number;
-  export let paused: boolean;
-  export let showControls: boolean;
-  export let buffered;
+  let pipButton;
+  let fullscreenButton;
+  let mediaControls: HTMLDivElement;
+  let listeners = 0;
+  let percentageTime: number;
+  let percentageBuffer: number;
+  let controlsTimeout: number | undefined;
+  let controls: boolean;
 
-  $: percentageTime = (time * 100) / duration;
-  $: percentageBuffer =
-    (buffered?.length && (buffered[buffered.length - 1].end * 100) / duration) || 0;
+  $: duration && (percentageTime = (time * 100) / duration);
+  $: duration &&
+    (percentageBuffer =
+      (buffered?.length && (buffered[buffered.length - 1].end * 100) / duration) || 0);
+  $: id && (duration = null)
+
+  function showControls() {
+    controls = true;
+    clearTimeout(controlsTimeout);
+    controlsTimeout = setTimeout(() => (controls = false), 4000);
+  }
 
   function format(seconds: number, prefix = '') {
     if (isNaN(seconds)) return '...';
@@ -52,8 +65,9 @@
     return `${prefix}${printMinutes}:${printSeconds}`;
   }
 
-  function handleWheel(event: WheelEvent) {
-    dispatch('wheel', {
+  function wheelHandler(event: WheelEvent) {
+    showControls();
+    dispatch('ui:wheel', {
       deltaX: event.deltaX,
       deltaY: event.deltaY,
       direction: event.deltaY <= 0 ? 'up' : 'down'
@@ -61,6 +75,7 @@
   }
 
   function dispatchMousemove(event: MouseEvent) {
+    showControls();
     dispatch('ui:mousemove', event);
   }
 
@@ -68,7 +83,7 @@
     dispatch('ui:mousedown', event);
   }
 
-  function dispatchTouchStart(event: TouchEvent) {
+  function touchstartHandler(event: TouchEvent) {
     dispatch('ui:touchstart', event);
   }
 
@@ -76,12 +91,12 @@
     dispatch('ui:pip', event);
   }
 
-  function handleAddMousemove() {
+  function addListenerHandler() {
     listeners++;
     mediaControls.addEventListener('mousemove', dispatchMousemove);
   }
 
-  function handleRemMousemove() {
+  function removeListenerHandler() {
     listeners--;
     mediaControls.removeEventListener('mousemove', dispatchMousemove);
   }
@@ -94,42 +109,39 @@
   }
 </script>
 
-<div class="media-controls-container" style="z-index: 2;">
+<div class="media-controls-container" style="z-index: 2;" {id}>
   <div class="visible-controls-bar" style="display: none; stroke-width: 0px;" />
-  <div
-    class="media-controls play-pause-controllable inline"
-    class:faded={!showControls}
-    bind:this={mediaControls}
-    on:wheel={handleWheel}
-    on:touchstart={dispatchTouchStart}
-    on:keydown
-    on:mousedown={dispatchMousedown}
-    on:mouseenter={handleAddMousemove}
-    on:mouseleave={handleRemMousemove}
-    on:mouseleave
-    on:mouseenter
-  >
-    {#if isNaN(duration)}
-      <button
-        class="play-pause play-pause-controllable center paused"
-        aria-label="Wiedergeben"
-        style="position: absolute; padding: 0; left: 0px; width: 11px; height: 13px;"
-      >
-        <div class="background-tint">
-          <div class="blur" />
-          <div class="tint" />
-        </div>
-        <picture
-          style="-webkit-mask-image: url({data_play_not_loaded}); width: 11px; height: 13px;"
-        />
-      </button>
-    {:else}
-      <div
-        role="group"
-        class="controls-bar top-left"
-        on:mouseenter={handleRemMousemove}
-        on:mouseleave={handleAddMousemove}
-      >
+  {#if !duration}
+    <button
+      on:mousedown={dispatchMousedown}
+      class="play-pause play-pause-controllable center"
+      class:paused
+      aria-label={$_('text.playback')}
+      style="position: absolute; padding: 0; left: 0px; width: 11px; height: 13px;"
+    >
+      <div class="background-tint">
+        <div class="blur" />
+        <div class="tint" />
+      </div>
+      <picture
+        style="-webkit-mask-image: url({data_play_not_loaded}); width: 11px; height: 13px;"
+      />
+    </button>
+  {:else}
+    <div
+      class="media-controls play-pause-controllable inline"
+      class:faded={!controls}
+      bind:this={mediaControls}
+      on:wheel={wheelHandler}
+      on:touchstart={touchstartHandler}
+      on:mousedown={dispatchMousedown}
+      on:mouseenter={addListenerHandler}
+      on:mouseleave={removeListenerHandler}
+      on:mouseleave
+      on:mouseenter
+      on:keydown
+    >
+      <div role="group" class="controls-bar top-left">
         <div class="background-tint">
           <div class="blur" />
           <div class="tint" />
@@ -152,8 +164,8 @@
         class="controls-bar bottom flex"
         aria-label="Videosteuerelemente"
         style="width: calc(100% - 2* var(--inline-controls-inside-margin)); bottom: 10px;"
-        on:mouseenter={handleRemMousemove}
-        on:mouseleave={handleAddMousemove}
+        on:mouseenter={removeListenerHandler}
+        on:mouseleave={addListenerHandler}
       >
         <div class="background-tint">
           <div class="blur" />
@@ -208,12 +220,12 @@
               min="0"
               max={duration}
               step="1"
-              aria-valuetext="{time} Sekunden"
+              aria-valuetext="{Math.floor(time)} {$_('text.seconds')}"
             />
           </div>
           <div
             class="time-label"
-            aria-label="Übrig: {Math.floor(duration - time)} Sekunden"
+            aria-label="{$_('text.remaining')}: {Math.floor(duration - time)} {$_('text.seconds')}"
             style="flex: 1;"
           >
             {format(duration - time, '-')}
@@ -246,8 +258,8 @@
           </button>
         </div>
       </div>
-    {/if}
-  </div>
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -275,9 +287,11 @@
   }
 
   .background-tint > .blur {
-    --tw-blur: 0px;
+    --blur: 17.5px;
     background-color: rgba(0, 0, 0, 0.55);
-    -webkit-backdrop-filter: saturate(180%) blur(var(--tw-blur));
+    backdrop-filter: saturate(180%) blur(var(--blur, 10px));
+    -webkit-backdrop-filter: saturate(180%) blur(var(--blur, 10px));
+    filter: unset;
   }
 
   .background-tint > .tint {
@@ -292,6 +306,8 @@
     align-items: center;
     justify-content: center;
     background-color: transparent !important;
+    user-select: none;
+    appearance: none;
     -webkit-appearance: none;
     -webkit-user-select: none;
     -webkit-tap-highlight-color: transparent;
@@ -300,7 +316,9 @@
   button > picture {
     background-color: var(--primary-glyph-color);
     mix-blend-mode: lighten;
+    mask-size: 100% 100%;
     -webkit-mask-size: 100% 100%;
+    mask-repeat: no-repeat;
     -webkit-mask-repeat: no-repeat;
     transition: transform 150ms;
     will-change: transform;
@@ -428,6 +446,7 @@
   }
 
   :host {
+    user-select: none !important;
     -webkit-user-select: none !important;
     -webkit-touch-callout: none !important;
   }
@@ -485,6 +504,7 @@
   .media-controls {
     height: 100%;
     font-family: -apple-system;
+    user-select: none;
     -webkit-user-select: none;
     white-space: nowrap;
     text-align: initial;
@@ -638,6 +658,7 @@
     margin: 0;
     height: 100%;
     background-color: transparent;
+    appearance: none !important;
     -webkit-appearance: none !important;
 
     outline: none;
@@ -654,7 +675,8 @@
   }
 
   .time-label {
-    font-family: -apple-system, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji';
+    font-family: -apple-system, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans',
+      'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji';
     padding: 0 8px;
     font-size: 12px;
     text-align: right;

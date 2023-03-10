@@ -1,81 +1,54 @@
 <script lang="ts">
-  import type { Video } from '$lib/classes/repos/types';
   import { tick, createEventDispatcher } from 'svelte';
-  import { Ui, mute } from '.';
+  import { Ui } from '.';
+  import { mute } from '.';
   import { _ } from 'svelte-i18n';
+  import type { Video } from '$lib/classes/repos/types';
 
   const dispatch = createEventDispatcher();
   const scrubStart = { x: 0, y: 0, playhead: 0 };
 
   let duration: number;
-  let controlsTimeout: number | undefined;
   let className = '';
-  let hydrated = false;
-  let hydrating = false;
+  let loaded = false;
   let currentPoster: any;
   let buffered;
   let scrubbing: boolean;
-  let target: Element;
-  let isMouseAction: boolean;
-  let customControls: boolean;
-  let _src: string | null;
+  let srcAttr: string | null;
 
-  export let allowScrubbing = false;
-  export let videoElement: HTMLVideoElement;
-  export let promise: Promise<any> = new Promise(()=> {});
   export let src: string | undefined;
+  export let videoElement: HTMLVideoElement;
+  export let scrub = false;
+  export let promise: Promise<void> = new Promise(() => {});
   export let video: Video;
   export let autoplay: boolean;
   export let poster: string | undefined;
   export let type: string | undefined;
-  export let controls = false; // use native controls if true
+  export let customUI = false;
   export let paused = false;
   export let preload = 'none';
   export let playhead = 0;
   export { className as class };
 
-  $: customControls = !controls;
-  $: showControls = paused || isMouseAction;
-  $: isMouseAction && clearTimeout(controlsTimeout);
-  $: !isMouseAction && delayHideControls();
-  $: paused && delayHideControls();
   $: ((p) => {
-    if (currentPoster !== p) {
-      currentPoster = p;
-      // reload video to bring up new poster
+    if (currentPoster && currentPoster !== p) {
       reload();
+      currentPoster = p;
     }
   })(poster);
 
   function setSourceAndLoad() {
-    const curSrc = videoElement.getAttribute('src');
-    if (!curSrc && _src) {
-      videoElement.setAttribute('src', _src);
+    if (!videoElement.getAttribute('src') && srcAttr) {
+      videoElement.setAttribute('src', srcAttr);
     }
-    videoElement.load();
+    !promise && videoElement.load();
   }
 
-  function handleMouseenter() {
-    isMouseAction = true;
+  function mousemoveHandler(event: Event) {
+    scrub && doScrub(event as MouseEvent);
   }
 
-  function handleMouseleave() {
-    isMouseAction = false;
-  }
-
-  function delayHideControls() {
-    if (!duration) return; // nothing loaded
-    clearTimeout(controlsTimeout);
-    controlsTimeout = setTimeout(() => (showControls = false), 4000);
-    showControls = true;
-  }
-
-  function handleMousemove({ detail }: CustomEvent) {
-    delayHideControls();
-    allowScrubbing && handleScrubbing(detail);
-  }
-
-  function handleScrubbing(event: MouseEvent) {
+  function doScrub(event: MouseEvent) {
     if (!(event.buttons & 1)) return; // mouse not down
     if (!duration) return; // videoElement not loaded yet
 
@@ -89,13 +62,15 @@
     let dist = left - x - (left - event.clientX);
     let delta = ph + dist * ratio;
 
-    // playhead = (duration * (e.clientX - left)) / (right - left); // entry point relative to videos bounding rect - causes playhed to jump in most cases
     playhead = delta >= duration ? duration : delta < 0 ? 0 : delta; // entry point equals current playhead - no playhead jump
     scrubbing = true;
   }
 
-  async function handlePlayPause() {
-    // if we have switched off preload, load first
+  async function playPauseHandler() {
+    /**
+     * For "preload" disabled, load first
+     * (Duration will be available only after videos "loadstart" event)
+     */ 
     if (!duration || !videoElement.getAttribute('src')) {
       setSourceAndLoad();
     }
@@ -103,43 +78,36 @@
       playhead && (videoElement.currentTime = playhead);
       promise = videoElement.play();
     } else {
-      await promise
-        .then(() => {
-          // playback started so we can safely pause
-          videoElement.pause();
-        })
-        .catch((reason: any) => {
-          console.error('[VIDEO PLAYER]', reason);
-        });
+      await promise;
+      videoElement.pause();
     }
   }
 
-  function handlePause() {
+  function pauseHandler() {
     dispatch('player:paused');
   }
 
-  function handleRewind({ detail }: CustomEvent) {
+  function rewindHandler({ detail }: CustomEvent) {
     let step = detail || 15;
     let s;
     playhead -= (s = playhead - step) < 0 ? step + s : step;
     dispatch('player:rwd');
   }
 
-  function handleForeward(event: CustomEvent) {
+  function forewardHandler(event: CustomEvent) {
     let step = event.detail || 15;
     playhead += playhead + step > duration ? duration - playhead : step;
     dispatch('player:fwd');
   }
 
-  function handleWheel({ detail }: CustomEvent) {
-    playhead += detail.deltaY * 0.2;
+  function wheelHandler({ detail }: CustomEvent) {
+    scrub && (playhead += detail.deltaY * 0.2);
   }
 
-  function handleMousedown(event: CustomEvent) {
-    const detail = event.detail as unknown as MouseEvent;
-    const target = event.detail.target as Element;
+  function mousedownHandler({ detail }: CustomEvent) {
+    const mouseevent = detail as unknown as MouseEvent;
+    const target = mouseevent.target as Element;
     const isMediaControl = target.classList.contains('play-pause-controllable');
-    isMouseAction = true;
 
     scrubStart.x = detail.clientX;
     scrubStart.y = detail.clientY;
@@ -148,60 +116,58 @@
     // we can't rely on the built-in click event, because it fires
     // after a drag — we have to listen for clicks ourselves
 
-    function handleMouseup() {
-      !scrubbing && isMediaControl && handlePlayPause();
+    function mouseupHandler() {
+      !scrubbing && isMediaControl && playPauseHandler();
       cancel();
     }
 
-    function handleMouseupAfterDrag() {
+    function mouseupAfterDragHandler() {
       scrubbing = false;
       cancelAfterDrag();
     }
 
     function cancel() {
-      target.removeEventListener('mouseup', handleMouseup);
-      target.addEventListener('mouseup', handleMouseupAfterDrag);
-      target.addEventListener('mouseleave', handleMouseupAfterDrag);
+      target.removeEventListener('mouseup', mouseupHandler);
+      target.addEventListener('mouseup', mouseupAfterDragHandler);
+      target.addEventListener('mouseleave', mouseupAfterDragHandler);
     }
 
     function cancelAfterDrag() {
-      target.removeEventListener('mouseup', handleMouseupAfterDrag);
-      target.removeEventListener('mouseleave', handleMouseupAfterDrag);
+      target.removeEventListener('mousemove', mousemoveHandler);
+      target.removeEventListener('mouseup', mouseupAfterDragHandler);
+      target.removeEventListener('mouseleave', mouseupAfterDragHandler);
     }
 
-    target.addEventListener('mouseup', handleMouseup);
+    target.addEventListener('mouseup', mouseupHandler);
+    target.addEventListener('mousemove', mousemoveHandler);
 
-    setTimeout(cancel, 100); // prevent start/stop after scrubbing
+    setTimeout(cancel, 500); // prevent start/stop after scrubbing
   }
 
-  function handleCanPlay() {
+  function canPlayHandler() {
     dispatch('player:canplay', { ...video });
   }
 
-  function handleLoadstart() {
-    !_src && (_src = videoElement.getAttribute('src'));
-    hydrating = true;
-    hydrated = false;
+  function loadstartHandler() {
     dispatch('player:loadstart', { ...video });
   }
-
-  function handleLoadedData() {
-    hydrating = false;
-    hydrated = true;
+  
+  function loadedDataHandler() {
+    loaded = true
+    srcAttr = videoElement.getAttribute('src');
     dispatch('player:loadeddata', { ...video });
   }
 
-  function handleEmptied() {
-    hydrated = false;
+  function emptiedHandler() {
+    loaded = false
     dispatch('player:emptied', { ...video });
   }
 
-  function handleAborted() {
-    hydrated = false;
+  function abortedHandler() {
     dispatch('player:aborted', { ...video });
   }
 
-  function handlePictureInPicture() {
+  function pictureInPictureHandler() {
     if (document.pictureInPictureElement) document.exitPictureInPicture().catch((e) => {});
     else videoElement && videoElement.requestPictureInPicture().catch((e) => {});
   }
@@ -212,7 +178,6 @@
   }
 
   async function reload() {
-    if (!duration) return;
     videoElement.pause();
     src = '';
     await tick();
@@ -220,7 +185,7 @@
   }
 </script>
 
-<div class="player {className}" class:hydrated>
+<div class="player {className}" class:loaded>
   <video
     class="flex-1"
     muted={$mute}
@@ -229,17 +194,17 @@
     bind:duration
     bind:paused
     bind:buffered
+    on:loadstart={loadstartHandler}
+    on:canplay={canPlayHandler}
+    on:loadeddata={loadedDataHandler}
+    on:emptied={emptiedHandler}
+    on:abort={abortedHandler}
+    on:pause={pauseHandler}
+    controls={!customUI}
+    {src}
     {poster}
     {preload}
-    {controls}
     {autoplay}
-    {src}
-    on:loadstart={handleLoadstart}
-    on:canplay={handleCanPlay}
-    on:loadeddata={handleLoadedData}
-    on:emptied={handleEmptied}
-    on:abort={handleAborted}
-    on:pause={handlePause}
   >
     <source type="video/{type}" />
     <track kind="captions" />
@@ -247,23 +212,21 @@
     <code>video</code>
     element.
   </video>
-  {#if customControls}
+  {#if customUI}
     <Ui
-      on:wheel={handleWheel}
-      on:ui:touchstart={handleMousedown}
-      on:ui:mousedown={handleMousedown}
-      on:ui:pip={handlePictureInPicture}
-      on:mouseenter={handleMouseenter}
-      on:mouseleave={handleMouseleave}
+      on:ui:wheel={wheelHandler}
+      on:ui:touchstart={mousedownHandler}
+      on:ui:mousedown={mousedownHandler}
+      on:ui:pip={pictureInPictureHandler}
       on:fullscreen={handleFullscreen}
-      on:play-pause={handlePlayPause}
-      on:rwd={handleRewind}
-      on:fwd={handleForeward}
+      on:play-pause={playPauseHandler}
+      on:rwd={rewindHandler}
+      on:fwd={forewardHandler}
       bind:time={playhead}
       {duration}
-      {showControls}
       {paused}
       {buffered}
+      id={video.id}
     />
   {/if}
 </div>
@@ -277,7 +240,7 @@
     object-position: center;
     object-fit: cover;
   }
-  .hydrated video {
+  .loaded video {
     object-fit: contain;
   }
 </style>

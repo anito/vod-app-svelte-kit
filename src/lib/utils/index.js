@@ -22,7 +22,7 @@ import {
   svg,
   windowSize
 } from './helper';
-import { key, players } from './module-vars';
+import { key, players, buffer } from './module-vars';
 import {
   ADD,
   ADMIN,
@@ -43,7 +43,7 @@ import {
   USER
 } from './const';
 import {
-  ellapsedFormatted,
+  elapsedFormatted,
   hasStarted,
   isExpired,
   isToday,
@@ -68,7 +68,7 @@ export {
   createTabSearch,
   del,
   dynamicUrl,
-  ellapsedFormatted,
+  elapsedFormatted,
   equals,
   filterByModelKeys,
   formatter,
@@ -89,6 +89,7 @@ export {
   parseRedirect,
   placeholderDotComAvatar,
   players,
+  buffer,
   post,
   posterCreatedHandler,
   posterRemoveHandler,

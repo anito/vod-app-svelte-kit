@@ -56,9 +56,9 @@
 
   onMount(() => {});
 
-  onDestroy(() => {
+  onDestroy(async () => {
     paused = true;
-    src = '';
+    await tick();
     savePlayhead();
   });
 
@@ -186,7 +186,7 @@
           on:player:loadeddata={handleLoadedData}
           on:player:loadstart={handleLoadStart}
           on:player:aborted={handleAborted}
-          multiplayer
+          customUI
           {poster}
           {src}
           {video}

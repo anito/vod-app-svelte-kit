@@ -717,7 +717,7 @@
             {#if $session.user}
               <NavItem href="/videos" title="Videothek" segment="videos">
                 <Icon class="material-icons" style="vertical-align: middle;">video_library</Icon>
-                <Label>{$_('nav.library')}</Label>
+                <Label>{$_('text.library')}</Label>
               </NavItem>
             {/if}
 

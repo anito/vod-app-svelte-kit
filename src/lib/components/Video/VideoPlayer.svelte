@@ -1,82 +1,70 @@
-<script context="module">
-  const MAXSTREAMS = 5;
-</script>
-
 <script lang="ts">
   import { page } from '$app/stores';
   import { Video } from '.';
   import { onMount } from 'svelte';
   import { getExt } from '$lib/utils';
-  import { players } from '$lib/utils';
+  import { players, buffer } from '$lib/utils';
+  import { videos } from '$lib/stores';
   import { _ } from 'svelte-i18n';
   import type { Video as VideoType } from '$lib/classes/repos/types';
 
-  let now = new Date().getTime();
-  let promise: Promise<any> = new Promise(()=> {})
+  let timestamp = new Date().getTime();
+  let promise: Promise<any>;
 
+  export let src: string | undefined;
   export let poster = '';
   export let video: VideoType;
-  export let src: string | undefined;
-  export let type = getExt(src);
+  export let type = getExt(video.src);
   export let paused = true;
   export let autoplay = false;
   export let playhead: any;
-  export let controls = false;
-  export let multiplayer = false;
+  export let customUI = false;
   export let curtain = false;
+  export let scrub = false;
 
-  const browserName = $page.data.ua.name;
+  const isChrome = $page.data.ua.name === 'Chrome';
 
   let canplay = false;
-  let videoElement: HTMLVideoElement;
+  let element: HTMLVideoElement;
   let className = '';
 
   export { className as class };
 
   onMount(() => {
-    let timestamp = now;
-    if (multiplayer) {
-      players.add({
-        videoElement,
-        timestamp
-      });
-    }
+    players.add(element);
+    return () => {
+      players.delete(element);
+    };
   });
 
-  $: multiplayer &&
-    ((playing) => {
-      if (playing) {
-        pausePlayers();
-        limitStreamsOnChrome();
-      }
-    })(!paused);
+  $: if (!paused) {
+    pausePlayers();
+    unloadStreams(5);
+  }
 
   /**
-   * Only one player playing at a time
+   * Only one player should be playing at a time
    */
   function pausePlayers() {
-    players.forEach((player) => {
-      if (player.videoElement !== videoElement) {
-        if (promise !== void 0) {
-          promise.then(() => player.videoElement.pause());
-        }
+    players.forEach(async (player) => {
+      if (player !== element) {
+        await promise.then(() => player.pause());
       } else {
-        player.timestamp = new Date().getTime();
+        buffer.add(element);
       }
     });
   }
-  function limitStreamsOnChrome() {
-    if (browserName !== 'Chrome') return;
-    var lastPlayer, playersArr;
-    playersArr = Array.from(players);
-    playersArr = playersArr.filter((player) => player.timestamp > now && player.videoElement.paused);
-    lastPlayer = playersArr
-      .sort((a, b) => b.timestamp - a.timestamp)
-      .slice(MAXSTREAMS - 1)
-      .shift();
-    if (lastPlayer) {
-      lastPlayer.videoElement.src = '';
-    }
+  /**
+   * Chrome has a limitation on how many media players can be loaded
+   * Unload the the first loaded players
+   */
+  function unloadStreams(limit: number) {
+    buffer.forEach((item, key, set) => {
+      if (set.size > limit) {
+        item.src = '';
+        set.delete(item);
+      }
+    });
   }
 </script>
 
@@ -107,7 +95,7 @@
 <Video
   class={className}
   bind:paused
-  bind:videoElement
+  bind:videoElement={element}
   bind:playhead
   bind:promise
   on:player:paused
@@ -119,9 +107,9 @@
   on:player:loadstart
   on:player:fwd
   on:player:rwd
-  allowScrubbing
+  {customUI}
+  {scrub}
   {autoplay}
-  {controls}
   {poster}
   {src}
   {video}
@@ -146,7 +134,7 @@
     top: 0;
     left: 0;
     min-width: 50%;
-    max-width: 80%;
+    max-width: 50%;
     height: 100%;
     z-index: 1;
     padding: 15px;

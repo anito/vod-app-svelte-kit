@@ -16,12 +16,12 @@ export interface Repo<RepoType = Record<string, void>> {
 }
 
 export interface User<UserRepoType = Record<any, any>> {
-  name: string;
-  email: string;
   id: string;
   jwt: string;
-  role: string;
+  email: string;
+  name: string;
   expires: number;
+  role: string;
   token_id: string;
   protected: boolean;
   active: boolean;
@@ -41,14 +41,14 @@ export interface UserFoundation<UserFoundationType = Record<any, any>> {
 }
 
 export interface Image<ImageRepoType = Record<string, any>> {
-  id: string | any;
+  id: string;
   src: string;
   videos: Video[];
   created: string | number | Date;
 }
 
 export interface Avatar<AvatarRepoType = Record<string, any>> {
-  id: string | any;
+  id: string;
   user_id: string | any;
   src: string | any;
 }
@@ -61,7 +61,7 @@ export interface Video<VideoRepoType = Record<string, any>> extends VideoAll {
 }
 
 export interface VideoAll<VideoAllRepoType = Record<string, any>> {
-  id: string | any;
+  id: string;
   title: string;
   description: string | never;
   image: Image | any;

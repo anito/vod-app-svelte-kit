@@ -33,7 +33,7 @@
     if (!paused || !canplay) return;
     let pauseTime = time;
     clearTimeout(timeoutId);
-    timeoutId = setTimeout((saved) => saved === playhead && savePlayhead(), 500, pauseTime);
+    timeoutId = setTimeout((savedAtTime: number) => savedAtTime === playhead && savePlayhead(), 500, pauseTime);
   })(playhead);
   $: video?.image_id && getMediaImage(video.image_id, $session.user?.jwt).then((v) => (poster = v));
   $: video?.id && getMediaVideo(video.id, $session.user?.jwt).then((v) => (src = v));
@@ -137,7 +137,9 @@
       {video}
       {poster}
       {src}
+      customUI
       curtain
+      scrub
     />
   </div>
 {:else}

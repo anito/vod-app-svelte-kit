@@ -52,7 +52,7 @@ export function isToday(date: string | number | Date) {
   let dateTime = new Date(date).getTime();
   return midnight < dateTime;
 }
-export function ellapsedFormatted(start = Date.now()) {
+export function elapsedFormatted(start = Date.now()) {
   let _sec = Math.floor((Date.now() - start) / 1000);
   let min = Math.floor(_sec / 60);
   let sec = Math.floor(_sec % 60);
