@@ -60,7 +60,8 @@
     }
   }
 
-  function reload () {
+  async function reload () {
+    await tick();
     videoElement.pause();
     // Take a breath to save playhead
     setTimeout(() => videoElement.src = '', 200);
