@@ -25,6 +25,7 @@ declare global {
     'ui:pip': CustomEvent;
     'video:save': CustomEvent;
     'video:add': CustomEvent;
+    'video:poster:changed': CustomEvent;
     'media:delete': CustomEvent;
     'media:deleteMany': CustomEvent;
   }

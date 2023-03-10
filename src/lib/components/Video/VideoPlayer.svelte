@@ -2,14 +2,10 @@
   import { page } from '$app/stores';
   import { Video } from '.';
   import { onMount } from 'svelte';
-  import { getExt } from '$lib/utils';
-  import { players, buffer } from '$lib/utils';
-  import { videos } from '$lib/stores';
+  import { getExt, players, stack } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import type { Video as VideoType } from '$lib/classes/repos/types';
-
-  let timestamp = new Date().getTime();
-  let promise: Promise<any>;
+  import type { Player } from '$lib/utils/module-vars';
 
   export let src: string | undefined;
   export let poster = '';
@@ -21,9 +17,10 @@
   export let customUI = false;
   export let curtain = false;
   export let scrub = false;
-
+  
   const isChrome = $page.data.ua.name === 'Chrome';
-
+  
+  let player: Player;
   let canplay = false;
   let element: HTMLVideoElement;
   let className = '';
@@ -31,9 +28,10 @@
   export { className as class };
 
   onMount(() => {
-    players.add(element);
+    player = { element, promise: new Promise(() => void 0) };
+    players.add(player);
     return () => {
-      players.delete(element);
+      players.delete(player);
     };
   });
 
@@ -46,20 +44,24 @@
    * Only one player should be playing at a time
    */
   function pausePlayers() {
-    players.forEach(async (player) => {
-      if (player !== element) {
-        await promise.then(() => player.pause());
-      } else {
-        buffer.add(element);
+    players.forEach(async (plr) => {
+      if(plr.promise === player.promise) {
+        stack.add(element);
+      } else if (!plr.element?.paused) {
+          await plr.promise;
+          plr.element?.pause();
       }
-    });
+    })
   }
+
   /**
-   * Chrome has a limitation on how many media players can be loaded
-   * Unload the the first loaded players
+   * Unload the first loaded player in the stack to free ressources
+   * 
+   * To preserve ressources some user agents (e.g. Chrome) limit the number of media players 
+   * that can be loaded simultaniously. Even if "preload" set to none.
    */
   function unloadStreams(limit: number) {
-    buffer.forEach((item, key, set) => {
+    stack.forEach((item, key, set) => {
       if (set.size > limit) {
         item.src = '';
         set.delete(item);
@@ -97,7 +99,7 @@
   bind:paused
   bind:videoElement={element}
   bind:playhead
-  bind:promise
+  bind:player={player}
   on:player:paused
   on:player:canplay={() => (canplay = true)}
   on:player:canplay

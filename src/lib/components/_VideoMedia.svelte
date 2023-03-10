@@ -46,7 +46,6 @@
       timeoutId = setTimeout(
         (pausedAtTime: number) => {
           if(pausedAtTime === time) savePlayhead()
-          else console.log(time, pausedAtTime);
         },
         200,
         pausedTime
@@ -62,13 +61,13 @@
     savePlayhead();
   });
 
-  // set playhead to the last saved position when the video is ready to play
   function handleCanPlay() {
     if (canplay) return;
     canplay = true;
     playhead = hasPrivileges ? video?.playhead : joinData?.playhead;
   }
-
+  
+  // set playhead to the last saved position when the video is ready to play
   async function savePlayhead() {
     if (!canplay) return;
     if (hasPrivileges) {

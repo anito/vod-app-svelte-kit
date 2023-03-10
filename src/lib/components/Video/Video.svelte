@@ -1,9 +1,10 @@
 <script lang="ts">
-  import { tick, createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, onMount, tick } from 'svelte';
   import { Ui } from '.';
   import { mute } from '.';
   import { _ } from 'svelte-i18n';
   import type { Video } from '$lib/classes/repos/types';
+  import type { Player } from '$lib/utils/module-vars';
 
   const dispatch = createEventDispatcher();
   const scrubStart = { x: 0, y: 0, playhead: 0 };
@@ -11,7 +12,6 @@
   let duration: number;
   let className = '';
   let loaded = false;
-  let currentPoster: any;
   let buffered;
   let scrubbing: boolean;
   let srcAttr: string | null;
@@ -19,7 +19,7 @@
   export let src: string | undefined;
   export let videoElement: HTMLVideoElement;
   export let scrub = false;
-  export let promise: Promise<void> = new Promise(() => {});
+  export let player: Player;
   export let video: Video;
   export let autoplay: boolean;
   export let poster: string | undefined;
@@ -30,20 +30,41 @@
   export let playhead = 0;
   export { className as class };
 
-  $: ((p) => {
-    if (currentPoster && currentPoster !== p) {
-      reload();
-      currentPoster = p;
-    }
-  })(poster);
+  onMount(() => {
+    window.addEventListener('video:poster:changed', videoPosterChangedHandler);
+  })
 
-  function setSourceAndLoad() {
-    if (!videoElement.getAttribute('src') && srcAttr) {
-      videoElement.setAttribute('src', srcAttr);
+  async function playPauseHandler() {
+    setSource();
+    if (paused) {
+      playhead && (videoElement.currentTime = playhead);
+      player.promise = videoElement.play();
+      player.promise
+        .then(() => console.log('[MEDIA PLAY] Video playing', video.title || video.src))
+        .catch((reason) => console.error('[MEDIA PLAY ERROR]', reason));
+    } else {
+      await player.promise;
+      videoElement.pause();
     }
-    !promise && videoElement.load();
   }
 
+  function videoPosterChangedHandler({detail}: CustomEvent) {
+    if(detail.video_id === video.id) {
+      reload()
+    }
+  }
+
+  async function setSource() {
+    if (srcAttr && !videoElement.getAttribute('src')) {
+      videoElement.setAttribute('src', srcAttr);
+    }
+  }
+
+  function reload () {
+    videoElement.pause();
+    // Take a breath to save playhead
+    setTimeout(() => videoElement.src = '', 200);
+  }
   function mousemoveHandler(event: Event) {
     scrub && doScrub(event as MouseEvent);
   }
@@ -64,23 +85,6 @@
 
     playhead = delta >= duration ? duration : delta < 0 ? 0 : delta; // entry point equals current playhead - no playhead jump
     scrubbing = true;
-  }
-
-  async function playPauseHandler() {
-    /**
-     * For "preload" disabled, load first
-     * (Duration will be available only after videos "loadstart" event)
-     */ 
-    if (!duration || !videoElement.getAttribute('src')) {
-      setSourceAndLoad();
-    }
-    if (paused) {
-      playhead && (videoElement.currentTime = playhead);
-      promise = videoElement.play();
-    } else {
-      await promise;
-      videoElement.pause();
-    }
   }
 
   function pauseHandler() {
@@ -151,15 +155,15 @@
   function loadstartHandler() {
     dispatch('player:loadstart', { ...video });
   }
-  
+
   function loadedDataHandler() {
-    loaded = true
+    loaded = true;
     srcAttr = videoElement.getAttribute('src');
     dispatch('player:loadeddata', { ...video });
   }
 
   function emptiedHandler() {
-    loaded = false
+    loaded = false;
     dispatch('player:emptied', { ...video });
   }
 
@@ -175,13 +179,6 @@
   function handleFullscreen() {
     if (document.fullscreenElement) document.exitFullscreen().catch((e) => {});
     else if (videoElement?.requestFullscreen) videoElement.requestFullscreen();
-  }
-
-  async function reload() {
-    videoElement.pause();
-    src = '';
-    await tick();
-    setTimeout(() => setSourceAndLoad(), 100);
   }
 </script>
 

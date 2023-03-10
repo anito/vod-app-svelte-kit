@@ -22,7 +22,7 @@ import {
   svg,
   windowSize
 } from './helper';
-import { key, players, buffer } from './module-vars';
+import { key, stack, players } from './module-vars';
 import {
   ADD,
   ADMIN,
@@ -89,7 +89,7 @@ export {
   parseRedirect,
   placeholderDotComAvatar,
   players,
-  buffer,
+  stack,
   post,
   posterCreatedHandler,
   posterRemoveHandler,
