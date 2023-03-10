@@ -19,6 +19,7 @@
   export let src: string | undefined;
   export let videoElement: HTMLVideoElement;
   export let scrub = false;
+  export let wheel = false;
   export let player: Player;
   export let video: Video;
   export let autoplay: boolean;
@@ -72,7 +73,7 @@
 
   function doScrub(event: MouseEvent) {
     if (!(event.buttons & 1)) return; // mouse not down
-    if (!duration) return; // videoElement not loaded yet
+    if (!loaded) return; 
 
     const { left, right } = videoElement && videoElement.getBoundingClientRect();
     if (left === undefined || right === undefined) return;
@@ -88,7 +89,7 @@
     scrubbing = true;
   }
 
-  function pauseHandler() {
+  function pausedHandler() {
     dispatch('player:paused');
   }
 
@@ -106,7 +107,7 @@
   }
 
   function wheelHandler({ detail }: CustomEvent) {
-    scrub && (playhead += detail.deltaY * 0.2);
+    wheel && (playhead += detail.deltaY * 0.2);
   }
 
   function mousedownHandler({ detail }: CustomEvent) {
@@ -197,7 +198,7 @@
     on:loadeddata={loadedDataHandler}
     on:emptied={emptiedHandler}
     on:abort={abortedHandler}
-    on:pause={pauseHandler}
+    on:pause={pausedHandler}
     controls={!customUI}
     {src}
     {poster}
