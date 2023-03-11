@@ -15,6 +15,7 @@
   export let autoplay = false;
   export let playhead: any;
   export let customUI = false;
+  export let controls = false;
   export let curtain = false;
   export let scrub = false;
 
@@ -48,7 +49,7 @@
    */
   function pausePlayers() {
     players.forEach(async (plr) => {
-      if (plr.promise === player.promise) {
+      if (plr.promise === player?.promise) {
         stack.add(element);
       } else if (!plr.element?.paused) {
         await plr.promise;
@@ -113,6 +114,7 @@
   on:player:fwd
   on:player:rwd
   {customUI}
+  {controls}
   {scrub}
   {autoplay}
   {poster}
@@ -130,6 +132,7 @@
     bottom: 0;
     right: 0;
     left: 0;
+    overflow: hidden;
   }
   .curtain.paused.mounted [class^='curtain-'] {
     transform: translateX(0);

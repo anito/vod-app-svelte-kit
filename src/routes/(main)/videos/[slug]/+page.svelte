@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page, navigating } from '$app/stores';
+  import { page } from '$app/stores';
   import { getContext } from 'svelte';
   import { fly } from 'svelte/transition';
   import { session, videos, users } from '$lib/stores';
@@ -10,11 +10,13 @@
   import type { User, Video } from '$lib/classes/repos/types';
   import { _ } from 'svelte-i18n';
   import { beforeNavigate } from '$app/navigation';
-  import { browser } from '$app/environment';
 
   export let data: PageData;
 
   const { info }: any = getContext('logger');
+  const curtain = true;
+  const mediaAnimDuration = 2000;
+  const curtainAnimDuration = 1800;
 
   let paused: boolean;
   let canplay: boolean;
@@ -23,6 +25,9 @@
   let timeoutIdSavePlayhead: ReturnType<typeof setTimeout>;
   let poster: string | undefined;
   let src: string | undefined;
+  let started: boolean = false;
+  let ended: boolean = false;
+  let customUI: boolean;
 
   $: if (data.video) videos.add([data.video]);
   $: user = $users?.find((user) => user.id === $session.user?.id);
@@ -164,15 +169,58 @@
     paused = true;
     canplay = false;
   }
+  function startHandler() {
+    started = true;
+    ended = false;
+    customUI = false;
+  }
+  function endHandler() {
+    ended = true;
+    started = false;
+    customUI = true;
+  }
+  $: playing = !paused;
 </script>
 
 <svelte:head>
   <title>{$page.data.config.Site?.name} | {video?.title || $_('text.no-title')}</title>
 </svelte:head>
 
+{#if curtain}
+  <div
+    style:--animation-duration={`${curtainAnimDuration}ms`}
+    class="curtains"
+    class:paused
+    class:playing
+    class:started
+    class:ended
+  >
+    <div class="curtain curtain-left">
+      <h2
+        class="mdc-typography--headline6 curtain-title opacity-25"
+        class:opacity-25={!video?.title}
+      >
+        {video?.title || video?.src}
+      </h2>
+      <h3
+        class="mdc-typography--subtitle2 curtain-desc opacity-25"
+        class:opacity-25={!video?.description}
+      >
+        {video?.description || $_('text.empty-description')}
+      </h3>
+    </div>
+    <div class="curtain curtain-right" />
+  </div>
+{/if}
 {#await promise then}
   {#if video}
-    <div in:fly={{ duration: 1000, opacity: 0 }} class="media-player bg-black flex flex-1">
+    <div
+      in:fly={{ duration: mediaAnimDuration, opacity: 0 }}
+      out:fly={{ duration: mediaAnimDuration, opacity: 0 }}
+      on:introstart={startHandler}
+      on:introend={endHandler}
+      class="media-player flex flex-1"
+    >
       <VideoPlayer
         class="video-player flex flex-1"
         bind:paused
@@ -185,8 +233,7 @@
         {video}
         {poster}
         {src}
-        customUI
-        curtain
+        {customUI}
         scrub
       />
     </div>
@@ -199,14 +246,123 @@
 
 <style>
   .media-player {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #000000;
+  }
+  .curtain {
     --curtain-lh-title: 4rem;
     --curtain-lh-descr: 2rem;
     --curtain-fs-title: 4rem;
     --curtain-fs-descr: 2rem;
-    --curtain-p: 3rem;
     --curtain-c-title: #555555;
     --curtain-c-descr: #888888;
-    --curtain-bg-left: #000000d0;
-    --curtain-bg-right: #00000030;
+    --curtain-bg-left: #00000062;
+    --curtain-bg-right: #00000043;
+  }
+  @keyframes leftopenclose {
+    0% {
+      transform: scaleX(1) translateX((43%));
+    }
+    50% {
+      transform: scaleX(.9) translateX(0%);
+    }
+    100% {
+      transform: scaleX(1) translateX(43%);
+    }
+  }
+  @keyframes rightopenclose {
+    0% {
+      /* transform: scaleX(1.2) translateX(-43.8%); */
+      transform: scaleX(1.2) translateX(calc(100% + 300px));
+    }
+    50% {
+      transform: scaleX(.9) translateX(0%);
+    }
+    100% {
+      /* transform: scaleX(1.2) translateX(43.8%); */
+      transform: scaleX(1.2) translateX(calc(100% + 300px));
+    }
+  }
+  .curtains {
+    pointer-events: none;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    overflow: hidden;
+  }
+  .curtain {
+    position: absolute;
+    top: 0;
+    min-width: 50%;
+    max-width: 50%;
+    height: 100%;
+    z-index: 1;
+    padding: 3rem;
+    overflow: hidden;
+    transform-origin: 0 center;
+    transition-property: transform;
+    transition-duration: var(--animation-duration);
+    transition-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
+  }
+  .curtain-left {
+    left: -300px;
+    transform: scaleX(1) translateX(38%);
+    transform-origin: left;
+    background-color: var(--curtain-bg-left);
+    word-wrap: break-word;
+  }
+  .playing .curtain-left {
+    transform: translateX(calc(-100% + 300px));
+    transition-duration: calc(var(--animation-duration) * 2.3);
+    transition-timing-function: cubic-bezier(0.075, 0.885, 0.32, 1.175);
+  }
+  .paused.started .curtain-left {
+    animation-name: leftopenclose;
+    animation-duration: calc(var(--animation-duration) * 1.5);
+    animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .paused.ended .curtain-left {
+    transform: scaleX(1) translateX(calc(45% + 0px));
+    transition-duration: calc(var(--animation-duration) * 1.3);
+    transition-timing-function: cubic-bezier(0.175, 0.385, 0.32, 1.075);
+  }
+  .curtain-right {
+    right: 300px;
+    transform: scaleX(1.2) translateX(-50%);
+    transform-origin: right;
+    background-color: var(--curtain-bg-right);
+  }
+  .playing .curtain-right {
+    transform: translateX(calc(100% + 300px));
+    transition-timing-function: cubic-bezier(0.175, 0.385, 0.32, 1.075);
+    animation-duration: calc(var(--animation-duration) * 0.8);
+  }
+  .paused.started .curtain-right {
+    animation-name: rightopenclose;
+    animation-duration: calc(var(--animation-duration) * 1.3);
+    animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .paused.ended .curtain-right {
+    /* transform: scaleX(1.2) translateX(-43.8%); */
+    transform: scaleX(1.2) translateX(calc(100% + 300px));
+    transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.175);
+  }
+  .curtain .curtain-title {
+    transform: translateX(0%);
+    font-size: var(--curtain-fs-title);
+    line-height: var(--curtain-lh-title, 1rem);
+    color: var(--curtain-c-title, #444444);
+    word-wrap: break-word;
+  }
+  .curtain .curtain-desc {
+    font-size: var(--curtain-fs-descr);
+    line-height: var(--curtain-lh-descr, 1rem);
+    color: var(--curtain-c-descr, #444444);
   }
 </style>

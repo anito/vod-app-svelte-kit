@@ -26,6 +26,7 @@
   export let poster: string | undefined;
   export let type: string | undefined;
   export let customUI = false;
+  export let controls = false;
   export let paused = false;
   export let preload = 'none';
   export let playhead = 0;
@@ -199,7 +200,7 @@
     on:emptied={emptiedHandler}
     on:abort={abortedHandler}
     on:pause={pausedHandler}
-    controls={!customUI}
+    {controls}
     {src}
     {poster}
     {preload}
@@ -238,7 +239,7 @@
   }
   video {
     object-position: center;
-    object-fit: cover;
+    object-fit: contain;
   }
   .loaded video {
     object-fit: contain;

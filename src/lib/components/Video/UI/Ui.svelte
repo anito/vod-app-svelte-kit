@@ -353,8 +353,8 @@
   }
 
   button.center {
-    width: 60px !important;
-    height: 60px !important;
+    width: 120px !important;
+    height: 120px !important;
   }
 
   button.center > .background-tint,

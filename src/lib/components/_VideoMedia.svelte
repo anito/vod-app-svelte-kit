@@ -228,15 +228,4 @@
   .player-container {
     position: relative;
   }
-  .media-player {
-    --curtain-fs-title: 1.3rem;
-    --curtain-fs-descr: 0.7rem;
-    --curtain-lh-title: 1.3rem;
-    --curtain-lh-descr: 0.7rem;
-    --curtain-p: 1rem;
-    --curtain-c-title: #555555;
-    --curtain-c-descr: #888888;
-    --curtain-bg-left: #000000f0;
-    --curtain-bg-right: #00000030;
-  }
 </style>
