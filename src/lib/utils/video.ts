@@ -15,11 +15,15 @@ export function posterSaveHandler(image_id: string, video_id: string) {
 
 export function posterRemoveHandler(id: string) {
   if (id) {
-    emit('video:save', { data: { id, image_id: null, image: null }, show: true });
+    emit('video:save', { data: { id, image_id: null, image: null }, show: true, relational: true });
   }
 }
 
 function savePoster(image_id: string, video_id: string) {
-  emit('video:save', { data: { id: video_id, image_id, image: null }, show: true });
+  emit('video:save', {
+    data: { id: video_id, image_id, image: null },
+    show: true,
+    relational: true
+  });
   emit('video:poster:changed', { video_id, image_id });
 }

@@ -375,7 +375,7 @@
   }
 
   async function videoSaveHandler({ detail }: CustomEvent) {
-    const { data, show, onsuccess, onerror } = detail;
+    const { data, show, onsuccess, onerror, relational } = detail;
     const res = await fetch(`/videos/${data.id}`, {
       method: 'PUT',
       body: JSON.stringify(data)
@@ -386,16 +386,18 @@
     if (res?.success) {
       videos.put(data);
       // Reload relational images repo in order to reflect poster changes
-      await fetch(`/repos/images?autolimit=true`)
-        .then(async (res) => await res.json())
-        .then((res) => {
-          if (res.success) {
-            images.update(res.data);
-          }
-        });
-      onsuccess?.(res);
-    } else {
-      onerror?.(res);
+      if (relational) {
+        await fetch(`/repos/images?autolimit=true`)
+          .then(async (res) => await res.json())
+          .then((res) => {
+            if (res.success) {
+              images.update(res.data);
+            }
+          });
+        onsuccess?.(res);
+      } else {
+        onerror?.(res);
+      }
     }
 
     if (show) {

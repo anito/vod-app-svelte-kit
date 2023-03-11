@@ -33,7 +33,11 @@
     if (!paused || !canplay) return;
     let pauseTime = time;
     clearTimeout(timeoutId);
-    timeoutId = setTimeout((savedAtTime: number) => savedAtTime === playhead && savePlayhead(), 500, pauseTime);
+    timeoutId = setTimeout(
+      (savedAtTime: number) => savedAtTime === playhead && savePlayhead(),
+      500,
+      pauseTime
+    );
   })(playhead);
   $: video?.image_id && getMediaImage(video.image_id, $session.user?.jwt).then((v) => (poster = v));
   $: video?.id && getMediaVideo(video.id, $session.user?.jwt).then((v) => (src = v));
@@ -91,14 +95,18 @@
     canplay = false;
   }
 
-  async function savePlayhead() {
+  async function savePlayhead(callback: { onsuccess?: any; onerror?: any } = {}) {
     if (!canplay) return;
+
+    const { onsuccess, onerror } = { onsuccess: () => {}, onerror: () => {}, ...callback };
     if (hasPrivileges) {
       if (Math.round(video?.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
       emit('video:save', {
-        data: { id: video?.id, playhead }
+        data: { id: video?.id, playhead },
+        onsuccess,
+        onerror
       });
-    } else if ($session.role === USER) {
+    } else {
       if (Math.round(joinData.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
       const associated = user?.videos
         .filter((v: Video) => v.id != video?.id)
@@ -114,7 +122,11 @@
         ]
       };
 
-      emit('user:save', { data });
+      emit('user:save', {
+        data,
+        onsuccess,
+        onerror
+      });
     }
   }
 </script>

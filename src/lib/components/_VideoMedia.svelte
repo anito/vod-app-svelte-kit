@@ -39,26 +39,10 @@
     getMediaImage(video.image_id, $session.user?.jwt).then((res) => (poster = res))) ||
     (poster = emptyPoster);
   $: video?.id && getMediaVideo(video?.id, $session.user?.jwt).then((res) => (src = res));
-  $: ((time) => {
-    if (paused && canplay) {
-      let pausedTime = time;
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(
-        (pausedAtTime: number) => {
-          if(pausedAtTime === time) savePlayhead()
-        },
-        200,
-        pausedTime
-      );
-    }
-  })(playhead);
+  $: watchPlayhead(playhead, paused);
 
-  onMount(() => {});
-
-  onDestroy(async () => {
-    paused = true;
-    await tick();
-    savePlayhead();
+  onDestroy(() => {
+    if (!paused) savePlayhead();
   });
 
   function handleCanPlay() {
@@ -66,13 +50,17 @@
     canplay = true;
     playhead = hasPrivileges ? video?.playhead : joinData?.playhead;
   }
-  
+
   // set playhead to the last saved position when the video is ready to play
-  async function savePlayhead() {
+  function savePlayhead(callback: { onsuccess?: any; onerror?: any } = {}) {
     if (!canplay) return;
+
+    const { onsuccess, onerror } = { onsuccess: () => {}, onerror: () => {}, ...callback };
     if (hasPrivileges) {
       emit('video:save', {
-        data: { id: video.id, playhead }
+        data: { id: video.id, playhead },
+        onsuccess,
+        onerror
       });
     } else {
       const data = {
@@ -87,8 +75,24 @@
       };
 
       emit('user:save', {
-        data
+        data,
+        onsuccess,
+        onerror
       });
+    }
+  }
+
+  function watchPlayhead(time: number, paused: boolean) {
+    if (paused && canplay) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(
+        (pausetime: number) => {
+          if (pausetime === time) savePlayhead();
+          else console.log(pausetime, time);
+        },
+        200,
+        time
+      );
     }
   }
 
