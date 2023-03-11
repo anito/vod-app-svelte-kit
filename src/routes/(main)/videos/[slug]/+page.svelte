@@ -33,7 +33,7 @@
     ?.videos.find((v: Video) => v.id === video?.id)?._joinData;
   $: video?.image_id && getMediaImage(video.image_id, $session.user?.jwt).then((v) => (poster = v));
   $: if (video) getMediaVideo(video.id, $session.user?.jwt).then((v) => (src = v));
-  $: if (video) watchPlayhead(playhead, paused);
+  $: watchPlayhead(playhead, paused);
 
   beforeNavigate(({ from, to }) => {
     const id = from?.params?.slug;
