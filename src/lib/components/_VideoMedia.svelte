@@ -18,7 +18,8 @@
 
   let src: string | undefined;
   let playhead: number;
-  let timeoutId: ReturnType<typeof setTimeout>;
+  let timeoutIdWatchPlayhead: ReturnType<typeof setTimeout>;
+  let timeoutIdSavePlayhead: ReturnType<typeof setTimeout>;
   let poster: string | undefined;
   let canplay = false;
   let paused = true;
@@ -42,7 +43,7 @@
   $: watchPlayhead(playhead, paused);
 
   onDestroy(() => {
-    if (!paused) savePlayhead();
+    if (!paused) savePlayhead(playhead);
   });
 
   function handleCanPlay() {
@@ -52,16 +53,17 @@
   }
 
   // set playhead to the last saved position when the video is ready to play
-  function savePlayhead(callback: { onsuccess?: any; onerror?: any } = {}) {
+  function savePlayhead(time: number, callback: { onsuccess?: any; onerror?: any } = {}) {
     if (!canplay) return;
 
+    clearTimeout(timeoutIdSavePlayhead);
     const { onsuccess, onerror } = { onsuccess: () => {}, onerror: () => {}, ...callback };
     if (hasPrivileges) {
-      emit('video:save', {
-        data: { id: video.id, playhead },
+      timeoutIdSavePlayhead = setTimeout(() => emit('video:save', {
+        data: { id: video.id, time },
         onsuccess,
         onerror
-      });
+      }), 200);
     } else {
       const data = {
         id: user?.id,
@@ -74,21 +76,20 @@
         ]
       };
 
-      emit('user:save', {
+      timeoutIdSavePlayhead = setTimeout(() => emit('user:save', {
         data,
         onsuccess,
         onerror
-      });
+      }), 200);
     }
   }
 
   function watchPlayhead(time: number, paused: boolean) {
     if (paused && canplay) {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(
+      clearTimeout(timeoutIdWatchPlayhead);
+      timeoutIdWatchPlayhead = setTimeout(
         (pausetime: number) => {
-          if (pausetime === time) savePlayhead();
-          else console.log(pausetime, time);
+          if (pausetime === time) savePlayhead(time);
         },
         200,
         time

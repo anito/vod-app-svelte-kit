@@ -17,7 +17,8 @@
   let paused: boolean;
   let canplay: boolean;
   let playhead: number;
-  let timeoutId: ReturnType<typeof setTimeout>;
+  let timeoutIdWatchPlayhead: ReturnType<typeof setTimeout>;
+  let timeoutIdSavePlayhead: ReturnType<typeof setTimeout>;
   let poster: string | undefined;
   let src: string | undefined;
 
@@ -29,19 +30,23 @@
   $: joinData = $users
     .find((u: User) => u.id === user?.id)
     ?.videos.find((v: Video) => v.id === video?.id)?._joinData;
-  $: ((time) => {
-    if (!paused || !canplay) return;
-    let pauseTime = time;
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(
-      (savedAtTime: number) => savedAtTime === playhead && savePlayhead(),
-      500,
-      pauseTime
-    );
-  })(playhead);
   $: video?.image_id && getMediaImage(video.image_id, $session.user?.jwt).then((v) => (poster = v));
   $: video?.id && getMediaVideo(video.id, $session.user?.jwt).then((v) => (src = v));
-  $: $navigating && savePlayhead();
+  $: !paused && $navigating && savePlayhead(playhead);
+  $: watchPlayhead(playhead, paused);
+
+  function watchPlayhead(time: number, paused: boolean) {
+    if (paused && canplay) {
+      clearTimeout(timeoutIdWatchPlayhead);
+      timeoutIdWatchPlayhead = setTimeout(
+        (pausetime: number) => {
+          if (pausetime === time) savePlayhead(time);
+        },
+        200,
+        time
+      );
+    }
+  }
 
   // set playhead to the last saved position when the video is ready to play
   function handleCanPlay() {
@@ -95,17 +100,18 @@
     canplay = false;
   }
 
-  async function savePlayhead(callback: { onsuccess?: any; onerror?: any } = {}) {
+  function savePlayhead(time: number, callback: { onsuccess?: any; onerror?: any } = {}) {
     if (!canplay) return;
 
+    clearTimeout(timeoutIdSavePlayhead)
     const { onsuccess, onerror } = { onsuccess: () => {}, onerror: () => {}, ...callback };
     if (hasPrivileges) {
       if (Math.round(video?.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
-      emit('video:save', {
-        data: { id: video?.id, playhead },
+      timeoutIdSavePlayhead = setTimeout(() => emit('video:save', {
+        data: { id: video?.id, time },
         onsuccess,
         onerror
-      });
+      }), 200);
     } else {
       if (Math.round(joinData.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
       const associated = user?.videos
@@ -116,17 +122,17 @@
         videos: [
           {
             id: video?.id,
-            _joinData: { ...joinData, playhead }
+            _joinData: { ...joinData, time }
           },
           ...associated
         ]
       };
 
-      emit('user:save', {
+      timeoutIdSavePlayhead = setTimeout(() => emit('user:save', {
         data,
         onsuccess,
         onerror
-      });
+      }), 200);
     }
   }
 </script>

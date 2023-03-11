@@ -54,6 +54,7 @@ export interface Avatar<AvatarRepoType = Record<string, any>> {
 }
 
 export interface Video<VideoRepoType = Record<string, any>> extends VideoAll {
+  id: string;
   src?: string | any;
   playhead?: number | any;
   _joinData?: any[] | any;
