@@ -9,6 +9,7 @@
   import type { PageData } from './$types';
   import type { User, Video } from '$lib/classes/repos/types';
   import { _ } from 'svelte-i18n';
+  import { beforeNavigate } from '$app/navigation';
 
   export let data: PageData;
 
@@ -31,19 +32,73 @@
     .find((u: User) => u.id === user?.id)
     ?.videos.find((v: Video) => v.id === video?.id)?._joinData;
   $: video?.image_id && getMediaImage(video.image_id, $session.user?.jwt).then((v) => (poster = v));
-  $: video?.id && getMediaVideo(video.id, $session.user?.jwt).then((v) => (src = v));
-  $: !paused && $navigating && savePlayhead(playhead);
-  $: watchPlayhead(playhead, paused);
+  $: if (video) getMediaVideo(video.id, $session.user?.jwt).then((v) => (src = v));
+  $: if (video) watchPlayhead(playhead, paused);
+
+  beforeNavigate(({ from, to }) => {
+    const id = from?.params?.slug;
+    if (id) {
+      savePlayhead(id, playhead);
+    }
+  });
 
   function watchPlayhead(time: number, paused: boolean) {
     if (paused && canplay) {
       clearTimeout(timeoutIdWatchPlayhead);
       timeoutIdWatchPlayhead = setTimeout(
         (pausetime: number) => {
-          if (pausetime === time) savePlayhead(time);
+          if (pausetime === time) video && savePlayhead(video.id, time);
         },
         200,
         time
+      );
+    }
+  }
+
+  function savePlayhead(
+    id: string,
+    playhead: number,
+    callback: { onsuccess?: any; onerror?: any } = {}
+  ) {
+    if (!canplay) return;
+
+    clearTimeout(timeoutIdSavePlayhead);
+    const { onsuccess, onerror } = { onsuccess: () => {}, onerror: () => {}, ...callback };
+    if (hasPrivileges) {
+      if (Math.round(video?.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
+      timeoutIdSavePlayhead = setTimeout(
+        () =>
+          emit('video:save', {
+            data: { id, playhead },
+            onsuccess,
+            onerror
+          }),
+        200
+      );
+    } else {
+      if (Math.round(joinData.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
+      const associated = user?.videos
+        .filter((v: Video) => v.id != video?.id)
+        .map((v: Video) => ({ id: v.id }));
+      const data = {
+        id: user?.id,
+        videos: [
+          {
+            id,
+            _joinData: { ...joinData, playhead }
+          },
+          ...associated
+        ]
+      };
+
+      timeoutIdSavePlayhead = setTimeout(
+        () =>
+          emit('user:save', {
+            data,
+            onsuccess,
+            onerror
+          }),
+        200
       );
     }
   }
@@ -98,42 +153,6 @@
     // to set the videos canPlay flag to false will re-adjust playhead to last saved position when video canPlay again
     paused = true;
     canplay = false;
-  }
-
-  function savePlayhead(playhead: number, callback: { onsuccess?: any; onerror?: any } = {}) {
-    if (!canplay) return;
-
-    clearTimeout(timeoutIdSavePlayhead)
-    const { onsuccess, onerror } = { onsuccess: () => {}, onerror: () => {}, ...callback };
-    if (hasPrivileges) {
-      if (Math.round(video?.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
-      timeoutIdSavePlayhead = setTimeout(() => emit('video:save', {
-        data: { id: video?.id, playhead },
-        onsuccess,
-        onerror
-      }), 200);
-    } else {
-      if (Math.round(joinData.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
-      const associated = user?.videos
-        .filter((v: Video) => v.id != video?.id)
-        .map((v: Video) => ({ id: v.id }));
-      const data = {
-        id: user?.id,
-        videos: [
-          {
-            id: video?.id,
-            _joinData: { ...joinData, playhead }
-          },
-          ...associated
-        ]
-      };
-
-      timeoutIdSavePlayhead = setTimeout(() => emit('user:save', {
-        data,
-        onsuccess,
-        onerror
-      }), 200);
-    }
   }
 </script>
 

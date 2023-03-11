@@ -39,11 +39,11 @@
   $: (video.image_id &&
     getMediaImage(video.image_id, $session.user?.jwt).then((res) => (poster = res))) ||
     (poster = emptyPoster);
-  $: video?.id && getMediaVideo(video?.id, $session.user?.jwt).then((res) => (src = res));
+  $: if (video.id) getMediaVideo(video.id, $session.user?.jwt).then((res) => (src = res));
   $: watchPlayhead(playhead, paused);
 
   onDestroy(() => {
-    if (!paused) savePlayhead(playhead);
+    if (!paused) savePlayhead(video.id, playhead);
   });
 
   function handleCanPlay() {
@@ -52,47 +52,59 @@
     playhead = hasPrivileges ? video?.playhead : joinData?.playhead;
   }
 
+  function watchPlayhead(time: number, paused: boolean) {
+    if (paused && canplay) {
+      clearTimeout(timeoutIdWatchPlayhead);
+      timeoutIdWatchPlayhead = setTimeout(
+        (pausetime: number) => {
+          if (pausetime === time) savePlayhead(video.id, time);
+        },
+        200,
+        time
+      );
+    }
+  }
+
   // set playhead to the last saved position when the video is ready to play
-  function savePlayhead(playhead: number, callback: { onsuccess?: any; onerror?: any } = {}) {
+  function savePlayhead(
+    id: string,
+    playhead: number,
+    callback: { onsuccess?: any; onerror?: any } = {}
+  ) {
     if (!canplay) return;
 
     clearTimeout(timeoutIdSavePlayhead);
     const { onsuccess, onerror } = { onsuccess: () => {}, onerror: () => {}, ...callback };
     if (hasPrivileges) {
-      timeoutIdSavePlayhead = setTimeout(() => emit('video:save', {
-        data: { id: video.id, playhead },
-        onsuccess,
-        onerror
-      }), 200);
+      timeoutIdSavePlayhead = setTimeout(
+        () =>
+          emit('video:save', {
+            data: { id, playhead },
+            onsuccess,
+            onerror
+          }),
+        200
+      );
     } else {
       const data = {
         id: user?.id,
         videos: [
           {
-            id: video?.id,
+            id,
             _joinData: { ...joinData, playhead }
           },
           ...associated
         ]
       };
 
-      timeoutIdSavePlayhead = setTimeout(() => emit('user:save', {
-        data,
-        onsuccess,
-        onerror
-      }), 200);
-    }
-  }
-
-  function watchPlayhead(time: number, paused: boolean) {
-    if (paused && canplay) {
-      clearTimeout(timeoutIdWatchPlayhead);
-      timeoutIdWatchPlayhead = setTimeout(
-        (pausetime: number) => {
-          if (pausetime === time) savePlayhead(time);
-        },
-        200,
-        time
+      timeoutIdSavePlayhead = setTimeout(
+        () =>
+          emit('user:save', {
+            data,
+            onsuccess,
+            onerror
+          }),
+        200
       );
     }
   }
