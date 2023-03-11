@@ -17,17 +17,20 @@
   export let customUI = false;
   export let curtain = false;
   export let scrub = false;
-  
+
   const isChrome = $page.data.ua.name === 'Chrome';
-  
+
   let player: Player;
   let canplay = false;
   let element: HTMLVideoElement;
   let className = '';
+  let mounted = false;
 
   export { className as class };
 
   onMount(() => {
+    mounted = true;
+    paused = true;
     player = { element, promise: new Promise(() => void 0) };
     players.add(player);
     return () => {
@@ -45,19 +48,19 @@
    */
   function pausePlayers() {
     players.forEach(async (plr) => {
-      if(plr.promise === player.promise) {
+      if (plr.promise === player.promise) {
         stack.add(element);
       } else if (!plr.element?.paused) {
-          await plr.promise;
-          plr.element?.pause();
+        await plr.promise;
+        plr.element?.pause();
       }
-    })
+    });
   }
 
   /**
    * Unload the first loaded player in the stack to free ressources
-   * 
-   * To preserve ressources some user agents (e.g. Chrome) limit the number of media players 
+   *
+   * To preserve ressources some user agents (e.g. Chrome) limit the number of media players
    * that can be loaded simultaniously. Even if "preload" set to none.
    */
   function unloadStreams(limit: number) {
@@ -71,7 +74,7 @@
 </script>
 
 {#if curtain}
-  <div class="curtain" class:paused>
+  <div class="curtain" class:paused class:mounted>
     <div class="curtain-left bg-black opacity-90">
       <h2
         class="mdc-typography--headline6 curtain-title opacity-25"
@@ -99,7 +102,7 @@
   bind:paused
   bind:videoElement={element}
   bind:playhead
-  bind:player={player}
+  bind:player
   on:player:paused
   on:player:canplay={() => (canplay = true)}
   on:player:canplay
@@ -128,7 +131,7 @@
     right: 0;
     left: 0;
   }
-  .curtain.paused [class^='curtain-'] {
+  .curtain.paused.mounted [class^='curtain-'] {
     transform: translateX(0);
   }
   .curtain-left {

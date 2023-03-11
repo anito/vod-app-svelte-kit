@@ -41,8 +41,8 @@
       playhead && (videoElement.currentTime = playhead);
       player.promise = videoElement.play();
       player.promise
-        .then(() => console.log('[MEDIA PLAY] Video playing', video.title || video.src))
-        .catch((reason) => console.error('[MEDIA PLAY ERROR]', reason));
+        .then(() => console.log('[MEDIA] Playing', video.title || video.src))
+        .catch((reason) => console.error('[MEDIA ERROR]', reason));
     } else {
       await player.promise;
       videoElement.pause();

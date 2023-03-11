@@ -27,6 +27,14 @@
   $: user = $users?.find((user) => user.id === $session.user?.id);
   $: user && (canplay = false);
   $: video = $videos.find((v) => v.id === $page.params.slug);
+  $: video_id = video?.id
+  $: promise = new Promise((resolve, reject) => {
+    if (user && video_id) {
+      resolve(video_id);
+    } else {
+      reject();
+    }
+  }).catch() as Promise<string>;
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: joinData = $users
     .find((u: User) => u.id === user?.id)
@@ -160,30 +168,32 @@
   <title>{$page.data.config.Site?.name} | {video?.title || $_('text.no-title')}</title>
 </svelte:head>
 
-{#if video && user}
-  <div in:fly={{ duration: 800, opacity: 0 }} class="media-player bg-black flex flex-1">
-    <VideoPlayer
-      class="video-player flex flex-1"
-      bind:paused
-      bind:playhead
-      on:player:canplay={handleCanPlay}
-      on:player:emptied={handleEmptied}
-      on:player:loadeddata={handleLoadedData}
-      on:player:loadstart={handleLoadStart}
-      on:player:aborted={handleAborted}
-      {video}
-      {poster}
-      {src}
-      customUI
-      curtain
-      scrub
-    />
-  </div>
-{:else}
+{#await promise then}
+  {#if video}
+    <div in:fly={{ duration: 800, opacity: 0 }} class="media-player bg-black flex flex-1">
+      <VideoPlayer
+        class="video-player flex flex-1"
+        bind:paused
+        bind:playhead
+        on:player:canplay={handleCanPlay}
+        on:player:emptied={handleEmptied}
+        on:player:loadeddata={handleLoadedData}
+        on:player:loadstart={handleLoadStart}
+        on:player:aborted={handleAborted}
+        {video}
+        {poster}
+        {src}
+        customUI
+        curtain
+        scrub
+      />
+    </div>
+  {/if}
+{:catch}
   <FlexContainer>
     {$_('text.empty-video-selection')}
   </FlexContainer>
-{/if}
+{/await}
 
 <style>
   .media-player {
