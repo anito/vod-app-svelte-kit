@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { onDestroy, onMount, getContext, createEventDispatcher, tick } from 'svelte';
+  import { onDestroy, getContext, createEventDispatcher } from 'svelte';
   import { fly } from 'svelte/transition';
   import { Media, MediaContent } from '@smui/card';
-  import Textfield, { Textarea } from '@smui/textfield';
-  import VideoPlayer, { mute } from '$lib/components/Video';
+  import Textfield from '@smui/textfield';
+  import VideoPlayer from '$lib/components/Video';
   import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, emit } from '$lib/utils';
   import { session, users } from '$lib/stores';
   import dummyPoster from '/src/assets/images/empty-poster.jpg';

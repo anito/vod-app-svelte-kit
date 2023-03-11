@@ -7,10 +7,9 @@
   import '$lib/components/_dialog.scss';
   import '$lib/components/_list.scss';
   import '$lib/components/_card.scss';
-  import { dev } from '$app/environment';
-  import { derived, writable } from 'svelte/store';
-  import { version } from '$app/environment';
+  import { dev, version } from '$app/environment';
   import { afterNavigate, beforeNavigate, goto, invalidate, invalidateAll } from '$app/navigation';
+  import { derived, writable } from 'svelte/store';
   import { navigating, page } from '$app/stores';
   import { enhance } from '$app/forms';
   import { getContext, onMount, setContext, tick } from 'svelte';
@@ -22,7 +21,6 @@
   import Snackbar, { Actions as SnackbarActions } from '@smui/snackbar';
   import { Label } from '@smui/common';
   import {
-    createTabSearch,
     post,
     emit,
     svg,
@@ -63,7 +61,7 @@
   import { svg_manifest } from '$lib/svg_manifest';
   import { _, locale } from 'svelte-i18n';
   import Dialog, { Title as DialogTitle, Content, Actions as DialogActions } from '@smui/dialog';
-  import { DEFAULT_TAB, IMAGE, VIDEO } from '$lib/utils/const';
+  import { IMAGE, VIDEO } from '$lib/utils/const';
   import { inject } from '@vercel/analytics';
   import type { NavigationTarget } from '@sveltejs/kit';
   import type { Dropzone } from '$lib/components/Dropzone/type';

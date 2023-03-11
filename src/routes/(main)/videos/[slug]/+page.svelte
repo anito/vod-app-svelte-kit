@@ -4,8 +4,8 @@
   import { fly } from 'svelte/transition';
   import { session, videos, users } from '$lib/stores';
   import { FlexContainer } from '$lib/components';
-  import VideoPlayer, { mute } from '$lib/components/Video';
-  import { ADMIN, SUPERUSER, USER, getMediaImage, getMediaVideo, emit } from '$lib/utils';
+  import VideoPlayer from '$lib/components/Video';
+  import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, emit } from '$lib/utils';
   import type { PageData } from './$types';
   import type { User, Video } from '$lib/classes/repos/types';
   import { _ } from 'svelte-i18n';
