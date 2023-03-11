@@ -28,6 +28,7 @@
   $: user && (canplay = false);
   $: video = $videos.find((v) => v.id === $page.params.slug);
   $: video_id = video?.id
+  $: console.log(video_id, paused)
   $: promise = new Promise((resolve, reject) => {
     if (user && video_id) {
       resolve(video_id);
