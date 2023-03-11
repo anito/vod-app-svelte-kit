@@ -16,7 +16,7 @@
   const { info }: any = getContext('logger');
   const curtain = true;
   const mediaAnimDuration = 2000;
-  const curtainAnimDuration = 1800;
+  const curtainAnimDuration = 1000;
 
   let paused: boolean;
   let canplay: boolean;
@@ -252,37 +252,35 @@
     background-color: #000000;
   }
   .curtain {
-    --curtain-lh-title: 4rem;
-    --curtain-lh-descr: 2rem;
-    --curtain-fs-title: 4rem;
-    --curtain-fs-descr: 2rem;
-    --curtain-c-title: #555555;
-    --curtain-c-descr: #888888;
-    --curtain-bg-left: #00000062;
-    --curtain-bg-right: #00000043;
+    --curtain-title-lh: 4rem;
+    --curtain-descr-lh: 2rem;
+    --curtain-title-size: 4rem;
+    --curtain-descr-size: 2rem;
+    --curtain-title-ink: #aaaaaa;
+    --curtain-descr-ink: #888888;
+    --curtain-left-bg: #00000062;
+    --curtain-right-bg: #00000043;
   }
   @keyframes leftopenclose {
     0% {
-      transform: scaleX(1) translateX((43%));
+      transform: scaleX(1) translateX(calc(300px));
     }
     50% {
-      transform: scaleX(.9) translateX(0%);
+      transform: scaleX(.9) translateX(-50%);
     }
     100% {
-      transform: scaleX(1) translateX(43%);
+      transform: scaleX(1) translateX(calc(300px));
     }
   }
   @keyframes rightopenclose {
     0% {
-      /* transform: scaleX(1.2) translateX(-43.8%); */
-      transform: scaleX(1.2) translateX(calc(100% + 300px));
+      transform: scaleX(1.2) translateX(calc(-50%));
     }
     50% {
-      transform: scaleX(.9) translateX(0%);
+      transform: scaleX(.9) translateX(calc(50%));
     }
     100% {
-      /* transform: scaleX(1.2) translateX(43.8%); */
-      transform: scaleX(1.2) translateX(calc(100% + 300px));
+      transform: scaleX(1.2) translateX(calc(0%));
     }
   }
   .curtains {
@@ -298,8 +296,6 @@
   .curtain {
     position: absolute;
     top: 0;
-    min-width: 50%;
-    max-width: 50%;
     height: 100%;
     z-index: 1;
     padding: 3rem;
@@ -312,31 +308,33 @@
   }
   .curtain-left {
     left: -300px;
-    transform: scaleX(1) translateX(38%);
+    min-width: 60%;
+    max-width: 60%;
     transform-origin: left;
-    background-color: var(--curtain-bg-left);
+    background-color: var(--curtain-left-bg);
     word-wrap: break-word;
   }
   .playing .curtain-left {
-    transform: translateX(calc(-100% + 300px));
+    transform: translateX(calc(-60%));
     transition-duration: calc(var(--animation-duration) * 2.3);
     transition-timing-function: cubic-bezier(0.075, 0.885, 0.32, 1.175);
   }
   .paused.started .curtain-left {
     animation-name: leftopenclose;
-    animation-duration: calc(var(--animation-duration) * 1.5);
+    animation-duration: calc(var(--animation-duration) * 1);
     animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
   .paused.ended .curtain-left {
-    transform: scaleX(1) translateX(calc(45% + 0px));
+    transform: scaleX(1) translateX(calc(300px));
     transition-duration: calc(var(--animation-duration) * 1.3);
     transition-timing-function: cubic-bezier(0.175, 0.385, 0.32, 1.075);
   }
   .curtain-right {
-    right: 300px;
-    transform: scaleX(1.2) translateX(-50%);
+    left: -300px;
+    min-width: 200%;
+    max-width: 200%;
     transform-origin: right;
-    background-color: var(--curtain-bg-right);
+    background-color: var(--curtain-right-bg);
   }
   .playing .curtain-right {
     transform: translateX(calc(100% + 300px));
@@ -345,24 +343,24 @@
   }
   .paused.started .curtain-right {
     animation-name: rightopenclose;
-    animation-duration: calc(var(--animation-duration) * 1.3);
+    animation-duration: calc(var(--animation-duration) * 1.2);
     animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
   .paused.ended .curtain-right {
     /* transform: scaleX(1.2) translateX(-43.8%); */
-    transform: scaleX(1.2) translateX(calc(100% + 300px));
+    transform: scaleX(1.2) translateX(calc(0%));
     transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.175);
   }
   .curtain .curtain-title {
     transform: translateX(0%);
-    font-size: var(--curtain-fs-title);
-    line-height: var(--curtain-lh-title, 1rem);
-    color: var(--curtain-c-title, #444444);
+    font-size: var(--curtain-title-size);
+    line-height: var(--curtain-title-lh, 1rem);
+    color: var(--curtain-title-ink, #444444);
     word-wrap: break-word;
   }
   .curtain .curtain-desc {
-    font-size: var(--curtain-fs-descr);
-    line-height: var(--curtain-lh-descr, 1rem);
-    color: var(--curtain-c-descr, #444444);
+    font-size: var(--curtain-descr-size);
+    line-height: var(--curtain-descr-lh, 1rem);
+    color: var(--curtain-descr-ink, #444444);
   }
 </style>
