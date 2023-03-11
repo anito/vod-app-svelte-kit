@@ -10,6 +10,7 @@
   import type { User, Video } from '$lib/classes/repos/types';
   import { _ } from 'svelte-i18n';
   import { beforeNavigate } from '$app/navigation';
+  import { browser } from '$app/environment';
 
   export let data: PageData;
 
@@ -27,15 +28,15 @@
   $: user = $users?.find((user) => user.id === $session.user?.id);
   $: user && (canplay = false);
   $: video = $videos.find((v) => v.id === $page.params.slug);
-  $: video_id = video?.id
-  $: console.log(video_id, paused)
+  $: video_id = video?.id; // debounce video
+  $: user_id = user?.id; // debounce user
   $: promise = new Promise((resolve, reject) => {
-    if (user && video_id) {
-      resolve(video_id);
+    if (video_id !== undefined && user_id !== undefined) {
+      resolve(true);
     } else {
       reject();
     }
-  }).catch() as Promise<string>;
+  }).catch() as Promise<boolean>;
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: joinData = $users
     .find((u: User) => u.id === user?.id)
@@ -44,7 +45,7 @@
   $: if (video) getMediaVideo(video.id, $session.user?.jwt).then((v) => (src = v));
   $: watchPlayhead(playhead, paused);
 
-  beforeNavigate(({ from, to }) => {
+  beforeNavigate(({ from }) => {
     const id = from?.params?.slug;
     if (id) {
       savePlayhead(id, playhead);
@@ -171,7 +172,7 @@
 
 {#await promise then}
   {#if video}
-    <div in:fly={{ duration: 800, opacity: 0 }} class="media-player bg-black flex flex-1">
+    <div in:fly={{ duration: 1000, opacity: 0 }} class="media-player bg-black flex flex-1">
       <VideoPlayer
         class="video-player flex flex-1"
         bind:paused
