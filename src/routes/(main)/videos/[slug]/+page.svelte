@@ -100,7 +100,7 @@
     canplay = false;
   }
 
-  function savePlayhead(time: number, callback: { onsuccess?: any; onerror?: any } = {}) {
+  function savePlayhead(playhead: number, callback: { onsuccess?: any; onerror?: any } = {}) {
     if (!canplay) return;
 
     clearTimeout(timeoutIdSavePlayhead)
@@ -108,7 +108,7 @@
     if (hasPrivileges) {
       if (Math.round(video?.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
       timeoutIdSavePlayhead = setTimeout(() => emit('video:save', {
-        data: { id: video?.id, time },
+        data: { id: video?.id, playhead },
         onsuccess,
         onerror
       }), 200);
@@ -122,7 +122,7 @@
         videos: [
           {
             id: video?.id,
-            _joinData: { ...joinData, time }
+            _joinData: { ...joinData, playhead }
           },
           ...associated
         ]

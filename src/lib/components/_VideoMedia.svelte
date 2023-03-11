@@ -53,14 +53,14 @@
   }
 
   // set playhead to the last saved position when the video is ready to play
-  function savePlayhead(time: number, callback: { onsuccess?: any; onerror?: any } = {}) {
+  function savePlayhead(playhead: number, callback: { onsuccess?: any; onerror?: any } = {}) {
     if (!canplay) return;
 
     clearTimeout(timeoutIdSavePlayhead);
     const { onsuccess, onerror } = { onsuccess: () => {}, onerror: () => {}, ...callback };
     if (hasPrivileges) {
       timeoutIdSavePlayhead = setTimeout(() => emit('video:save', {
-        data: { id: video.id, time },
+        data: { id: video.id, playhead },
         onsuccess,
         onerror
       }), 200);
