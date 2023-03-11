@@ -258,7 +258,7 @@
     --curtain-descr-size: 2rem;
     --curtain-title-ink: #aaaaaa;
     --curtain-descr-ink: #888888;
-    --curtain-left-bg: #00000062;
+    --curtain-left-bg: #000000d6;
     --curtain-right-bg: #00000043;
   }
   @keyframes leftopenclose {
