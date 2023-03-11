@@ -353,6 +353,11 @@
   }
 
   button.center {
+    width: 60px !important;
+    height: 60px !important;
+  }
+
+  :global(.single-player) button.center {
     width: 120px !important;
     height: 120px !important;
   }

@@ -219,7 +219,7 @@
       out:fly={{ duration: mediaAnimDuration, opacity: 0 }}
       on:introstart={startHandler}
       on:introend={endHandler}
-      class="media-player flex flex-1"
+      class="media-player single-player flex flex-1"
     >
       <VideoPlayer
         class="video-player flex flex-1"
