@@ -30,8 +30,12 @@
   let customUI: boolean;
   let withinRoute: boolean;
 
-  beforeNavigate(({ to }) => {
+  beforeNavigate(({ to, from }) => {
     withinRoute = to?.route.id === '/(main)/videos/[slug]';
+    const id = from?.params?.slug;
+    if (id) {
+      savePlayhead(id, playhead);
+    }
   });
 
   onMount(() => {
@@ -58,13 +62,6 @@
   $: video?.image_id && getMediaImage(video.image_id, $session.user?.jwt).then((v) => (poster = v));
   $: if (video) getMediaVideo(video.id, $session.user?.jwt).then((v) => (src = v));
   $: watchPlayhead(playhead, paused);
-
-  beforeNavigate(({ from }) => {
-    const id = from?.params?.slug;
-    if (id) {
-      savePlayhead(id, playhead);
-    }
-  });
 
   function watchPlayhead(time: number, paused: boolean) {
     if (paused && canplay) {
