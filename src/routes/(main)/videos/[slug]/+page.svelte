@@ -252,36 +252,14 @@
     background-color: #000000;
   }
   .curtain {
-    --curtain-title-lh: 4rem;
-    --curtain-descr-lh: 2rem;
-    --curtain-title-size: 4rem;
-    --curtain-descr-size: 2rem;
+    --curtain-title-lh: 2rem;
+    --curtain-descr-lh: 1rem;
+    --curtain-title-size: 2rem;
+    --curtain-descr-size: 1rem;
     --curtain-title-ink: #aaaaaa;
     --curtain-descr-ink: #888888;
     --curtain-left-bg: #000000d6;
     --curtain-right-bg: #00000043;
-  }
-  @keyframes leftopenclose {
-    0% {
-      transform: scaleX(1) translateX(calc(0));
-    }
-    50% {
-      transform: scaleX(.9) translateX(-50%);
-    }
-    100% {
-      transform: scaleX(1) translateX(calc(0));
-    }
-  }
-  @keyframes rightopenclose {
-    0% {
-      transform: scaleX(1.2) translateX(calc(-50%));
-    }
-    50% {
-      transform: scaleX(.9) translateX(calc(50%));
-    }
-    100% {
-      transform: scaleX(1.2) translateX(calc(0%));
-    }
   }
   .curtains {
     pointer-events: none;
@@ -298,7 +276,7 @@
     top: 0;
     height: 100%;
     z-index: 1;
-    padding: 3rem;
+    padding: 2rem;
     overflow: hidden;
     transform-origin: 0 center;
     transition-property: transform;
@@ -307,9 +285,12 @@
     animation-fill-mode: forwards;
   }
   .curtain-left {
-    left: 0;
-    min-width: 60%;
-    max-width: 60%;
+    left: -100px;
+    width: 700px;
+    max-width: 100%;
+    height: 200px;
+    min-height: 200px;
+    padding-left: 130px;
     transform-origin: left;
     background-color: var(--curtain-left-bg);
     word-wrap: break-word;
@@ -331,9 +312,7 @@
   }
   .curtain-right {
     left: 0;
-    min-width: 200%;
-    max-width: 200%;
-    transform-origin: right;
+    width: 200%;
     background-color: var(--curtain-right-bg);
   }
   .playing .curtain-right {
@@ -357,10 +336,33 @@
     line-height: var(--curtain-title-lh, 1rem);
     color: var(--curtain-title-ink, #444444);
     word-wrap: break-word;
+    margin-bottom: 20px;
   }
   .curtain .curtain-desc {
     font-size: var(--curtain-descr-size);
     line-height: var(--curtain-descr-lh, 1rem);
     color: var(--curtain-descr-ink, #444444);
+  }
+  @keyframes leftopenclose {
+    0% {
+      transform: scaleX(1) translateX(calc(0));
+    }
+    50% {
+      transform: scaleX(.9) translateX(-100%);
+    }
+    100% {
+      transform: scaleX(1) translateX(calc(0));
+    }
+  }
+  @keyframes rightopenclose {
+    0% {
+      transform: scaleX(1.2) translateX(calc(-50%));
+    }
+    50% {
+      transform: scaleX(.9) translateX(calc(100%));
+    }
+    100% {
+      transform: scaleX(1.2) translateX(calc(0%));
+    }
   }
 </style>
