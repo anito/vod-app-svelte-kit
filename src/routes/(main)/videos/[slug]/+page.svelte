@@ -31,7 +31,7 @@
   let withinRoute: boolean;
 
   beforeNavigate(({ to, from }) => {
-    withinRoute = to?.route.id === '/(main)/videos/[slug]';
+    withinRoute = to?.route.id === $page.route.id;
     const id = from?.params?.slug;
     if (id) {
       savePlayhead(id, playhead);
