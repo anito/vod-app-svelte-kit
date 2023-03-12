@@ -78,7 +78,7 @@
     color: white;
   }
 
-  .box:global(h2) {
+  .box :global(h2) {
     padding: 0;
     margin: 0 0 0.5em 0;
     font-size: var(--h2);
