@@ -1,15 +1,15 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { getContext } from 'svelte';
+  import { beforeNavigate } from '$app/navigation';
   import { fly } from 'svelte/transition';
+  import { getContext, onMount } from 'svelte';
   import { session, videos, users } from '$lib/stores';
   import { FlexContainer } from '$lib/components';
   import VideoPlayer from '$lib/components/Video';
   import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, emit } from '$lib/utils';
+  import { _ } from 'svelte-i18n';
   import type { PageData } from './$types';
   import type { User, Video } from '$lib/classes/repos/types';
-  import { _ } from 'svelte-i18n';
-  import { beforeNavigate } from '$app/navigation';
 
   export let data: PageData;
 
@@ -28,6 +28,15 @@
   let started: boolean = false;
   let ended: boolean = false;
   let customUI: boolean;
+  let withinRoute: boolean;
+
+  beforeNavigate(({ to }) => {
+    withinRoute = to?.route.id === '/(main)/videos/[slug]';
+  });
+
+  onMount(() => {
+    withinRoute = true;
+  })
 
   $: if (data.video) videos.add([data.video]);
   $: user = $users?.find((user) => user.id === $session.user?.id);
@@ -186,63 +195,65 @@
   <title>{$page.data.config.Site?.name} | {video?.title || $_('text.no-title')}</title>
 </svelte:head>
 
-{#if curtain}
-  <div
-    style:--animation-duration={`${curtainAnimDuration}ms`}
-    class="curtains"
-    class:paused
-    class:playing
-    class:started
-    class:ended
-  >
-    <div class="curtain curtain-left">
-      <h2
-        class="mdc-typography--headline6 curtain-title opacity-25"
-        class:opacity-25={!video?.title}
-      >
-        {video?.title || video?.src}
-      </h2>
-      <h3
-        class="mdc-typography--subtitle2 curtain-desc opacity-25"
-        class:opacity-25={!video?.description}
-      >
-        {video?.description || $_('text.empty-description')}
-      </h3>
-    </div>
-    <div class="curtain curtain-right" />
-  </div>
-{/if}
-{#await promise then}
-  {#if video}
+{#if withinRoute}
+  {#if curtain}
     <div
-      in:fly={{ duration: mediaAnimDuration, opacity: 0 }}
-      out:fly={{ duration: mediaAnimDuration, opacity: 0 }}
-      on:introstart={startHandler}
-      on:introend={endHandler}
-      class="media-player single-player flex flex-1"
+      style:--animation-duration={`${curtainAnimDuration}ms`}
+      class="curtains"
+      class:paused
+      class:playing
+      class:started
+      class:ended
     >
-      <VideoPlayer
-        class="video-player flex flex-1"
-        bind:paused
-        bind:playhead
-        on:player:canplay={handleCanPlay}
-        on:player:emptied={handleEmptied}
-        on:player:loadeddata={handleLoadedData}
-        on:player:loadstart={handleLoadStart}
-        on:player:aborted={handleAborted}
-        {video}
-        {poster}
-        {src}
-        {customUI}
-        scrub
-      />
+      <div class="curtain curtain-left">
+        <h2
+          class="mdc-typography--headline6 curtain-title opacity-25"
+          class:opacity-25={!video?.title}
+        >
+          {video?.title || video?.src}
+        </h2>
+        <h3
+          class="mdc-typography--subtitle2 curtain-desc opacity-25"
+          class:opacity-25={!video?.description}
+        >
+          {video?.description || $_('text.empty-description')}
+        </h3>
+      </div>
+      <div class="curtain curtain-right" />
     </div>
   {/if}
-{:catch}
-  <FlexContainer>
-    {$_('text.empty-video-selection')}
-  </FlexContainer>
-{/await}
+  {#await promise then}
+    {#if video}
+      <div
+        in:fly={{ duration: mediaAnimDuration, opacity: 0 }}
+        out:fly={{ duration: mediaAnimDuration, opacity: 0 }}
+        on:introstart={startHandler}
+        on:introend={endHandler}
+        class="media-player single-player flex flex-1"
+      >
+        <VideoPlayer
+          class="video-player flex flex-1"
+          bind:paused
+          bind:playhead
+          on:player:canplay={handleCanPlay}
+          on:player:emptied={handleEmptied}
+          on:player:loadeddata={handleLoadedData}
+          on:player:loadstart={handleLoadStart}
+          on:player:aborted={handleAborted}
+          {video}
+          {poster}
+          {src}
+          {customUI}
+          scrub
+        />
+      </div>
+    {/if}
+  {:catch}
+    <FlexContainer>
+      {$_('text.empty-video-selection')}
+    </FlexContainer>
+  {/await}
+{/if}
 
 <style>
   .media-player {
@@ -259,7 +270,7 @@
     --curtain-title-ink: #aaaaaa;
     --curtain-descr-ink: #888888;
     --curtain-left-bg: #000000d6;
-    --curtain-right-bg: #00000043;
+    --curtain-right-bg: #0000006c;
   }
   .curtains {
     pointer-events: none;
@@ -285,6 +296,7 @@
     animation-fill-mode: forwards;
   }
   .curtain-left {
+    z-index: 2;
     left: -100px;
     width: 700px;
     max-width: 100%;
@@ -296,7 +308,7 @@
     word-wrap: break-word;
   }
   .playing .curtain-left {
-    transform: translateX(calc(-100%));
+    transform: translateX(-100%);
     transition-duration: calc(var(--animation-duration) * 2.3);
     transition-timing-function: cubic-bezier(0.075, 0.885, 0.32, 1.175);
   }
@@ -306,29 +318,22 @@
     animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
   .paused.ended .curtain-left {
-    transform: scaleX(1) translateX(0);
+    transform: translateX(0);
     transition-duration: calc(var(--animation-duration) * 1.3);
     transition-timing-function: cubic-bezier(0.175, 0.385, 0.32, 1.075);
   }
   .curtain-right {
+    z-index: 1;
     left: 0;
-    width: 200%;
+    width: 100%;
+    opacity: 1;
+    transform: translateX(0%);
+    transition: all;
+    transition-duration: 1s;
     background-color: var(--curtain-right-bg);
   }
   .playing .curtain-right {
-    transform: translateX(calc(100% + 300px));
-    transition-timing-function: cubic-bezier(0.175, 0.385, 0.32, 1.075);
-    animation-duration: calc(var(--animation-duration) * 0.8);
-  }
-  .paused.started .curtain-right {
-    animation-name: rightopenclose;
-    animation-duration: calc(var(--animation-duration) * 1.2);
-    animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-  .paused.ended .curtain-right {
-    /* transform: scaleX(1.2) translateX(-43.8%); */
-    transform: scaleX(1.2) translateX(calc(0%));
-    transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.175);
+    opacity: 0;
   }
   .curtain .curtain-title {
     transform: translateX(0%);
@@ -345,24 +350,24 @@
   }
   @keyframes leftopenclose {
     0% {
-      transform: scaleX(1) translateX(calc(0));
+      transform: scaleX(1) translateX(0);
     }
     50% {
-      transform: scaleX(.9) translateX(-100%);
+      transform: scaleX(0.9) translateX(-100%);
     }
     100% {
-      transform: scaleX(1) translateX(calc(0));
+      transform: scaleX(1) translateX(0);
     }
   }
-  @keyframes rightopenclose {
+  @-webkit-keyframes leftopenclose {
     0% {
-      transform: scaleX(1.2) translateX(calc(-50%));
+      transform: scaleX(1) translateX(0);
     }
     50% {
-      transform: scaleX(.9) translateX(calc(100%));
+      transform: scaleX(0.9) translateX(-100%);
     }
     100% {
-      transform: scaleX(1.2) translateX(calc(0%));
+      transform: scaleX(1) translateX(0);
     }
   }
 </style>
