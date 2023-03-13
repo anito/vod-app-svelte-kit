@@ -33,9 +33,7 @@
   beforeNavigate(({ to, from }) => {
     withinRoute = to?.route.id === $page.route.id;
     const id = from?.params?.slug;
-    if (id) {
-      savePlayhead(id, playhead);
-    }
+    if (id && !paused) savePlayhead(id, playhead);
   });
 
   onMount(() => {
@@ -193,7 +191,7 @@
 </svelte:head>
 
 {#if withinRoute}
-  {#if curtain}
+  {#if curtain && video}
     <div
       style:--animation-duration={`${curtainAnimDuration}ms`}
       class="curtains"
