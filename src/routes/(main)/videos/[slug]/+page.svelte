@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { beforeNavigate } from '$app/navigation';
+  import { browser } from '$app/environment';
   import { fly } from 'svelte/transition';
   import { getContext, onMount } from 'svelte';
   import { session, videos, users } from '$lib/stores';
@@ -38,7 +39,7 @@
 
   onMount(() => {
     withinRoute = true;
-  })
+  });
 
   $: if (data.video) videos.add([data.video]);
   $: user = $users?.find((user) => user.id === $session.user?.id);
@@ -46,13 +47,15 @@
   $: video = $videos.find((v) => v.id === $page.params.slug);
   $: video_id = video?.id; // debounce video
   $: user_id = user?.id; // debounce user
-  $: promise = new Promise((resolve, reject) => {
-    if (video_id !== undefined && user_id !== undefined) {
-      resolve(true);
-    } else {
-      reject();
-    }
-  }).catch() as Promise<boolean>;
+  $: promise =
+    browser &&
+    (new Promise((resolve, reject) => {
+      if (video_id !== undefined && user_id !== undefined) {
+        resolve(1);
+      } else {
+        reject();
+      }
+    }).catch() as Promise<number>);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: joinData = $users
     .find((u: User) => u.id === user?.id)
@@ -258,10 +261,6 @@
     background-color: #000000;
   }
   .curtain {
-    --curtain-title-lh: 2rem;
-    --curtain-descr-lh: 1rem;
-    --curtain-title-size: 2rem;
-    --curtain-descr-size: 1rem;
     --curtain-title-ink: #aaaaaa;
     --curtain-descr-ink: #888888;
     --curtain-left-bg: #000000d6;
@@ -310,12 +309,12 @@
   .paused.started .curtain-left {
     animation-name: leftopenclose;
     animation-duration: calc(var(--animation-duration) * 1);
-    animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation-timing-function: ease-in-out;
   }
   .paused.ended .curtain-left {
     transform: translateX(0);
     transition-duration: calc(var(--animation-duration) * 1.3);
-    transition-timing-function: cubic-bezier(0.175, 0.385, 0.32, 1.075);
+    transition-timing-function: ease-in-out;
   }
   .curtain-right {
     z-index: 1;
@@ -332,15 +331,15 @@
   }
   .curtain .curtain-title {
     transform: translateX(0%);
-    font-size: var(--curtain-title-size);
-    line-height: var(--curtain-title-lh, 1rem);
+    font-size: 2rem;
+    line-height: 2rem;
     color: var(--curtain-title-ink, #444444);
     word-wrap: break-word;
     margin-bottom: 20px;
   }
   .curtain .curtain-desc {
-    font-size: var(--curtain-descr-size);
-    line-height: var(--curtain-descr-lh, 1rem);
+    font-size: 1rem;
+    line-height: 1rem;
     color: var(--curtain-descr-ink, #444444);
   }
   @keyframes leftopenclose {
