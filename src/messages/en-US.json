@@ -261,12 +261,12 @@
     "session-terminated": "Session terminated",
     "permanently-deleting-media": "Permanently deleting {title}",
     "switch-account": "Switch account",
-    "enjoy-your-videos": "Enjoy your videos",
-    "your-library": "Your videos library",
     "remaining": "Remaining",
     "start-pip": "start Picture-in-Picture",
     "playback": "Play",
-    "library": "Library"
+    "library": "Library",
+    "videos-library": "Videos Library",
+    "your-booked-videos": "Your booked videos"
   },
   "summary": {
     "copy-link": {

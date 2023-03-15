@@ -115,7 +115,7 @@
     <div slot="header">
       <div class="grid grid-cols-2">
         <span class="ml-2">
-          <Heading h="6" mdc style="text-transform: capitalize;">{$_('text.your-library')}</Heading>
+          <Heading h="6" mdc style="text-transform: capitalize;">{$_('text.videos-library')}</Heading>
         </span>
         <span class="justify-self-end mr-2">
           <Heading h="5" mdc>
@@ -134,7 +134,7 @@
                 h="5"
                 mdc
                 wrapperStyle="
-              color: currentColor; text-transform: capitalize; padding: 10px 10px 10px 0;">{@html $_('text.enjoy-your-videos')}</Heading
+              color: currentColor; padding: 10px 10px 10px 0;">{@html $_('text.your-booked-videos')}</Heading
               >
             </span>
           </div>

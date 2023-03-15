@@ -261,12 +261,12 @@
     "session-terminated": "Sitzung beendet",
     "permanently-deleting-media": "Entferne unwiderruflich {title}",
     "switch-account": "Konto wechseln",
-    "enjoy-your-videos": "Deine Videos",
-    "your-library": "Deine Video Bibliothek",
     "remaining": "Verbleibend",
     "start-pip": "Starte Bild-in-Bild",
     "playback": "Wiedergeben",
-    "library": "Bibliothek"
+    "library": "Bibliothek",
+    "videos-library": "Video Bibliothek",
+    "your-booked-videos": "Deine gebuchten Videos"
   },
   "summary": {
     "copy-link": {
