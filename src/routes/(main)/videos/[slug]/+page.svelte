@@ -304,7 +304,7 @@
   .playing .curtain-left {
     transform: translateX(-100%);
     transition-duration: calc(var(--animation-duration) * 2.3);
-    transition-timing-function: cubic-bezier(0.075, 0.885, 0.32, 1.175);
+    transition-timing-function: ease-in-out;
   }
   .paused.started .curtain-left {
     animation-name: leftopenclose;
