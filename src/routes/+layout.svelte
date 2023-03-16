@@ -597,6 +597,7 @@
       if (success) {
         await invalidate('app:session');
         await invalidate('app:main');
+        await invalidate('app:video');
       }
     };
     if (document.visibilityState === 'visible') {

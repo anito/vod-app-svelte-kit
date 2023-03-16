@@ -3,7 +3,8 @@ import { videos } from '$lib/stores';
 import type { PageLoadEvent } from './$types';
 import type { Video } from '$lib/classes/repos/types';
 
-export async function load({ fetch, params }: PageLoadEvent) {
+export async function load({ fetch, params, depends }: PageLoadEvent) {
+  depends('app:video');
   const id = params.slug;
   const video = get(videos).find((video: Video) => video.id === id);
   if (!video) {
