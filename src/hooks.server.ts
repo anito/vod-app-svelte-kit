@@ -27,7 +27,7 @@ export const handle = handleSession(
     }
     event.locals = {
       ...event.locals, // session
-      config: config || (await getConfig()),
+      config: config || (config = await getConfig()),
       usersRepo: UsersRepo.getInstance(),
       videosRepo: VideosRepo.getInstance(),
       videosAllRepo: VideosAllRepo.getInstance(),
