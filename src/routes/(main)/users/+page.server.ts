@@ -1,4 +1,4 @@
-import type { Actions } from '@sveltejs/kit';
+import type { Actions } from './$types';
 
 export const actions = {
   more: async ({ locals, cookies }) => {
@@ -12,4 +12,4 @@ export const actions = {
     cookies.set('pagination', JSON.stringify(newPagination), { path: '/' });
     return users;
   }
-} as Actions;
+} satisfies Actions;

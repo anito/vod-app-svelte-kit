@@ -1,4 +1,4 @@
-import type { Actions } from '@sveltejs/kit';
+import type { Actions } from './$types';
 
 export const actions = {
   more_videos: async ({ locals, cookies }) => {
@@ -35,4 +35,4 @@ export const actions = {
     cookies.set('pagination', JSON.stringify(newPagination), { path: '/' });
     return images;
   }
-} as Actions;
+} satisfies Actions;

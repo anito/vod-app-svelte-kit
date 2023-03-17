@@ -870,7 +870,7 @@
                 </Item>
                 <Separator />
                 <Item class="justify-start">
-                  <Button formaction="/config?/reload" class="link-button" ripple={false}>
+                  <Button formaction="/config?/reload=true" class="link-button" ripple={false}>
                     <SvgIcon name="sync" class="mr-2" />
                     <Label>Reload Config</Label>
                   </Button>

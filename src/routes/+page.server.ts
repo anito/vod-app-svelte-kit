@@ -1,5 +1,5 @@
 import * as api from '$lib/api';
-import type { Actions } from '@sveltejs/kit';
+import type { Actions } from './$types';
 
 export const actions = {
   send: async ({ request }) => {
@@ -15,4 +15,4 @@ export const actions = {
       .then(async (res) => res)
       .catch((reason) => console.error('[ACTIONS]', reason));
   }
-} as Actions;
+} satisfies Actions;

@@ -22,7 +22,10 @@ export const handle = handleSession(
     dev && (process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0');
 
     // Force config to reload
-    if (event.url.pathname.startsWith('/resetconfig')) {
+    if (
+      event.url.pathname.startsWith('/config') &&
+      event.url.searchParams.get('/reload') === 'true'
+    ) {
       config = null;
     }
     event.locals = {
