@@ -34,8 +34,8 @@
 
   const minSearchChars = 2;
   const { getDropzone }: any = getContext('dropzone');
-  const { open: open$editor }: any = getContext('editor-modal');
-  const { open: open$default, close: close$default }: any = getContext('default-modal');
+  const { open: editor$open }: any = getContext('editor-modal');
+  const { open: default$open, close: default$close }: any = getContext('default-modal');
   const { getSnackbar, configSnackbar }: any = getContext('snackbar');
   const { getSegment }: any = getContext('segment');
   const { searchUsers }: any = getContext('search');
@@ -258,10 +258,8 @@
   let openUploader = () => {
     let dropzone: Dropzone;
     let completed = true;
-    open$default(
-      MediaUploader,
-      {
-        layoutProps: { type: $_('text.videos') },
+    default$open(MediaUploader, {
+      props: {
         type: 'video',
         options: {
           // acceptedFiles: '.mov .mp4 .m4a .m4v .3gp .3g2 .webm',
@@ -276,7 +274,7 @@
           'upload:complete': () => (completed = true)
         }
       },
-      {
+      options: {
         closeOnOuterClick: false,
         transitionWindow: fly,
         transitionWindowProps: {
@@ -284,7 +282,7 @@
           duration: 500
         }
       },
-      {
+      events: {
         onOpen: () => {
           dropzone = getDropzone();
         },
@@ -301,8 +299,9 @@
           return true;
         },
         onClosed: openEditor
-      }
-    );
+      },
+      headerProps: { type: $_('text.videos') }
+    });
   };
 
   function uploadSuccessHandler({ detail }: CustomEvent) {
@@ -314,22 +313,21 @@
     if (success) {
       uploadedData = data;
       emit('video:add', { data });
-      close$default();
+      default$close();
     }
   }
 
   function openEditor() {
     if (!uploadedData) return;
 
-    open$editor(
-      VideoEditorList,
-      {
+    editor$open(VideoEditorList, {
+      props: {
         data: uploadedData
       },
-      {
+      options: {
         closeOnOuterClick: false
       }
-    );
+    });
     uploadedData = null;
   }
 
@@ -393,7 +391,7 @@
               store={users}
               id="users-paginator"
               action="/users?/more"
-              type='label'
+              type="label"
               indicator
             />
           {/if}

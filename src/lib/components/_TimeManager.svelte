@@ -356,15 +356,14 @@
   }
 
   function editVideo(video: Video) {
-    open(
-      VideoEditorList,
-      {
+    open(VideoEditorList, {
+      props: {
         data: [video]
       },
-      {
+      options: {
         closeOnOuterClick: false
       }
-    );
+    });
   }
 
   function scrollIntoView({ detail }: CustomEvent) {

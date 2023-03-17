@@ -4,7 +4,6 @@
   import type Snackbar from '@smui/snackbar';
   import { _ } from 'svelte-i18n';
   import type { UploaderOptions } from '$lib/types';
-  import type { Dropzone } from '.';
 
   export { className as class };
   export let type = '';
@@ -25,7 +24,6 @@
   let count = 0;
   let uploader: HTMLDivElement;
   let snackbar: Snackbar;
-  let dropzone: Dropzone;
 
   $: fileType = type === 'avatar' ? 'image' : type;
   $: acceptedFiles = `${fileType}/*`;
@@ -66,7 +64,6 @@
   function onErrorHandler({ detail }: CustomEvent) {
     const {file, responseText, request } = detail;
     let message = 'Error'
-    console.log(responseText)
     if(responseText.data) {
       message = responseText.data.message
     } else if (typeof responseText === 'string') {

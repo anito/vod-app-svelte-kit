@@ -17,16 +17,14 @@
   let imagesList;
 
   const { getDropzone }: any = getContext('dropzone');
-  const { open: open$uploader, close: close$uploader }: any = getContext('default-modal');
+  const { open: uploader$open, close: uploader$close }: any = getContext('default-modal');
   const { getSnackbar, configSnackbar }: any = getContext('snackbar');
   const { setFab }: any = getContext('fab');
 
   const openUploader = () => {
     let dropzone: Dropzone;
-    open$uploader(
-      MediaUploader,
-      {
-        layoutProps: { type: $_('text.video-poster') },
+    uploader$open(MediaUploader, {
+      props: {
         type: 'image',
         options: {
           uploadMultiple: true,
@@ -37,7 +35,7 @@
           'upload:successmultiple': uploadSuccessHandler
         }
       },
-      {
+      options: {
         closeOnOuterClick: false,
         transitionWindow: fly,
         transitionWindowProps: {
@@ -45,7 +43,7 @@
           duration: 500
         }
       },
-      {
+      events: {
         onOpen: () => {
           dropzone = getDropzone();
         },
@@ -61,8 +59,9 @@
           }
           return true;
         }
-      }
-    );
+      },
+      headerProps: { type: $_('text.video-poster') }
+    });
   };
 
   $: pagination = $page.data.pagination?.images;
@@ -81,7 +80,7 @@
     if (success) {
       images.add(data);
     }
-    close$uploader();
+    uploader$close();
   }
 
   function isVideoPoster(image: Image) {
@@ -113,7 +112,7 @@
     store={images}
     id="images-paginator"
     action="/videos?/more_images"
-    type='label'
+    type="label"
   />
   {#if $fabs === 'add-image'}
     <Fab class="floating-fab" color="primary" on:click={() => openUploader()} extended>

@@ -169,10 +169,8 @@
   let openUploader = () => {
     avatarMenu?.setOpen(false);
 
-    open(
-      MediaUploader,
-      {
-        layoutProps: { type: $_('text.avatar') },
+    open(MediaUploader, {
+      props: {
         type: 'avatar',
         uid: selectedUser?.id,
         options: {
@@ -181,15 +179,16 @@
         },
         events: { 'upload:success': uploadSuccessHandler }
       },
-      {
+      options: {
         closeOnOuterClick: false,
         transitionWindow: fly,
         transitionWindowProps: {
           y: -200,
           duration: 500
         }
-      }
-    );
+      },
+      headerProps: { type: $_('text.avatar') }
+    });
   };
 
   function setMode(mode: string) {

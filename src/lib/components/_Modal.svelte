@@ -3,6 +3,21 @@
   import { fade } from 'svelte/transition';
   import { Container, Heading } from '$lib/components';
   import { _ } from 'svelte-i18n';
+    import Actions from '@smui/card/src/Actions.svelte';
+
+  type Events = {
+      beforeClose: () => boolean;
+      onOpen: () => void;
+      onClose: () => void;
+      onOpened: () => void;
+      onClosed: () => void;
+    };
+  type Config = {
+    props?: any;
+    headerProps?: any;
+    options?: any;
+    events?: Events;
+  }
 
   export let key = 'default-modal';
   export let header: any;
@@ -17,6 +32,16 @@
   export let transitionWindow = transitionBg;
   export let transitionWindowProps = transitionBgProps;
 
+  const toVoid = () => {};
+  const toTrue = () => true;
+  const empty = {};
+
+  let onOpen = toVoid;
+  let onClose = toVoid;
+  let onOpened = toVoid;
+  let onClosed = toVoid;
+  let beforeClose = toTrue;
+
   const defaultState = {
     closeButton,
     closeOnEsc,
@@ -29,11 +54,7 @@
     transitionWindow,
     transitionWindowProps
   };
-  let state = { ...defaultState };
-
-  let HostedComponent: any = null;
-  let props: any = null;
-  let layoutProps: any = null;
+  const defaultEvents: Events = {onClose, onClosed, onOpen, onOpened, beforeClose};
 
   let background: Element | null | undefined;
   let wrap: Element;
@@ -49,33 +70,26 @@
   $: currentTransitionBg = state.transitionBg;
   $: currentTransitionWindow = state.transitionWindow;
 
-  const toVoid = () => {};
-  const toTrue = () => true;
-  const toFalse = () => false;
-  const doClose = { beforeClose: () => true };
-
-  let onOpen = toVoid;
-  let onClose = toVoid;
-  let onOpened = toVoid;
-  let onClosed = toVoid;
-  let beforeClose = toTrue;
-  // let beforeClose = toFalse;
+  let HostedComponent: any = null;
+  let state = { ...defaultState };
+  let events = {...defaultEvents};
+  let props: any;
+  let headerProps: any;
 
   const open = (
     NewComponent: any,
-    newProps = { layoutProps },
-    options = {},
-    callback = { beforeClose, onOpen, onOpened, onClose, onClosed }
+    config: Config = {}
   ) => {
     HostedComponent = NewComponent;
-    layoutProps = { ...newProps.layoutProps } || {};
-    props = { ...newProps };
-    state = { ...defaultState, ...options };
-    onOpen = callback.onOpen || toVoid;
-    onClose = callback.onClose || toVoid;
-    onOpened = callback.onOpened || toVoid;
-    onClosed = callback.onClosed || toVoid;
-    beforeClose = callback.beforeClose || toTrue;
+    props = { ...config.props } || empty;
+    headerProps = { ...config.headerProps } || empty;
+    state = { ...defaultState, ...config.options };
+    events = { ...defaultEvents, ...config.events};
+    onOpen = events.onOpen;
+    onClose = events.onClose;
+    onOpened = events.onOpened;
+    onClosed = events.onClosed;
+    beforeClose = events.beforeClose;
   };
 
   const close = (
@@ -114,7 +128,7 @@
   };
 
   function translateHeader() {
-    return $_(header.name, { values: { ...layoutProps } });
+    return $_(header.name, { values: { ...headerProps } });
   }
 
   function _onOpened() {

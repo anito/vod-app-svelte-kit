@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount, tick } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
   import { Ui } from '.';
   import { mute } from '.';
   import { _ } from 'svelte-i18n';
@@ -46,28 +46,31 @@
         .catch((reason) => console.error('[MEDIA ERROR]', reason));
     } else {
       await player.promise;
-      videoElement.pause();
+      videoElement?.pause();
     }
   }
 
-  function videoPosterChangedHandler({ detail }: CustomEvent) {
+  async function videoPosterChangedHandler({ detail }: CustomEvent) {
     if (detail.video_id === video.id) {
-      reload();
+      unload();
     }
   }
 
   async function setSource() {
-    if (srcAttr && !videoElement.getAttribute('src')) {
-      videoElement.setAttribute('src', srcAttr);
+    if (!videoElement.getAttribute('src')) {
+      const src = srcAttr || videoElement.getAttribute('src');
+      src && videoElement.setAttribute('src', src);
     }
   }
 
-  async function reload() {
-    await tick();
-    videoElement.pause();
-    // Take a breath to save playhead
-    setTimeout(() => (videoElement.src = ''), 200);
+  async function unload() {
+    if (videoElement) {
+      !videoElement.paused && videoElement.pause();
+      // Take a breath to save playhead
+      setTimeout(() => (videoElement.src = ''), 400);
+    }
   }
+
   function mousemoveHandler(event: Event) {
     scrub && doScrub(event as MouseEvent);
   }
@@ -185,52 +188,52 @@
   }
 </script>
 
-<div class="player {className}" class:loaded>
-  <video
-    class="flex-1"
-    muted={$mute}
-    bind:this={videoElement}
-    bind:currentTime={playhead}
-    bind:duration
-    bind:paused
-    bind:buffered
-    on:loadstart={loadstartHandler}
-    on:canplay={canPlayHandler}
-    on:loadeddata={loadedDataHandler}
-    on:emptied={emptiedHandler}
-    on:abort={abortedHandler}
-    on:pause={pausedHandler}
-    {controls}
-    {src}
-    {poster}
-    {preload}
-    {autoplay}
-  >
-    <source type="video/{type}" />
-    <track kind="captions" />
-    Your browser does not support the
-    <code>video</code>
-    element.
-  </video>
-  {#if customUI}
-    <Ui
-      on:ui:wheel={wheelHandler}
-      on:ui:touchstart={mousedownHandler}
-      on:ui:mousedown={mousedownHandler}
-      on:ui:pip={pictureInPictureHandler}
-      on:fullscreen={fullscreenHandler}
-      on:play-pause={playPauseHandler}
-      on:rwd={rewindHandler}
-      on:fwd={forewardHandler}
-      bind:time={playhead}
-      {duration}
-      {paused}
-      {buffered}
-      {loaded}
-      id={video.id}
-    />
-  {/if}
-</div>
+  <div class="player {className}" class:loaded>
+    <video
+      class="flex-1"
+      muted={$mute}
+      bind:this={videoElement}
+      bind:currentTime={playhead}
+      bind:duration
+      bind:paused
+      bind:buffered
+      on:loadstart={loadstartHandler}
+      on:canplay={canPlayHandler}
+      on:loadeddata={loadedDataHandler}
+      on:emptied={emptiedHandler}
+      on:abort={abortedHandler}
+      on:pause={pausedHandler}
+      {controls}
+      {src}
+      {poster}
+      {preload}
+      {autoplay}
+    >
+      <source type="video/{type}" />
+      <track kind="captions" />
+      Your browser does not support the
+      <code>video</code>
+      element.
+    </video>
+    {#if customUI}
+      <Ui
+        on:ui:wheel={wheelHandler}
+        on:ui:touchstart={mousedownHandler}
+        on:ui:mousedown={mousedownHandler}
+        on:ui:pip={pictureInPictureHandler}
+        on:fullscreen={fullscreenHandler}
+        on:play-pause={playPauseHandler}
+        on:rwd={rewindHandler}
+        on:fwd={forewardHandler}
+        bind:time={playhead}
+        {duration}
+        {paused}
+        {buffered}
+        {loaded}
+        id={video.id}
+      />
+    {/if}
+  </div>
 
 <style>
   .player {

@@ -266,7 +266,8 @@
     "playback": "Wiedergeben",
     "library": "Bibliothek",
     "videos-library": "Video Bibliothek",
-    "your-booked-videos": "Deine gebuchten Videos"
+    "your-booked-videos": "Deine gebuchten Videos",
+    "video": "Video"
   },
   "summary": {
     "copy-link": {

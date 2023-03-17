@@ -88,10 +88,8 @@
   }
 
   function createPoster() {
-    open(
-      MediaUploader,
-      {
-        layoutProps: { type: $_('text.image') },
+    open(MediaUploader, {
+      props: {
         type: 'image',
         options: {
           parallelUploads: 1,
@@ -100,15 +98,16 @@
         },
         events: { 'upload:success': uploadSuccessHandler }
       },
-      {
+      options: {
         closeOnOuterClick: false,
         transitionWindow: fly,
         transitionWindowProps: {
           y: -200,
           duration: 500
         }
-      }
-    );
+      },
+      headerProps: { type: $_('text.image') }
+    });
   }
 
   function getCachedImage(id: string) {

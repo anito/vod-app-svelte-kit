@@ -23,7 +23,7 @@ function savePoster(image_id: string, video_id: string) {
   emit('video:save', {
     data: { id: video_id, image_id, image: null },
     show: true,
-    relational: true
+    relational: true,
+    onsuccess: (res: any) => emit('video:poster:changed', { video_id, image_id, ...res })
   });
-  emit('video:poster:changed', { video_id, image_id });
 }

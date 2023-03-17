@@ -266,7 +266,8 @@
     "playback": "Play",
     "library": "Library",
     "videos-library": "Videos Library",
-    "your-booked-videos": "Your booked videos"
+    "your-booked-videos": "Your booked videos",
+    "video": "Video"
   },
   "summary": {
     "copy-link": {

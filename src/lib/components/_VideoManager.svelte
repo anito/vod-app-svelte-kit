@@ -28,8 +28,8 @@
   import type Dropzone from '$lib/components/Dropzone/index.svelte';
 
   const { getDropzone }: any = getContext('dropzone');
-  const { open: open$editor, close: close$editor }: any = getContext('editor-modal');
-  const { open: open$uploader, close: close$uploader }: any = getContext('default-modal');
+  const { open: editor$open, close: editor$close }: any = getContext('editor-modal');
+  const { open: uploader$open, close: uploader$close }: any = getContext('default-modal');
   const { getSnackbar, configSnackbar }: any = getContext('snackbar');
   const { setFab }: any = getContext('fab');
   const transitionParams = {
@@ -45,6 +45,7 @@
     if (a > b) return 1;
     return 0;
   };
+  const maxFiles = 1;
 
   let snackbar: Snackbar;
   let uploadedData: any;
@@ -66,16 +67,14 @@
   const openUploader = () => {
     let dropzone: Dropzone;
     let completed = true;
-    open$uploader(
-      MediaUploader,
-      {
-        layoutProps: { type: $_('text.videos') },
+    uploader$open(MediaUploader, {
+      props: {
         type: 'video',
         options: {
           // acceptedFiles: '.mov .mp4 .m4a .m4v .3gp .3g2 .webm',
           uploadMultiple: true,
           parallelUploads: 1,
-          maxFiles: 1,
+          maxFiles,
           timeout: 3600 * 1000, // 60min
           maxFilesize: 1024 // Megabyte
         },
@@ -84,7 +83,7 @@
           'upload:complete': () => (completed = true)
         }
       },
-      {
+      options: {
         closeOnOuterClick: false,
         transitionWindow: fly,
         transitionWindowProps: {
@@ -92,7 +91,7 @@
           duration: 500
         }
       },
-      {
+      events: {
         onOpen: () => {
           dropzone = getDropzone();
         },
@@ -109,8 +108,9 @@
           return true;
         },
         onClosed: openEditor
-      }
-    );
+      },
+      headerProps: { type: maxFiles === 1 ? $_('text.video') : $_('text.videos') }
+    });
   };
 
   function uploadSuccessHandler({ detail }: CustomEvent) {
@@ -122,21 +122,18 @@
     if (success) {
       uploadedData = data;
       emit('video:add', { data });
-      close$uploader();
+      uploader$close();
     }
   }
 
   function openEditor() {
     if (!uploadedData) return;
 
-    open$editor(
-      VideoEditorList,
-      {
+    editor$open(VideoEditorList, {
+      props: {
         data: uploadedData
-      },
-      {},
-      {}
-    );
+      }
+    });
     uploadedData = null;
   }
 </script>
@@ -169,7 +166,7 @@
     store={videos}
     id="videos-paginator"
     action="/videos?/more_videos"
-    type='label'
+    type="label"
   />
   {#if $fabs === 'add-video'}
     <Fab class="floating-fab" color="primary" on:click={() => openUploader()} extended>

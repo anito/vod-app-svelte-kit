@@ -24,17 +24,15 @@
   });
 
   let openUploader = () => {
-    open(
-      MediaUploader,
-      {
-        layoutProps: { type: $currentVideo ? $_('text.video-poster') : $_('text.video-posters') },
+    open(MediaUploader, {
+      props: {
         type: 'image',
         options: {
           parallelUploads: 12,
           maxFiles: $currentVideo ? 1 : 12
         }
       },
-      {
+      options: {
         closeOnOuterClick: false,
         transitionWindow: fly,
         transitionWindowProps: {
@@ -42,10 +40,11 @@
           duration: 500
         }
       },
-      {
+      events: {
         onClose: () => {}
-      }
-    );
+      },
+      headerProps: { type: $currentVideo ? $_('text.video-poster') : $_('text.video-posters') }
+    });
   };
 </script>
 
