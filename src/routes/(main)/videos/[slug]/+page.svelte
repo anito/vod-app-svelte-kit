@@ -16,8 +16,8 @@
 
   const { info }: any = getContext('logger');
   const curtain = true;
-  const mediaAnimDuration = 2000;
-  const curtainAnimDuration = 1000;
+  const mediaAnimDuration = 1000;
+  const curtainAnimDuration = 500;
 
   let paused: boolean;
   let canplay: boolean;
@@ -26,10 +26,14 @@
   let timeoutIdSavePlayhead: ReturnType<typeof setTimeout>;
   let poster: string | undefined;
   let src: string | undefined;
-  let started: boolean = false;
-  let ended: boolean = false;
+  let introstart: boolean = false;
+  let introend: boolean = false;
+  let outrostart: boolean = false;
+  let outroend: boolean = false;
   let customUI: boolean;
   let withinRoute: boolean;
+  let title: string;
+  let description: string | undefined;
 
   beforeNavigate(({ to, from }) => {
     withinRoute = to?.route.id === $page.route.id;
@@ -39,6 +43,7 @@
 
   onMount(() => {
     withinRoute = true;
+    setCurtainText();
   });
 
   $: if (data.video) videos.add([data.video]);
@@ -63,6 +68,7 @@
   $: video?.image_id && getMediaImage(video.image_id, $session.user?.jwt).then((v) => (poster = v));
   $: if (video) getMediaVideo(video.id, $session.user?.jwt).then((v) => (src = v));
   $: watchPlayhead(playhead, paused);
+  $: playing = !paused;
 
   function watchPlayhead(time: number, paused: boolean) {
     if (paused && canplay) {
@@ -176,17 +182,34 @@
     paused = true;
     canplay = false;
   }
-  function startHandler() {
-    started = true;
-    ended = false;
+
+  function setCurtainText() {
+    title = video?.title || video?.src;
+    description = video?.description;
+  }
+
+  function outrostartHandler() {
+    outrostart = true;
+    outroend = false;
     customUI = false;
   }
-  function endHandler() {
-    ended = true;
-    started = false;
+
+  function outroendHandler() {
+    outroend = true;
+    outrostart = false;
+    setCurtainText()
+  }
+
+  function introstartHandler() {
+    introstart = true;
+    introend = false;
+  }
+
+  function introendHandler() {
+    introend = true;
+    introstart = false;
     customUI = true;
   }
-  $: playing = !paused;
 </script>
 
 <svelte:head>
@@ -196,37 +219,41 @@
 {#if withinRoute}
   {#if curtain && video}
     <div
-      style:--animation-duration={`${curtainAnimDuration}ms`}
+      style:--transition-duration={`${curtainAnimDuration}ms`}
       class="curtains"
       class:paused
       class:playing
-      class:started
-      class:ended
+      class:introstart
+      class:introend
+      class:outrostart
+      class:outroend
     >
-      <div class="curtain curtain-left">
+      <div class="curtain curtain-primary">
         <h2
           class="mdc-typography--headline6 curtain-title opacity-25"
-          class:opacity-25={!video?.title}
+          class:opacity-25={!title}
         >
-          {video?.title || video?.src}
+          {title}
         </h2>
         <h3
           class="mdc-typography--subtitle2 curtain-desc opacity-25"
-          class:opacity-25={!video?.description}
+          class:opacity-25={!description}
         >
-          {video?.description || $_('text.empty-description')}
+          {description || $_('text.empty-description')}
         </h3>
       </div>
-      <div class="curtain curtain-right" />
+      <div class="curtain curtain-secondary" />
     </div>
   {/if}
   {#await promise then}
     {#if video}
       <div
-        in:fly={{ duration: mediaAnimDuration, opacity: 0 }}
+        in:fly={{ duration: mediaAnimDuration, opacity: 0, delay: 200 }}
         out:fly={{ duration: mediaAnimDuration, opacity: 0 }}
-        on:introstart={startHandler}
-        on:introend={endHandler}
+        on:introstart={introstartHandler}
+        on:introend={introendHandler}
+        on:outrostart={outrostartHandler}
+        on:outroend={outroendHandler}
         class="media-player single-player flex flex-1"
       >
         <VideoPlayer
@@ -263,13 +290,14 @@
   .curtain {
     --curtain-title-ink: #aaaaaa;
     --curtain-descr-ink: #888888;
-    --curtain-left-bg: #000000d6;
-    --curtain-right-bg: #0000006c;
+    --curtain-primary-bg: #000000d6;
+    --curtain-secondary-bg: #0000006c;
   }
   .curtains {
     pointer-events: none;
     width: 100%;
     position: absolute;
+    z-index: 1;
     top: 0;
     bottom: 0;
     right: 0;
@@ -285,38 +313,35 @@
     overflow: hidden;
     transform-origin: 0 center;
     transition-property: transform;
-    transition-duration: var(--animation-duration);
+    transition-duration: var(--transition-duration);
     transition-timing-function: ease-in-out;
     animation-fill-mode: forwards;
   }
-  .curtain-left {
+  .curtain-primary {
     z-index: 2;
-    left: -100px;
-    width: 700px;
+    right: 0;
+    width: 50%;
     max-width: 100%;
     height: 200px;
     min-height: 200px;
-    padding-left: 130px;
-    transform-origin: left;
-    background-color: var(--curtain-left-bg);
+    background-color: var(--curtain-primary-bg);
     word-wrap: break-word;
+    border-bottom-left-radius: 40px;
   }
-  .playing .curtain-left {
-    transform: translateX(-100%);
-    transition-duration: calc(var(--animation-duration) * 2.3);
+  .playing .curtain-primary {
+    transform: translateX(100%);
+    transition-duration: calc(var(--transition-duration) * 1.5);
     transition-timing-function: ease-in-out;
   }
-  .paused.started .curtain-left {
-    animation-name: leftopenclose;
-    animation-duration: calc(var(--animation-duration) * 1);
-    animation-timing-function: ease-in-out;
+  .paused.outrostart .curtain-primary {
+    transform: translateX(100%);
+    transition-duration: calc(var(--transition-duration) * 1);
   }
-  .paused.ended .curtain-left {
-    transform: translateX(0);
-    transition-duration: calc(var(--animation-duration) * 1.3);
-    transition-timing-function: ease-in-out;
+  .paused.outroend .curtain-primary {
+    transform: translateX(0%);
+    transition-duration: calc(var(--transition-duration) * 1);
   }
-  .curtain-right {
+  .curtain-secondary {
     z-index: 1;
     left: 0;
     width: 100%;
@@ -324,9 +349,9 @@
     transform: translateX(0%);
     transition: all;
     transition-duration: 1s;
-    background-color: var(--curtain-right-bg);
+    background-color: var(--curtain-secondary-bg);
   }
-  .playing .curtain-right {
+  .playing .curtain-secondary {
     opacity: 0;
   }
   .curtain .curtain-title {
@@ -341,27 +366,5 @@
     font-size: 1rem;
     line-height: 1rem;
     color: var(--curtain-descr-ink, #444444);
-  }
-  @keyframes leftopenclose {
-    0% {
-      transform: scaleX(1) translateX(0);
-    }
-    50% {
-      transform: scaleX(0.9) translateX(-100%);
-    }
-    100% {
-      transform: scaleX(1) translateX(0);
-    }
-  }
-  @-webkit-keyframes leftopenclose {
-    0% {
-      transform: scaleX(1) translateX(0);
-    }
-    50% {
-      transform: scaleX(0.9) translateX(-100%);
-    }
-    100% {
-      transform: scaleX(1) translateX(0);
-    }
   }
 </style>

@@ -66,6 +66,17 @@
     return `${prefix}${printMinutes}:${printSeconds}`;
   }
 
+  function display(time: number) {
+    if (isNaN(time)) return '...';
+
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    const minutesUnit = () => minutes === 1 ? $_('text.minute'): $_('text.minutes');
+    const secondsUnit = () => seconds === 1 ? $_('text.second'): $_('text.seconds');
+
+    return `${minutes} ${minutesUnit()} ${seconds} ${secondsUnit()}`;
+  }
+
   function wheelHandler(event: WheelEvent) {
     showControls();
     dispatch('ui:wheel', {
@@ -75,12 +86,12 @@
     });
   }
 
-  function dispatchMousemove(event: MouseEvent) {
+  function mousemoveHandler(event: MouseEvent) {
     showControls();
     dispatch('ui:mousemove', event);
   }
 
-  function dispatchMousedown(event: MouseEvent) {
+  function mousedownHandler(event: MouseEvent) {
     dispatch('ui:mousedown', event);
   }
 
@@ -88,18 +99,18 @@
     dispatch('ui:touchstart', event);
   }
 
-  function dispatchPip(event: MouseEvent) {
+  function pipHandler(event: MouseEvent) {
     dispatch('ui:pip', event);
   }
 
   function addListenerHandler() {
     listeners++;
-    mediaControls.addEventListener('mousemove', dispatchMousemove);
+    mediaControls.addEventListener('mousemove', mousemoveHandler);
   }
 
   function removeListenerHandler() {
     listeners--;
-    mediaControls.removeEventListener('mousemove', dispatchMousemove);
+    mediaControls.removeEventListener('mousemove', mousemoveHandler);
   }
 
   function maybeEnablePipButton(node: Element) {
@@ -119,7 +130,7 @@
       bind:this={mediaControls}
       on:wheel={wheelHandler}
       on:touchstart={touchstartHandler}
-      on:mousedown={dispatchMousedown}
+      on:mousedown={mousedownHandler}
       on:mouseenter={addListenerHandler}
       on:mouseleave={removeListenerHandler}
       on:mouseleave
@@ -135,7 +146,7 @@
           <button
             bind:this={pipButton}
             use:maybeEnablePipButton
-            on:click={dispatchPip}
+            on:click={pipHandler}
             disabled
             class="pip bar hidden"
             aria-label="Bild-in-Bild starten"
@@ -158,17 +169,17 @@
         </div>
         <div class="buttons-container left" style="flex: 2;">
           <button
-            on:click={(e) => dispatch('rwd', 15)}
+            on:click={() => dispatch('rwd', 15)}
             class="skip-back bar"
-            aria-label="15 Sekunden zurückspringen"
+            aria-label={$_('text.rewind-15-seconds')}
           >
             <picture style="-webkit-mask-image: url({data_rwd}); width: 13px; height: 17px;" />
           </button>
           <button
-            on:click={(e) => dispatch('play-pause', e)}
+            on:click={() => dispatch('play-pause')}
             class="play-pause bar"
             class:paused
-            aria-label={paused ? 'Wiedergeben' : 'Pause'}
+            aria-label={paused ? $_('text.play') : $_('text.pause')}
           >
             <picture
               style="-webkit-mask-image: url({paused
@@ -177,9 +188,9 @@
             />
           </button>
           <button
-            on:click={(e) => dispatch('fwd', 15)}
+            on:click={() => dispatch('fwd', 15)}
             class="skip-forward bar"
-            aria-label="15 Sekunden vorspringen"
+            aria-label={$_('text.foreward-15-seconds')}
           >
             <picture style="-webkit-mask-image: url({data_fwd}); width: 13px; height: 17px;" />
           </button>
@@ -187,7 +198,7 @@
         <div class="time-control flex" style="flex: 8;" on:keydown on:click|stopPropagation>
           <div
             class="time-label"
-            aria-label="Verstrichen: {Math.floor(time)} Sekunden"
+            aria-label={$_('text.time-elapsed', { values: { time: Math.floor(time) } })}
             style="flex: 1;"
           >
             {format(time)}
@@ -205,12 +216,12 @@
               min="0"
               max={duration}
               step="1"
-              aria-valuetext="{Math.floor(time)} {$_('text.seconds')}"
+              aria-valuetext="{display(time)}"
             />
           </div>
           <div
             class="time-label"
-            aria-label="{$_('text.remaining')}: {Math.floor(duration - time)} {$_('text.seconds')}"
+            aria-label={$_('text.remaining', { values: { time: Math.floor(duration - time) } })}
             style="flex: 1;"
           >
             {format(duration - time, '-')}
@@ -220,9 +231,11 @@
           <button
             disabled={!duration}
             bind:this={fullscreenButton}
-            on:click={(e) => dispatch('fullscreen', e)}
+            on:click={() => dispatch('fullscreen')}
             class="fullscreen bar"
-            aria-label="Vollbildmodus ein"
+            aria-label={document.fullscreenEnabled
+              ? $_('text.fullscreen-off')
+              : $_('text.fullscreen-on')}
           >
             <picture style="-webkit-mask-image: url({data_full}); width: 24px; height: 24px;" />
           </button>
@@ -234,7 +247,11 @@
           <div class="tint" />
         </div>
         <div class="buttons-container ">
-          <button class="mute bar" aria-label="Stumm" on:click={() => ($mute = !$mute)}>
+          <button
+            class="mute bar"
+            aria-label={$mute ? $_('text.loud') : $_('text.mute')}
+            on:click={() => ($mute = !$mute)}
+          >
             <picture
               style="width: 22px; height: 22px; -webkit-mask-image: url({$mute
                 ? data_muted
@@ -246,7 +263,7 @@
     </div>
   {:else}
     <button
-      on:mousedown={dispatchMousedown}
+      on:mousedown={mousedownHandler}
       class="play-pause play-pause-controllable center"
       class:paused
       aria-label={$_('text.playback')}
@@ -666,7 +683,6 @@
     background-color: transparent;
     appearance: none !important;
     -webkit-appearance: none !important;
-
     outline: none;
   }
 

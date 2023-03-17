@@ -261,13 +261,24 @@
     "session-terminated": "Session terminated",
     "permanently-deleting-media": "Permanently deleting {title}",
     "switch-account": "Switch account",
-    "remaining": "Remaining",
+    "remaining": "Remaining: {time}",
     "start-pip": "start Picture-in-Picture",
     "playback": "Play",
     "library": "Library",
     "videos-library": "Videos Library",
     "your-booked-videos": "Your booked videos",
-    "video": "Video"
+    "video": "Video",
+    "play": "Play",
+    "pause": "Pause",
+    "rewind-15-seconds": "Rewind 15 seconds",
+    "time-elapsed": "Time elapsed: {time}",
+    "foreward-15-seconds": "Forward 15 seconds",
+    "mute": "Stumm",
+    "loud": "Loud",
+    "fullscreen-off": "Fullscreen Off",
+    "fullscreen-on": "Fullscreen On",
+    "minute": "Minute",
+    "minutes": "Minutes"
   },
   "summary": {
     "copy-link": {

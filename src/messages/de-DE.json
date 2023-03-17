@@ -261,13 +261,24 @@
     "session-terminated": "Sitzung beendet",
     "permanently-deleting-media": "Entferne unwiderruflich {title}",
     "switch-account": "Konto wechseln",
-    "remaining": "Verbleibend",
+    "remaining": "Verbleibend: {time}",
     "start-pip": "Starte Bild-in-Bild",
     "playback": "Wiedergeben",
     "library": "Bibliothek",
     "videos-library": "Video Bibliothek",
     "your-booked-videos": "Deine gebuchten Videos",
-    "video": "Video"
+    "video": "Video",
+    "play": "Wiedergeben",
+    "pause": "Pause",
+    "rewind-15-seconds": "15 Sekunden zurückspringen",
+    "time-elapsed": "Verstrichen: {time}",
+    "foreward-15-seconds": "15 Sekunden vorspringen",
+    "mute": "Stumm",
+    "loud": "Laut",
+    "fullscreen-off": "Vollbild aus",
+    "fullscreen-on": "Vollbild an",
+    "minute": "Minute",
+    "minutes": "Minuten"
   },
   "summary": {
     "copy-link": {

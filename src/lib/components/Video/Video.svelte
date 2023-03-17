@@ -203,7 +203,7 @@
       on:emptied={emptiedHandler}
       on:abort={abortedHandler}
       on:pause={pausedHandler}
-      {controls}
+      controls ={false}
       {src}
       {poster}
       {preload}
