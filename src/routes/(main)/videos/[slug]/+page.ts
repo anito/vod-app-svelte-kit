@@ -13,9 +13,9 @@ export async function load({ fetch, params, depends }: PageLoadEvent) {
       if (success) {
         return { video };
       } else {
-        return { video: null };
+        return {};
       }
     });
   }
-  return { video: null };
+  return {};
 }

@@ -229,7 +229,7 @@
     const { event, video } = detail;
     const id = video?.id;
     selectionVideoId = id;
-    const videoExists = ((isPrivileged) => {
+    const exists = ((isPrivileged) => {
       const finder = (v: Video) => selectionVideoId === v.id;
       if (isPrivileged) {
         return !!$videos.find(finder);
@@ -237,7 +237,7 @@
         return !!$videosAll.find(finder);
       }
     })(hasPrivileges);
-    if (!videoExists) {
+    if (!exists) {
       await fetch(`/repos/videos?id=${id}`)
         .then(async (res) => await res.json())
         .then((res) => emit('video:add', { data: [res] }));
