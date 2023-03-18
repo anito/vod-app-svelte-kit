@@ -7,19 +7,6 @@
   import type { Video } from '$lib/classes/repos/types';
   import type { Player } from '$lib/utils/module-vars';
 
-  const dispatch = createEventDispatcher();
-  const scrubStart = { x: 0, y: 0, playhead: 0 };
-
-  let duration: number;
-  let className = '';
-  let loadeddata = false;
-  let waiting = false;
-  let buffered: TimeRanges;
-  let buffer: TimeRanges;
-  let scrubbing: boolean;
-  let url: string | null;
-  let timeoutId: number | undefined;
-
   export let src: string | undefined;
   export let type: string | undefined;
   export let poster: string | undefined;
@@ -36,7 +23,19 @@
   export let playhead = 0;
   export { className as class };
 
-  let timeoutIdWatchPlayhead: ReturnType<typeof setTimeout>;
+  const dispatch = createEventDispatcher();
+  const scrubStart = { x: 0, y: 0, playhead: 0 };
+
+  let duration: number;
+  let className = '';
+  let loadeddata = false;
+  let waiting = false;
+  let buffered: TimeRanges;
+  let buffer: TimeRanges;
+  let scrubbing: boolean;
+  let url: string | null;
+  let timeoutIdForWait: number | undefined;
+  let timeoutIdForPause: ReturnType<typeof setTimeout>;
   let canplay = false;
 
   $: watchPlayheadForWait(playhead);
@@ -50,8 +49,8 @@
 
   function watchPlayheadForPause(time: number, paused: boolean) {
     if (paused && canplay) {
-      clearTimeout(timeoutIdWatchPlayhead);
-      timeoutIdWatchPlayhead = setTimeout(
+      clearTimeout(timeoutIdForPause);
+      timeoutIdForPause = setTimeout(
         (pausetime: number) => {
           if (pausetime === time) {
             let callback = {};
@@ -75,8 +74,8 @@
    */
   function watchPlayheadForWait(time: number) {
     waiting = false;
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(
+    clearTimeout(timeoutIdForWait);
+    timeoutIdForWait = setTimeout(
       (previously: number) => {
         waiting = paused ? false : previously === time;
       },
