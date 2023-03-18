@@ -81,8 +81,7 @@
 
   async function prepare() {
     if (!videoElement.getAttribute('src') && url) {
-      const src = url;
-      src && videoElement.setAttribute('src', src);
+      videoElement.setAttribute('src', url);
       playhead && (videoElement.currentTime = playhead);
     }
   }
