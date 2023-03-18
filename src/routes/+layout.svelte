@@ -392,10 +392,10 @@
               images.update(res.data);
             }
           });
-        onsuccess?.(res);
-      } else {
-        onerror?.(res);
       }
+      onsuccess?.(res);
+    } else {
+      onerror?.(res);
     }
 
     if (show) {

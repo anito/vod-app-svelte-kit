@@ -36,7 +36,11 @@
   export let playhead = 0;
   export { className as class };
 
-  $: !paused && watchPlayhead(playhead);
+  let timeoutIdWatchPlayhead: ReturnType<typeof setTimeout>;
+  let canplay = false;
+
+  $: watchPlayheadForWait(playhead);
+  $: watchPlayheadForPause(playhead, paused);
   $: poster = poster || emptyPoster;
   $: buffer && (buffered = videoElement?.buffered);
 
@@ -44,16 +48,37 @@
     window.addEventListener('video:poster:changed', videoPosterChangedHandler);
   });
 
+  function watchPlayheadForPause(time: number, paused: boolean) {
+    if (paused && canplay) {
+      clearTimeout(timeoutIdWatchPlayhead);
+      timeoutIdWatchPlayhead = setTimeout(
+        (pausetime: number) => {
+          if (pausetime === time) {
+            let callback = {};
+            // Unload and rewind playhead to start if video has ended
+            if(time === duration) {
+              callback = { onsuccess: () => videoElement.src = '' };
+              time = 0;
+            }
+            dispatch('player:saveplayhead', { id: video.id, playhead: time, callback });
+          }
+        },
+        200,
+        time
+      );
+    }
+  }
+
   /**
-   * If the video struggles to fetch more data:
-   * There is a build in <video> 'waiting' event that gives us this exact information, however obviously we can not rely on it
+   * Although there is a build in 'waiting' event the following emulates the lack of data behaviour
+   * (e.g. for use with a waiting spinner)
    */
-  function watchPlayhead(time: number) {
+  function watchPlayheadForWait(time: number) {
     waiting = false;
     clearTimeout(timeoutId);
     timeoutId = setTimeout(
-      (lasttime: number) => {
-        waiting = paused ? false : lasttime === time;
+      (previously: number) => {
+        waiting = paused ? false : previously === time;
       },
       1000,
       time
@@ -86,7 +111,8 @@
     }
   }
 
-  async function unload() {
+  function unload() {
+    console.log('unloading....');
     if (videoElement) {
       !videoElement.paused && videoElement.pause();
       // Take a breath to save playhead
@@ -178,6 +204,7 @@
   }
 
   function canPlayHandler() {
+    canplay = true
     dispatch('player:canplay', video);
   }
 
@@ -197,6 +224,7 @@
   }
 
   function abortedHandler() {
+    canplay = false;
     dispatch('player:aborted', video);
   }
 

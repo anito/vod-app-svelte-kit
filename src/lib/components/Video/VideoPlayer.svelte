@@ -81,15 +81,16 @@
   bind:videoElement={element}
   bind:playhead
   bind:player
+  on:player:fwd
+  on:player:rwd
   on:player:paused
   on:player:canplay={() => (canplay = true)}
   on:player:canplay
   on:player:emptied
   on:player:aborted
-  on:player:loadeddata
   on:player:loadstart
-  on:player:fwd
-  on:player:rwd
+  on:player:loadeddata
+  on:player:saveplayhead
   {customUI}
   {controls}
   {scrub}

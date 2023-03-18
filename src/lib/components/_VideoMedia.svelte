@@ -18,7 +18,6 @@
 
   let src: string | undefined;
   let playhead: number;
-  let timeoutIdWatchPlayhead: ReturnType<typeof setTimeout>;
   let timeoutIdSavePlayhead: ReturnType<typeof setTimeout>;
   let poster: string | undefined;
   let canplay = false;
@@ -40,29 +39,15 @@
     getMediaImage(video.image_id, $session.user?.jwt).then((res) => (poster = res))) ||
     (poster = emptyPoster);
   $: if (video.id) getMediaVideo(video.id, $session.user?.jwt).then((res) => (src = res));
-  $: watchPlayhead(playhead, paused);
 
   onDestroy(() => {
     if (!paused) savePlayhead(video.id, playhead);
   });
 
-  function handleCanPlay() {
+  function canPlayHandler() {
     if (canplay) return;
     canplay = true;
     playhead = hasPrivileges ? video?.playhead : joinData?.playhead;
-  }
-
-  function watchPlayhead(time: number, paused: boolean) {
-    if (paused && canplay) {
-      clearTimeout(timeoutIdWatchPlayhead);
-      timeoutIdWatchPlayhead = setTimeout(
-        (pausetime: number) => {
-          if (pausetime === time) savePlayhead(video.id, time);
-        },
-        200,
-        time
-      );
-    }
   }
 
   // set playhead to the last saved position when the video is ready to play
@@ -109,7 +94,12 @@
     }
   }
 
-  function handleEmptied(event: CustomEvent) {
+  function savePlayheadHandler({ detail }: CustomEvent) {
+    const { id, playhead, callback } = detail;
+    savePlayhead(id, playhead, callback);
+  }
+
+  function emptiedHandler(event: CustomEvent) {
     info(
       4,
       '%c EMPTIED   %c %s',
@@ -119,7 +109,7 @@
     );
   }
 
-  function handleLoadStart(event: CustomEvent) {
+  function loadstartHandler(event: CustomEvent) {
     info(
       4,
       '%c LOADSTART %c %s',
@@ -139,7 +129,7 @@
     );
   }
 
-  function handleAborted(event: CustomEvent) {
+  function abortedHandler(event: CustomEvent) {
     info(
       4,
       '%c ABORTED   %c %s',
@@ -197,11 +187,12 @@
           class="video-player flex flex-1"
           bind:paused
           bind:playhead
-          on:player:canplay={handleCanPlay}
-          on:player:emptied={handleEmptied}
+          on:player:aborted={abortedHandler}
+          on:player:canplay={canPlayHandler}
+          on:player:emptied={emptiedHandler}
+          on:player:loadstart={loadstartHandler}
           on:player:loadeddata={handleLoadedData}
-          on:player:loadstart={handleLoadStart}
-          on:player:aborted={handleAborted}
+          on:player:saveplayhead={savePlayheadHandler}
           customUI
           {poster}
           {src}

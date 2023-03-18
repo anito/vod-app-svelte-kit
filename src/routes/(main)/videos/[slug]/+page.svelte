@@ -66,7 +66,9 @@
   $: joinData = $users
     .find((u: User) => u.id === user?.id)
     ?.videos.find((v: Video) => v.id === video?.id)?._joinData;
-  $: video?.image_id ? getMediaImage(video.image_id, $session.user?.jwt).then((v) => (poster = v)) : poster = undefined;
+  $: video?.image_id
+    ? getMediaImage(video.image_id, $session.user?.jwt).then((v) => (poster = v))
+    : (poster = undefined);
   $: if (video) getMediaVideo(video.id, $session.user?.jwt).then((v) => (src = v));
   $: watchPlayhead(playhead, paused);
   $: playing = !paused;
@@ -94,18 +96,20 @@
     clearTimeout(timeoutIdSavePlayhead);
     const { onsuccess, onerror } = { onsuccess: () => {}, onerror: () => {}, ...callback };
     if (hasPrivileges) {
-      if (Math.round(video?.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
       timeoutIdSavePlayhead = setTimeout(
-        () =>
-          emit('video:save', {
-            data: { id, playhead },
-            onsuccess,
-            onerror
-          }),
-        200
+        (data: {
+          data: { id: string; playhead: number };
+          onsuccess: () => void;
+          onerror: () => void;
+        }) => emit('video:save', data),
+        200,
+        {
+          data: { id, playhead },
+          onsuccess,
+          onerror
+        }
       );
     } else {
-      if (Math.round(joinData.playhead * 100) / 100 === Math.round(playhead * 100) / 100) return;
       const associated = user?.videos
         .filter((v: Video) => v.id != video?.id)
         .map((v: Video) => ({ id: v.id }));
@@ -121,13 +125,14 @@
       };
 
       timeoutIdSavePlayhead = setTimeout(
-        () =>
-          emit('user:save', {
-            data,
-            onsuccess,
-            onerror
-          }),
-        200
+        (data: { data: any; onsuccess: () => void; onerror: () => void }) =>
+          emit('user:save', data),
+        200,
+        {
+          data,
+          onsuccess,
+          onerror
+        }
       );
     }
   }
@@ -185,7 +190,7 @@
   }
 
   function setCurtainText() {
-    if(video) {
+    if (video) {
       curVideo = video;
       title = video.title || video.src;
       description = video.description;
@@ -201,7 +206,7 @@
   function outroendHandler() {
     outroend = true;
     outrostart = false;
-    setCurtainText()
+    setCurtainText();
   }
 
   function introstartHandler() {
@@ -213,6 +218,11 @@
     introend = true;
     introstart = false;
     customUI = true;
+  }
+
+  function savePlayheadHandler({ detail }: CustomEvent) {
+    const { id, playhead, callback } = detail;
+    savePlayhead(id, playhead, callback);
   }
 </script>
 
@@ -233,17 +243,14 @@
       class:outroend
     >
       <div class="curtain curtain-primary">
-        <h2
-          class="mdc-typography--headline6 curtain-title opacity-25"
-          class:opacity-25={!title}
-        >
+        <h2 class="mdc-typography--headline6 curtain-title opacity-25" class:opacity-25={!title}>
           {title}
         </h2>
         <h3
           class="mdc-typography--subtitle2 curtain-desc opacity-25"
           class:opacity-25={!description}
         >
-          {description || $_('text.empty-description')}
+          {description || $_('text.empty-description')}
         </h3>
       </div>
       <div class="curtain curtain-secondary" />
@@ -266,13 +273,14 @@
           bind:playhead
           on:player:canplay={handleCanPlay}
           on:player:emptied={handleEmptied}
-          on:player:loadeddata={handleLoadedData}
           on:player:loadstart={handleLoadStart}
           on:player:aborted={handleAborted}
+          on:player:loadeddata={handleLoadedData}
+          on:player:saveplayhead={savePlayheadHandler}
           video={curVideo}
+          {customUI}
           {poster}
           {src}
-          {customUI}
           scrub
         />
       </div>
