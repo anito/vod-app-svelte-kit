@@ -13,11 +13,11 @@
   let duration: number;
   let className = '';
   let loadeddata = false;
-  let canplay = false;
   let waiting = false;
-  let buffered;
+  let buffered: TimeRanges;
+  let buffer: TimeRanges;
   let scrubbing: boolean;
-  let srcAttr: string | null;
+  let url: string | null;
   let timeoutId: number | undefined;
 
   export let src: string | undefined;
@@ -37,12 +37,17 @@
   export { className as class };
 
   $: !paused && watchPlayhead(playhead);
-  $: poster = poster || emptyPoster
+  $: poster = poster || emptyPoster;
+  $: buffer && (buffered = videoElement?.buffered);
 
   onMount(() => {
     window.addEventListener('video:poster:changed', videoPosterChangedHandler);
   });
 
+  /**
+   * If the video struggles to fetch more data:
+   * There is a build in <video> 'waiting' event that gives us this exact information, however obviously we can not rely on it
+   */
   function watchPlayhead(time: number) {
     waiting = false;
     clearTimeout(timeoutId);
@@ -56,9 +61,8 @@
   }
 
   async function playPauseHandler() {
-    setSource();
+    prepare();
     if (paused) {
-      playhead && (videoElement.currentTime = playhead);
       player.promise = videoElement.play();
       player.promise
         .then(() => console.log('[MEDIA] Now playing', video.title || video.src))
@@ -75,10 +79,11 @@
     }
   }
 
-  async function setSource() {
-    if (!videoElement.getAttribute('src')) {
-      const src = srcAttr || videoElement.getAttribute('src');
+  async function prepare() {
+    if (!videoElement.getAttribute('src') && url) {
+      const src = url;
       src && videoElement.setAttribute('src', src);
+      playhead && (videoElement.currentTime = playhead);
     }
   }
 
@@ -174,7 +179,6 @@
   }
 
   function canPlayHandler() {
-    canplay = true;
     dispatch('player:canplay', video);
   }
 
@@ -184,7 +188,7 @@
 
   function loadedDataHandler() {
     loadeddata = true;
-    srcAttr = videoElement.getAttribute('src');
+    url = videoElement.getAttribute('src');
     dispatch('player:loadeddata', video);
   }
 
@@ -216,7 +220,7 @@
     bind:currentTime={playhead}
     bind:duration
     bind:paused
-    bind:buffered
+    bind:buffered={buffer}
     on:loadstart={loadstartHandler}
     on:canplay={canPlayHandler}
     on:loadeddata={loadedDataHandler}

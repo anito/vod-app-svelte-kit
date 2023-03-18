@@ -17,6 +17,7 @@
   export let customUI = false;
   export let controls = false;
   export let scrub = false;
+  export { className as class };
 
   const isChrome = $page.data.ua.name === 'Chrome';
 
@@ -24,24 +25,20 @@
   let canplay = false;
   let element: HTMLVideoElement;
   let className = '';
-  let mounted = false;
-
-  export { className as class };
-
-  onMount(() => {
-    paused = true;
-    player = { element, promise: new Promise(() => void 0) };
-    players.add(player);
-    mounted = true;
-    return () => {
-      players.delete(player);
-    };
-  });
 
   $: if (!paused) {
     pausePlayers();
     unloadStreams(5);
   }
+
+  onMount(() => {
+    paused = true;
+    player = { element, promise: new Promise(() => void 0) };
+    players.add(player);
+    return () => {
+      players.delete(player);
+    };
+  });
 
   /**
    * Only one player should be playing at a time
@@ -73,37 +70,35 @@
   }
 </script>
 
-{#if mounted}
-  {#if !canplay && video.duration}
-    <div class="duration">
-      {video.duration?.toHHMMSS()}
-    </div>
-  {/if}
-  <Video
-    class={className}
-    bind:paused
-    bind:videoElement={element}
-    bind:playhead
-    bind:player
-    on:player:paused
-    on:player:canplay={() => (canplay = true)}
-    on:player:canplay
-    on:player:emptied
-    on:player:aborted
-    on:player:loadeddata
-    on:player:loadstart
-    on:player:fwd
-    on:player:rwd
-    {customUI}
-    {controls}
-    {scrub}
-    {autoplay}
-    {poster}
-    {src}
-    {video}
-    {type}
-  />
+{#if !canplay && video.duration}
+  <div class="duration">
+    {video.duration?.toHHMMSS()}
+  </div>
 {/if}
+<Video
+  class={className}
+  bind:paused
+  bind:videoElement={element}
+  bind:playhead
+  bind:player
+  on:player:paused
+  on:player:canplay={() => (canplay = true)}
+  on:player:canplay
+  on:player:emptied
+  on:player:aborted
+  on:player:loadeddata
+  on:player:loadstart
+  on:player:fwd
+  on:player:rwd
+  {customUI}
+  {controls}
+  {scrub}
+  {autoplay}
+  {poster}
+  {src}
+  {video}
+  {type}
+/>
 
 <style>
   .duration {
