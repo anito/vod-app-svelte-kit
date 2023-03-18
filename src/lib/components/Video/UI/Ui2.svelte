@@ -7,7 +7,6 @@
   export let time = 0;
   export let duration: number;
   export let loadeddata: boolean;
-  export let canplay: boolean;
   export let waiting: boolean;
   export let paused: boolean;
   export let buffered;

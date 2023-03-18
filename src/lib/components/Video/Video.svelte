@@ -1,4 +1,5 @@
 <script lang="ts">
+  import emptyPoster from '/src/assets/images/empty-poster.jpg';
   import { createEventDispatcher, onMount } from 'svelte';
   import { Ui } from '.';
   import { mute } from '.';
@@ -20,14 +21,14 @@
   let timeoutId: number | undefined;
 
   export let src: string | undefined;
+  export let type: string | undefined;
+  export let poster: string | undefined;
   export let videoElement: HTMLVideoElement;
   export let scrub = false;
   export let wheel = false;
   export let player: Player;
   export let video: Video;
   export let autoplay: boolean;
-  export let poster: string | undefined;
-  export let type: string | undefined;
   export let customUI = false;
   export let controls = false;
   export let paused = false;
@@ -36,6 +37,7 @@
   export { className as class };
 
   $: !paused && watchPlayhead(playhead);
+  $: poster = poster || emptyPoster
 
   onMount(() => {
     window.addEventListener('video:poster:changed', videoPosterChangedHandler);
@@ -59,7 +61,7 @@
       playhead && (videoElement.currentTime = playhead);
       player.promise = videoElement.play();
       player.promise
-        .then(() => console.log('[MEDIA] Playing', video.title || video.src))
+        .then(() => console.log('[MEDIA] Now playing', video.title || video.src))
         .catch((reason) => console.error('[MEDIA ERROR]', reason));
     } else {
       await player.promise;
@@ -221,7 +223,7 @@
     on:emptied={emptiedHandler}
     on:abort={abortedHandler}
     on:pause={pausedHandler}
-    controls={false}
+    {controls}
     {src}
     {poster}
     {preload}
@@ -245,7 +247,6 @@
       on:fwd={forewardHandler}
       bind:time={playhead}
       {duration}
-      {canplay}
       {paused}
       {buffered}
       {loadeddata}

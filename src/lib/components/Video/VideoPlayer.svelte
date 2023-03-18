@@ -7,8 +7,8 @@
   import type { Video as VideoType } from '$lib/classes/repos/types';
   import type { Player } from '$lib/utils/module-vars';
 
-  export let src: string | undefined;
-  export let poster = '';
+  export let src: string | undefined = undefined;
+  export let poster: string | undefined = undefined;
   export let video: VideoType;
   export let type = getExt(video.src);
   export let paused = true;
@@ -16,7 +16,6 @@
   export let playhead: any;
   export let customUI = false;
   export let controls = false;
-  export let curtain = false;
   export let scrub = false;
 
   const isChrome = $page.data.ua.name === 'Chrome';

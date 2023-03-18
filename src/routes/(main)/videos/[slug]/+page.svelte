@@ -32,6 +32,7 @@
   let outroend: boolean = false;
   let customUI: boolean;
   let withinRoute: boolean;
+  let curVideo: Video;
   let title: string;
   let description: string | undefined;
 
@@ -65,7 +66,7 @@
   $: joinData = $users
     .find((u: User) => u.id === user?.id)
     ?.videos.find((v: Video) => v.id === video?.id)?._joinData;
-  $: video?.image_id && getMediaImage(video.image_id, $session.user?.jwt).then((v) => (poster = v));
+  $: video?.image_id ? getMediaImage(video.image_id, $session.user?.jwt).then((v) => (poster = v)) : poster = undefined;
   $: if (video) getMediaVideo(video.id, $session.user?.jwt).then((v) => (src = v));
   $: watchPlayhead(playhead, paused);
   $: playing = !paused;
@@ -184,8 +185,11 @@
   }
 
   function setCurtainText() {
-    title = video?.title || video?.src;
-    description = video?.description;
+    if(video) {
+      curVideo = video;
+      title = video.title || video.src;
+      description = video.description;
+    }
   }
 
   function outrostartHandler() {
@@ -246,7 +250,7 @@
     </div>
   {/if}
   {#await promise then}
-    {#if video}
+    {#if curVideo}
       <div
         in:fly={{ duration: mediaAnimDuration, opacity: 0, delay: 200 }}
         out:fly={{ duration: mediaAnimDuration, opacity: 0 }}
@@ -265,7 +269,7 @@
           on:player:loadeddata={handleLoadedData}
           on:player:loadstart={handleLoadStart}
           on:player:aborted={handleAborted}
-          {video}
+          video={curVideo}
           {poster}
           {src}
           {customUI}
