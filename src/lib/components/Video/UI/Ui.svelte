@@ -46,7 +46,7 @@
   $: if (duration) {
     percentageTime = (time * 100) / duration;
     percentageBuffer =
-      (buffered?.length && (buffered[buffered.length - 1].end * 100) / duration) || 0;
+      (buffered?.length && (buffered.end(buffered?.length) * 100) / duration) || 0;
   }
 
   function showControls() {

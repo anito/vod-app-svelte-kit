@@ -11,10 +11,13 @@
 
   let duration: number;
   let className = '';
-  let loaded = false;
+  let loadeddata = false;
+  let canplay = false;
+  let waiting = false;
   let buffered;
   let scrubbing: boolean;
   let srcAttr: string | null;
+  let timeoutId: number | undefined;
 
   export let src: string | undefined;
   export let videoElement: HTMLVideoElement;
@@ -32,9 +35,23 @@
   export let playhead = 0;
   export { className as class };
 
+  $: !paused && watchPlayhead(playhead);
+
   onMount(() => {
     window.addEventListener('video:poster:changed', videoPosterChangedHandler);
   });
+
+  function watchPlayhead(time: number) {
+    waiting = false;
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(
+      (lasttime: number) => {
+        waiting = paused ? false : lasttime === time;
+      },
+      1000,
+      time
+    );
+  }
 
   async function playPauseHandler() {
     setSource();
@@ -77,7 +94,7 @@
 
   function doScrub(event: MouseEvent) {
     if (!(event.buttons & 1)) return; // mouse not down
-    if (!loaded) return;
+    if (!loadeddata) return;
 
     const { left, right } = videoElement && videoElement.getBoundingClientRect();
     if (left === undefined || right === undefined) return;
@@ -155,6 +172,7 @@
   }
 
   function canPlayHandler() {
+    canplay = true;
     dispatch('player:canplay', video);
   }
 
@@ -163,13 +181,13 @@
   }
 
   function loadedDataHandler() {
-    loaded = true;
+    loadeddata = true;
     srcAttr = videoElement.getAttribute('src');
     dispatch('player:loadeddata', video);
   }
 
   function emptiedHandler() {
-    loaded = false;
+    loadeddata = false;
     dispatch('player:emptied', video);
   }
 
@@ -188,52 +206,54 @@
   }
 </script>
 
-  <div class="player {className}" class:loaded>
-    <video
-      class="flex-1"
-      muted={$mute}
-      bind:this={videoElement}
-      bind:currentTime={playhead}
-      bind:duration
-      bind:paused
-      bind:buffered
-      on:loadstart={loadstartHandler}
-      on:canplay={canPlayHandler}
-      on:loadeddata={loadedDataHandler}
-      on:emptied={emptiedHandler}
-      on:abort={abortedHandler}
-      on:pause={pausedHandler}
-      controls ={false}
-      {src}
-      {poster}
-      {preload}
-      {autoplay}
-    >
-      <source type="video/{type}" />
-      <track kind="captions" />
-      Your browser does not support the
-      <code>video</code>
-      element.
-    </video>
-    {#if customUI}
-      <Ui
-        on:ui:wheel={wheelHandler}
-        on:ui:touchstart={mousedownHandler}
-        on:ui:mousedown={mousedownHandler}
-        on:ui:pip={pictureInPictureHandler}
-        on:fullscreen={fullscreenHandler}
-        on:play-pause={playPauseHandler}
-        on:rwd={rewindHandler}
-        on:fwd={forewardHandler}
-        bind:time={playhead}
-        {duration}
-        {paused}
-        {buffered}
-        {loaded}
-        id={video.id}
-      />
-    {/if}
-  </div>
+<div class="player {className}" class:loadeddata>
+  <video
+    class="flex-1"
+    muted={$mute}
+    bind:this={videoElement}
+    bind:currentTime={playhead}
+    bind:duration
+    bind:paused
+    bind:buffered
+    on:loadstart={loadstartHandler}
+    on:canplay={canPlayHandler}
+    on:loadeddata={loadedDataHandler}
+    on:emptied={emptiedHandler}
+    on:abort={abortedHandler}
+    on:pause={pausedHandler}
+    controls={false}
+    {src}
+    {poster}
+    {preload}
+    {autoplay}
+  >
+    <source type="video/{type}" />
+    <track kind="captions" />
+    Your browser does not support the
+    <code>video</code>
+    element.
+  </video>
+  {#if customUI}
+    <Ui
+      on:ui:wheel={wheelHandler}
+      on:ui:touchstart={mousedownHandler}
+      on:ui:mousedown={mousedownHandler}
+      on:ui:pip={pictureInPictureHandler}
+      on:fullscreen={fullscreenHandler}
+      on:play-pause={playPauseHandler}
+      on:rwd={rewindHandler}
+      on:fwd={forewardHandler}
+      bind:time={playhead}
+      {duration}
+      {canplay}
+      {paused}
+      {buffered}
+      {loadeddata}
+      {waiting}
+      id={video.id}
+    />
+  {/if}
+</div>
 
 <style>
   .player {

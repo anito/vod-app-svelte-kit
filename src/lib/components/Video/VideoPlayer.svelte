@@ -30,10 +30,10 @@
   export { className as class };
 
   onMount(() => {
-    mounted = true;
     paused = true;
     player = { element, promise: new Promise(() => void 0) };
     players.add(player);
+    mounted = true;
     return () => {
       players.delete(player);
     };
@@ -62,7 +62,7 @@
    * Unload the first loaded player in the stack to free ressources
    *
    * To preserve ressources some user agents (e.g. Chrome) limit the number of media players
-   * that can be loaded simultaniously. Even if "preload" set to none.
+   * that can be loaded simultaniously. Even if "preload" is set to none.
    */
   function unloadStreams(limit: number) {
     stack.forEach((item, key, set) => {
@@ -74,35 +74,37 @@
   }
 </script>
 
-{#if !canplay && video.duration}
-  <div class="duration">
-    {video.duration?.toHHMMSS()}
-  </div>
+{#if mounted}
+  {#if !canplay && video.duration}
+    <div class="duration">
+      {video.duration?.toHHMMSS()}
+    </div>
+  {/if}
+  <Video
+    class={className}
+    bind:paused
+    bind:videoElement={element}
+    bind:playhead
+    bind:player
+    on:player:paused
+    on:player:canplay={() => (canplay = true)}
+    on:player:canplay
+    on:player:emptied
+    on:player:aborted
+    on:player:loadeddata
+    on:player:loadstart
+    on:player:fwd
+    on:player:rwd
+    {customUI}
+    {controls}
+    {scrub}
+    {autoplay}
+    {poster}
+    {src}
+    {video}
+    {type}
+  />
 {/if}
-<Video
-  class={className}
-  bind:paused
-  bind:videoElement={element}
-  bind:playhead
-  bind:player
-  on:player:paused
-  on:player:canplay={() => (canplay = true)}
-  on:player:canplay
-  on:player:emptied
-  on:player:aborted
-  on:player:loadeddata
-  on:player:loadstart
-  on:player:fwd
-  on:player:rwd
-  {customUI}
-  {controls}
-  {scrub}
-  {autoplay}
-  {poster}
-  {src}
-  {video}
-  {type}
-/>
 
 <style>
   .duration {
