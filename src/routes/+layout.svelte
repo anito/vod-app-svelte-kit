@@ -688,7 +688,7 @@
 
 {#if $locale}
   <Modal header={{ name: 'text.upload-type' }} key="default-modal">
-    <Modal header={{ name: 'text.edit-uploaded-content' }} key="editor-modal">
+    <Modal header={{ name: 'text.editor' }} key="editor-modal">
       <div bind:this={outerElement} class="transition opacity-0">
         <form
           use:enhance={({ action, cancel }) => {

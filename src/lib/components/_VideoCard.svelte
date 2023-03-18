@@ -99,7 +99,6 @@
         events: { 'upload:success': uploadSuccessHandler }
       },
       options: {
-        closeOnOuterClick: false,
         transitionWindow: fly,
         transitionWindowProps: {
           y: -200,
@@ -203,7 +202,7 @@
         <div class="flex justify-end" style="flex-basis: 50%; max-width: 50%">
           <IconButton
             href={`/videos/${video.id}`}
-            class="action-button button-shaped-round unelevated small"
+            class="action-button button-shaped-round unelevated medium"
           >
             <i class="material-icons">smart_display</i>
           </IconButton>

@@ -36,7 +36,6 @@
         }
       },
       options: {
-        closeOnOuterClick: false,
         transitionWindow: fly,
         transitionWindowProps: {
           y: -200,

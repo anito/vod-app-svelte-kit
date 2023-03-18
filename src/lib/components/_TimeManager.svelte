@@ -444,7 +444,7 @@
                   {selectionUserId}
                 >
                   <IconButton
-                    class="self-center mr-2 small"
+                    class="self-center mr-2 medium"
                     color="primary"
                     href={`/videos/${video.id}`}
                   >
@@ -465,7 +465,7 @@
                       </Icon>
                     </IconButton>
                     <IconButton
-                      class="delete-action-button delete ml-2 small"
+                      class="delete-action-button delete ml-2 medium"
                       on:click$preventDefault={() => openRemoveDialog(video)}
                     >
                       <Icon class="material-icons">remove_circle</Icon>
@@ -536,15 +536,15 @@
               {selectionUserId}
             >
               {#if hasPrivileges}
-                <IconButton class="mr-2 small" on:click={() => editVideo(video)}>
+                <IconButton class="mr-2 medium" on:click={() => editVideo(video)}>
                   <Icon class="material-icons">edit</Icon>
                 </IconButton>
-                <IconButton class="mr-2 small" href={`/videos/${video.id}`}>
+                <IconButton class="mr-2 medium" href={`/videos/${video.id}`}>
                   <Icon class="material-icons">smart_display</Icon>
                 </IconButton>
                 <IconButton
                   disabled={hasCurrentPrivileges || unmanagable || video.teaser}
-                  class="add small"
+                  class="add medium"
                   on:click={() => openScheduleDialog(video)}
                 >
                   <Icon class="material-icons">add_circle</Icon>

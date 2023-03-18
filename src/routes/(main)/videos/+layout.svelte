@@ -1,6 +1,8 @@
 <script lang="ts">
+  import '$lib/components/_icon-button.scss';
   import { page } from '$app/stores';
   import { getContext } from 'svelte';
+  import { fly } from 'svelte/transition';
   import Layout from './layout.svelte';
   import List from '@smui/list';
   import {
@@ -10,23 +12,27 @@
     Container,
     Paginator,
     FlexContainer,
-    SearchTextField
+    SearchTextField,
+    VideoEditorList
   } from '$lib/components';
-  import { dynamicUrl, filterByModelKeys, emit } from '$lib/utils';
-  import { videos } from '$lib/stores';
+  import { dynamicUrl, filterByModelKeys, emit, ADMIN, SUPERUSER } from '$lib/utils';
+  import { session, videos } from '$lib/stores';
   import emptyPoster from '/src/assets/images/empty-poster.jpg';
   import { _ } from 'svelte-i18n';
   import type { LayoutData } from './$types';
+  import IconButton, { Icon } from '@smui/icon-button';
 
   export let data: LayoutData;
 
   const minSearchChars = 2;
   const { searchVideos }: any = getContext('search');
   const modelSearchKeys = 'title,id';
+  const { open }: any = getContext('editor-modal');
 
   let selectedIndex: any;
   let search = '';
 
+  $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: pagination = data.pagination?.videos;
   $: sidebar = !!$page.params.slug;
   $: selectionVideoId = $page.params.slug;
@@ -41,6 +47,21 @@
   }
   $: filteredVideos = ((videos) => filterByModelKeys(search, videos, modelSearchKeys))($videos);
   $: filteredVideos.sortBy('title');
+
+  function openEditor(id: string) {
+    open(VideoEditorList, {
+      props: {
+        data: [{ id }]
+      },
+      options: {
+        transitionWindow: fly,
+        transitionWindowProps: {
+          y: -200,
+          duration: 500
+        }
+      }
+    });
+  }
 </script>
 
 <Layout {sidebar}>
@@ -66,7 +87,11 @@
               {emptyPoster}
               anchorFn={dynamicUrl}
               {video}
-            />
+            >
+              {#if hasPrivileges}<IconButton class="small" on:click={() => openEditor(video.id)}>
+                  <Icon class="material-icons">edit</Icon>
+                </IconButton>{/if}</SimpleVideoCard
+            >
           {/each}
           <Paginator
             {pagination}
@@ -74,7 +99,7 @@
             store={videos}
             id="videos-paginator"
             action="/videos?/more_videos"
-            type='label'
+            type="label"
           />
         </List>
       {:else}
