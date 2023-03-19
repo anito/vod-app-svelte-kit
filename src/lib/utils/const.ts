@@ -17,6 +17,38 @@ export const DateTimeFormatOptions = {
 } as {
   weekday: 'long' | 'short' | 'narrow' | undefined;
 };
+export const DEFAULT_CONFIG = {
+  Session: {
+    lifetime: '3600',
+    logoutredirect: '/login'
+  },
+  Site: {
+    logo: 'https://files.doojoo.de/f/01e377c2785e4db4a69e/?dl=1',
+    name: 'Immersive Studio',
+    description: 'Immersive Life Dev',
+    salutations: [
+      'Bonjour',
+      'Salute',
+      'Ciao',
+      'Holla',
+      'Hi',
+      'Welcome',
+      'Welcom',
+      'Willkommen',
+      'Bem-vindo',
+      'Velkommen',
+      'Bonvenon',
+      'Karibu',
+      'Benvenuto',
+      'Benvingut',
+      'Tervetuloa'
+    ]
+  },
+  Console: {
+    infoLevel: '0',
+    log: false
+  }
+};
 export const VIDEO = 'videos';
 export const IMAGE = 'images';
 export const INBOX = 'inboxes';

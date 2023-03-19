@@ -28,6 +28,7 @@ import {
   ADMIN,
   ASC,
   DateTimeFormatOptions,
+  DEFAULT_CONFIG,
   DEFAULT_LOCALE,
   DEFAULT_TAB,
   DEL,
