@@ -74,8 +74,10 @@
     !element.paused && element.pause();
     setTimeout(() => {
       element.src = '';
+      playhead = 0;
       stack.delete(element);
     }, 200);
+    progress = 0;
   }
 </script>
 
@@ -111,7 +113,7 @@
   {video}
   {type}
 >
-  <div class="progress-bar" style:--progress="{progress || 0}%">
+  <div class="progress-bar" style:--progress="{progress}%">
     <div class="value" />
   </div>
 </Video>

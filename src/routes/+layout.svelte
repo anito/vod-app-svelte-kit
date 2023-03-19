@@ -280,10 +280,14 @@
     /**
      * With init flag set to true this indicates the server to fetch a fresh config,
      * which otherwise happens only when starting the app
-     * The invalidate command ist needed, for taking the new configuration into immediate effect
-    */
-    emit('session:validate', { callback: fadeIn, init: true });
-    invalidate('app:session')
+     */
+    emit('session:validate', {
+      callback: () => {
+        fadeIn();
+        invalidate('app:session');
+      },
+      init: true
+    });
   }
 
   function fadeIn() {
@@ -608,7 +612,7 @@
   async function sessionValidateHandler({ detail }: CustomEvent) {
     const lifetime = $page.data.config.Session?.lifetime;
     const _expires = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
-    const init = !!detail?.init
+    const init = !!detail?.init;
     return await post('/session/validate', { _expires, init }).then(async (res) => {
       if (res.success === true) {
         sessionHelper.update({ _expires });

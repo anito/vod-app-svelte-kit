@@ -52,10 +52,6 @@
     height = container?.clientHeight || 0;
   }
 
-  function resizeHandler(e: Event) {
-    resize();
-  }
-
   function format(seconds: number, prefix = '') {
     if (isNaN(seconds)) return '...';
 
@@ -80,9 +76,14 @@
 
   function showControls() {
     controls = true;
-    if(paused) return;
+    resize();
+    if (paused) return;
     clearTimeout(controlsTimeout);
     controlsTimeout = setTimeout(() => (controls = false), 3000);
+  }
+
+  function resizeHandler(e: Event) {
+    resize();
   }
 
   function wheelHandler(event: WheelEvent) {
@@ -180,7 +181,7 @@
     <button
       on:mousedown={mousedownHandler}
       class="play-pause play-pause-controllable center paused"
-      aria-label="{$_('text.play')}"
+      aria-label={$_('text.play')}
       style="position: absolute; padding: 0; left: 0px; width: 11px; height: 13px;"
     >
       <div class="background-tint">
@@ -262,7 +263,7 @@
       <div
         role="group"
         class="controls-bar bottom"
-        aria-label="{$_('text.video-controls')}"
+        aria-label={$_('text.video-controls')}
         style="width: {width - 2 * 6}px; top: {height - 40}px"
       >
         <div class="background-tint">
@@ -392,7 +393,7 @@
             /></button
           ><button
             class="tracks bar"
-            aria-label="{$_('text.media-selection')}"
+            aria-label={$_('text.media-selection')}
             style="width: 16px; height: 13px; left: 54px; display: none"
           >
             <picture
