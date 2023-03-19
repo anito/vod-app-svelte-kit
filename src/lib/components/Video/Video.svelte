@@ -141,7 +141,7 @@
     } else {
       let callback = getCallback();
       intervalId = setInterval(callback, 100);
-      getCallback()();
+      callback();
     }
   }
 
