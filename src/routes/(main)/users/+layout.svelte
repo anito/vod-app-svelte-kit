@@ -322,9 +322,6 @@
     editor$open(VideoEditorList, {
       props: {
         data: uploadedData
-      },
-      options: {
-        closeOnOuterClick: false
       }
     });
     uploadedData = null;

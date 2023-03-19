@@ -359,9 +359,6 @@
     open(VideoEditorList, {
       props: {
         data: [video]
-      },
-      options: {
-        closeOnOuterClick: false
       }
     });
   }
