@@ -18,11 +18,12 @@
   }
 
   .error {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+      Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     display: flex;
     align-items: center;
-    max-width: 32rem;
-    margin: 0 1rem;
-    color: inherit;
+    justify-content: center;
+    color: currentColor;
   }
 
   .status {
@@ -34,12 +35,23 @@
   }
 
   .message {
-    border-left: 1px solid currentColor;
     padding: 0 0 0 1rem;
     margin: 0 0 0 1rem;
     min-height: 2.5rem;
+    height: 2.5rem;
     display: flex;
+    position: relative;
     align-items: center;
+  }
+
+  .message::before {
+    content: '';
+    opacity: 0.2;
+    position: absolute;
+    left: 0;
+    display: inline-block;
+    height: 100%;
+    border-left: 1px solid;
   }
 
   .message h1 {

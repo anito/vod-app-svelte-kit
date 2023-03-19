@@ -277,7 +277,13 @@
   });
 
   async function checkSession() {
-    emit('session:validate', { callback: fadeIn });
+    /**
+     * With init flag set to true this indicates the server to fetch a fresh config,
+     * which otherwise happens only when starting the app
+     * The invalidate command ist needed, for taking the new configuration into immediate effect
+    */
+    emit('session:validate', { callback: fadeIn, init: true });
+    invalidate('app:session')
   }
 
   function fadeIn() {
@@ -403,12 +409,6 @@
       configSnackbar(message);
       snackbar?.forceOpen();
     }
-  }
-
-  async function fetchImages(path: string) {
-    return await fetch(path)
-      .then(async (res) => await res.json())
-      .then((res) => res);
   }
 
   async function videoAddHandler({ detail }: CustomEvent) {
@@ -608,7 +608,8 @@
   async function sessionValidateHandler({ detail }: CustomEvent) {
     const lifetime = $page.data.config.Session?.lifetime;
     const _expires = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
-    return await post('/session/validate', { _expires }).then(async (res) => {
+    const init = !!detail?.init
+    return await post('/session/validate', { _expires, init }).then(async (res) => {
       if (res.success === true) {
         sessionHelper.update({ _expires });
       } else if (res.success === false) {

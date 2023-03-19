@@ -1,4 +1,5 @@
 import { browser, dev } from '$app/environment';
+import { error } from '@sveltejs/kit';
 import { getBlob } from './utils';
 
 export const base = dev ? `https://vod.mbp` : `https://vod.webpremiere.de`;
@@ -57,7 +58,9 @@ async function send(atts: {
       }
     })
     .catch((err) => {
-      console.error('[API FETCH]', err);
+      throw error(500, {
+        message: 'API Server Error'
+      });
     });
 }
 

@@ -8,7 +8,9 @@ import type { Config } from '$lib/types';
 
 async function getConfig(): Promise<any> {
   const res = await api.get(`settings`);
-  return res?.success ? { ...res.data } : DEFAULT_CONFIG;
+  if (res?.success) {
+    return { ...DEFAULT_CONFIG, ...res.data };
+  }
 }
 
 let config: Config | null = null;
