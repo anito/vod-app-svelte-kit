@@ -63,10 +63,14 @@
   function unloadStreams(limit: number) {
     stack.forEach((item, key, set) => {
       if (set.size > limit) {
-        item.src = '';
-        set.delete(item);
+        unloadStream(item);
       }
     });
+  }
+
+  function unloadStream(element: HTMLVideoElement) {
+    element.src = '';
+    stack.delete(element);
   }
 </script>
 
@@ -83,6 +87,7 @@
   bind:player
   on:player:fwd
   on:player:rwd
+  on:player:unload={(e) => unloadStream(e.detail)}
   on:player:paused
   on:player:canplay={() => (canplay = true)}
   on:player:canplay

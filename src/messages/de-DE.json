@@ -277,7 +277,9 @@
     "fullscreen-off": "Vollbild aus",
     "fullscreen-on": "Vollbild an",
     "minute": "Minute",
-    "minutes": "Minuten"
+    "minutes": "Minuten",
+    "video-controls": "Videosteuerelemente",
+    "media-selection": "Medienauswahl"
   },
   "summary": {
     "copy-link": {

@@ -9,7 +9,7 @@
   export let loadeddata: boolean;
   export let waiting: boolean;
   export let paused: boolean;
-  export let buffered;
+  export let buffered: TimeRanges;
 
   const dispatch = createEventDispatcher();
 
@@ -179,7 +179,7 @@
     <button
       on:mousedown={mousedownHandler}
       class="play-pause play-pause-controllable center paused"
-      aria-label="Wiedergeben"
+      aria-label="{$_('text.play')}"
       style="position: absolute; padding: 0; left: 0px; width: 11px; height: 13px;"
     >
       <div class="background-tint">
@@ -261,7 +261,7 @@
       <div
         role="group"
         class="controls-bar bottom"
-        aria-label="Videosteuerelemente"
+        aria-label="{$_('text.video-controls')}"
         style="width: {width - 2 * 6}px; top: {height - 40}px"
       >
         <div class="background-tint">
@@ -391,7 +391,7 @@
             /></button
           ><button
             class="tracks bar"
-            aria-label="Medienauswahl"
+            aria-label="{$_('text.media-selection')}"
             style="width: 16px; height: 13px; left: 54px; display: none"
           >
             <picture

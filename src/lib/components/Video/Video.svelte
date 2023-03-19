@@ -56,7 +56,7 @@
             let callback = {};
             // Unload and rewind playhead to start if video has ended
             if(time === duration) {
-              callback = { onsuccess: () => videoElement.src = '' };
+              callback = { onsuccess: () => dispatch('player:unload', videoElement) };
               time = 0;
             }
             dispatch('player:saveplayhead', { id: video.id, playhead: time, callback });
