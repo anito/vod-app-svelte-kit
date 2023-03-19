@@ -21,12 +21,12 @@
   export let paused = false;
   export let preload = 'none';
   export let playhead = 0;
+  export let duration: number;
   export { className as class };
 
   const dispatch = createEventDispatcher();
   const scrubStart = { x: 0, y: 0, playhead: 0 };
 
-  let duration: number;
   let className = '';
   let keyListenerDiv: HTMLDivElement;
   let loadeddata = false;
@@ -105,7 +105,7 @@
 
   async function videoPosterChangedHandler({ detail }: CustomEvent) {
     if (detail.video_id === video.id) {
-      dispatch('player:unload', videoElement);
+      videoElement && dispatch('player:unload', videoElement);
     }
   }
 
@@ -264,6 +264,7 @@
   }
 </script>
 
+<slot />
 <div
   bind:this={keyListenerDiv}
   class="player {className}"

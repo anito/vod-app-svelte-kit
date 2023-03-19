@@ -80,6 +80,7 @@
 
   function showControls() {
     controls = true;
+    if(paused) return;
     clearTimeout(controlsTimeout);
     controlsTimeout = setTimeout(() => (controls = false), 3000);
   }

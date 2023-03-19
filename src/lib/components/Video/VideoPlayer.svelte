@@ -13,7 +13,7 @@
   export let type = getExt(video.src);
   export let paused = true;
   export let autoplay = false;
-  export let playhead: any;
+  export let playhead: number;
   export let customUI = false;
   export let controls = false;
   export let scrub = false;
@@ -23,9 +23,11 @@
 
   let player: Player;
   let canplay = false;
+  let duration: number;
   let element: HTMLVideoElement;
   let className = '';
 
+  $: progress = (playhead * 100) / duration || 0;
   $: if (!paused) {
     pausePlayers();
     unloadStreams(5);
@@ -69,8 +71,11 @@
   }
 
   function unloadStream(element: HTMLVideoElement) {
-    element.src = '';
-    stack.delete(element);
+    !element.paused && element.pause();
+    setTimeout(() => {
+      element.src = '';
+      stack.delete(element);
+    }, 200);
   }
 </script>
 
@@ -85,9 +90,10 @@
   bind:videoElement={element}
   bind:playhead
   bind:player
+  bind:duration
   on:player:fwd
   on:player:rwd
-  on:player:unload={(e) => unloadStream(e.detail)}
+  on:player:unload={({ detail }) => unloadStream(detail)}
   on:player:paused
   on:player:canplay={() => (canplay = true)}
   on:player:canplay
@@ -104,7 +110,11 @@
   {src}
   {video}
   {type}
-/>
+>
+  <div class="progress-bar" style:--progress="{progress || 0}%">
+    <div class="value" />
+  </div>
+</Video>
 
 <style>
   .duration {
@@ -120,5 +130,20 @@
     border-radius: 3px;
     color: #fff;
     background: #000;
+  }
+  .progress-bar {
+    position: absolute;
+    left: 0;
+    bottom: 1px;
+    width: 100%;
+    height: 3px;
+    z-index: 2;
+  }
+  .progress-bar > .value {
+    background-color: var(--primary);
+    position: absolute;
+    transition: all 0.2s;
+    width: var(--progress);
+    height: 100%;
   }
 </style>
