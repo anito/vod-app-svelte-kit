@@ -28,6 +28,7 @@
 
   let duration: number;
   let className = '';
+  let keyListenerDiv: HTMLDivElement;
   let loadeddata = false;
   let waiting = false;
   let buffered: TimeRanges;
@@ -44,6 +45,7 @@
   $: buffer && (buffered = videoElement?.buffered);
 
   onMount(() => {
+    keyListenerDiv.focus();
     window.addEventListener('video:poster:changed', videoPosterChangedHandler);
   });
 
@@ -55,7 +57,7 @@
           if (pausetime === time) {
             let callback = {};
             // Unload and rewind playhead to start if video has ended
-            if(time === duration) {
+            if (time === duration) {
               callback = { onsuccess: () => dispatch('player:unload', videoElement) };
               time = 0;
             }
@@ -85,11 +87,15 @@
   }
 
   async function playPauseHandler() {
+    if (!player) return;
     prepare();
     if (paused) {
       player.promise = videoElement.play();
       player.promise
-        .then(() => console.log('[MEDIA] Now playing', video.title || video.src))
+        .then(() => {
+          keyListenerDiv.focus();
+          console.log('[MEDIA] Now playing', video.title || video.src);
+        })
         .catch((reason) => console.error('[MEDIA ERROR]', reason));
     } else {
       await player.promise;
@@ -99,7 +105,7 @@
 
   async function videoPosterChangedHandler({ detail }: CustomEvent) {
     if (detail.video_id === video.id) {
-      unload();
+      dispatch('player:unload', videoElement);
     }
   }
 
@@ -110,12 +116,32 @@
     }
   }
 
-  function unload() {
-    console.log('unloading....');
-    if (videoElement) {
-      !videoElement.paused && videoElement.pause();
-      // Take a breath to save playhead
-      setTimeout(() => (videoElement.src = ''), 400);
+  function keydownHandler(e: KeyboardEvent) {
+    const target = e.target as Element;
+    let intervalId: number | undefined;
+
+    keyListenerDiv.removeEventListener('keydown', keydownHandler);
+    function keyupHandler() {
+      clearInterval(intervalId);
+      target.removeEventListener('keyup', keyupHandler);
+      keyListenerDiv.addEventListener('keydown', keydownHandler);
+    }
+
+    target?.addEventListener('keyup', keyupHandler);
+
+    const code = e.code;
+    const getCallback = () => {
+      if (code === 'ArrowLeft') return () => --playhead;
+      if (code === 'ArrowRight') return () => ++playhead;
+      return () => void 0;
+    };
+
+    if (code === 'Space') {
+      playPauseHandler();
+    } else {
+      let callback = getCallback();
+      intervalId = setInterval(callback, 100);
+      getCallback()();
     }
   }
 
@@ -203,7 +229,7 @@
   }
 
   function canPlayHandler() {
-    canplay = true
+    canplay = true;
     dispatch('player:canplay', video);
   }
 
@@ -238,7 +264,13 @@
   }
 </script>
 
-<div class="player {className}" class:loadeddata>
+<div
+  bind:this={keyListenerDiv}
+  class="player {className}"
+  class:loadeddata
+  tabindex="-1"
+  on:keydown={keydownHandler}
+>
   <video
     class="flex-1"
     muted={$mute}
