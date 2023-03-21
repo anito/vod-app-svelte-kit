@@ -30,7 +30,7 @@
   $: progress = (playhead * 100) / duration || 0;
   $: if (!paused) {
     pausePlayers();
-    unloadStreams(5);
+    unloadStream();
   }
 
   onMount(() => {
@@ -57,27 +57,27 @@
   }
 
   /**
-   * Unload the first loaded player in the stack to free ressources
+   * Unload the given element in the stack to free ressources
    *
    * To preserve ressources some user agents (e.g. Chrome) limit the number of media players
-   * that can be loaded simultaniously. Even if "preload" is set to none.
+   * that can be loaded simultaniously (regardless of "preload" attribute is set to none)
    */
-  function unloadStreams(limit: number) {
-    stack.forEach((item, key, set) => {
-      if (set.size > limit) {
-        unloadStream(item);
+  function unloadStream(element?: HTMLVideoElement) {
+    if (element) {
+      element.src = '';
+      stack.delete(element);
+    } else if (stack.size > 5) {
+      const it = stack.values();
+      const element = it.next().value;
+      if (element) {
+        element.src = '';
+        stack.delete(element);
       }
-    });
+    }
   }
 
-  function unloadStream(element: HTMLVideoElement) {
-    !element.paused && element.pause();
-    setTimeout(() => {
-      element.src = '';
-      playhead = 0;
-      stack.delete(element);
-    }, 200);
-    progress = 0;
+  function unloadStreamHandler({detail}: CustomEvent) {
+    unloadStream(detail)
   }
 </script>
 
@@ -95,7 +95,7 @@
   bind:duration
   on:player:fwd
   on:player:rwd
-  on:player:unload={({ detail }) => unloadStream(detail)}
+  on:player:unload={unloadStreamHandler}
   on:player:paused
   on:player:canplay={() => (canplay = true)}
   on:player:canplay

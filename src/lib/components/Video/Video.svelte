@@ -55,7 +55,6 @@
       timeoutIdForPause = setTimeout(
         (pausetime: number) => {
           if (pausetime === time) {
-            let callback = {};
             // Unload and rewind playhead to start if video has ended
             const ended = time === duration;
             dispatch('player:saveplayhead', {
