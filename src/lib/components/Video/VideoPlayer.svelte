@@ -48,10 +48,10 @@
     players.forEach(async (plr) => {
       if (plr.promise === player?.promise) {
         stack.add(element);
+        unloadStream();
       } else if (!plr.element?.paused) {
         await plr.promise;
         plr.element?.pause();
-        unloadStream();
       }
     });
   }
@@ -63,16 +63,13 @@
    * that can be loaded simultaniously (regardless of "preload" attribute is set to none)
    */
   function unloadStream(element?: HTMLVideoElement) {
+    if (!element && stack.size > 5) {
+      const it = stack.values();
+      element = it.next().value;
+    }
     if (element) {
       element.src = '';
       stack.delete(element);
-    } else if (stack.size > 5) {
-      const it = stack.values();
-      const element = it.next().value;
-      if (element) {
-        element.src = '';
-        stack.delete(element);
-      }
     }
   }
 
