@@ -30,7 +30,6 @@
   $: progress = (playhead * 100) / duration || 0;
   $: if (!paused) {
     pausePlayers();
-    unloadStream();
   }
 
   onMount(() => {
@@ -52,6 +51,7 @@
       } else if (!plr.element?.paused) {
         await plr.promise;
         plr.element?.pause();
+        unloadStream();
       }
     });
   }
@@ -76,8 +76,8 @@
     }
   }
 
-  function unloadStreamHandler({detail}: CustomEvent) {
-    unloadStream(detail)
+  function unloadStreamHandler({ detail }: CustomEvent) {
+    unloadStream(detail);
   }
 </script>
 
