@@ -141,8 +141,8 @@
   {id}
 >
   <div class="visible-controls-bar" style="display: none; stroke-width: 0px" />
-  {#if !loadeddata}
-    {#if waiting || !paused}
+  {#if !loadeddata || waiting}
+    {#if !paused}
       <svg
         class="center"
         xmlns="http://www.w3.org/2000/svg"
