@@ -112,7 +112,6 @@
   async function prepare() {
     if (!videoElement.getAttribute('src') && url) {
       videoElement.setAttribute('src', url);
-      playhead && (videoElement.currentTime = playhead);
     }
   }
 
