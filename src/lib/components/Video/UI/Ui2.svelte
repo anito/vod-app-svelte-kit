@@ -199,7 +199,8 @@
         />
       </button>
     {/if}
-  {:else}
+  {/if}
+  {#if loadeddata}
     <div
       class="media-controls inline mac uses-ltr-user-interface-layout-direction play-pause-controllable"
       style="width: {width}px; height: {height}px"
