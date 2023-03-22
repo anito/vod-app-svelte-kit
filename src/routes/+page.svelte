@@ -3,7 +3,7 @@
   import { page } from '$app/stores';
   import { enhance } from '$app/forms';
   import { getContext, onMount } from 'svelte';
-  import logo from 'assets/images/logo-type-vod.svg';
+  import logo from 'assets/images/logo-type.svg';
   import hero from 'assets/images/logo-hero-vod.svg';
   import { session } from '$lib/stores';
   import Layout from './layout.svelte';
