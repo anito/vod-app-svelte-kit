@@ -22,7 +22,6 @@
     "login": "Anmelden",
     "user-profil": "Profil",
     "more-classes": "Weitere Kurse",
-    "booked-classes": "Gebuchte Kurse",
     "generate-token": "Token generieren",
     "missing-token": "Kein Token vorhanden",
     "regenerate-expired-token": "Abgelaufenen Token erneuern",
@@ -279,7 +278,8 @@
     "minute": "Minute",
     "minutes": "Minuten",
     "video-controls": "Videosteuerelemente",
-    "media-selection": "Medienauswahl"
+    "media-selection": "Medienauswahl",
+    "booked-videos": "Gebuchte Videos"
   },
   "summary": {
     "copy-link": {

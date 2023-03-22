@@ -22,7 +22,6 @@
     "login": "Sign in",
     "user-profil": "Profile",
     "more-classes": "More classes",
-    "booked-classes": "Booked classes",
     "generate-token": "Generate Token",
     "missing-token": "Missing Token",
     "regenerate-expired-token": "Refresh expired token",
@@ -279,7 +278,8 @@
     "minute": "Minute",
     "minutes": "Minutes",
     "video-controls": "Video controls",
-    "media-selection": "Media selection"
+    "media-selection": "Media selection",
+    "booked-videos": "Booked videos"
   },
   "summary": {
     "copy-link": {

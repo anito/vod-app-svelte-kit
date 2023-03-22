@@ -411,7 +411,7 @@
               <span class="header-name pr-5 self-center">{name}</span>
               <span
                 class="uppercase flex-auto flex self-center justify-end"
-                style="font-weight: 400;">| {$_('text.booked-classes')}</span
+                style="font-weight: 400;">| {$_('text.booked-videos')}</span
               >
             {/if}
           </div>
@@ -465,7 +465,7 @@
                       class="delete-action-button delete ml-2 medium"
                       on:click$preventDefault={() => openRemoveDialog(video)}
                     >
-                      <Icon class="material-icons">remove_circle</Icon>
+                      <Icon class="material-icons">delete</Icon>
                     </IconButton>
                   {/if}
                 </SimpleVideoCard>
@@ -533,7 +533,7 @@
               {selectionUserId}
             >
               {#if hasPrivileges}
-                <IconButton class="mr-2 medium" on:click={() => editVideo(video)}>
+                <IconButton class="mr-2 small" on:click={() => editVideo(video)}>
                   <Icon class="material-icons">edit</Icon>
                 </IconButton>
                 <IconButton class="mr-2 medium" href={`/videos/${video.id}`}>
@@ -544,7 +544,7 @@
                   class="add medium"
                   on:click={() => openScheduleDialog(video)}
                 >
-                  <Icon class="material-icons">add_circle</Icon>
+                  <Icon class="material-icons">playlist_add</Icon>
                 </IconButton>
               {:else if userVideos.find(({ id }) => video.id == id)}
                 <Icon class="material-icons">verified</Icon>
