@@ -141,64 +141,65 @@
   {id}
 >
   <div class="visible-controls-bar" style="display: none; stroke-width: 0px" />
-  {#if waiting}
-    <svg
-      class="center"
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      stroke="#000"
-      viewBox="0 0 24 24"
-      ><g
-        ><circle cx="12" cy="12" r="9.5" fill="none" stroke-width="1" stroke-linecap="round"
-          ><animate
-            attributeName="stroke-dasharray"
-            dur="1.5s"
-            calcMode="spline"
-            values="0 150;42 150;42 150;42 150"
-            keyTimes="0;0.475;0.95;1"
-            keySplines="0.42,0,0.58,1;0.42,0,0.58,1;0.42,0,0.58,1"
+  {#if !loadeddata}
+    {#if waiting || !paused}
+      <svg
+        class="center"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        stroke="#000"
+        viewBox="0 0 24 24"
+        ><g
+          ><circle cx="12" cy="12" r="9.5" fill="none" stroke-width="1" stroke-linecap="round"
+            ><animate
+              attributeName="stroke-dasharray"
+              dur="1.5s"
+              calcMode="spline"
+              values="0 150;42 150;42 150;42 150"
+              keyTimes="0;0.475;0.95;1"
+              keySplines="0.42,0,0.58,1;0.42,0,0.58,1;0.42,0,0.58,1"
+              repeatCount="indefinite"
+            /><animate
+              attributeName="stroke-dashoffset"
+              dur="1.5s"
+              calcMode="spline"
+              values="0;-16;-59;-59"
+              keyTimes="0;0.475;0.95;1"
+              keySplines="0.42,0,0.58,1;0.42,0,0.58,1;0.42,0,0.58,1"
+              repeatCount="indefinite"
+            /></circle
+          ><animateTransform
+            attributeName="transform"
+            type="rotate"
+            dur="2s"
+            values="0 12 12;360 12 12"
             repeatCount="indefinite"
-          /><animate
-            attributeName="stroke-dashoffset"
-            dur="1.5s"
-            calcMode="spline"
-            values="0;-16;-59;-59"
-            keyTimes="0;0.475;0.95;1"
-            keySplines="0.42,0,0.58,1;0.42,0,0.58,1;0.42,0,0.58,1"
-            repeatCount="indefinite"
-          /></circle
-        ><animateTransform
-          attributeName="transform"
-          type="rotate"
-          dur="2s"
-          values="0 12 12;360 12 12"
-          repeatCount="indefinite"
-        /></g
-      ></svg
-    >
-  {:else if !loadeddata}
-    <button
-      on:mousedown={mousedownHandler}
-      class="play-pause play-pause-controllable center paused"
-      aria-label={$_('text.play')}
-      style="position: absolute; padding: 0; left: 0px; width: 11px; height: 13px;"
-    >
-      <div class="background-tint">
-        <div class="blur" />
-        <div class="tint" />
-      </div>
-      <picture
-        style="
+          /></g
+        ></svg
+      >
+    {:else}
+      <button
+        on:mousedown={mousedownHandler}
+        class="play-pause play-pause-controllable center paused"
+        aria-label={$_('text.play')}
+        style="position: absolute; padding: 0; left: 0px; width: 11px; height: 13px;"
+      >
+        <div class="background-tint">
+          <div class="blur" />
+          <div class="tint" />
+        </div>
+        <picture
+          style="
           width: 11px;
           height: 13px;
           mask-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMTFweCIgaGVpZ2h0PSIxM3B4IiB2aWV3Qm94PSIwIDAgMTEgMTMiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDQzLjEgKDM5MDEyKSAtIGh0dHA6Ly93d3cuYm9oZW1pYW5jb2RpbmcuY29tL3NrZXRjaCAtLT4KICAgIDx0aXRsZT5fQXNzZXRzL0lubGluZS9QbGF5PC90aXRsZT4KICAgIDxkZXNjPkNyZWF0ZWQgd2l0aCBTa2V0Y2guPC9kZXNjPgogICAgPGRlZnM+PC9kZWZzPgogICAgPGcgaWQ9Ik1lZGlhLUNvbnRyb2wtU3ltYm9scyIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9Il9Bc3NldHMvSW5saW5lL1BsYXkiIGZpbGw9IiMwMDAwMDAiPgogICAgICAgICAgICA8cGF0aCBkPSJNMCwwLjYwNTA2ODY5MiBDMCwwLjA1ODE3MzcxMjEgMC4zODI1MTY0ODgsLTAuMTU2MTA0Nzg5IDAuODY0MTIyNjUsMC4xMzIzMDE4ODcgTDEwLjYzMjU5ODUsNS45ODIwODkyOCBDMTEuMTA5ODQwMyw2LjI2Nzg4MjM3IDExLjExNDIwNDcsNi43Mjg2MTkxMyAxMC42MzI1OTg1LDcuMDE3MDEwOTcgTDAuODY0MTIyNjUsMTIuODY2NDk3NSBDMC4zODY4ODA4ODksMTMuMTUyMjc1OSAwLDEyLjk0MTQxNjYgMCwxMi4zOTM3MDQxIEwwLDAuNjA1MDY4NjkyIFoiIGlkPSJSZWN0YW5nbGUiPjwvcGF0aD4KICAgICAgICA8L2c+CiAgICA8L2c+Cjwvc3ZnPg=='); width: 11px; height: 13px;
           -webkit-mask-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMTFweCIgaGVpZ2h0PSIxM3B4IiB2aWV3Qm94PSIwIDAgMTEgMTMiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDQzLjEgKDM5MDEyKSAtIGh0dHA6Ly93d3cuYm9oZW1pYW5jb2RpbmcuY29tL3NrZXRjaCAtLT4KICAgIDx0aXRsZT5fQXNzZXRzL0lubGluZS9QbGF5PC90aXRsZT4KICAgIDxkZXNjPkNyZWF0ZWQgd2l0aCBTa2V0Y2guPC9kZXNjPgogICAgPGRlZnM+PC9kZWZzPgogICAgPGcgaWQ9Ik1lZGlhLUNvbnRyb2wtU3ltYm9scyIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9Il9Bc3NldHMvSW5saW5lL1BsYXkiIGZpbGw9IiMwMDAwMDAiPgogICAgICAgICAgICA8cGF0aCBkPSJNMCwwLjYwNTA2ODY5MiBDMCwwLjA1ODE3MzcxMjEgMC4zODI1MTY0ODgsLTAuMTU2MTA0Nzg5IDAuODY0MTIyNjUsMC4xMzIzMDE4ODcgTDEwLjYzMjU5ODUsNS45ODIwODkyOCBDMTEuMTA5ODQwMyw2LjI2Nzg4MjM3IDExLjExNDIwNDcsNi43Mjg2MTkxMyAxMC42MzI1OTg1LDcuMDE3MDEwOTcgTDAuODY0MTIyNjUsMTIuODY2NDk3NSBDMC4zODY4ODA4ODksMTMuMTUyMjc1OSAwLDEyLjk0MTQxNjYgMCwxMi4zOTM3MDQxIEwwLDAuNjA1MDY4NjkyIFoiIGlkPSJSZWN0YW5nbGUiPjwvcGF0aD4KICAgICAgICA8L2c+CiAgICA8L2c+Cjwvc3ZnPg=='); width: 11px; height: 13px;
         "
-      />
-    </button>
-  {/if}
-  {#if loadeddata}
+        />
+      </button>
+    {/if}
+  {:else}
     <div
       class="media-controls inline mac uses-ltr-user-interface-layout-direction play-pause-controllable"
       style="width: {width}px; height: {height}px"
