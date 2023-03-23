@@ -50,8 +50,8 @@
   });
 
   $: if (data.video) videos.add([data.video]);
-  $: user = getUserById($session.user?.id);
-  $: video = getVideoById($page.params.slug);
+  $: user = $users.find((u) => u.id === $session.user?.id);
+  $: video = $videos.find((v) => v.id === $page.params.slug);
   $: video_id = video?.id; // debounce video
   $: user_id = user?.id; // debounce user
   $: promise =
@@ -85,14 +85,6 @@
         time
       );
     }
-  }
-
-  function getVideoById(id: string) {
-    return $videos.find(v => v.id === id)
-  }
-
-  function getUserById(id: string) {
-    return $users.find(u => u.id === id)
   }
 
   function savePlayhead(
@@ -160,7 +152,7 @@
       '%c CANPLAY   %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      detail.title
+      detail.video.title
     );
   }
 
@@ -171,7 +163,7 @@
       '%c EMPTIED   %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      detail.title
+      detail.video.title
     );
   }
 
@@ -181,19 +173,20 @@
       '%c LOADSTART %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      detail.title
+      detail.video.title
     );
   }
 
   function loadeddataHandler({ detail }: CustomEvent) {
-    loadeddata = true
-    playhead = hasPrivileges ? detail.playhead : joindata.playhead;
+    loadeddata = true;
+    console.log(video?.playhead)
+    playhead = hasPrivileges ? video?.playhead : joindata.playhead;
     info(
       4,
       '%c LOADEDDATA%c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      detail.title
+      detail.video.title
     );
   }
 
@@ -203,7 +196,7 @@
       '%c ABORTED   %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      detail.title
+      detail.video.title
     );
   }
 
