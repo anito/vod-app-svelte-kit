@@ -50,7 +50,7 @@
   });
 
   function watchPlayheadForPause(time: number, delay: number) {
-    if (canplay) {
+    if (paused && canplay) {
       clearTimeout(timeoutIdForPause);
       timeoutIdForPause = setTimeout(
         (last: number) => {
