@@ -36,10 +36,11 @@
   let scrubbing: boolean;
   let url: string | null;
   let timeoutIdForWait: number | undefined;
+  let timeoutIdForPause: number | undefined;
   let canplay = false;
 
   $: watchForWait(playhead);
-  $: watchPaused(paused);
+  $: watchForPause(paused);
   $: poster = poster || emptyPoster;
   $: buffer && (buffered = videoElement?.buffered);
 
@@ -48,15 +49,18 @@
     window.addEventListener('video:poster:changed', videoPosterChangedHandler);
   });
 
-  function watchPaused(paused: boolean) {
+  function watchForPause(paused: boolean) {
     if (paused && canplay) {
-      // Unload and rewind playhead to start if video has ended
-      const ended = playhead === duration;
-      dispatch('player:saveplayhead', {
-        id: video.id,
-        playhead: ended ? 0 : playhead,
-        callback: ended && { onsuccess: () => dispatch('player:unload', videoElement) }
-      });
+      clearTimeout(timeoutIdForPause);
+      timeoutIdForPause = setTimeout(() => {
+        // Unload and rewind playhead to start if video has ended
+        const ended = playhead === duration;
+        dispatch('player:saveplayhead', {
+          id: video.id,
+          playhead: ended ? 0 : playhead,
+          callback: ended && { onsuccess: () => dispatch('player:unload', videoElement) }
+        });
+      }, 200);
     }
   }
 
