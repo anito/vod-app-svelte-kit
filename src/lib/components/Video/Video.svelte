@@ -39,8 +39,8 @@
   let timeoutIdForPause: ReturnType<typeof setTimeout>;
   let canplay = false;
 
-  $: watchPlayheadForWait(playhead);
-  $: watchPlayheadForPause(playhead, paused);
+  $: watchPlayheadForWait(playhead, 1000);
+  $: watchPlayheadForPause(playhead, 200);
   $: poster = poster || emptyPoster;
   $: buffer && (buffered = videoElement?.buffered);
 
@@ -49,39 +49,39 @@
     window.addEventListener('video:poster:changed', videoPosterChangedHandler);
   });
 
-  function watchPlayheadForPause(time: number, paused: boolean) {
-    if (paused && canplay) {
+  function watchPlayheadForPause(time: number, delay: number) {
+    if (canplay) {
       clearTimeout(timeoutIdForPause);
       timeoutIdForPause = setTimeout(
-        (pausetime: number) => {
-          if (pausetime === time) {
+        (last: number) => {
+          if (last === time) {
             // Unload and rewind playhead to start if video has ended
             const ended = time === duration;
             dispatch('player:saveplayhead', {
               id: video.id,
-              playhead: ended ? 0 : time,
+              playhead: ended ? 0 : last,
               callback: ended && { onsuccess: () => dispatch('player:unload', videoElement) }
             });
           }
         },
-        200,
+        delay,
         time
       );
     }
   }
 
   /**
-   * Although there is a build in 'waiting' event the following emulates the lack of data behaviour
-   * (e.g. for use with a waiting spinner)
+   * The build in 'waiting' event doesn't seem reliable enough
+   * (for use with a waiting spinner)
    */
-  function watchPlayheadForWait(time: number) {
+  function watchPlayheadForWait(time: number, delay: number) {
     waiting = false;
     clearTimeout(timeoutIdForWait);
     timeoutIdForWait = setTimeout(
       (previously: number) => {
         waiting = paused ? false : previously === time;
       },
-      1000,
+      delay,
       time
     );
   }

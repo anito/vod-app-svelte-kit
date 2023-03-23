@@ -27,7 +27,6 @@
   const { info }: any = getContext('logger');
 
   $: user = $users?.find((user) => user?.id === $session.user?.id);
-  $: user && (canplay = false);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: joinData = $users
     .find((u) => u?.id === user?.id)
@@ -130,6 +129,7 @@
   }
 
   function abortedHandler(event: CustomEvent) {
+    console.log('aborted...')
     info(
       4,
       '%c ABORTED   %c %s',
