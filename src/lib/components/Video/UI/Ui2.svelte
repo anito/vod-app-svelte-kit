@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher, onMount, tick } from 'svelte';
-  import { mute } from '..';
+  import { format, mute } from '..';
   import { _ } from 'svelte-i18n';
 
   export let id: string;
@@ -50,17 +50,6 @@
   function resize() {
     width = container?.clientWidth || 0;
     height = container?.clientHeight || 0;
-  }
-
-  function format(seconds: number, prefix = '') {
-    if (isNaN(seconds)) return '...';
-
-    const minutes = Math.floor(seconds / 60);
-    seconds = Math.floor(seconds % 60);
-    const printMinutes = minutes < 10 ? '0' + minutes : minutes;
-    const printSeconds = seconds < 10 ? '0' + seconds : seconds;
-
-    return `${prefix}${printMinutes}:${printSeconds}`;
   }
 
   function display(time: number) {

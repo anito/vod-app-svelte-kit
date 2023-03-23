@@ -7,7 +7,7 @@
   import type { Video as VideoType } from '$lib/classes/repos/types';
   import type { Player } from '$lib/utils/module-vars';
 
-  export let src: string | undefined = undefined;
+  export let src: string | null = null;
   export let poster: string | undefined = undefined;
   export let video: VideoType;
   export let type = getExt(video.src);
@@ -78,7 +78,7 @@
   }
 </script>
 
-{#if !canplay && video.duration}
+{#if video.duration}
   <div class="duration">
     {video.duration?.toHHMMSS()}
   </div>
@@ -94,7 +94,6 @@
   on:player:rwd
   on:player:unload={unloadStreamHandler}
   on:player:paused
-  on:player:canplay={() => (canplay = true)}
   on:player:canplay
   on:player:emptied
   on:player:aborted
@@ -141,7 +140,7 @@
   .progress-bar > .value {
     background-color: var(--primary);
     position: absolute;
-    transition: all 0.2s;
+    transition: width 0.02s;
     width: var(--progress);
     height: 100%;
   }

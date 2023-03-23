@@ -21,6 +21,7 @@
   let timeoutIdSavePlayhead: ReturnType<typeof setTimeout>;
   let poster: string | undefined;
   let canplay = false;
+  let loadeddata: boolean = false;
   let paused = true;
 
   const dispatch = createEventDispatcher();
@@ -43,19 +44,13 @@
     if (!paused) savePlayhead(video.id, playhead);
   });
 
-  function canPlayHandler() {
-    if (canplay) return;
-    canplay = true;
-    playhead = hasPrivileges ? video?.playhead : joinData?.playhead;
-  }
-
   // set playhead to the last saved position when the video is ready to play
   function savePlayhead(
     id: string,
     playhead: number,
     callback: { onsuccess?: any; onerror?: any } = {}
   ) {
-    if (!canplay) return;
+    if (!loadeddata) return;
 
     clearTimeout(timeoutIdSavePlayhead);
     const { onsuccess, onerror } = { onsuccess: () => {}, onerror: () => {}, ...callback };
@@ -98,46 +93,59 @@
     savePlayhead(id, playhead, callback);
   }
 
-  function emptiedHandler(event: CustomEvent) {
+  function emptiedHandler({ detail }: CustomEvent) {
+    loadeddata = false;
     info(
       4,
       '%c EMPTIED   %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      event.detail.title
+      detail.video.title
     );
   }
 
-  function loadstartHandler(event: CustomEvent) {
+  function loadstartHandler({ detail }: CustomEvent) {
     info(
       4,
       '%c LOADSTART %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      event.detail.title
+      detail.video.title
     );
   }
 
-  function handleLoadedData(event: CustomEvent) {
+  function canplayHandler({ detail }: CustomEvent) {
+    info(
+      4,
+      '%c CANPLAY%c %s',
+      'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
+      'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
+      detail.video.title
+    );
+  }
+  
+  function loadeddataHandler({ detail }: CustomEvent) {
+    loadeddata = true;
+    playhead = hasPrivileges ? video?.playhead : joinData?.playhead;
     info(
       4,
       '%c LOADEDDATA%c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      event.detail.title
+      detail.video.title
     );
   }
 
-  function abortedHandler(event: CustomEvent) {
+  function abortedHandler({ detail }: CustomEvent) {
+    paused = true;
+    loadeddata = false;
     info(
       4,
       '%c ABORTED   %c %s',
       'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
       'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      event.detail.title
+      detail.video.title
     );
-    paused = true;
-    canplay = false;
   }
 
   function setFocus(node: HTMLElement) {
@@ -187,10 +195,10 @@
           bind:paused
           bind:playhead
           on:player:aborted={abortedHandler}
-          on:player:canplay={canPlayHandler}
+          on:player:canplay={canplayHandler}
           on:player:emptied={emptiedHandler}
           on:player:loadstart={loadstartHandler}
-          on:player:loadeddata={handleLoadedData}
+          on:player:loadeddata={loadeddataHandler}
           on:player:saveplayhead={savePlayheadHandler}
           customUI
           {poster}

@@ -6,7 +6,7 @@
   import { getContext, onMount } from 'svelte';
   import { session, videos, users } from '$lib/stores';
   import { FlexContainer } from '$lib/components';
-  import VideoPlayer from '$lib/components/Video';
+  import VideoPlayer, { format } from '$lib/components/Video';
   import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, emit } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import type { PageData } from './$types';
@@ -20,7 +20,7 @@
   const curtainAnimDuration = 500;
 
   let paused: boolean;
-  let canplay: boolean;
+  let loadeddata: boolean = false;
   let playhead: number;
   let timeoutIdWatchPlayhead: ReturnType<typeof setTimeout>;
   let timeoutIdSavePlayhead: ReturnType<typeof setTimeout>;
@@ -39,7 +39,9 @@
   beforeNavigate(({ to, from }) => {
     withinRoute = to?.route.id === $page.route.id;
     const id = from?.params?.slug;
-    if (id && !paused) savePlayhead(id, playhead);
+    if (id && !paused) {
+      savePlayhead(id, playhead);
+    }
   });
 
   onMount(() => {
@@ -48,8 +50,8 @@
   });
 
   $: if (data.video) videos.add([data.video]);
-  $: user = $users?.find((user) => user.id === $session.user?.id);
-  $: video = $videos.find((v) => v.id === $page.params.slug);
+  $: user = getUserById($session.user?.id);
+  $: video = getVideoById($page.params.slug);
   $: video_id = video?.id; // debounce video
   $: user_id = user?.id; // debounce user
   $: promise =
@@ -62,7 +64,7 @@
       }
     }).catch() as Promise<number>);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
-  $: joinData = $users
+  $: joindata = $users
     .find((u: User) => u.id === user?.id)
     ?.videos.find((v: Video) => v.id === video?.id)?._joinData;
   $: video?.image_id
@@ -73,7 +75,7 @@
   $: playing = !paused;
 
   function watchPlayhead(time: number, paused: boolean) {
-    if (paused && canplay) {
+    if (paused) {
       clearTimeout(timeoutIdWatchPlayhead);
       timeoutIdWatchPlayhead = setTimeout(
         (pausetime: number) => {
@@ -85,12 +87,20 @@
     }
   }
 
+  function getVideoById(id: string) {
+    return $videos.find(v => v.id === id)
+  }
+
+  function getUserById(id: string) {
+    return $users.find(u => u.id === id)
+  }
+
   function savePlayhead(
     id: string,
     playhead: number,
     callback: { onsuccess?: any; onerror?: any } = {}
   ) {
-    if (!canplay) return;
+    if (!loadeddata) return;
 
     clearTimeout(timeoutIdSavePlayhead);
     const { onsuccess, onerror } = { onsuccess: () => {}, onerror: () => {}, ...callback };
@@ -117,7 +127,7 @@
         videos: [
           {
             id,
-            _joinData: { ...joinData, playhead }
+            _joinData: { ...joindata, playhead }
           },
           ...associated
         ]
@@ -136,64 +146,65 @@
     }
   }
 
-  // set playhead to the last saved position when the video is ready to play
-  function handleCanPlay() {
-    if (canplay) return;
-    canplay = true;
-    playhead = hasPrivileges ? video?.playhead : joinData?.playhead;
-  }
-
-  function handleEmptied(event: CustomEvent) {
-    info(
-      4,
-      '%c EMPTIED   %c %s',
-      'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
-      'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      event.detail.title
-    );
-  }
-
-  function handleLoadStart(event: CustomEvent) {
-    info(
-      4,
-      '%c LOADSTART %c %s',
-      'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
-      'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      event.detail.title
-    );
-  }
-
-  function handleLoadedData(event: CustomEvent) {
-    info(
-      4,
-      '%c LOADEDDATA%c %s',
-      'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
-      'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      event.detail.title
-    );
-  }
-
-  function handleAborted(event: CustomEvent) {
-    info(
-      4,
-      '%c ABORTED   %c %s',
-      'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
-      'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
-      event.detail.title
-    );
-    // in Chrome we have to limit streams due to Chromes limitation
-    // this is done by emptying src attribute on the video which forgets the playheads position
-    // to set the videos canPlay flag to false will re-adjust playhead to last saved position when video canPlay again
-    paused = true;
-    canplay = false;
-  }
-
   function setCurtainText() {
     if (video) {
       curVideo = video;
       title = video.title || video.src;
       description = video.description;
     }
+  }
+
+  function canplayHandler({ detail }: CustomEvent) {
+    info(
+      4,
+      '%c CANPLAY   %c %s',
+      'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
+      'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
+      detail.title
+    );
+  }
+
+  function emptiedHandler({ detail }: CustomEvent) {
+    loadeddata = false;
+    info(
+      4,
+      '%c EMPTIED   %c %s',
+      'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
+      'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
+      detail.title
+    );
+  }
+
+  function loadstartHandler({ detail }: CustomEvent) {
+    info(
+      4,
+      '%c LOADSTART %c %s',
+      'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
+      'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
+      detail.title
+    );
+  }
+
+  function loadeddataHandler({ detail }: CustomEvent) {
+    loadeddata = true
+    playhead = hasPrivileges ? detail.playhead : joindata.playhead;
+    info(
+      4,
+      '%c LOADEDDATA%c %s',
+      'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
+      'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
+      detail.title
+    );
+  }
+
+  function abortedHandler({ detail }: CustomEvent) {
+    info(
+      4,
+      '%c ABORTED   %c %s',
+      'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
+      'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
+      detail.title
+    );
   }
 
   function outrostartHandler() {
@@ -270,11 +281,11 @@
           class="video-player flex flex-1"
           bind:paused
           bind:playhead
-          on:player:canplay={handleCanPlay}
-          on:player:emptied={handleEmptied}
-          on:player:loadstart={handleLoadStart}
-          on:player:aborted={handleAborted}
-          on:player:loadeddata={handleLoadedData}
+          on:player:canplay_={canplayHandler}
+          on:player:emptied={emptiedHandler}
+          on:player:loadstart={loadstartHandler}
+          on:player:aborted={abortedHandler}
+          on:player:loadeddata={loadeddataHandler}
           on:player:saveplayhead={savePlayheadHandler}
           video={curVideo}
           {customUI}

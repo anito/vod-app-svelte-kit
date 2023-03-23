@@ -7,7 +7,7 @@
   import type { Video } from '$lib/classes/repos/types';
   import type { Player } from '$lib/utils/module-vars';
 
-  export let src: string | undefined;
+  export let src: string | null;
   export let type: string | undefined;
   export let poster: string | undefined;
   export let videoElement: HTMLVideoElement;
@@ -34,13 +34,11 @@
   let buffered: TimeRanges;
   let buffer: TimeRanges;
   let scrubbing: boolean;
-  let url: string | null;
   let timeoutIdForWait: number | undefined;
   let timeoutIdForPause: number | undefined;
-  let canplay = false;
 
   $: watchForWait(playhead);
-  $: watchForPause(paused);
+  $: watchForPause(playhead, paused);
   $: poster = poster || emptyPoster;
   $: buffer && (buffered = videoElement?.buffered);
 
@@ -49,8 +47,8 @@
     window.addEventListener('video:poster:changed', videoPosterChangedHandler);
   });
 
-  function watchForPause(paused: boolean) {
-    if (paused && canplay) {
+  function watchForPause(playhead: number, paused: boolean) {
+    if (paused) {
       clearTimeout(timeoutIdForPause);
       timeoutIdForPause = setTimeout(() => {
         // Unload and rewind playhead to start if video has ended
@@ -104,8 +102,8 @@
   }
 
   async function prepare() {
-    if (!videoElement.getAttribute('src') && url) {
-      videoElement.setAttribute('src', url);
+    if (!videoElement.getAttribute('src') && src) {
+      videoElement.setAttribute('src', src);
     }
   }
 
@@ -221,29 +219,32 @@
     setTimeout(cancel, 500); // prevent start/stop after scrubbing
   }
 
-  function canPlayHandler() {
-    canplay = true;
-    dispatch('player:canplay', video);
+  function canplayHandler(e: Event) {
+    const target = e.target as HTMLVideoElement
+    dispatch('player:canplay', {target, video});
   }
 
-  function loadstartHandler() {
-    dispatch('player:loadstart', video);
+  function loadstartHandler(e: Event) {
+    const target = e.target as HTMLVideoElement
+    dispatch('player:loadstart', {target, video});
   }
 
-  function loadedDataHandler() {
+  function loadeddataHandler(e: Event) {
+    const target = e.target as HTMLVideoElement
     loadeddata = true;
-    url = videoElement.getAttribute('src');
-    dispatch('player:loadeddata', video);
+    src = target.getAttribute('src');
+    dispatch('player:loadeddata', {target, video});
   }
 
-  function emptiedHandler() {
+  function emptiedHandler(e: Event) {
+    const target = e.target as HTMLVideoElement
     loadeddata = false;
-    dispatch('player:emptied', video);
+    dispatch('player:emptied', {target, video});
   }
 
-  function abortedHandler() {
-    canplay = false;
-    dispatch('player:aborted', video);
+  function abortedHandler(e: Event) {
+    const target = e.target as HTMLVideoElement
+    dispatch('player:aborted', {target, video});
   }
 
   function pictureInPictureHandler() {
@@ -274,8 +275,8 @@
     bind:paused
     bind:buffered={buffer}
     on:loadstart={loadstartHandler}
-    on:canplay={canPlayHandler}
-    on:loadeddata={loadedDataHandler}
+    on:canplay={canplayHandler}
+    on:loadeddata={loadeddataHandler}
     on:emptied={emptiedHandler}
     on:abort={abortedHandler}
     on:pause={pausedHandler}
