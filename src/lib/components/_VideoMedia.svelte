@@ -129,7 +129,6 @@
   }
 
   function abortedHandler(event: CustomEvent) {
-    console.log('aborted...')
     info(
       4,
       '%c ABORTED   %c %s',
