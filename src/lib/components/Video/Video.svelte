@@ -36,11 +36,10 @@
   let scrubbing: boolean;
   let url: string | null;
   let timeoutIdForWait: number | undefined;
-  let timeoutIdForPause: ReturnType<typeof setTimeout>;
   let canplay = false;
 
-  $: watchPlayheadForWait(playhead, 1000);
-  $: watchPlayheadForPause(playhead, 200);
+  $: watchForWait(playhead);
+  $: watchPaused(paused);
   $: poster = poster || emptyPoster;
   $: buffer && (buffered = videoElement?.buffered);
 
@@ -49,24 +48,15 @@
     window.addEventListener('video:poster:changed', videoPosterChangedHandler);
   });
 
-  function watchPlayheadForPause(time: number, delay: number) {
+  function watchPaused(paused: boolean) {
     if (paused && canplay) {
-      clearTimeout(timeoutIdForPause);
-      timeoutIdForPause = setTimeout(
-        (last: number) => {
-          if (last === time) {
-            // Unload and rewind playhead to start if video has ended
-            const ended = time === duration;
-            dispatch('player:saveplayhead', {
-              id: video.id,
-              playhead: ended ? 0 : last,
-              callback: ended && { onsuccess: () => dispatch('player:unload', videoElement) }
-            });
-          }
-        },
-        delay,
-        time
-      );
+      // Unload and rewind playhead to start if video has ended
+      const ended = playhead === duration;
+      dispatch('player:saveplayhead', {
+        id: video.id,
+        playhead: ended ? 0 : playhead,
+        callback: ended && { onsuccess: () => dispatch('player:unload', videoElement) }
+      });
     }
   }
 
@@ -74,14 +64,14 @@
    * The build in 'waiting' event doesn't seem reliable enough
    * (for use with a waiting spinner)
    */
-  function watchPlayheadForWait(time: number, delay: number) {
+  function watchForWait(time: number) {
     waiting = false;
     clearTimeout(timeoutIdForWait);
     timeoutIdForWait = setTimeout(
       (previously: number) => {
         waiting = paused ? false : previously === time;
       },
-      delay,
+      1000,
       time
     );
   }
