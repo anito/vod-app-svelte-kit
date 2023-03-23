@@ -15,7 +15,7 @@
 <Textfield class="textfield-search {className}" bind:value={search} {label} {style}>
   <Icon
     role="button"
-    class="material-icons-outlined cancel-search"
+    class="material-icons cancel-search"
     slot="trailingIcon"
     on:click={() => (search = '')}>{search.length && 'cancel'}</Icon
   >
