@@ -49,7 +49,6 @@
 
   $: if (data.video) videos.add([data.video]);
   $: user = $users?.find((user) => user.id === $session.user?.id);
-  $: user && (canplay = false);
   $: video = $videos.find((v) => v.id === $page.params.slug);
   $: video_id = video?.id; // debounce video
   $: user_id = user?.id; // debounce user
