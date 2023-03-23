@@ -22,8 +22,8 @@
   const isChrome = $page.data.ua.name === 'Chrome';
 
   let player: Player;
-  let canplay = false;
   let duration: number;
+  let loadeddata: boolean = false;
   let element: HTMLVideoElement;
   let className = '';
 
@@ -78,7 +78,7 @@
   }
 </script>
 
-{#if video.duration}
+{#if !loadeddata && video.duration}
   <div class="duration">
     {video.duration?.toHHMMSS()}
   </div>
@@ -95,9 +95,11 @@
   on:player:unload={unloadStreamHandler}
   on:player:paused
   on:player:canplay
+  on:player:emptied={() => (loadeddata = false)}
   on:player:emptied
   on:player:aborted
   on:player:loadstart
+  on:player:loadeddata={() => (loadeddata = true)}
   on:player:loadeddata
   on:player:saveplayhead
   {customUI}
@@ -140,7 +142,7 @@
   .progress-bar > .value {
     background-color: var(--primary);
     position: absolute;
-    transition: width 0.02s;
+    transition: width 0.08s;
     width: var(--progress);
     height: 100%;
   }

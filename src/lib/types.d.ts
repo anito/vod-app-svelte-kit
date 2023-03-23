@@ -29,6 +29,9 @@ declare global {
     'media:delete': CustomEvent;
     'media:deleteMany': CustomEvent;
   }
+  interface HTMLElementEventMap {
+    'ui:show': CustomEvent;
+  }
 
   interface Number {
     /**

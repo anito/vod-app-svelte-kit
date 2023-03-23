@@ -18,8 +18,9 @@
   }
 
   .error {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
       Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family: var(--font-family);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -55,7 +56,8 @@
   }
 
   .message h1 {
-    font-weight: 400;
+    font-family: var(--font-family);
+    font-weight: 200;
     font-size: 1em;
     margin: 0;
   }

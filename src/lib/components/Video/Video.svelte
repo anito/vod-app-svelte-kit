@@ -6,6 +6,7 @@
   import { _ } from 'svelte-i18n';
   import type { Video } from '$lib/classes/repos/types';
   import type { Player } from '$lib/utils/module-vars';
+  import { emit } from '$lib/utils';
 
   export let src: string | null;
   export let type: string | undefined;
@@ -36,6 +37,7 @@
   let scrubbing: boolean;
   let timeoutIdForWait: number | undefined;
   let timeoutIdForPause: number | undefined;
+  let ui: HTMLDivElement;
 
   $: watchForWait(playhead);
   $: watchForPause(playhead, paused);
@@ -47,15 +49,16 @@
     window.addEventListener('video:poster:changed', videoPosterChangedHandler);
   });
 
-  function watchForPause(playhead: number, paused: boolean) {
+  function watchForPause(ph: number, paused: boolean) {
     if (paused) {
       clearTimeout(timeoutIdForPause);
       timeoutIdForPause = setTimeout(() => {
         // Unload and rewind playhead to start if video has ended
-        const ended = playhead === duration;
+        const ended = ph === duration;
+        playhead = ended ? 0 : ph;
         dispatch('player:saveplayhead', {
           id: video.id,
-          playhead: ended ? 0 : playhead,
+          playhead,
           callback: ended && { onsuccess: () => dispatch('player:unload', videoElement) }
         });
       }, 200);
@@ -121,16 +124,17 @@
     target?.addEventListener('keyup', keyupHandler);
 
     const code = e.code;
-    const getCallback = () => {
-      if (code === 'ArrowLeft') return () => --playhead;
-      if (code === 'ArrowRight') return () => ++playhead;
+    const getCallback = (speed: number) => {
+      if (code === 'ArrowLeft') return () => ui.dispatchEvent(new CustomEvent('ui:show')) && (playhead -= speed);
+      if (code === 'ArrowRight') return () => ui.dispatchEvent(new CustomEvent('ui:show')) && (playhead += speed);
       return () => void 0;
     };
 
     if (code === 'Space') {
       playPauseHandler();
+      ui.dispatchEvent(new CustomEvent('ui:show', {cancelable: true}));
     } else {
-      let callback = getCallback();
+      let callback = getCallback(e.shiftKey ? 10 : 1);
       intervalId = setInterval(callback, 100);
       callback();
     }
@@ -220,31 +224,31 @@
   }
 
   function canplayHandler(e: Event) {
-    const target = e.target as HTMLVideoElement
-    dispatch('player:canplay', {target, video});
+    const target = e.target as HTMLVideoElement;
+    dispatch('player:canplay', { target, video });
   }
 
   function loadstartHandler(e: Event) {
-    const target = e.target as HTMLVideoElement
-    dispatch('player:loadstart', {target, video});
+    const target = e.target as HTMLVideoElement;
+    dispatch('player:loadstart', { target, video });
   }
 
   function loadeddataHandler(e: Event) {
-    const target = e.target as HTMLVideoElement
+    const target = e.target as HTMLVideoElement;
     loadeddata = true;
     src = target.getAttribute('src');
-    dispatch('player:loadeddata', {target, video});
+    dispatch('player:loadeddata', { target, video });
   }
 
   function emptiedHandler(e: Event) {
-    const target = e.target as HTMLVideoElement
+    const target = e.target as HTMLVideoElement;
     loadeddata = false;
-    dispatch('player:emptied', {target, video});
+    dispatch('player:emptied', { target, video });
   }
 
   function abortedHandler(e: Event) {
-    const target = e.target as HTMLVideoElement
-    dispatch('player:aborted', {target, video});
+    const target = e.target as HTMLVideoElement;
+    dispatch('player:aborted', { target, video });
   }
 
   function pictureInPictureHandler() {
@@ -303,6 +307,7 @@
       on:rwd={rewindHandler}
       on:fwd={forewardHandler}
       bind:time={playhead}
+      bind:ui
       {duration}
       {paused}
       {buffered}

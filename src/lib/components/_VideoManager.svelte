@@ -139,7 +139,7 @@
 
 {#if $session.user}
   {#if $videos?.length}
-    <ul
+    <ul tabindex="-1" on:keydown|preventDefault
       bind:this={videoList}
       class="items-list grid lg:grid-cols-3 md:grid-cols-2 grid-flow-row gap-4"
     >

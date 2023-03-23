@@ -10,6 +10,7 @@
   export let waiting: boolean;
   export let paused: boolean;
   export let buffered: TimeRanges;
+  export let ui: HTMLDivElement;
 
   const dispatch = createEventDispatcher();
 
@@ -40,12 +41,23 @@
       (buffered?.length && (buffered.end(buffered.length - 1) * 100) / duration) || 0;
   }
 
-  onMount(async () => {
-    await tick();
+  onMount(() => {
     container = document.getElementById(id);
     resize();
     window.addEventListener('resize', resizeHandler);
+    ui.addEventListener('ui:show', showUI);
+    return () => {
+      window.removeEventListener('resize', resizeHandler);
+      ui.removeEventListener('ui:show', showUI);
+    };
   });
+
+  function showUI(e: CustomEvent) {
+    e.stopPropagation();
+    e.preventDefault();
+    showControls();
+    false
+  }
 
   function resize() {
     width = container?.clientWidth || 0;
@@ -90,6 +102,7 @@
   }
 
   function mousedownHandler(event: MouseEvent) {
+    showControls();
     dispatch('ui:mousedown', event);
   }
 
@@ -125,12 +138,13 @@
   style:--primary-glyph-color={'rgba(255, 255, 255, 0.75)'}
   style:--secondary-glyph-color={'rgba(255, 255, 255, 0.55)'}
   style:--scrubber-margin={'5px'}
-  style:--inline-controls-bar-height={'31px'}
+  style:--inline-controls-bar-height={'41px'}
   class="media-controls-container"
   {id}
+  bind:this={ui}
 >
   <div class="visible-controls-bar" style="display: none; stroke-width: 0px" />
-  {#if !loadeddata || waiting}
+  {#if !loadeddata || waiting}
     {#if !paused}
       <svg
         class="center"
@@ -170,14 +184,10 @@
     {:else}
       <button
         on:mousedown={mousedownHandler}
-        class="play-pause play-pause-controllable center paused"
+        class="play-pause play-pause-controllable center backdrop circle"
         aria-label={$_('text.play')}
         style="position: absolute; padding: 0; left: 0px; width: 11px; height: 13px;"
       >
-        <div class="background-tint">
-          <div class="blur" />
-          <div class="tint" />
-        </div>
         <picture
           style="
           width: 11px;
@@ -206,15 +216,11 @@
     >
       <div
         role="group"
-        class="controls-bar top-left"
+        class="controls-bar top-left backdrop"
         style="width: 82px"
         on:mouseenter={removeListenerHandler}
         on:mouseleave={addListenerHandler}
       >
-        <div class="background-tint">
-          <div class="blur" />
-          <div class="tint" />
-        </div>
         <div class="buttons-container" style="width: 82px">
           <button
             disabled={!duration}
@@ -253,14 +259,10 @@
       </div>
       <div
         role="group"
-        class="controls-bar bottom"
+        class="controls-bar bottom backdrop"
         aria-label={$_('text.video-controls')}
-        style="width: {width - 2 * 6}px; top: {height - 40}px"
+        style="width: {width - 2 * 6}px; top: {height - 50}px"
       >
-        <div class="background-tint">
-          <div class="blur" />
-          <div class="tint" />
-        </div>
         <div class="buttons-container left" style="width: 101px">
           <button
             on:click={() => dispatch('rwd', 15)}
@@ -411,10 +413,6 @@
           </button>
         </div>
         <div class="volume-slider-container" style="left: 1016px; top: 920px; display: none;">
-          <div class="background-tint">
-            <div class="blur" />
-            <div class="tint" />
-          </div>
           <div class="slider default volume" style="height: 16px; width: 60px;">
             <div class="appearance">
               <div class="fill">
@@ -493,28 +491,17 @@
       opacity: 0.25;
     }
   }
-  .background-tint {
-    pointer-events: none;
-  }
-  .background-tint,
-  .background-tint > div {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+  .backdrop,
+  button.backdrop {
+    --blur: blur(17.5px);
+    --saturate: saturate(180%);
+    -webkit-backdrop-filter: var(--saturate) var(--blur);
+    backdrop-filter: var(--saturate) var(--blur);
     border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.4) !important;
   }
-  .background-tint > .blur {
-    --blur: 17.5px;
-    background-color: rgba(0, 0, 0, 0.55);
-    backdrop-filter: saturate(180%) blur(var(--blur, 10px));
-    -webkit-backdrop-filter: saturate(180%) blur(var(--blur, 1x));
-    filter: unset;
-  }
-  .background-tint > .tint {
-    background-color: rgba(255, 255, 255, 0.14);
-    mix-blend-mode: lighten;
+  button.backdrop.circle {
+    border-radius: 50%;
   }
   button {
     position: absolute;
@@ -524,7 +511,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: transparent !important;
+    background-color: transparent;
     appearance: none;
     user-select: none;
     -webkit-user-select: none;

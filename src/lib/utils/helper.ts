@@ -112,9 +112,9 @@ export let convert = (() => {
   };
 })();
 
-export const emit = function (eventType: string, detail?: any, target?: Window) {
+export const emit = function (eventType: string, detail?: any, target?: Window | Element) {
   eventType = typeof eventType === 'string' ? eventType : detail?.eventType;
-  target = typeof window !== 'undefined' ? window : target;
+  target = target || typeof window !== 'undefined' ? window : undefined;
   if (target) {
     target.dispatchEvent(new CustomEvent(eventType, { detail }));
   }
