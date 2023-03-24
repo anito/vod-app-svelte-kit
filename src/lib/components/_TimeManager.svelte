@@ -501,7 +501,7 @@
       <div slot="header">
         <Heading mdc h="5">
           <div class="uppercase" style="font-weight: 400; text-align: right;">
-            {$_('text.more-classes')}
+            {$_('text.available-videos')}
           </div></Heading
         >
       </div>

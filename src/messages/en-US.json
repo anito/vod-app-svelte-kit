@@ -21,7 +21,6 @@
     "yourCourses": "Your classes",
     "login": "Sign in",
     "user-profil": "Profile",
-    "more-classes": "More classes",
     "generate-token": "Generate Token",
     "missing-token": "Missing Token",
     "regenerate-expired-token": "Refresh expired token",
@@ -280,7 +279,8 @@
     "video-controls": "Video controls",
     "media-selection": "Media selection",
     "booked-videos": "Booked videos",
-    "type-to-search": "Type to search videos"
+    "type-to-search": "Type to search videos",
+    "available-videos": "Available videos"
   },
   "summary": {
     "copy-link": {

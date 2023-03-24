@@ -21,7 +21,6 @@
     "yourCourses": "Ihre Kurse",
     "login": "Anmelden",
     "user-profil": "Profil",
-    "more-classes": "Weitere Kurse",
     "generate-token": "Token generieren",
     "missing-token": "Kein Token vorhanden",
     "regenerate-expired-token": "Abgelaufenen Token erneuern",
@@ -280,7 +279,8 @@
     "video-controls": "Videosteuerelemente",
     "media-selection": "Medienauswahl",
     "booked-videos": "Gebuchte Videos",
-    "type-to-search": "Tippe um nach Videos zu suchen"
+    "type-to-search": "Tippe um nach Videos zu suchen",
+    "available-videos": "Verfügbare Videos"
   },
   "summary": {
     "copy-link": {
