@@ -25,8 +25,8 @@
   export let data: LayoutData;
 
   const minSearchChars = 3;
+  const modelSearchKeys = 'id,title,description';
   const { searchVideos }: any = getContext('search');
-  const modelSearchKeys = 'title,id';
   const { open }: any = getContext('editor-modal');
 
   let selectedIndex: any;
@@ -93,14 +93,16 @@
                 </IconButton>{/if}</SimpleVideoCard
             >
           {/each}
-          <Paginator
-            {pagination}
-            indicator
-            store={videos}
-            id="videos-paginator"
-            action="/videos?/more_videos"
-            type="label"
-          />
+          {#if !search}
+            <Paginator
+              {pagination}
+              indicator
+              store={videos}
+              id="videos-paginator"
+              action="/videos?/more_videos"
+              type="label"
+            />
+          {/if}
         </List>
       {:else}
         <FlexContainer style="height: 100%;">

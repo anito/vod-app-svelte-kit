@@ -10,6 +10,7 @@
     VideoManager,
     ImageManager,
     Container,
+    Paginator,
     Heading,
     SearchTextField,
     SvgIcon
@@ -22,16 +23,16 @@
   let confirmDeletionMediaDialog: Dialog;
   let search: string = '';
 
+  const modelSearchKeys = 'id,title,description';
+  const minSearchChars = 3;
   const { getNameByEndpoint }: any = getContext('media');
   const { searchVideos }: any = getContext('search');
-  const modelSearchKeys = 'title,id';
-  const minSearchChars = 3;
 
   $: tab = ((tab) => TABS.find((itm) => itm === tab))($page.url.searchParams.get('tab')) || TABS[0];
   $: tab && resetCardSelect();
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: deleteLabel = $_('text.delete').concat($selection.length ? ` (${$selection.length})` : '');
-  $: isDeepSearch = hasPrivileges && search.length >= minSearchChars;
+  $: isDeepSearch = search.length >= minSearchChars;
   $: if (isDeepSearch) {
     (async (s) => {
       const { success, data } = await searchVideos({ keys: modelSearchKeys, search: s });
@@ -133,6 +134,16 @@
     <div class="frame grid-item one">
       {#if tab === TABS[0]}
         <VideoManager videos={filteredVideos} />
+        {#if search === ''}
+          <Paginator
+            pagination={$page.data.pagination?.videos}
+            indicator
+            store={videos}
+            id="videos-paginator"
+            action="/videos?/more_videos"
+            type="label"
+          />
+        {/if}
       {/if}
       {#if tab === TABS[1]}
         <ImageManager />

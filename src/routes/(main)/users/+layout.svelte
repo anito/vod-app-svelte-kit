@@ -33,13 +33,13 @@
   import type Dropzone from '$lib/components/Dropzone/index.svelte';
 
   const minSearchChars = 3;
+  const modelSearchKeys = 'id,name,email';
   const { getDropzone }: any = getContext('dropzone');
   const { open: editor$open }: any = getContext('editor-modal');
   const { open: default$open, close: default$close }: any = getContext('default-modal');
   const { getSnackbar, configSnackbar }: any = getContext('snackbar');
   const { getSegment }: any = getContext('segment');
   const { searchUsers }: any = getContext('search');
-  const modelSearchKeys = 'name,id';
 
   const segment = getSegment();
   export let data: LayoutData;
@@ -382,7 +382,7 @@
           {#each filteredUsers as user (user.id)}
             <SimpleUserCard id={user.id} {selectionUserId} {user} />
           {/each}
-          {#if !isDeepSearch}
+          {#if search === ''}
             <Paginator
               {pagination}
               store={users}

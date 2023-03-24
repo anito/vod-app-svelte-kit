@@ -13,7 +13,7 @@
     Paginator,
     FlexContainer
   } from '$lib/components';
-  import { session, videos as videosStore, fabs } from '$lib/stores';
+  import { session, fabs } from '$lib/stores';
   import {
     ADMIN,
     SUPERUSER,
@@ -26,7 +26,6 @@
   import type Snackbar from '@smui/snackbar';
   import type { Video } from '$lib/classes/repos/types';
   import type Dropzone from '$lib/components/Dropzone/index.svelte';
-  import { query_selector_all } from 'svelte/internal';
 
   export let videos: Video[];
 
@@ -40,21 +39,12 @@
     duration: 200
   };
   const flyTransitionParams = { ...transitionParams, x: -80 };
-  const sortAZ = (a: Video, b: Video) => {
-    let _a, _b;
-    a = (_a = a.title || a.src) && _a.toLowerCase();
-    b = (_b = b.title || b.src) && _b.toLowerCase();
-    if (a < b) return -1;
-    if (a > b) return 1;
-    return 0;
-  };
   const maxFiles = 1;
 
   let snackbar: Snackbar;
   let uploadedData: any;
   let ul: HTMLUListElement;
 
-  $: pagination = $page.data.pagination?.videos;
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
 
   onMount(() => {
@@ -164,14 +154,6 @@
       {$_('text.no-content-available')}
     </FlexContainer>
   {/if}
-  <Paginator
-    {pagination}
-    indicator
-    store={videosStore}
-    id="videos-paginator"
-    action="/videos?/more_videos"
-    type="label"
-  />
   {#if $fabs === 'add-video'}
     <Fab class="floating-fab" color="primary" on:click={() => openUploader()} extended>
       <Label>{$_('text.add-video')}</Label>
