@@ -77,7 +77,7 @@
           on:click={() => changeTab(TABS[0])}
           variant={tab === TABS[0] ? 'unelevated' : 'outlined'}
         >
-          <Icon class="material-icons">video_settings</Icon>
+          <Icon class="material-icons">ondemand_video</Icon>
           <Label>Videos</Label>
         </Button>
 
@@ -100,33 +100,33 @@
         />
       {/if}
       <Group variant="unelevated">
-        {#if $selection.length}
-          <Button
-            class="focus:outline-none focus:shadow-outline"
-            disabled={!$selection.length}
-            on:click={() => selection.reset()}
-            variant="unelevated"
-          >
-            <Icon class="material-icons">clear</Icon>
-            <Label>{$_('text.clear')}</Label>
-          </Button>
-        {/if}
-        <Button
-          class="focus:outline-none focus:shadow-outline"
-          disabled={!$selection.length}
-          on:click={() => confirmDeletionMediaDialog?.setOpen(true)}
-          variant="outlined"
-        >
-          <Icon class="material-icons">delete</Icon>
-          <Label>{deleteLabel}</Label>
-        </Button>
         <Button
           style="min-width: 150px;"
           class="focus:outline-none focus:shadow-outline"
           on:click={() => toggleCardSelect()}
           variant="unelevated"
         >
+          <Icon class="material-icons">{select ? 'done' : 'select_all'}</Icon>
           <Label>{select ? $_('text.done') : $_('text.select')}</Label>
+        </Button>
+        <Button
+          class="focus:outline-none focus:shadow-outline"
+          disabled={!$selection.length}
+          on:click={() => selection.reset()}
+          variant="outlined"
+        >
+          <Icon class="material-icons" style="margin-right: 0;">deselect</Icon>
+        </Button>
+        <Button
+          class="focus:outline-none focus:shadow-outline"
+          disabled={!$selection.length}
+          on:click={() => confirmDeletionMediaDialog?.setOpen(true)}
+          variant="outlined"
+        >
+          <Icon class="material-icons" style="margin-right: 0;">delete</Icon>
+          {#if $selection.length}
+            <Label style="margin-left: 8px;">({$selection.length})</Label>
+          {/if}
         </Button>
       </Group>
     </div>
@@ -212,11 +212,11 @@
 >
   <Title id="info-title"
     >{$_('text.deleting-media', {
-      values: { count: $selection.length, media: getNameByEndpoint(tab) }
+      values: { count: $selection.length, type: getNameByEndpoint(tab) }
     })}</Title
   >
   <Content>
-    <div class="">{$_('text.confirm-deletion')}</div>
+    <div class="">{$_('text.confirm-deletion', { values: { type: getNameByEndpoint(tab) } })}</div>
   </Content>
   <Actions>
     <Button>

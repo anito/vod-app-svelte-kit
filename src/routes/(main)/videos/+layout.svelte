@@ -89,7 +89,7 @@
               {video}
             >
               {#if hasPrivileges}<IconButton class="small" on:click={() => openEditor(video.id)}>
-                  <Icon class="material-icons">edit</Icon>
+                  <Icon class="material-icons">movie_edit</Icon>
                 </IconButton>{/if}</SimpleVideoCard
             >
           {/each}

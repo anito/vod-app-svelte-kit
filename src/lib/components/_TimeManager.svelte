@@ -533,8 +533,8 @@
               {selectionUserId}
             >
               {#if hasPrivileges}
-                <IconButton class="mr-2 small" on:click={() => editVideo(video)}>
-                  <Icon class="material-icons">edit</Icon>
+                <IconButton class="mr-2 medium" on:click={() => editVideo(video)}>
+                  <Icon class="material-icons">movie_edit</Icon>
                 </IconButton>
                 <IconButton class="mr-2 medium" href={`/videos/${video.id}`}>
                   <Icon class="material-icons">smart_display</Icon>

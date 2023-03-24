@@ -99,7 +99,7 @@
         href="/users/{selectionUserId}?tab=time"
         variant={tab === TABS[0] ? 'unelevated' : 'outlined'}
       >
-        <Icon class="material-icons">video_settings</Icon>
+        <Icon class="material-icons">ondemand_video</Icon>
         <Label>{$_('text.videos')}</Label>
       </Button>
       <Button
