@@ -279,7 +279,8 @@
     "minutes": "Minuten",
     "video-controls": "Videosteuerelemente",
     "media-selection": "Medienauswahl",
-    "booked-videos": "Gebuchte Videos"
+    "booked-videos": "Gebuchte Videos",
+    "type-to-search": "Tippe um nach Videos zu suchen"
   },
   "summary": {
     "copy-link": {

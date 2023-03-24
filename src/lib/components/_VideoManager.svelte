@@ -13,7 +13,7 @@
     Paginator,
     FlexContainer
   } from '$lib/components';
-  import { session, videos, fabs } from '$lib/stores';
+  import { session, videos as videosStore, fabs } from '$lib/stores';
   import {
     ADMIN,
     SUPERUSER,
@@ -26,9 +26,12 @@
   import type Snackbar from '@smui/snackbar';
   import type { Video } from '$lib/classes/repos/types';
   import type Dropzone from '$lib/components/Dropzone/index.svelte';
+  import { query_selector_all } from 'svelte/internal';
+
+  export let videos: Video[];
 
   const { getDropzone }: any = getContext('dropzone');
-  const { open: editor$open, close: editor$close }: any = getContext('editor-modal');
+  const { open: editor$open }: any = getContext('editor-modal');
   const { open: uploader$open, close: uploader$close }: any = getContext('default-modal');
   const { getSnackbar, configSnackbar }: any = getContext('snackbar');
   const { setFab }: any = getContext('fab');
@@ -49,7 +52,7 @@
 
   let snackbar: Snackbar;
   let uploadedData: any;
-  let videoList;
+  let ul: HTMLUListElement;
 
   $: pagination = $page.data.pagination?.videos;
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
@@ -138,12 +141,14 @@
 </script>
 
 {#if $session.user}
-  {#if $videos?.length}
-    <ul tabindex="-1" on:keydown|preventDefault
-      bind:this={videoList}
+  {#if videos?.length}
+    <ul
+      bind:this={ul}
+      tabindex="-1"
+      on:keydown={(e) => !ul.querySelector('.card .editor') && e.preventDefault()}
       class="items-list grid lg:grid-cols-3 md:grid-cols-2 grid-flow-row gap-4"
     >
-      {#each $videos.sort(sortAZ) as video (video.id)}
+      {#each videos as video (video.id)}
         <li class="list-item relative">
           <VideoCard
             on:video:postercreated={(event) => posterCreatedHandler(event, video.id)}
@@ -162,7 +167,7 @@
   <Paginator
     {pagination}
     indicator
-    store={videos}
+    store={videosStore}
     id="videos-paginator"
     action="/videos?/more_videos"
     type="label"

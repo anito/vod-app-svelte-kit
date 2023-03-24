@@ -24,7 +24,7 @@
 
   export let data: LayoutData;
 
-  const minSearchChars = 2;
+  const minSearchChars = 3;
   const { searchVideos }: any = getContext('search');
   const modelSearchKeys = 'title,id';
   const { open }: any = getContext('editor-modal');

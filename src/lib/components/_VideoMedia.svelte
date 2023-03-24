@@ -14,7 +14,7 @@
   export let emptyPoster: string = dummyPoster;
   export let title: string = '';
   export let description: string = '';
-  export let isEditMode: boolean = false;
+  export let editmode: boolean = false;
 
   let src: string | undefined;
   let playhead: number;
@@ -167,7 +167,7 @@
 
 <Media aspectRatio="16x9">
   <MediaContent class="flex z-10">
-    {#if isEditMode}
+    {#if editmode}
       <div in:fly out:fly class="editor-wrapper">
         <div class="editor p-2">
           <Textfield

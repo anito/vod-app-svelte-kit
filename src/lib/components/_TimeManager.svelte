@@ -57,7 +57,7 @@
   const lists: Set<string> = new Set();
   const USERVIDEOSLIST = 'user-video-list';
   const NONUSERVIDEOSLIST = 'non-user-videos-list';
-  const minSearchChars = 2;
+  const minSearchChars = 3;
   const modelSearchKeys = 'description,title,id';
   const lsTimespanName = 'timespanindex';
 
@@ -506,7 +506,7 @@
         >
       </div>
       <SearchTextField
-        style="position: absolute; z-index: 1;"
+        style="position: absolute; z-index: 1; width: 100%;"
         bind:search
         label={$_('text.search-videos')}
         infoLabel={$_('text.type-min-char-count', { values: { count: minSearchChars } })}

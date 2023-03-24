@@ -8,18 +8,21 @@
   export let infoLabel = 'Type to search';
   export { className as class };
   export let style = '';
+  export let height = '80px';
 
   let className = '';
 </script>
 
-<Textfield class="textfield-search {className}" bind:value={search} {label} {style}>
-  <Icon
-    role="button"
-    class="material-icons cancel-search"
-    slot="trailingIcon"
-    on:click={() => (search = '')}>{search.length && 'cancel'}</Icon
-  >
-  {#if infoLabel}
-    <span class="info-label">{infoLabel}</span>
-  {/if}
-</Textfield>
+<div style:--height={height} {style}>
+  <Textfield class="textfield-search {className}" bind:value={search} {label}>
+    <Icon
+      role="button"
+      class="material-icons cancel-search"
+      slot="trailingIcon"
+      on:click={() => (search = '')}>{search.length && 'cancel'}</Icon
+    >
+    {#if infoLabel}
+      <span class="info-label">{infoLabel}</span>
+    {/if}
+  </Textfield>
+</div>

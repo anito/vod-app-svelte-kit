@@ -2,26 +2,46 @@
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { getContext, onMount } from 'svelte';
-  import { selection, session, currentMediaStore } from '$lib/stores';
+  import { selection, session, currentMediaStore, videos } from '$lib/stores';
   import Dialog, { Title, Content, Actions } from '@smui/dialog';
   import Button, { Group, Label, Icon } from '@smui/button';
-  import { emit, ADMIN, SUPERUSER } from '$lib/utils';
-  import { VideoManager, ImageManager, Container, Heading } from '$lib/components';
+  import { emit, ADMIN, SUPERUSER, filterByModelKeys } from '$lib/utils';
+  import {
+    VideoManager,
+    ImageManager,
+    Container,
+    Heading,
+    SearchTextField,
+    SvgIcon
+  } from '$lib/components';
   import { _ } from 'svelte-i18n';
-    import SvgIcon from '$lib/components/_SvgIcon.svelte';
-    import { id } from 'date-fns/locale';
 
   const TABS = ['videos', 'images'];
 
   let select: boolean;
   let confirmDeletionMediaDialog: Dialog;
+  let search: string = '';
 
   const { getNameByEndpoint }: any = getContext('media');
+  const { searchVideos }: any = getContext('search');
+  const modelSearchKeys = 'title,id';
+  const minSearchChars = 3;
 
   $: tab = ((tab) => TABS.find((itm) => itm === tab))($page.url.searchParams.get('tab')) || TABS[0];
   $: tab && resetCardSelect();
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: deleteLabel = $_('text.delete').concat($selection.length ? ` (${$selection.length})` : '');
+  $: isDeepSearch = hasPrivileges && search.length >= minSearchChars;
+  $: if (isDeepSearch) {
+    (async (s) => {
+      const { success, data } = await searchVideos({ keys: modelSearchKeys, search: s });
+      if (success) {
+        emit('video:add', { data });
+      }
+    })(search);
+  }
+  $: filteredVideos = ((videos) => filterByModelKeys(search, videos, modelSearchKeys))($videos);
+  $: filteredVideos.sortBy('title');
 
   onMount(() => {
     resetCardSelect();
@@ -69,6 +89,15 @@
           <Label>{$_('text.posters')}</Label>
         </Button>
       </Group>
+      {#if tab === TABS[0]}
+        <SearchTextField
+          style="width: 100%; margin: 0 20px;"
+          height="60px"
+          bind:search
+          label={$_('text.search-videos')}
+          infoLabel={$_('text.type-min-char-count', { values: { count: minSearchChars } })}
+        />
+      {/if}
       <Group variant="unelevated">
         {#if $selection.length}
           <Button
@@ -103,7 +132,7 @@
 
     <div class="frame grid-item one">
       {#if tab === TABS[0]}
-        <VideoManager />
+        <VideoManager videos={filteredVideos} />
       {/if}
       {#if tab === TABS[1]}
         <ImageManager />
@@ -115,7 +144,9 @@
     <div slot="header">
       <div class="grid grid-cols-2">
         <span class="ml-2">
-          <Heading h="6" mdc style="text-transform: capitalize;">{$_('text.videos-library')}</Heading>
+          <Heading h="6" mdc style="text-transform: capitalize;"
+            >{$_('text.videos-library')}</Heading
+          >
         </span>
         <span class="justify-self-end mr-2">
           <Heading h="5" mdc>
@@ -128,18 +159,26 @@
       <div class="grid-inner">
         <div class="media-grid non-admin">
           <div class="grid-item pl-8 pt-3 flex items-center">
-            <span class="pr-3"><SvgIcon name='ondemand_video' /></span>
+            <span class="pr-3"><SvgIcon name="ondemand_video" /></span>
             <span>
               <Heading
                 h="5"
                 mdc
                 wrapperStyle="
-              color: currentColor; padding: 10px 10px 10px 0;">{@html $_('text.your-booked-videos')}</Heading
+              color: currentColor; padding: 10px 10px 10px 0;"
+                >{@html $_('text.your-booked-videos')}</Heading
               >
             </span>
+            <SearchTextField
+              style="width: 100%; margin-left: 20px;"
+              height="60px"
+              bind:search
+              label={$_('text.search-videos')}
+              infoLabel={$_('text.type-to-search')}
+            />
           </div>
           <div class="frame grid-item one">
-            <VideoManager />
+            <VideoManager videos={filteredVideos} />
           </div>
         </div>
       </div>
@@ -187,7 +226,7 @@
   .media-grid {
     --toolbar: calc(var(--toolbar-h) * 1.2);
     display: grid;
-    grid-template-rows: 80px auto;
+    grid-template-rows: 110px auto;
     grid-template-columns: 1fr;
     grid-gap: 0;
     align-items: initial;
@@ -204,7 +243,6 @@
     grid-area: toolbar;
     display: flex;
     align-items: center;
-    height: 100%;
   }
   .non-admin .toolbar {
     align-items: flex-end;

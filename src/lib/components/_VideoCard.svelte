@@ -40,7 +40,7 @@
   let imageListAnchor: HTMLDivElement;
   let menuAnchor: HTMLDivElement;
   let deleteMenuAnchor: HTMLDivElement;
-  let isEditMode = false;
+  let editmode = false;
   let title: string;
   let description: string;
   let isImageListOpen = false;
@@ -48,10 +48,10 @@
 
   $: pagination = $page.data.pagination?.images;
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
-  $: leftButton = isEditMode
+  $: leftButton = editmode
     ? { label: $_('text.save'), icon: 'save' }
     : { label: $_('text.edit'), icon: 'edit' };
-  $: rightButton = isEditMode
+  $: rightButton = editmode
     ? { label: $_('text.cancel'), icon: 'cancel' }
     : { label: $_('text.delete'), icon: 'delete' };
   $: matchingData = ('_matchingData' in video && video._matchingData.UsersVideos) || null;
@@ -59,7 +59,7 @@
   $: selected = !!$selection.find((id: string) => id === video.id) || false;
 
   function save() {
-    isEditMode = false;
+    editmode = false;
     if (!canSave) return;
     emit('video:save', {
       data: { id: video.id, title, description },
@@ -68,13 +68,13 @@
   }
 
   function edit() {
-    isEditMode = true;
+    editmode = true;
     title = video.title || '';
     description = video.description || '';
   }
 
   function setDeleteMenuOpen(open: boolean) {
-    isEditMode = false;
+    editmode = false;
     deleteMenu?.setOpen(open);
   }
 
@@ -152,11 +152,11 @@
   <PrimaryAction class="primary-action" onclick={() => currentVideo.set(video)}>
     <VideoMedia
       on:key:enter={() => save()}
-      on:key:escape={() => (isEditMode = false)}
+      on:key:escape={() => (editmode = false)}
       bind:title
       bind:description
       {video}
-      {isEditMode}
+      {editmode}
       {emptyPoster}
     />
     <Content class="card-content">
@@ -167,7 +167,7 @@
             <span class="ellipsed pl-2">{video.title || $_('text.no-title')}</span>
           </div>
           {#if hasPrivileges}
-            <div class="flex text-xs text-inherit ">
+            <div class="flex text-xs text-inherit">
               <Icon class="material-icons">cloud_upload</Icon>
               <span class="ellipsed pl-2"
                 >{$_('text.uploaded-on', {
@@ -214,18 +214,18 @@
     <Actions class="card-actions">
       <ActionButtons class="action-buttons" style="flex: 1 0 auto;">
         <Button
-          on:click={() => (isEditMode ? save() : edit())}
+          on:click={() => (editmode ? save() : edit())}
           class="action-button"
           color="primary"
           variant="unelevated"
-          disabled={isEditMode && !canSave}
+          disabled={editmode && !canSave}
         >
           <Label>{leftButton.label}</Label>
           <Icon class="material-icons">{leftButton.icon}</Icon>
         </Button>
         <div bind:this={deleteMenuAnchor} use:Anchor>
           <Button
-            on:click={() => (isEditMode ? (isEditMode = false) : setDeleteMenuOpen(true))}
+            on:click={() => (editmode ? (editmode = false) : setDeleteMenuOpen(true))}
             class="action-button"
             color="primary"
             variant="unelevated"

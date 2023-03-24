@@ -279,7 +279,8 @@
     "minutes": "Minutes",
     "video-controls": "Video controls",
     "media-selection": "Media selection",
-    "booked-videos": "Booked videos"
+    "booked-videos": "Booked videos",
+    "type-to-search": "Type to search videos"
   },
   "summary": {
     "copy-link": {

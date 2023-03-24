@@ -32,7 +32,7 @@
   import type Snackbar from '@smui/snackbar';
   import type Dropzone from '$lib/components/Dropzone/index.svelte';
 
-  const minSearchChars = 2;
+  const minSearchChars = 3;
   const { getDropzone }: any = getContext('dropzone');
   const { open: editor$open }: any = getContext('editor-modal');
   const { open: default$open, close: default$close }: any = getContext('default-modal');
@@ -356,6 +356,7 @@
     <Container transparent>
       <div slot="header">
         <SearchTextField
+          style="width: 100%;"
           bind:search
           label={$_('text.search-users')}
           infoLabel={$_('text.type-min-char-count', { values: { count: minSearchChars } })}
