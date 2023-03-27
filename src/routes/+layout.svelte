@@ -747,7 +747,7 @@
                   on:mouseenter={() => (emphasize = 'v-emph-active')}
                   on:mouseleave={() => (emphasize = '')}
                 >
-                  <Label class="first-line v-emph-primary v-emph-down">
+                  <Label class="label first-line v-emph-primary v-emph-down">
                     <Icon
                       class="material-icons"
                       style="vertical-align: middle; font-size: 0.6rem; line-height: 1rem; margin-right: 0 !important;
@@ -755,7 +755,7 @@
                     >
                     Logout
                   </Label>
-                  <Label class="second-line v-emph-secondary v-emph-up">
+                  <Label class="label second-line v-emph-secondary v-emph-up">
                     {@html loggedInButtonTextSecondLine}
                   </Label>
                 </Button>
@@ -767,7 +767,7 @@
                 segment="login"
               >
                 <Button variant="raised" class="sign-in-out" style="font">
-                  <Label>{$_('nav.login')}</Label>
+                  <Label class="label">{$_('nav.login')}</Label>
                   <Icon class="material-icons" style="vertical-align: middle;">login</Icon>
                 </Button>
               </NavItem>

@@ -100,7 +100,6 @@
     transition: transform 0.2s;
     color: inherit;
   }
-
   header::before,
   header::after {
     --progressbar-h: 3px;
@@ -126,11 +125,9 @@
     transition: all ease-out 1s;
     z-index: 2;
   }
-
   header.visible {
     transform: none;
   }
-
   nav {
     position: fixed;
     top: 0;
@@ -146,23 +143,19 @@
     transition: none;
     box-shadow: none;
   }
-
   .primary {
     list-style: none;
     font-family: var(--font);
     margin: 0;
     line-height: 1;
   }
-
   .primary :global(li.nav-item) {
     display: block;
     display: none;
   }
-
   .primary :global(li.nav-item.active) {
     display: block;
   }
-
   .primary {
     position: relative;
     pointer-events: none;
@@ -170,7 +163,6 @@
     background: url(/src/assets/icons/chevron.svg) calc(100% - 1em) 0.05em no-repeat;
     background-size: 1em 1em;
   }
-
   .primary::after {
     /* prevent clicks from registering if nav is closed */
     position: absolute;
@@ -180,25 +172,25 @@
     left: 0;
     top: 0;
   }
-
   .primary.open::after {
     display: none;
   }
-
   .primary > :global(li.nav-item) {
     pointer-events: all;
   }
-
+  
   .primary > :global(li.nav-item a),
   .primary > :global(li.nav-item .link-button),
-  .primary > :global(li.nav-item [class*='label']) {
+  .primary > :global(li.nav-item .label) {
     font-size: var(--label-size, 1.1em);
     font-weight: 600;
     border: none;
-    color: inherit;
+    color: var(--on-surface);
     display: inline-block;
   }
-
+  .primary > :global(li.nav-item button .label) {
+    color: inherit;
+  }
   .primary > :global(li.nav-item > a),
   .primary > :global(li.nav-item > span) {
     display: inline-block;
@@ -208,12 +200,10 @@
     padding: 0 0.7rem;
     min-width: 40px;
   }
-
   .primary :global(svg) {
     width: var(--icon-size, 1.25rem);
     height: var(--icon-size, 1.25rem);
   }
-
   .home {
     position: relative;
     top: -0.1rem;
@@ -226,11 +216,9 @@
     text-indent: -9999px;
     /* z-index: 11; */
   }
-
   .primary > :global(li.nav-item.active a) {
     color: var(--primary);
   }
-
   .modal-background {
     position: fixed;
     width: 100%;
@@ -239,18 +227,15 @@
     top: 0;
     background-color: rgba(255, 255, 255, 0.9);
   }
-
   a {
     color: inherit;
     border-bottom: none;
     transition: none;
   }
-
   .primary > :global(li.nav-item):not(.active) :global(a):hover,
   .primary > :global(li.nav-item):not(.active) :global(.link-button):hover {
     color: var(--flash);
   }
-
   @media (max-width: 990px) {
     .primary.open {
       padding: 0 0 1em 0;
@@ -261,26 +246,21 @@
       border-radius: 0 0 var(--border-r) var(--border-r);
       align-self: start;
     }
-
     .primary.open > :global(li.nav-item) {
       display: block;
       text-align: right;
     }
-
     .primary.open > :global(li.nav-item a) {
       padding: 0.9375rem 2.3125rem 0.9375rem 2.5rem;
       display: block;
     }
-
     .primary.open > :global(li.nav-item):first-child :global(a) {
       padding-top: 1.4375rem;
     }
-
     :global(.hide-if-mobile) {
       display: none !important;
     }
   }
-
   @media (min-width: 991px) {
     .primary {
       display: flex;
@@ -288,37 +268,30 @@
       padding: 0;
       background: none;
     }
-
     /* .primary.open {
       padding: 0;
       background: transparent;
       border: none;
       align-self: initial;
     }
-
     .primary.open > :global(li.nav-item) {
       display: inline;
       text-align: left;
     }
-
     .primary.open > :global(li.nav-item a) {
       font-size: var(--h4);
       padding: 0 0.7rem;
     }
-
     .primary.open > :global(li.nav-item):first-child :global(a) {
       padding-top: 0;
     } */
-
     .primary::after {
       display: none;
     }
-
     .primary :global(li.nav-item) {
       display: inline;
       padding-left: 5px;
     }
-
     :global(.hide-if-desktop) {
       display: none !important;
     }

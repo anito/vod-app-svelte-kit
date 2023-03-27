@@ -49,7 +49,7 @@
 </span>
 
 <style>
-  .more-menu :global(li [class*='label']) {
+  .more-menu :global(li .label) {
     font-size: var(--label-size, 1em);
   }
   .more-menu :global(li [class*='icon']) {
