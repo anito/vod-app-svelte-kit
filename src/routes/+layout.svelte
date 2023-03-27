@@ -803,7 +803,20 @@
             <NavItem title={$_('text.choose-locale')}>
               <LocaleSwitcher on:changed:locale={changedLocaleHandler} />
             </NavItem>
-
+            <Separator />
+            <NavItem>
+              <span style="width: 45px;" class="flex">
+                <Button
+                  on:click$preventDefault={() => setTheme(colorSchema?.requested.mode)}
+                  class="link-button"
+                  style="min-width: 45px; justify-content: center;"
+                  ripple={false}
+                >
+                  <SvgIcon name={colorSchema?.requested.icon} class="mr-2" size={22}/>
+                </Button>
+              </span>
+            </NavItem>
+            <Separator />
             {#if $session.user}
               <NavItem title="Logout" class="hide-if-desktop" segment="login">
                 <Button>
@@ -857,19 +870,6 @@
                     <span style="display: flex; flex: 1 0 100%; align-items: center">
                       <SvgIcon name="github" class="mr-2" />
                       <Label>GitHub</Label>
-                    </span>
-                  </Button>
-                </Item>
-                <Separator />
-                <Item class="justify-start">
-                  <Button
-                    on:click$preventDefault={() => setTheme(colorSchema?.requested.mode)}
-                    class="link-button"
-                    ripple={false}
-                  >
-                    <span style="display: flex; flex: 1 0 100%; align-items: center">
-                      <SvgIcon name={colorSchema?.requested.icon} class="mr-2" />
-                      <Label>{colorSchema?.requested.label}</Label>
                     </span>
                   </Button>
                 </Item>
