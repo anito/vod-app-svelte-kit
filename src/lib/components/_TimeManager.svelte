@@ -662,6 +662,7 @@
   bind:this={removeDialog}
   aria-labelledby="event-title"
   aria-describedby="event-content"
+  surface$style="width: var(--dialog-w); max-width: var(--dialog-max-w);"
   on:SMUIDialog:closed={removeDialogCloseHandler}
 >
   <Title id="event-title">

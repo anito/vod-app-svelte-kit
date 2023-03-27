@@ -278,8 +278,8 @@
 
   async function checkSession() {
     /**
-     * With init flag set to true this indicates the server to fetch a fresh config,
-     * which otherwise happens only when starting the app
+     * The init flag tells the server to fetch a fresh config,
+     * which normally only happens when starting the app
      */
     emit('session:validate', {
       callback: () => {
@@ -909,6 +909,7 @@
   bind:this={deletingMediaDialog}
   aria-labelledby="info-title"
   aria-describedby="info-content"
+  surface$style="width: var(--dialog-w); max-width: var(--dialog-max-w);"
   on:SMUIDialog:closed={() => (media = undefined)}
 >
   <DialogTitle id="info-title">{$_('text.deleting-media')}</DialogTitle>

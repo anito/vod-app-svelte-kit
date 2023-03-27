@@ -340,7 +340,7 @@
     "video-available-until": "gültig bis",
     "transfer-token-reminder": "Denken Sie daran, dem Benutzer <strong>{name}</strong> den neuen Token zu übermitteln.",
     "login-will-fail": "Die Anmeldung als <strong>{name}</strong> wird aus den folgenden Gründen fehlschlagen:",
-    "class-has-active-time-slot": "Dieser Kurs hat ein aktives Zeitfenster.<br /> <strong>{title}</strong> trotzdem entfernen?",
+    "class-has-active-time-slot": "Dieser Kurs hat ein aktives Zeitfenster. <strong>{title}</strong> trotzdem entfernen?",
     "content-inaccessible": "<p>Der Benutzer <strong>{name}</strong> kann momentan nicht auf die von ihm gebuchten Inhalte zugreifen.</p><p>Um die Inhalte verfügbar zu machen, müssen folgende Aktionen ausgeführt werden:</p>",
     "should-user-be-activated": "<p>Soll Benutzer <strong>{name}</strong> aktiviert werden?</p>",
     "deactivating-token-locks-account": "Das Löschen des Tokens deaktiviert den Account!",

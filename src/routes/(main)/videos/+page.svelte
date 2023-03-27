@@ -200,6 +200,7 @@
   bind:this={confirmDeletionMediaDialog}
   aria-labelledby="info-title"
   aria-describedby="info-content"
+  surface$style="width: var(--dialog-w); max-width: var(--dialog-max-w);"
   on:SMUIDialog:closed={({ detail }) => {
     if (detail.action === 'accept') {
       emit('media:deleteMany', {

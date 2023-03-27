@@ -179,7 +179,6 @@
 
   function loadeddataHandler({ detail }: CustomEvent) {
     loadeddata = true;
-    console.log(video?.playhead)
     playhead = hasPrivileges ? video?.playhead : joindata.playhead;
     info(
       4,

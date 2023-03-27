@@ -4,7 +4,6 @@
   import { onMount } from 'svelte';
   import { convert } from '$lib/utils';
   import type { NavigationTarget } from '@sveltejs/kit';
-  import { DoubleBounce } from 'svelte-loading-spinners';
 
   export let wait = 500;
   export let backgroundColor = '#222222';
@@ -25,6 +24,7 @@
 
   let root: HTMLElement;
   let timeoutId: number | undefined;
+  let timeoutIdCancel: number | undefined;
 
   let disabled = false;
   const omitt = new Map([
@@ -61,15 +61,25 @@
 
   afterNavigate(() => (disabled = false));
 
+  function navigate(isNavigating: boolean) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      // If something goes wrong remove the navigation loader after a decent amount of time
+      isNavigating && cancelNavigate(8000);
+      root?.classList.toggle('navigating', isNavigating)
+    }, wait);
+  }
+
+  function cancelNavigate(delay: number) {
+    clearTimeout(timeoutIdCancel);
+    timeoutIdCancel = setTimeout(() => root?.classList.remove('navigating'), delay);
+  }
+
   onMount(() => {
     root = document.documentElement;
   });
 
-  $: !disabled &&
-    ((isNavigating) => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => root?.classList.toggle('navigating', isNavigating), wait);
-    })(!!$navigating);
+  $: !disabled && navigate(!!$navigating);
   $: _step1 = backgroundColor.slice(0, 7);
   $: bgColor = `${_step1}${(_step1.length === 7 && opacityToHex) || ''}`;
   $: opacityToHex = convert.dec2Hex(opacity, true);

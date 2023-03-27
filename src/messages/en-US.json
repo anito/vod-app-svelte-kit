@@ -340,7 +340,7 @@
     "video-available-until": "valid until",
     "transfer-token-reminder": "Remember to send the new token to the user <strong> {name} </strong>.",
     "login-will-fail": "Logging in as <strong> {name} </strong> will fail for the following reason:",
-    "class-has-active-time-slot": "This course has an active time slot. <br /> Remove <strong> {title} </strong> anyway?",
+    "class-has-active-time-slot": "This course has an active time slot. Remove <strong> {title} </strong> anyway?",
     "content-inaccessible": "<p> The user <strong> {name} </strong> can currently not access the content he has booked. </p> <p> To make the content available, the following actions must be taken: </p>",
     "should-user-be-activated": "<p>Should user <strong>{name}</strong> be activated?</p>",
     "deactivating-token-locks-account": "Deleting the token will lock the account!",

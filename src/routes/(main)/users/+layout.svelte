@@ -406,7 +406,12 @@
     <div class="m-auto mr-0" />
   </div>
 </Layout>
-<Dialog bind:this={infoDialog} aria-labelledby="info-title" aria-describedby="info-content">
+<Dialog
+  bind:this={infoDialog}
+  aria-labelledby="info-title"
+  aria-describedby="info-content"
+  surface$style="width: var(--dialog-w); max-width: var(--dialog-max-w);"
+>
   <DialogTitle id="info-title">{$_('text.what-is-a-token')}</DialogTitle>
   <Content id="info-content">
     <div class="item">{$_('text.a-token-is')}</div>
@@ -461,6 +466,7 @@
   bind:this={resolveAllDialog}
   aria-labelledby="info-title"
   aria-describedby="info-content"
+  surface$style="width: var(--dialog-w); max-width: var(--dialog-max-w);"
   on:SMUIDialog:closed={resolveAllDialogCloseHandler}
 >
   {#if userIssues.length}
@@ -504,6 +510,7 @@
   bind:this={activateUserDialog}
   aria-labelledby="info-title"
   aria-describedby="info-content"
+  surface$style="width: var(--dialog-w); max-width: var(--dialog-max-w);"
   on:SMUIDialog:closed={activateUserDialogCloseHandler}
 >
   <DialogTitle id="info-title">{$_('text.activate-user')}</DialogTitle>
@@ -527,6 +534,7 @@
   bind:this={generateTokenDialog}
   aria-labelledby="info-title"
   aria-describedby="info-content"
+  surface$style="width: var(--dialog-w); max-width: var(--dialog-max-w);"
   on:SMUIDialog:closed={generateTokenDialogCloseHandler}
 >
   <DialogTitle id="info-title">{$_('text.generate-token')}</DialogTitle>
@@ -556,6 +564,7 @@
   bind:this={removeTokenDialog}
   aria-labelledby="info-title"
   aria-describedby="info-content"
+  surface$style="width: var(--dialog-w); max-width: var(--dialog-max-w);"
   on:SMUIDialog:closed={removeTokenDialogCloseHandler}
 >
   <DialogTitle id="info-title">{$_('text.delete-token')}</DialogTitle>
@@ -576,6 +585,7 @@
   bind:this={redirectDialog}
   aria-labelledby="event-title"
   aria-describedby="event-content"
+  surface$style="width: var(--dialog-w); max-width: var(--dialog-max-w);"
   on:SMUIDialog:closed={tokenRedirectDialogCloseHandler}
   class="redirect-dialog"
 >
@@ -653,6 +663,7 @@
   bind:this={renewedTokenDialog}
   aria-labelledby="info-title"
   aria-describedby="info-content"
+  surface$style="width: var(--dialog-w); max-width: var(--dialog-max-w);"
   on:SMUIDialog:closed={renewTokenDialogCloseHandler}
 >
   <DialogTitle id="info-title">{$_('text.token-updated')}</DialogTitle>

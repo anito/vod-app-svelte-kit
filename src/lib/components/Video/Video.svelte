@@ -5,8 +5,7 @@
   import { mute } from '.';
   import { _ } from 'svelte-i18n';
   import type { Video } from '$lib/classes/repos/types';
-  import type { Player } from '$lib/utils/module-vars';
-  import { emit } from '$lib/utils';
+  import type { Player } from './utils';
 
   export let src: string | null;
   export let type: string | undefined;
@@ -19,7 +18,7 @@
   export let autoplay: boolean;
   export let customUI = false;
   export let controls = false;
-  export let paused = false;
+  export let paused = true;
   export let preload = 'none';
   export let playhead = 0;
   export let duration: number;
@@ -35,12 +34,11 @@
   let buffered: TimeRanges;
   let buffer: TimeRanges;
   let scrubbing: boolean;
-  let timeoutIdForWait: number | undefined;
-  let timeoutIdForPause: number | undefined;
+  let timeoutId: number | undefined;
   let ui: HTMLDivElement;
 
   $: watchForWait(playhead);
-  $: watchForPause(playhead, paused);
+  $: paused && savePlayhead(playhead);
   $: poster = poster || emptyPoster;
   $: buffer && (buffered = videoElement?.buffered);
 
@@ -49,20 +47,15 @@
     window.addEventListener('video:poster:changed', videoPosterChangedHandler);
   });
 
-  function watchForPause(ph: number, paused: boolean) {
-    if (paused) {
-      clearTimeout(timeoutIdForPause);
-      timeoutIdForPause = setTimeout(() => {
-        // Unload and rewind playhead to start if video has ended
-        const ended = ph === duration;
-        playhead = ended ? 0 : ph;
-        dispatch('player:saveplayhead', {
-          id: video.id,
-          playhead,
-          callback: ended && { onsuccess: () => dispatch('player:unload', videoElement) }
-        });
-      }, 200);
-    }
+  function savePlayhead(time: number) {
+    // Unload and rewind playhead to start if video has ended
+    const ended = time === duration;
+    playhead = ended ? 0 : time;
+    dispatch('player:saveplayhead', {
+      id: video.id,
+      playhead,
+      callback: ended && { onsuccess: () => dispatch('player:unload', videoElement) }
+    });
   }
 
   /**
@@ -71,8 +64,8 @@
    */
   function watchForWait(time: number) {
     waiting = false;
-    clearTimeout(timeoutIdForWait);
-    timeoutIdForWait = setTimeout(
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(
       (previously: number) => {
         waiting = paused ? false : previously === time;
       },
@@ -125,14 +118,16 @@
 
     const code = e.code;
     const getCallback = (speed: number) => {
-      if (code === 'ArrowLeft') return () => ui.dispatchEvent(new CustomEvent('ui:show')) && (playhead -= speed);
-      if (code === 'ArrowRight') return () => ui.dispatchEvent(new CustomEvent('ui:show')) && (playhead += speed);
+      if (code === 'ArrowLeft')
+        return () => ui.dispatchEvent(new CustomEvent('ui:show')) && (playhead -= speed);
+      if (code === 'ArrowRight')
+        return () => ui.dispatchEvent(new CustomEvent('ui:show')) && (playhead += speed);
       return () => void 0;
     };
 
     if (code === 'Space') {
       playPauseHandler();
-      ui.dispatchEvent(new CustomEvent('ui:show', {cancelable: true}));
+      ui.dispatchEvent(new CustomEvent('ui:show', { cancelable: true }));
     } else {
       let callback = getCallback(e.shiftKey ? 10 : 1);
       intervalId = setInterval(callback, 100);

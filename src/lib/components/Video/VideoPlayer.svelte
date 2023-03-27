@@ -2,10 +2,11 @@
   import { page } from '$app/stores';
   import { Video } from '.';
   import { onMount } from 'svelte';
-  import { getExt, players, stack } from '$lib/utils';
+  import { players, streams } from './utils';
+  import { getExt } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import type { Video as VideoType } from '$lib/classes/repos/types';
-  import type { Player } from '$lib/utils/module-vars';
+  import type { Player } from './utils';
 
   export let src: string | null = null;
   export let poster: string | undefined = undefined;
@@ -47,7 +48,7 @@
   function pausePlayers() {
     players.forEach(async (plr) => {
       if (plr.promise === player?.promise) {
-        stack.add(element);
+        streams.add(element);
         unloadStream();
       } else if (!plr.element?.paused) {
         await plr.promise;
@@ -63,13 +64,13 @@
    * that can be loaded simultaniously (regardless of "preload" attribute is set to none)
    */
   function unloadStream(element?: HTMLVideoElement) {
-    if (!element && stack.size > 5) {
-      const it = stack.values();
+    if (!element && streams.size > 5) {
+      const it = streams.values();
       element = it.next().value;
     }
     if (element) {
       element.src = '';
-      stack.delete(element);
+      streams.delete(element);
     }
   }
 

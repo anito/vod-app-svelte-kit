@@ -18,6 +18,8 @@
   --ad-w: var(--sidebar-w);
   --sidebar-mid-w: 22.5rem;
   --sidebar-large-w: 30rem;
+  --dialog-w: 600px;
+  --dialog-max-w: calc(100vw - 32px);
   --main-width: 50rem;
   --side-nav: 2rem;
   --side-page: var(--side-nav);

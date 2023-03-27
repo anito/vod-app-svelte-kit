@@ -22,7 +22,7 @@ import {
   svg,
   windowSize
 } from './helper';
-import { key, stack, players } from './module-vars';
+import { key } from './module-vars';
 import {
   ADD,
   ADMIN,
@@ -89,8 +89,6 @@ export {
   parseLifetime,
   parseRedirect,
   placeholderDotComAvatar,
-  players,
-  stack,
   post,
   posterCreatedHandler,
   posterRemoveHandler,
