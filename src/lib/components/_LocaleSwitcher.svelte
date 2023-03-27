@@ -51,7 +51,7 @@
       <SelectionGroup>
         {#each $locales as _locale}
           <Item on:SMUI:action={() => setLocale(_locale)} selected={_locale === currentLocale}>
-            <Text class={_locale === currentLocale && 'font-bold'}
+            <Text class="label {_locale === currentLocale && 'font-bold'}"
               >{_locale.toUpperCase().slice(0, 2)}</Text
             >
             {#if _locale === currentLocale}
