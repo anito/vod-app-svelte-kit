@@ -51,9 +51,10 @@
     { name: DEL, i18n: 'text.delete-user', formAction: 'del' },
     { name: ADD, i18n: 'text.add-user', formAction: 'add' }
   ]);
+  const DEFAULT_MODE = EDIT;
 
   export let selectionUserId = '';
-  export let selectedMode = EDIT;
+  export let mode:string;
 
   let code;
   let root: HTMLElement;
@@ -75,13 +76,13 @@
   let email = '';
   let active = false;
   let __protected = false;
-  let mode: string;
+  let selectedMode: string = DEFAULT_MODE;
 
   $: token = $session.user?.jwt;
   $: groups = $session.groups || [];
   $: selectedUser = ((id) => {
     const user = $users.find((usr) => usr?.id === id) as User | undefined;
-    if (user && selectedMode !== ADD) {
+    if (user && mode !== ADD) {
       copy(user);
     }
     return user;
@@ -93,20 +94,20 @@
   $: isProtected = isCurrentSuperuser ? (!isSuperuser ? true : false) : !hasPrivileges;
   $: hidden = selectedUser?.id === $session.user?.id;
   $: notFound =
-    selectedMode !== ADD &&
+    mode !== ADD &&
     selectionUserId &&
     undefined === $users?.find((user) => user.id === selectionUserId);
-  $: _name = ((user) => user?.name || '')(selectedMode !== ADD ? selectedUser : undefined);
-  $: _active = ((usr) => usr?.active || false)(selectedMode !== ADD ? selectedUser : undefined);
+  $: _name = ((user) => user?.name || '')(mode !== ADD ? selectedUser : undefined);
+  $: _active = ((usr) => usr?.active || false)(mode !== ADD ? selectedUser : undefined);
   $: _protected = ((usr) => usr?.protected || false)(
-    selectedMode !== ADD ? selectedUser : undefined
+    mode !== ADD ? selectedUser : undefined
   );
-  $: _email = ((usr) => usr?.email || '')(selectedMode !== ADD ? selectedUser : undefined);
-  $: _group_id = ((usr) => usr?.group_id || '')(selectedMode !== ADD ? selectedUser : undefined);
+  $: _email = ((usr) => usr?.email || '')(mode !== ADD ? selectedUser : undefined);
+  $: _group_id = ((usr) => usr?.group_id || '')(mode !== ADD ? selectedUser : undefined);
   $: invalidPassword = password.length < 8;
   $: invalidRepeatedPassword = password !== repeatedPassword || invalidPassword;
   $: canSave =
-    selectedMode === ADD
+    mode === ADD
       ? name && group_id && !invalidEmail && !invalidRepeatedPassword
       : name !== _name ||
         (email !== _email && !invalidEmail) ||
@@ -133,9 +134,8 @@
     protectedLabel = (__protected && $_('text.unprotect-user')) || $_('text.protect-user');
   })(selectedUser);
   $: magicLink = (jwt && `${$page.url.origin}/login?token=${jwt}`) || '';
-  $: formAction = [...actionsLookup].find((action) => action.name === selectedMode)?.formAction;
-  $: selectedMode = $page.url.searchParams.get('mode') || (mode = EDIT);
-  $: ((mode) => {
+  $: formAction = [...actionsLookup].find((action) => action.name === mode)?.formAction;
+  $: if(mode) {
     root?.classList.toggle('user-add-view', mode === ADD);
     root?.classList.toggle('user-edit-view', mode === EDIT);
     root?.classList.toggle('user-password-view', mode === PASS);
@@ -146,8 +146,9 @@
       setTimeout(() => reset(), 100);
       setFab();
     }
-  })(selectedMode);
-  $: browser && setMode($page.url.searchParams.get('mode') || EDIT);
+  }
+  $: browser && setMode(selectedMode)
+  $: mode = $page.url.searchParams.get('mode') || DEFAULT_MODE;
 
   onMount(() => {
     root = document.documentElement;
@@ -189,9 +190,9 @@
     });
   };
 
-  function setMode(mode: string) {
+  function setMode(m: string) {
     const searchParams = new URLSearchParams($page.url.search);
-    searchParams.set('mode', mode);
+    searchParams.set('mode', m);
     goto(`${$page.url.pathname}?${searchParams.toString()}`);
   }
 
@@ -396,13 +397,13 @@
         <div slot="header">
           <span class="flex">
             <Heading mdc h="5" class="ml-2">
-              {#if selectedMode === ADD}
+              {#if mode === ADD}
                 {$_('text.create-new-user')}
               {:else if selectedUser}
                 {selectedUser?.name}
               {/if}
             </Heading>
-            {#if selectedMode === ADD}
+            {#if mode === ADD}
               <button on:click={() => setMode(EDIT)} class="button-close" />
             {/if}
           </span>
@@ -417,7 +418,7 @@
               </div>
             </div>
           {:else}
-            {#if selectionUserId && selectedMode !== ADD}
+            {#if selectionUserId && mode !== ADD}
               <div
                 class="avatar-container"
                 on:keydown={() => {}}
@@ -464,24 +465,24 @@
             {/if}
             <form use:enhance={formHandler} action={`?/${formAction}`} method="POST">
               <div class="user-items h-full">
-                {#if selectedMode !== ADD}
+                {#if mode !== ADD}
                   <div class="flex justify-between flex-wrap">
                     <div class="select-item item">
                       <Select
-                        bind:value={mode}
+                        bind:value={selectedMode}
                         label={$_('text.select-mode')}
                         class="select-width"
                         menu$class="select-width"
                         variant="filled"
                       >
                         {#each userCan as can}
-                          <Option value={can.name} selected={mode === can.name}>
+                          <Option value={can.name} selected={selectedMode === can.name}>
                             {$_(can.i18n)}
                           </Option>
                         {/each}
                       </Select>
                     </div>
-                    {#if selectedMode === EDIT && hasPrivileges}
+                    {#if mode === EDIT && hasPrivileges}
                       <div class="switches-wrapper">
                         <div class="item flex flex-col items-center">
                           <div class="ml-3" style="flex: 0.5;">
@@ -513,7 +514,7 @@
                     {/if}
                   </div>
                 {/if}
-                {#if selectedMode === ADD || selectedMode === EDIT}
+                {#if mode === ADD || mode === EDIT}
                   <div class="item">
                     <Textfield bind:value={name} label="Name" type="text" input$name="name">
                       <TextfieldIcon slot="leadingIcon" class="material-icons"
@@ -566,7 +567,7 @@
                     </Select>
                   </div>
                 {/if}
-                {#if selectedMode === ADD || selectedMode === PASS}
+                {#if mode === ADD || mode === PASS}
                   <div class="item">
                     <Textfield
                       type="password"
@@ -602,12 +603,12 @@
                     </Textfield>
                   </div>
                 {/if}
-                {#if selectedMode === ADD || selectedMode === EDIT || selectedMode === PASS}
+                {#if mode === ADD || mode === EDIT || mode === PASS}
                   <div class="item">
                     <div class="button-group">
                       <Group>
                         <Button
-                          disabled={selectedMode === PASS ? invalidRepeatedPassword : !canSave}
+                          disabled={mode === PASS ? invalidRepeatedPassword : !canSave}
                           color="primary"
                           variant="unelevated"
                         >
@@ -628,7 +629,7 @@
                     </div>
                   </div>
                 {/if}
-                {#if selectedMode === DEL}
+                {#if mode === DEL}
                   <div class="item">
                     <div class="alert-box mt-3" role="alert">
                       <div class="alert-head rounded-t px-4 py-2">
@@ -644,7 +645,7 @@
                     </div>
                   </div>
                 {/if}
-                {#if !selectedMode}
+                {#if !mode}
                   <FlexContainer>
                     {$_('text.empty-edit-mode')}
                   </FlexContainer>
@@ -652,7 +653,7 @@
               </div>
             </form>
           {/if}
-          {#if selectedUser && hasPrivileges && selectedMode !== ADD}
+          {#if selectedUser && hasPrivileges && mode !== ADD}
             <div class="table-wrapper">
               <div class="token-factory" class:no-token={!jwt}>
                 <div class="main-info">
@@ -681,7 +682,7 @@
                       </Button>
                     </Group>
                   </div>
-                  <div class="item ">
+                  <div class="item">
                     <TokenInfo {selectionUserId} />
                   </div>
                   <div class="item info-section">
