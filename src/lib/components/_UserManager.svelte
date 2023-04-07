@@ -51,10 +51,9 @@
     { name: DEL, i18n: 'text.delete-user', formAction: 'del' },
     { name: ADD, i18n: 'text.add-user', formAction: 'add' }
   ]);
-  const DEFAULT_MODE = EDIT;
+  const DEFAULT_MODE = $page.url.searchParams.get('mode') || EDIT;
 
   export let selectionUserId = '';
-  export let mode:string;
 
   let code;
   let root: HTMLElement;

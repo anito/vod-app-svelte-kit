@@ -148,7 +148,6 @@
       on:token:Remove
       on:user:Activate
       on:open:InfoDialog
-      {selectedMode}
       {selectionUserId}
     />
   {/if}
