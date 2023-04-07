@@ -75,7 +75,7 @@
   let email = '';
   let active = false;
   let __protected = false;
-  let mode = EDIT;
+  let mode: string;
 
   $: token = $session.user?.jwt;
   $: groups = $session.groups || [];
@@ -147,13 +147,12 @@
       setFab();
     }
   })(selectedMode);
-  $: browser && setMode(mode);
+  $: browser && setMode($page.url.searchParams.get('mode') || EDIT);
 
   onMount(() => {
     root = document.documentElement;
     root.classList.add('usermanager--open');
     snackbar = getSnackbar();
-    mode = EDIT;
 
     return () => {
       root.classList.remove(

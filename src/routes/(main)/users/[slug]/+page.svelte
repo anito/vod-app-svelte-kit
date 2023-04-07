@@ -72,6 +72,7 @@
 
   async function addUserHandler() {
     const searchParams = new URLSearchParams($page.url.searchParams.toString());
+    searchParams.set('tab', 'profile');
     searchParams.set('mode', ADD);
     await goto(`${$page.url.pathname}?${searchParams.toString()}`);
   }

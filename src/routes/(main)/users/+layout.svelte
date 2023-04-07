@@ -21,7 +21,7 @@
   } from '$lib/components';
   import { emit, filterByModelKeys, USER } from '$lib/utils';
   import Button, { Icon as ButtonIcon } from '@smui/button';
-  import Fab, { Label } from '@smui/fab';
+  import Fab, { Icon as FabIcon, Label } from '@smui/fab';
   import Icon from '@smui/textfield/icon';
   import List from '@smui/list';
   import Dialog, { Title as DialogTitle, Content, Actions, InitialFocus } from '@smui/dialog';
@@ -394,6 +394,11 @@
           {/if}
         {/if}
       </List>
+      <div style="position: absolute; right: 8px; bottom: 8px;">
+        <Fab class="" color="primary" on:click={addUser}>
+          <FabIcon class="material-icons">add</FabIcon>
+        </Fab>
+      </div>
     </Container>
   </div>
   <div slot="ad">
