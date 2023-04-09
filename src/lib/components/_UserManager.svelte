@@ -41,7 +41,8 @@
   const { open, close }: any = getContext('default-modal');
   const { getSnackbar, configSnackbar }: any = getContext('snackbar');
 
-  const privilegedActions = [EDIT, PASS, DEL];
+  const modi = [EDIT, PASS, DEL];
+  const privilegedActions = modi;
   const userActions = [EDIT, PASS];
   const setCopyButton = (node: any) => (copyButton = node);
   const setMagicLinkInput = (node: any) => (inputElementMagicLink = node);
@@ -51,7 +52,7 @@
     { name: DEL, i18n: 'text.delete-user', formAction: 'del' },
     { name: ADD, i18n: 'text.add-user', formAction: 'add' }
   ]);
-  const DEFAULT_MODE = $page.url.searchParams.get('mode') || EDIT;
+  const DEFAULT_MODE = $page.url.searchParams.get('mode') || EDIT;
 
   export let selectionUserId = '';
 
@@ -98,9 +99,7 @@
     undefined === $users?.find((user) => user.id === selectionUserId);
   $: _name = ((user) => user?.name || '')(mode !== ADD ? selectedUser : undefined);
   $: _active = ((usr) => usr?.active || false)(mode !== ADD ? selectedUser : undefined);
-  $: _protected = ((usr) => usr?.protected || false)(
-    mode !== ADD ? selectedUser : undefined
-  );
+  $: _protected = ((usr) => usr?.protected || false)(mode !== ADD ? selectedUser : undefined);
   $: _email = ((usr) => usr?.email || '')(mode !== ADD ? selectedUser : undefined);
   $: _group_id = ((usr) => usr?.group_id || '')(mode !== ADD ? selectedUser : undefined);
   $: invalidPassword = password.length < 8;
@@ -134,7 +133,7 @@
   })(selectedUser);
   $: magicLink = (jwt && `${$page.url.origin}/login?token=${jwt}`) || '';
   $: formAction = [...actionsLookup].find((action) => action.name === mode)?.formAction;
-  $: if(mode) {
+  $: if (mode) {
     root?.classList.toggle('user-add-view', mode === ADD);
     root?.classList.toggle('user-edit-view', mode === EDIT);
     root?.classList.toggle('user-password-view', mode === PASS);
@@ -146,7 +145,7 @@
       setFab();
     }
   }
-  $: browser && setMode(selectedMode)
+  $: browser && setMode(selectedMode);
   $: mode = $page.url.searchParams.get('mode') || DEFAULT_MODE;
 
   onMount(() => {
@@ -189,9 +188,9 @@
     });
   };
 
-  function setMode(m: string) {
-    const searchParams = new URLSearchParams($page.url.search);
-    searchParams.set('mode', m);
+  function setMode(mode: string) {
+    if (-1 === modi.indexOf(mode)) return;
+    const searchParams = new URLSearchParams({ tab: 'profile', mode });
     goto(`${$page.url.pathname}?${searchParams.toString()}`);
   }
 
