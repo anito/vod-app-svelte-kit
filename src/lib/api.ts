@@ -13,7 +13,7 @@ async function send(atts: {
 }) {
   const { method, path, token, data } = { ...atts };
   const url = path.startsWith('http') ? path : `${base}/${version}/${path}`;
-  const useBlob = method === 'GET' && browser && false;
+  const useBlob = method === 'GET' && browser && false; // don't use blob for now
 
   if (useBlob) {
     return getBlob(url, token);
