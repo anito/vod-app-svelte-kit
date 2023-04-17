@@ -1,4 +1,5 @@
-<img src="./images/hero_frontpage.jpg" alt="banner hero immercive studio">
+<img src="./images/hero.jpg" alt="banner hero immercive studio">
+<img src="./images/hero_2.jpg" alt="banner hero immercive studio">
 
 # Video On Demand Manager (SvelteKit)
 
