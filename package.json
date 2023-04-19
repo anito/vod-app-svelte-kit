@@ -82,6 +82,7 @@
   },
   "type": "module",
   "dependencies": {
+    "@tsconfig/svelte": "^1.0.12",
     "@vercel/analytics": "^0.1.8",
     "cookie": "^0.5.0",
     "html-minifier": "^4.0.0",
