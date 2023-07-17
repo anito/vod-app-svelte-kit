@@ -17,7 +17,7 @@
   let userExpires;
   let hasExpired;
   let jwt;
-  let magicLink: string;
+  let magicLink: string = '';
   let selectedUser: User | undefined;
   let username: string;
 
@@ -44,8 +44,8 @@
       magicLink = jwt && `${$page.url.origin}/login?token=${jwt}`;
     }
   })(selectedUser);
-  $: hidden =
-    !hasPrivileges || isCurrentSuperUser
+  $: disabled =
+    !magicLink || !hasPrivileges || isCurrentSuperUser
       ? true
       : selectionUserId == $session.user?.id
       ? true
@@ -118,10 +118,10 @@
         <Label>{$_('text.mail')}</Label>
       </Button>
     </Group>
-    <div class="flex mr-2" class:hidden>
+    <div class="flex mr-2">
       <Button
         on:click={() => emit('info:token:redirect')}
-        disabled={!magicLink}
+        {disabled}
         variant="unelevated"
       >
         <UserGraphic
