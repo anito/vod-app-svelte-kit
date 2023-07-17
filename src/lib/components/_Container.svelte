@@ -56,7 +56,7 @@
     .header {
       display: flex;
       position: absolute;
-      z-index: auto;
+      z-index: 0;
       justify-content: center;
       flex-direction: column;
       width: 100%;
@@ -128,7 +128,7 @@
   .wrapper .content {
     background-color: var(--content-background-color);
     height: 100%;
-    z-index: auto;
+    z-index: 1;
     flex-shrink: 1;
     -webkit-overflow-scrolling: touch;
     border-bottom-right-radius: var(--border-shape, 4px);
