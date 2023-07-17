@@ -56,7 +56,6 @@
     .header {
       display: flex;
       position: absolute;
-      z-index: 0;
       justify-content: center;
       flex-direction: column;
       width: 100%;
@@ -75,7 +74,6 @@
     display: flex;
     margin-top: 0px;
     position: relative;
-    z-index: auto;
   }
   :global(.transparent).wrapper::before {
     color: inherit;
@@ -128,7 +126,6 @@
   .wrapper .content {
     background-color: var(--content-background-color);
     height: 100%;
-    z-index: 1;
     flex-shrink: 1;
     -webkit-overflow-scrolling: touch;
     border-bottom-right-radius: var(--border-shape, 4px);
