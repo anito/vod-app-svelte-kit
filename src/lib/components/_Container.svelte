@@ -27,10 +27,10 @@
     class:extended
     class:transparent
   >
-    <div use:addClass={'header'} class={headerClassName}>
+    <div use:addClass={'container-header'} class={headerClassName}>
       <slot name="header">You must provide a header</slot>
     </div>
-    <div class="content {className}">
+    <div class="container-content {className}">
       <slot />
     </div>
   </div>
@@ -41,10 +41,10 @@
     position: relative;
     height: 100%;
   }
-  .wrapper .header > * {
+  .wrapper .container-header > * {
     color: inherit;
   }
-  .wrapper .header > * {
+  .wrapper .container-header > * {
     font-size: inherit;
     line-height: 1em;
     display: block;
@@ -53,19 +53,19 @@
     overflow: hidden;
   }
   .wrapper {
-    .header {
+    .container-header {
       display: flex;
       position: absolute;
-      z-index: auto;
+      z-index: 0;
       justify-content: center;
       flex-direction: column;
       width: 100%;
     }
-    &.primary .header {
+    &.primary .container-header {
       background-color: var(--mdc-theme-primary, rgb(179, 116, 1));
       color: var(--mdc-theme-on-primary);
     }
-    &.secondary .header {
+    &.secondary .container-header {
       background-color: var(--mdc-theme-secondary, rgb(179, 116, 1));
       color: var(--mdc-theme-on-secondary);
     }
@@ -81,22 +81,22 @@
     background-color: transparent;
   }
   .wrapper::before,
-  .header {
+  .container-header {
     height: var(--height, 50px);
     min-height: var(--height, 50px);
   }
-  .header {
+  .container-header {
     border-top-left-radius: var(--border-shape, 4px);
     border-top-right-radius: var(--border-shape, 4px);
   }
   :global(.xs).wrapper::before,
-  :global(.xs) .header {
+  :global(.xs) .container-header {
     height: var(--xs-h);
     min-height: var(--xs-h);
     font-size: 0.8em;
   }
   :global(.sm).wrapper::before,
-  :global(.sm) .header {
+  :global(.sm) .container-header {
     height: var(--sm-h);
     min-height: var(--sm-h);
     padding: 0 25px;
@@ -104,27 +104,28 @@
     width: 100%;
   }
   :global(.md).wrapper::before,
-  :global(.md) .header {
+  :global(.md) .container-header {
     height: var(--md-h);
     min-height: var(--md-h);
     padding: 0 25px;
     font-size: 1.6em;
   }
   :global(.lg).wrapper::before,
-  :global(.lg) .header {
+  :global(.lg) .container-header {
     height: var(--lg-h);
     min-height: var(--lg-h);
     padding: 0 25px;
     font-size: 2em;
   }
   :global(.xl).wrapper::before,
-  :global(.xl) .header {
+  :global(.xl) .container-header {
     height: var(--xl-h);
     min-height: var(--xl-h);
     padding: 0 25px;
     font-size: 3em;
   }
-  .wrapper .content {
+  .wrapper .container-content {
+    overflow: auto;
     background-color: var(--content-background-color);
     height: 100%;
     flex-shrink: 1;
@@ -132,11 +133,11 @@
     border-bottom-right-radius: var(--border-shape, 4px);
     border-bottom-left-radius: var(--border-shape, 4px);
   }
-  .wrapper.extended .content {
-    padding: 60px;
+  .wrapper.extended .container-content {
+    padding: 70px;
   }
   @media (min-width: 640px) {
-    .wrapper .header > :global(*) {
+    .wrapper .container-header > :global(*) {
       display: inline;
     }
   }

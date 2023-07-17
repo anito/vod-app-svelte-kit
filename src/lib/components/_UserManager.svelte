@@ -391,7 +391,7 @@
 <div class="main-grid">
   {#if $session.user}
     <div class="grid-item user" style="height: 100%;">
-      <Container density="sm" extended variant="primary">
+      <Container density="sm" extended variant="primary" class="overflow-visible">
         <div slot="header">
           <span class="flex">
             <Heading mdc h="5" class="ml-2">
@@ -836,8 +836,8 @@
     position: absolute;
     right: 50px;
     top: 20px;
-    cursor: pointer;
     z-index: 1;
+    cursor: pointer;
 
     :global(img) {
       cursor: pointer;
