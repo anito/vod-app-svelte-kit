@@ -47,7 +47,9 @@
   $: disabled =
     !magicLink || !hasPrivileges || isCurrentSuperUser
       ? true
-      : selectionUserId == $session.user?.id
+      : false;
+  $: hidden =
+    selectionUserId == $session.user?.id
       ? true
       : false;
 
@@ -118,7 +120,7 @@
         <Label>{$_('text.mail')}</Label>
       </Button>
     </Group>
-    <div class="flex mr-2">
+    <div class="flex mr-2" class:hidden>
       <Button
         on:click={() => emit('info:token:redirect')}
         {disabled}
