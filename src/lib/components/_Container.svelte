@@ -56,6 +56,7 @@
     .header {
       display: flex;
       position: absolute;
+      z-index: auto;
       justify-content: center;
       flex-direction: column;
       width: 100%;
@@ -127,6 +128,7 @@
     background-color: var(--content-background-color);
     height: 100%;
     flex-shrink: 1;
+    -webkit-transform: translate3d(0,0,0);
     -webkit-overflow-scrolling: touch;
     border-bottom-right-radius: var(--border-shape, 4px);
     border-bottom-left-radius: var(--border-shape, 4px);
