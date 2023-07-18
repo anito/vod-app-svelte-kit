@@ -6,7 +6,17 @@
   import { UserManager, TimeManager, MailManager, UserGraphic } from '$lib/components';
   import Button, { Group, Label, Icon } from '@smui/button';
   import { users, usersFoundation, session } from '$lib/stores';
-  import { emit, INBOX, ADMIN, SUPERUSER, TABS, createTabSearch, EDIT, ADD, DEFAULT_TAB } from '$lib/utils';
+  import {
+    emit,
+    INBOX,
+    ADMIN,
+    SUPERUSER,
+    TABS,
+    createTabSearch,
+    EDIT,
+    ADD,
+    DEFAULT_TAB
+  } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import type { PageData } from './$types';
   import type { User } from '$lib/classes/repos/types';
@@ -44,14 +54,8 @@
       magicLink = jwt && `${$page.url.origin}/login?token=${jwt}`;
     }
   })(selectedUser);
-  $: disabled =
-    !magicLink || !hasPrivileges || isCurrentSuperUser
-      ? true
-      : false;
-  $: hidden =
-    selectionUserId == $session.user?.id
-      ? true
-      : false;
+  $: disabled = !magicLink || !hasPrivileges || isCurrentSuperUser ? true : false;
+  $: hidden = selectionUserId == $session.user?.id ? true : false;
 
   setContext('siux', {
     getSIUX: getSimpleUserIndex
@@ -121,11 +125,7 @@
       </Button>
     </Group>
     <div class="flex mr-2" class:hidden>
-      <Button
-        on:click={() => emit('info:token:redirect')}
-        {disabled}
-        variant="unelevated"
-      >
+      <Button on:click={() => emit('info:token:redirect')} {disabled} variant="unelevated">
         <UserGraphic
           borderSize={1}
           borderColor="--surface"
