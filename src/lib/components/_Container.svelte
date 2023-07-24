@@ -125,7 +125,7 @@
     font-size: 3em;
   }
   .wrapper .container-content {
-    overflow: auto;
+    overflow: visible;
     background-color: var(--content-background-color);
     height: 100%;
     flex-shrink: 1;
