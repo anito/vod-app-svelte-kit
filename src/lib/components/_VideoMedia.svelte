@@ -20,7 +20,6 @@
   let playhead: number;
   let timeoutIdSavePlayhead: ReturnType<typeof setTimeout>;
   let poster: string | undefined;
-  let canplay = false;
   let loadeddata: boolean = false;
   let paused = true;
 

@@ -12,17 +12,15 @@
 
   export let data: PageData;
 
+  let promise: Promise<any>;
+
   const transitionParams = {
     delay: 100,
     duration: 600
   };
   const textTransitionParams = { ...transitionParams, x: -80 };
   const { mounted }: any = getContext('mounted');
-  let promise: Promise<any>;
-
-  $: $mounted && init();
-  $: loggedin = !!$session.user;
-  $: userPromise = () =>
+  const userPromise = () =>
     new Promise((resolve, reject) => {
       if ($session.user)
         resolve({
@@ -37,6 +35,9 @@
           type: 'success'
         });
     }).catch() as Promise<{ message: string; type: string }>;
+
+  $: $mounted && init();
+  $: loggedin = !!$session.user;
 
   // listeners are ready
   async function init() {

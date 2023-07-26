@@ -54,15 +54,14 @@
   $: video = $videos.find((v) => v.id === $page.params.slug);
   $: video_id = video?.id; // debounce video
   $: user_id = user?.id; // debounce user
-  $: promise =
-    browser &&
-    (new Promise((resolve, reject) => {
+  $: promise = () =>
+    new Promise((resolve, reject) => {
       if (video_id !== undefined && user_id !== undefined) {
         resolve(1);
       } else {
         reject();
       }
-    }).catch() as Promise<number>);
+    }).catch() as Promise<number>;
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: joindata = $users
     .find((u: User) => u.id === user?.id)
@@ -258,35 +257,33 @@
       <div class="curtain curtain-secondary" />
     </div>
   {/if}
-  {#await promise then}
-    {#if curVideo}
-      <div
-        in:fly={{ duration: mediaAnimDuration, opacity: 0, delay: 200 }}
-        out:fly={{ duration: mediaAnimDuration, opacity: 0 }}
-        on:introstart={introstartHandler}
-        on:introend={introendHandler}
-        on:outrostart={outrostartHandler}
-        on:outroend={outroendHandler}
-        class="media-player single-player flex flex-1"
-      >
-        <VideoPlayer
-          class="video-player flex flex-1"
-          bind:paused
-          bind:playhead
-          on:player:canplay_={canplayHandler}
-          on:player:emptied={emptiedHandler}
-          on:player:loadstart={loadstartHandler}
-          on:player:aborted={abortedHandler}
-          on:player:loadeddata={loadeddataHandler}
-          on:player:saveplayhead={savePlayheadHandler}
-          video={curVideo}
-          {customUI}
-          {poster}
-          {src}
-          scrub
-        />
-      </div>
-    {/if}
+  {#await promise() then}
+    <div
+      in:fly={{ duration: mediaAnimDuration, opacity: 0, delay: 200 }}
+      out:fly={{ duration: mediaAnimDuration, opacity: 0 }}
+      on:introstart={introstartHandler}
+      on:introend={introendHandler}
+      on:outrostart={outrostartHandler}
+      on:outroend={outroendHandler}
+      class="media-player single-player flex flex-1"
+    >
+      <VideoPlayer
+        class="video-player flex flex-1"
+        bind:paused
+        bind:playhead
+        on:player:canplay_={canplayHandler}
+        on:player:emptied={emptiedHandler}
+        on:player:loadstart={loadstartHandler}
+        on:player:aborted={abortedHandler}
+        on:player:loadeddata={loadeddataHandler}
+        on:player:saveplayhead={savePlayheadHandler}
+        video={curVideo}
+        {customUI}
+        {poster}
+        {src}
+        scrub
+      />
+    </div>
   {:catch}
     <FlexContainer>
       {$_('text.empty-video-selection')}

@@ -119,15 +119,15 @@
     const code = e.code;
     const getCallback = (speed: number) => {
       if (code === 'ArrowLeft')
-        return () => ui.dispatchEvent(new CustomEvent('ui:show')) && (playhead -= speed);
+        return () => ui?.dispatchEvent(new CustomEvent('ui:show')) && (playhead -= speed);
       if (code === 'ArrowRight')
-        return () => ui.dispatchEvent(new CustomEvent('ui:show')) && (playhead += speed);
+        return () => ui?.dispatchEvent(new CustomEvent('ui:show')) && (playhead += speed);
       return () => void 0;
     };
 
     if (code === 'Space') {
       playPauseHandler();
-      ui.dispatchEvent(new CustomEvent('ui:show', { cancelable: true }));
+      ui?.dispatchEvent(new CustomEvent('ui:show', { cancelable: true }));
     } else {
       let callback = getCallback(e.shiftKey ? 10 : 1);
       intervalId = setInterval(callback, 100);
@@ -259,6 +259,7 @@
 
 <slot />
 <div
+  role="button"
   bind:this={keyListenerDiv}
   class="player {className}"
   class:loadeddata
