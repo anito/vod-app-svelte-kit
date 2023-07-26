@@ -254,7 +254,7 @@
     (loaderBackgroundColor = colorSchema.current.mode === DARK ? '#000000' : '#ffffff');
   $: currentStore = $currentMediaStore;
 
-  onMount(async () => {
+  onMount(() => {
     root = document.documentElement;
     snackbar = getSnackbar();
 

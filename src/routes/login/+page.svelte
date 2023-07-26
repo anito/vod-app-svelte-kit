@@ -9,7 +9,6 @@
   import { processRedirect, emit } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import type { PageData } from './$types';
-  import { browser } from '$app/environment';
 
   export let data: PageData;
 
@@ -23,9 +22,8 @@
 
   $: $mounted && init();
   $: loggedin = !!$session.user;
-  $: userPromise =
-    browser &&
-    (new Promise((resolve, reject) => {
+  $: userPromise = () =>
+    new Promise((resolve, reject) => {
       if ($session.user)
         resolve({
           message: `${$session.salutation}, ${$session.user.name}`,
@@ -38,7 +36,7 @@
             : $_('text.login-text'),
           type: 'success'
         });
-    }).catch() as Promise<{ message: string; type: string }>);
+    }).catch() as Promise<{ message: string; type: string }>;
 
   // listeners are ready
   async function init() {
@@ -52,6 +50,7 @@
     promise = new Promise((resolve) => setTimeout(() => resolve(1), 500));
   }
 
+  // Redirect after successful login
   function introendHandler() {
     setTimeout(async () => {
       const location = processRedirect($page.url, $session);
@@ -93,16 +92,14 @@
                 </h5>
               </div>
             {:else}
-              {#await userPromise then promise}
-                {#if promise}
-                  <div
-                    class="flex justify-center items-center message {promise.type}"
-                    in:fly={textTransitionParams}
-                    on:introend={introendHandler}
-                  >
-                    <h5 class="m-2 mdc-typography--headline5 headline">{promise.message}</h5>
-                  </div>
-                {/if}
+              {#await userPromise() then promise}
+                <div
+                  class="flex justify-center items-center message {promise.type}"
+                  in:fly={textTransitionParams}
+                  on:introend={introendHandler}
+                >
+                  <h5 class="m-2 mdc-typography--headline5 headline">{promise.message}</h5>
+                </div>
               {:catch reason}
                 <div
                   class="flex justify-center items-center message {reason.type}"
