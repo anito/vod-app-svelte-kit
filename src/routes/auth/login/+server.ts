@@ -18,12 +18,15 @@ const setSession = async (locals: App.Locals, data: LoginResponseData) => {
   const salutations = locals.config.Site?.salutations;
   const lifetime = Number(locals.config.Session?.lifetime);
   const _expires = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
+  const locale = locals.session.data.locale;
+
+  await locals.session.destroy();
 
   await locals.session.set({
     ...parseData(data),
     _expires,
     salutation: randomItem(salutations),
-    locale: locals.session.data.locale
+    locale
   });
 };
 
@@ -50,7 +53,6 @@ export async function POST({ locals, request, url }: RequestEvent) {
   return await api
     .post(`${type}?locale=${locale}`, { token: data.token, data })
     .then(async (res) => {
-      await locals.session.destroy();
       if (res.success) await setSession(locals, res.data);
       return json(res);
     });
