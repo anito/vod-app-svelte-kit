@@ -259,12 +259,9 @@ export interface Subsection {
 export interface Metadata {
   title: string;
 }
-export interface LoginResponse {
-  success: boolean;
-  data: {
-    user: User;
-    groups: Group[];
-    renewed: boolean;
-    message: string;
-  };
+export interface LoginResponseData {
+  user: User;
+  groups: Group[];
+  renewed: boolean;
+  message: string;
 }

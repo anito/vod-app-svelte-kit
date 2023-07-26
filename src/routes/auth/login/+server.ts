@@ -3,9 +3,9 @@ import { error, json } from '@sveltejs/kit';
 import { parseLifetime, randomItem } from '$lib/utils';
 import type { User } from '$lib/classes/repos/types';
 import type { RequestEvent } from './$types';
-import type { LoginResponse } from '$lib/types';
+import type { LoginResponseData } from '$lib/types';
 
-const parseData = (data: any) => {
+const parseData = (data: LoginResponseData) => {
   const { id, name, email, avatar, jwt, role, groups }: User = { ...data.user, ...data };
   return {
     user: { id, name, email, jwt, avatar, role },
@@ -14,13 +14,13 @@ const parseData = (data: any) => {
   };
 };
 
-const setSession = async (locals: App.Locals, res: LoginResponse) => {
+const setSession = async (locals: App.Locals, data: LoginResponseData) => {
   const salutations = locals.config.Site?.salutations;
   const lifetime = Number(locals.config.Session?.lifetime);
   const _expires = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
 
   await locals.session.set({
-    ...parseData(res.data),
+    ...parseData(data),
     _expires,
     salutation: randomItem(salutations),
     locale: locals.session.data.locale
@@ -35,7 +35,7 @@ export async function GET({ locals, url }: RequestEvent) {
   if (token) {
     return await api.get(`${type}?token=${token}&locale=${locale}`).then(async (res) => {
       await locals.session.destroy();
-      if (res.success) await setSession(locals, res);
+      if (res.success) await setSession(locals, res.data);
       return json(res);
     });
   }
@@ -51,7 +51,7 @@ export async function POST({ locals, request, url }: RequestEvent) {
     .post(`${type}?locale=${locale}`, { token: data.token, data })
     .then(async (res) => {
       await locals.session.destroy();
-      if (res.success) await setSession(locals, res);
+      if (res.success) await setSession(locals, res.data);
       return json(res);
     });
 }
