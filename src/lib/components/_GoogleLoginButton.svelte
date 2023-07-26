@@ -3,7 +3,6 @@
   import { flash, googleUser } from '$lib/stores';
   import { get, emit } from '$lib/utils';
   import { _ } from 'svelte-i18n';
-  import type { GoogleUser } from '$lib/types';
 
   export let client_id = '';
 
@@ -61,7 +60,7 @@
         shape: 'pill',
         text: 'continue_with',
         logo_alignment: 'right',
-        width: '221'
+        width: 221
       } // customization attributes
     );
     globalGoogle.accounts.id.prompt(); // display the One Tap dialog

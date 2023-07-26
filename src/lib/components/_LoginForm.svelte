@@ -37,13 +37,7 @@
     ['Social', { rows: TWO, text: $_('text.social'), icon: 'mood' }]
   ]);
   const tabs = {
-    names: () => {
-      const names: string[] = [];
-      tabMap.forEach((val, key) => {
-        names.push(key);
-      });
-      return names;
-    },
+    names: () =>  [...tabMap.keys()],
     rows: (key: string) => tabMap.get(key)?.rows,
     text: (key: string) => tabMap.get(key)?.text,
     icon: (key: string) => tabMap.get(key)?.icon
