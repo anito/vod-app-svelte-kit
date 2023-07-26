@@ -3,6 +3,7 @@ import { error, json } from '@sveltejs/kit';
 import { parseLifetime, randomItem } from '$lib/utils';
 import type { User } from '$lib/classes/repos/types';
 import type { RequestEvent } from './$types';
+import type { LoginResponse } from '$lib/types';
 
 const parseData = (data: any) => {
   const { id, name, email, avatar, jwt, role, groups }: User = { ...data.user, ...data };
@@ -13,6 +14,19 @@ const parseData = (data: any) => {
   };
 };
 
+const setSession = async (locals: App.Locals, res: LoginResponse) => {
+  const salutations = locals.config.Site?.salutations;
+  const lifetime = Number(locals.config.Session?.lifetime);
+  const _expires = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
+
+  await locals.session.set({
+    ...parseData(res.data),
+    _expires,
+    salutation: randomItem(salutations),
+    locale: locals.session.data.locale
+  });
+};
+
 export async function GET({ locals, url }: RequestEvent) {
   const token = url.searchParams.get('token');
   const type = url.searchParams.get('type') || 'login';
@@ -21,17 +35,7 @@ export async function GET({ locals, url }: RequestEvent) {
   if (token) {
     return await api.get(`${type}?token=${token}&locale=${locale}`).then(async (res) => {
       await locals.session.destroy();
-      if (res.success) {
-        const salutations = locals.config.Site?.salutations;
-        const lifetime = Number(locals.config.Session?.lifetime);
-        const _expires = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
-        await locals.session.set({
-          ...parseData(res.data),
-          _expires,
-          salutation: randomItem(salutations),
-          locale
-        });
-      }
+      if (res.success) await setSession(locals, res);
       return json(res);
     });
   }
@@ -47,17 +51,7 @@ export async function POST({ locals, request, url }: RequestEvent) {
     .post(`${type}?locale=${locale}`, { token: data.token, data })
     .then(async (res) => {
       await locals.session.destroy();
-      if (res.success) {
-        const salutations = locals.config.Site?.salutations;
-        const lifetime = Number(locals.config.Session?.lifetime);
-        const _expires = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
-        await locals.session.set({
-          ...parseData(res.data),
-          _expires,
-          salutation: randomItem(salutations),
-          locale
-        });
-      }
+      if (res.success) await setSession(locals, res);
       return json(res);
     });
 }
