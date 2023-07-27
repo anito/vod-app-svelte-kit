@@ -9,7 +9,7 @@
   let mesh: Mesh;
   let rotationZ = 0.9;
   const topoColorValOnDark = new Color(38 / 255, 38 / 255, 38 / 255);
-  const topoColorValOnLight = new Color(248 / 255, 248 / 255, 248 / 255);
+  const topoColorValOnLight = new Color(231 / 255, 231 / 255, 231 / 255);
   const highlightColorValOnDark = new Color(56 / 255, 56 / 255, 56 / 255);
   const highlightColorValOnLight = new Color(255 / 255, 255 / 255, 255 / 255);
   const f = 3.3;
