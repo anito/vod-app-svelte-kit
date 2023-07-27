@@ -27,6 +27,9 @@
 </Section>
 
 <style lang="scss">
+  :global(.dark) .blurb .box {
+    --opacity: 0.75;
+  }
   .blurb {
     display: grid;
     grid-row-gap: 1em;
@@ -40,7 +43,7 @@
     .box {
       --blur: blur(2.5px);
       --saturate: saturate(180%);
-      --opacity: 0.6;
+      --opacity: 1;
       padding: 1em;
       display: flex;
       flex-direction: column;
@@ -51,12 +54,12 @@
       backdrop-filter: var(--saturate) var(--blur);
 
       &.primary {
-        --color: rgb(40 158 255/var(--opacity));
+        --color: rgb(40 158 255 / var(--opacity));
         color: var(--on-primary);
         grid-area: one;
       }
       &.flash {
-        --color: rgb(174 20 87/var(--opacity));
+        --color: rgb(174 20 87 / var(--opacity));
         color: white;
         grid-area: two / two;
       }
