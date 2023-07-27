@@ -11,10 +11,13 @@
   import Textfield from '@smui/textfield';
   import Select, { Option } from '@smui/select';
   import Button, { Icon } from '@smui/button';
+  import { Canvas } from '$lib/components';
+  import TerrainScene from '$lib/components/scenes/SceneTerrain.svelte';
+  import FilmgrainScene from '$lib/components/scenes/SceneFilmgrain.svelte';
   import { ADMIN, SUPERUSER } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import type Snackbar from '@smui/snackbar';
-    import type { ActionResult } from '@sveltejs/kit';
+  import type { ActionResult } from '@sveltejs/kit';
 
   const { getSnackbar, configSnackbar }: any = getContext('snackbar');
   const void0 = void 0;
@@ -64,7 +67,7 @@
   });
 
   const sendMail = () => {
-    return ({result}: {result: ActionResult}) => {
+    return ({ result }: { result: ActionResult }) => {
       let message;
       if (result.type === 'success') {
         const success = result.data?.success;
@@ -95,6 +98,12 @@
 </svelte:head>
 
 <Layout>
+  <Canvas class='bg-canvas'>
+    <TerrainScene />
+  </Canvas>
+  <Canvas class='fg-canvas'>
+    <FilmgrainScene />
+  </Canvas>
   <Hero title="Immersive Studio" tagline="" outline={hero} logotype={logo} />
 
   <Blurb>
@@ -142,7 +151,6 @@
             <div class="flex justify-between" style="width: 100%;">
               <Textfield
                 bind:value={name}
-                name="name"
                 disabled={!!$session.user}
                 label=""
                 style="flex: 0.49"

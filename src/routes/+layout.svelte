@@ -9,7 +9,7 @@
   import '$lib/components/_card.scss';
   import { dev, version } from '$app/environment';
   import { afterNavigate, beforeNavigate, goto, invalidate, invalidateAll } from '$app/navigation';
-  import { derived, writable } from 'svelte/store';
+  import { derived, writable, type Writable } from 'svelte/store';
   import { navigating, page } from '$app/stores';
   import { enhance } from '$app/forms';
   import { getContext, onMount, setContext, tick } from 'svelte';
@@ -37,7 +37,6 @@
     flash,
     framework,
     session,
-    theme,
     ticker,
     urls,
     videos,
@@ -61,7 +60,7 @@
   import { svg_manifest } from '$lib/svg_manifest';
   import { _, locale } from 'svelte-i18n';
   import Dialog, { Title as DialogTitle, Content, Actions as DialogActions } from '@smui/dialog';
-  import { IMAGE, VIDEO } from '$lib/utils/const';
+  import { DARK, IMAGE, LIGHT, VIDEO } from '$lib/utils/const';
   import { inject } from '@vercel/analytics';
   import type { NavigationTarget } from '@sveltejs/kit';
   import type { Dropzone } from '$lib/components/Dropzone/type';
@@ -71,8 +70,6 @@
 
   const snackbarLifetime = 4000;
   const redirectDelay = 300;
-  const LIGHT = 'light';
-  const DARK = 'dark';
 
   let root: Element;
   let outerElement: HTMLDivElement;
@@ -90,8 +87,7 @@
   let loaderBackgroundOpacity = 1;
   let loaderColor = 'var(--primary)';
   let loaderBackgroundColor: string;
-  let colorSchema: { current: any; requested: any };
-  let mediaMode: string | undefined;
+  let colorSchema: { mode: string; icon: string; label: string };
   let isMounted = false;
   let isPreferredDarkMode;
   let dropzone: Dropzone;
@@ -181,6 +177,11 @@
     searchVideosAll: (data: any, limit: number = 10) =>
       searchBy('/repos/videos/all', { match: data, limit })
   });
+  
+  const mediaMode: Writable<string> = writable();
+  setContext('theme', {
+    mediaMode
+  });
 
   const { info }: any = getContext('logger');
   const editableSettings = new Map([
@@ -238,7 +239,7 @@
   });
 
   $: printDiff($page.data, { store: 'page' });
-  $: logo = svg(svg_manifest.logo_vod, $theme.primary);
+  $: logo = svg(svg_manifest.logo_vod);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: root && ((user) => root.classList.toggle('loggedin', user))(!!$session.user);
   $: root && ((isPrivileged) => root.classList.toggle('admin', isPrivileged))(hasPrivileges);
@@ -249,9 +250,8 @@
   $: searchParamsString = $page.url.searchParams.toString();
   $: search = searchParamsString && `?${searchParamsString}`;
   $: settingsDialog?.setOpen($page.url.searchParams.get('modal') === 'settings');
-  $: $locale && setTheme(colorSchema?.current.mode);
   $: $mounted &&
-    (loaderBackgroundColor = colorSchema.current.mode === DARK ? '#000000' : '#ffffff');
+    (loaderBackgroundColor = colorSchema.mode === LIGHT ? '#000000' : '#ffffff');
   $: currentStore = $currentMediaStore;
 
   onMount(() => {
@@ -262,14 +262,13 @@
     initMediaListener();
     checkSession();
     initClasses();
-    initStyles();
     printCopyright();
 
+    
     isPreferredDarkMode = !window.matchMedia('(prefers-color-scheme: light)').matches;
-    const mode = isPreferredDarkMode ? DARK : LIGHT;
-    setTheme(mode);
-
+    setColorSchema(isPreferredDarkMode ? DARK : LIGHT);
     $mounted = true;
+
     return () => {
       removeListener();
       removeClasses();
@@ -321,35 +320,17 @@
     isMobile().any && root.classList.add('ismobile');
   }
 
-  function initStyles() {
-    let styles = window.getComputedStyle(root);
-    theme.set({
-      primary: styles.getPropertyValue('--primary'),
-      secondary: styles.getPropertyValue('--secondary')
-    });
-  }
-
-  function setTheme(mode: string | undefined) {
-    colorSchema = setColorSchema(mode);
+  function setColorSchema(mode: string) {
+    const getSchemaIcon = (m: string) => (m === LIGHT ? 'dark_mode' : 'light_mode');
+    const getSchemaLabel = (m: string) => (m === LIGHT ? $_('text.dark_mode') : $_('light_mode'));
+    
+    $mediaMode = mode;
     root?.classList.toggle(DARK, mode === DARK);
-    mediaMode = mode;
-  }
 
-  function setColorSchema(m = LIGHT) {
-    const mode = m === LIGHT ? DARK : LIGHT;
-    const getSchemaIcon = (m: string) => (m === DARK ? 'dark_mode' : 'light_mode');
-    const getSchemaLabel = (m: string) => (m === DARK ? $_('text.dark_mode') : $_('light_mode'));
-    return {
-      current: {
-        mode: m,
-        icon: getSchemaIcon(m),
-        label: getSchemaLabel(m)
-      },
-      requested: {
+    colorSchema = {
         mode,
         icon: getSchemaIcon(mode),
         label: getSchemaLabel(mode)
-      }
     };
   }
 
@@ -379,7 +360,7 @@
 
   async function mediaChangedHandler({ matches }: any) {
     const mode = matches ? LIGHT : DARK;
-    setTheme(mode);
+    setColorSchema(mode);
   }
 
   async function videoSaveHandler({ detail }: CustomEvent) {
@@ -686,7 +667,7 @@
 </script>
 
 <svelte:head>
-  <link id="media-mode" rel="stylesheet" href={`/smui${mediaMode === DARK ? '-dark' : ''}.css`} />
+  <link id="media-mode" rel="stylesheet" href={`/smui${$mediaMode === DARK ? '-dark' : ''}.css`} />
 </svelte:head>
 
 <Icons />
@@ -807,12 +788,12 @@
             <NavItem>
               <span style="width: 45px;" class="flex">
                 <Button
-                  on:click$preventDefault={() => setTheme(colorSchema?.requested.mode)}
+                  on:click$preventDefault={() => setColorSchema(colorSchema?.mode === DARK ? LIGHT : DARK)}
                   class="link-button"
                   style="min-width: 45px; justify-content: center;"
                   ripple={false}
                 >
-                  <SvgIcon name={colorSchema?.requested.icon} class="mr-2" size={22}/>
+                  <SvgIcon name={colorSchema?.icon} class="mr-2" size={22} />
                 </Button>
               </span>
             </NavItem>

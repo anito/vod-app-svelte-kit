@@ -64,3 +64,5 @@ export const EDIT = 'edit';
 export const ADD = 'add';
 export const DEL = 'del';
 export const PASS = 'pass';
+export const LIGHT = 'light';
+export const DARK = 'dark';

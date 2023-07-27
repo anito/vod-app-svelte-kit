@@ -155,19 +155,12 @@ export function placeholderDotComAvatar(name = '?') {
     .join('')}`;
 }
 
-export function svg(fn: { (c: any): string }, colors: string | string[]) {
-  colors = (!Array.isArray(colors) && [colors]) || colors;
+export function svg(fn: any, colors: string | string[] = []) {
+  colors = !Array.isArray(colors) ? [colors] : colors;
   return (
     'data:image/svg+xml;utf8,' +
     encodeURIComponent(
-      fn(
-        ((c) => {
-          for (var fillColors = [], i = 0; i < c.length; i++) {
-            fillColors.push(c[i]);
-          }
-          return fillColors;
-        })(colors)
-      )
+      fn(...colors)
     )
   );
 }

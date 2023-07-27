@@ -16,7 +16,6 @@ export { default as session } from './sessionStore'; // derived
 export { default as usersFoundation } from './userFoundationStore';
 export { default as streams } from './streamStore';
 export { default as templates } from './templateStore';
-export { default as theme } from './themeStore';
 export { default as ticker } from './tickerStore'; // derived
 export { default as urls } from './urlStore';
 export { default as users } from './userStore';
