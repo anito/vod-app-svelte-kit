@@ -66,7 +66,7 @@
   import type { Dropzone } from '$lib/components/Dropzone/type';
   import type { User } from '$lib/classes/repos/types';
 
-  // inject({ mode: dev ? 'development' : 'production' });
+  inject({ mode: dev ? 'development' : 'production' });
 
   const snackbarLifetime = 4000;
   const redirectDelay = 300;
