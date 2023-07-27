@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { de } from 'date-fns/locale/index';
+import de from 'date-fns/locale/de/index.js';
 
 function createStore() {
   const { subscribe, update, set } = writable(de, () => {});

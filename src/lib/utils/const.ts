@@ -1,4 +1,5 @@
-import { de, enUS } from 'date-fns/locale/index';
+import de from 'date-fns/locale/de/index.js';
+import enUS from 'date-fns/locale/en-US/index.js';
 
 export const DIFFSTORES = new Map([
   ['config', new Map()],
