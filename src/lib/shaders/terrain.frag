@@ -7,6 +7,7 @@ uniform float scroll;
 uniform float waveAmplitude;
 uniform float topoDefinition;
 uniform vec3 topoColor;
+uniform vec3 highlightColor;
 
 varying vec3 vPosition;
 varying vec2 vUv;
@@ -27,11 +28,12 @@ void main(void){
   // Gradients
   // vec3 from=vec3(.7098,.0471,.0471);
   vec3 from=vec3(0.,.749,.9765);
-  vec3 via=vec3(1.,1.,1.);
-  // vec3 via=vec3(.4078,.4078,.4078);
-  vec3 to=vec3(.7098,.0471,.0471);
-  vec3 funColor=vUv.y>.5?mix(via,from,(vUv.y-.5)*2.):mix(to,via,vUv.y*2.);
+  // vec3 via=vec3(1.,1.,1.);
+  vec3 via=highlightColor;
+  vec3 to=highlightColor;
+  vec3 funColor=vUv.y>.5?mix(via,from,(vUv.y-.5)*5.):mix(to,via,(vUv.y-0.)*2.);
   // vec3 funColor=mix(to,from,(vUv.y-.5)*2.);
-  gl_FragColor=vec4(mix(vec3(.5,.5,.5),funColor,vUv.y),mix(1.-line,0.,pow(2.*distToCenter/nLines,5.)));
+  gl_FragColor=vec4(mix(highlightColor,funColor,vUv.y),mix(1.-line,0.,pow(2.*distToCenter/nLines,5.)));
+  // gl_FragColor=vec4(mix(highlightColor,funColor,vUv.y),mix(1.-line,0.,pow(2.*distToCenter/nLines,5.)));
   // gl_FragColor=vec4(mix(vec3(.5,.5,.5),funColor,vUv.y),mix(1.-line,0.,pow(2.*distToCenter/nLines,5.)));
 }

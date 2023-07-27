@@ -8,6 +8,10 @@
 
   let mesh: Mesh;
   let rotationZ = 0.9;
+  const topoColorValOnDark = new Color(38 / 255, 38 / 255, 38 / 255);
+  const topoColorValOnLight = new Color(248 / 255, 248 / 255, 248 / 255);
+  const highlightColorValOnDark = new Color(46 / 255, 46 / 255, 46 / 255);
+  const highlightColorValOnLight = new Color(255 / 255, 255 / 255, 255 / 255);
   const f = 3.3;
   const t = 2.7;
   let d = 0;
@@ -31,15 +35,14 @@
     const n = (Math.PI * (u - t)) / (f - t);
     uniforms.time.value = t + (f - t) * Math.sin(n);
     uniforms.topoColor.value = topoColorVal;
+    uniforms.highlightColor.value = highlightColorVal;
     d = window.scrollY;
   });
 
   const { mediaMode }: any = getContext('theme');
 
-  $: topoColorVal =
-    $mediaMode === DARK
-      ? new Color(38 / 255, 38 / 255, 38 / 255)
-      : new Color(228 / 255, 228 / 255, 228 / 255);
+  $: topoColorVal = $mediaMode === DARK ? topoColorValOnDark : topoColorValOnLight;
+  $: highlightColorVal = $mediaMode === DARK ? highlightColorValOnDark : highlightColorValOnLight;
   $: uniforms = {
     time: { value: t },
     speed: { value: 0.002 },
@@ -47,7 +50,8 @@
     waveDefinition: { value: 1.4 },
     waveAmplitude: { value: 0.5 },
     topoDefinition: { value: 70 },
-    topoColor: { value: new Color(228 / 255, 228 / 255, 228 / 255) }
+    topoColor: { value: new Color(228 / 255, 228 / 255, 228 / 255) },
+    highlightColor: { value: new Color(228 / 255, 228 / 255, 228 / 255) }
   };
 
   onMount(() => {});
@@ -68,7 +72,7 @@
   // geometry.setAttribute('position', bufferAttr);
 </script>
 
-<T.Mesh bind:ref={mesh} scale={600} position={[-100, 0, 200]} rotation={[0,0,rotationZ]}>
+<T.Mesh bind:ref={mesh} scale={600} position={[-100, 0, 200]} rotation={[0, 0, rotationZ]}>
   <T.PlaneGeometry args={[5, 5, 800, 800]} />
   <T.ShaderMaterial transparent side={2} {vertexShader} {fragmentShader} {uniforms} />
 </T.Mesh>
