@@ -10,7 +10,7 @@
   let rotationZ = 0.9;
   const topoColorValOnDark = new Color(38 / 255, 38 / 255, 38 / 255);
   const topoColorValOnLight = new Color(248 / 255, 248 / 255, 248 / 255);
-  const highlightColorValOnDark = new Color(46 / 255, 46 / 255, 46 / 255);
+  const highlightColorValOnDark = new Color(56 / 255, 56 / 255, 56 / 255);
   const highlightColorValOnLight = new Color(255 / 255, 255 / 255, 255 / 255);
   const f = 3.3;
   const t = 2.7;

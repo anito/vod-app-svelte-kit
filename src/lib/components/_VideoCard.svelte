@@ -325,7 +325,7 @@
     </Actions>
   {/if}
 </Card>
-<div class="card-outer" on:click={cardClick} on:mousedown on:keydown />
+<div tabindex="0" role="button" class="card-outer" on:click={cardClick} on:mousedown on:keydown />
 
 <style lang="scss">
   :global(.preview-image) {

@@ -5,8 +5,6 @@
 
 <T.PerspectiveCamera
   aspect={window.innerWidth / window.innerHeight}
-  near={0.1}
-  far={1000}
   fov={75}
 />
 
