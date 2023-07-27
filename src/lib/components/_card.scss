@@ -35,6 +35,9 @@ $border-radius: 3px;
       display: inline-block;
       --fontSize: 0.7em;
     }
+    .checkbox-container {
+      display: none;
+    }
     .mdc-button {
       @include mdc-button-label-overflow-ellipsis();
       @include mdc-button-density(0);
@@ -49,12 +52,16 @@ $border-radius: 3px;
       .card-actions {
         z-index: 2;
       }
-      &[selected='true']::after {
+      &[aria-selected='true']::after {
         content: '';
         background: var(--secondary);
       }
-      .card-content, .card-actions {
+      .card-content,
+      .card-actions {
         opacity: 0.4;
+      }
+      .checkbox-container {
+        display: block;
       }
     }
     .card::after {

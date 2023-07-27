@@ -6,6 +6,7 @@
   import Button, { Label } from '@smui/button';
   import IconButton, { Icon } from '@smui/icon-button';
   import Menu from '@smui/menu';
+  import Checkbox from '@smui/checkbox';
   import Tooltip, { Wrapper } from '@smui/tooltip';
   import List, { Item, Text } from '@smui/list';
   import { SvgIcon } from '.';
@@ -34,8 +35,11 @@
   }
 </script>
 
-<Card class="card image {className} primary">
-  <PrimaryAction class="primary-action">
+<Card aria-selected={selected} variant="raised" class="card image primary {className}">
+  <PrimaryAction class="primary-action" on:click={() => console.log('clicked')}>
+    <div class="absolute z-10 checkbox-container">
+      <Checkbox bind:checked={selected} />
+    </div>
     <MediaImagePreview media={image} />
     <div class="hidden" class:activeposter>
       {#if posterVideos.length}

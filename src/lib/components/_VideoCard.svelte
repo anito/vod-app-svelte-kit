@@ -16,6 +16,7 @@
   } from '$lib/utils';
   import { VideoMedia, MediaUploader, Paginator } from '$lib/components';
   import Card, { Content, PrimaryAction, Actions, ActionButtons, ActionIcons } from '@smui/card';
+  import Checkbox from '@smui/checkbox';
   import Button, { Label } from '@smui/button';
   import IconButton, { Icon } from '@smui/icon-button';
   import Menu from '@smui/menu';
@@ -148,8 +149,8 @@
   }
 </script>
 
-<Card class="card {className} primary" variant="raised">
-  <PrimaryAction class="primary-action" on:click={() => currentVideo.set(video)}>
+<Card aria-selected={selected} class="card primary {className}" variant="raised">
+  <PrimaryAction class="primary-action relative" on:click={() => currentVideo.set(video)}>
     <VideoMedia
       on:key:enter={() => save()}
       on:key:escape={() => (editmode = false)}
@@ -159,6 +160,9 @@
       {editmode}
       {emptyPoster}
     />
+    <div class="absolute z-10 checkbox-container">
+      <Checkbox bind:checked={selected} />
+    </div>
     <Content class="card-content">
       <div class="wrapper flex flex-row justify-between">
         <div class="flex flex-col" style="flex-basis: 50%; max-width: 50%">

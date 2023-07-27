@@ -49,13 +49,14 @@
   });
 
   async function changeTab(tab: string) {
+    toggleCardSelect(false);
     await goto(`/videos?tab=${tab}`);
     return false;
   }
 
-  function toggleCardSelect() {
+  function toggleCardSelect(active = !select) {
     selection.reset();
-    select = !select;
+    select = active;
   }
 
   function resetCardSelect() {
