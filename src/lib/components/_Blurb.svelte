@@ -44,7 +44,7 @@
       padding: 1em;
       display: flex;
       flex-direction: column;
-      border-width: 4px;
+      border-width: 0;
       background-color: var(--color);
       border-color: var(--color);
       -webkit-backdrop-filter: var(--saturate) var(--blur);
