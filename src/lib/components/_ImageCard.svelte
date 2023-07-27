@@ -17,7 +17,7 @@
   export { className as class };
 
   $: posterVideos = image.videos || [];
-  $: activeposter = posterVideos.length
+  $: activeposter = posterVideos.length;
 
   let selected: boolean;
 
@@ -34,7 +34,7 @@
   }
 </script>
 
-<Card class="card image {className} primary" {selected}>
+<Card class="card image {className} primary">
   <PrimaryAction class="primary-action">
     <MediaImagePreview media={image} />
     <div class="hidden" class:activeposter>
@@ -82,7 +82,7 @@
     </ActionButtons>
   </Actions>
 </Card>
-<div class="card-outer" on:click={cardClick} on:mousedown on:keydown />
+<div tabindex="0" role="button" class="card-outer" on:click={cardClick} on:mousedown on:keydown />
 
 <style>
   .activeposter {

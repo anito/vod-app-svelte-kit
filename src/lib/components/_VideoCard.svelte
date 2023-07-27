@@ -148,8 +148,8 @@
   }
 </script>
 
-<Card class="card {className} primary" {selected} variant="raised">
-  <PrimaryAction class="primary-action" onclick={() => currentVideo.set(video)}>
+<Card class="card {className} primary" variant="raised">
+  <PrimaryAction class="primary-action" on:click={() => currentVideo.set(video)}>
     <VideoMedia
       on:key:enter={() => save()}
       on:key:escape={() => (editmode = false)}
