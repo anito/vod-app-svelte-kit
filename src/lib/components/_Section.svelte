@@ -1,4 +1,10 @@
-<section>
+<script type="ts">
+  export { className as class };
+
+  let className = '';
+</script>
+
+<section class={className}>
   <slot />
 </section>
 

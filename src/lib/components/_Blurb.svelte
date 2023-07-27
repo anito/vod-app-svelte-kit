@@ -1,8 +1,12 @@
 <script>
   import Section from './_Section.svelte';
+
+  export { className as class };
+
+  let className = '';
 </script>
 
-<Section>
+<Section class={className}>
   <div class="blurb">
     <div class="box primary">
       <slot name="one" />
@@ -34,18 +38,25 @@
       'how';
 
     .box {
+      --blur: blur(2.5px);
+      --saturate: saturate(180%);
+      --opacity: 0.6;
       padding: 1em;
       display: flex;
       flex-direction: column;
-      border-bottom: none;
+      border-width: 4px;
+      background-color: var(--color);
+      border-color: var(--color);
+      -webkit-backdrop-filter: var(--saturate) var(--blur);
+      backdrop-filter: var(--saturate) var(--blur);
 
       &.primary {
-        background: var(--primary);
+        --color: rgb(40 158 255/var(--opacity));
         color: var(--on-primary);
         grid-area: one;
       }
       &.flash {
-        background: var(--flash);
+        --color: rgb(174 20 87/var(--opacity));
         color: white;
         grid-area: two / two;
       }
