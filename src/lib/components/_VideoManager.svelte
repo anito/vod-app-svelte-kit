@@ -134,8 +134,6 @@
   {#if videos?.length}
     <ul
       bind:this={ul}
-      tabindex="-1"
-      on:keydown={(e) => !ul.querySelector('.card .editor') && e.preventDefault()}
       class="items-list grid lg:grid-cols-3 md:grid-cols-2 grid-flow-row gap-4"
     >
       {#each videos as video (video.id)}

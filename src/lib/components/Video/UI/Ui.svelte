@@ -1,5 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher, onMount, tick } from 'svelte';
+  import { fade } from 'svelte/transition';
   import { format, mute } from '..';
   import { _ } from 'svelte-i18n';
 
@@ -133,6 +134,7 @@
 </script>
 
 <div
+  in:fade
   style:--inline-controls-inside-margin={'6px'}
   style:--fullscreen-controls-bar-height={'75px'}
   style:--primary-glyph-color={'rgba(255, 255, 255, 0.75)'}

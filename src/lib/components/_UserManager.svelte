@@ -418,6 +418,8 @@
           {:else}
             {#if selectionUserId && mode !== ADD}
               <div
+                tabindex="0"
+                role="button"
                 class="avatar-container"
                 on:keydown={() => {}}
                 on:click={() => avatarMenu?.setOpen(true)}
@@ -550,10 +552,9 @@
                       disabled={!hasPrivileges}
                       label={$_('text.user-role')}
                       class="select-width"
-                      name="group_id"
+                      input$name="group_id"
                       bind:value={group_id}
                     >
-                      <input type="hidden" name="group_id" bind:value={group_id} />
                       <SelectIcon slot="leadingIcon" class="material-icons">contact_page</SelectIcon
                       >
                       <Option selected={true}>{$_('text.please-select')}</Option>
@@ -572,7 +573,6 @@
                       bind:invalid={invalidPassword}
                       bind:value={password}
                       label={$_('text.password')}
-                      name="password"
                       style="min-width: 250px;"
                       input$name="password"
                     >
@@ -671,7 +671,6 @@
                       </Button>
                       <Button
                         disabled={isProtected || !jwt}
-                        label={$_('text.can-not-remove-admin-token')}
                         variant="raised"
                         on:click={() => !isProtected && emit('info:token:remove', { open: true })}
                       >

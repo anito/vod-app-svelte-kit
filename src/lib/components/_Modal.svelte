@@ -149,6 +149,8 @@
 
 {#if HostedComponent}
   <div
+    tabindex="0"
+    role="button"
     class="bg"
     on:keydown={() => {}}
     on:click={handleOuterClick}
