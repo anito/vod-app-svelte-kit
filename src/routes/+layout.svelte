@@ -251,7 +251,7 @@
   $: search = searchParamsString && `?${searchParamsString}`;
   $: settingsDialog?.setOpen($page.url.searchParams.get('modal') === 'settings');
   $: $mounted &&
-    (loaderBackgroundColor = colorSchema.mode === LIGHT ? '#000000' : '#ffffff');
+    (loaderBackgroundColor = colorSchema.mode === DARK ? '#000000' : '#ffffff');
   $: currentStore = $currentMediaStore;
 
   onMount(() => {
