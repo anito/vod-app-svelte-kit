@@ -98,6 +98,7 @@
     "sass": "^1.51.0",
     "svelte-kit-cookie-session": "^3.4.1",
     "three": "^0.154.0",
-    "tweakpane": "^3.1.10"
+    "tweakpane": "^3.1.10",
+    "web-vitals": "^3.4.0"
   }
 }

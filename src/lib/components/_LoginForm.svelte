@@ -134,7 +134,6 @@
             bind:value={email}
             bind:input$name={email}
             label="Email"
-            autocomplete="user-email"
           >
             <Icon class="material-icons" slot="leadingIcon">mail</Icon>
           </Textfield>
@@ -146,7 +145,6 @@
             bind:value={password}
             bind:input$name={password}
             label={$_('text.password')}
-            autocomplete="user-password"
           >
             <Icon class="material-icons" slot="leadingIcon">login</Icon>
           </Textfield>

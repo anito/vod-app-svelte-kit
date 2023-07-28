@@ -6,5 +6,8 @@ export default defineConfig({
   plugins: [sveltekit(), basicSsl()],
   ssr: {
     noExternal: ['postprocessing']
+  },
+  define: {
+    'import.meta.env.VERCEL_ANALYTICS_ID': JSON.stringify(process.env.VERCEL_ANALYTICS_ID)
   }
 });

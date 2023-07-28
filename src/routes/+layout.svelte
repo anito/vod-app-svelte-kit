@@ -7,13 +7,14 @@
   import '$lib/components/_dialog.scss';
   import '$lib/components/_list.scss';
   import '$lib/components/_card.scss';
-  import { dev, version } from '$app/environment';
+  import { browser, dev, version } from '$app/environment';
   import { afterNavigate, beforeNavigate, goto, invalidate, invalidateAll } from '$app/navigation';
   import { derived, writable, type Writable } from 'svelte/store';
   import { navigating, page } from '$app/stores';
   import { enhance } from '$app/forms';
   import { getContext, onMount, setContext, tick } from 'svelte';
   import isMobile from 'ismobilejs';
+  import { webVitals } from '$lib/vitals';
   import { Icons } from '$lib/components';
   import Button, { Icon } from '@smui/button';
   import IconButton from '@smui/icon-button';
@@ -70,6 +71,7 @@
 
   const snackbarLifetime = 4000;
   const redirectDelay = 300;
+  const analytics_id = import.meta.env.VERCEL_ANALYTICS_ID;
 
   let root: Element;
   let outerElement: HTMLDivElement;
@@ -252,6 +254,13 @@
   $: $mounted &&
     (loaderBackgroundColor = colorSchema.mode === DARK ? '#000000' : '#ffffff');
   $: currentStore = $currentMediaStore;
+  $: if (browser && analytics_id) {
+    webVitals({
+      path: $page.url.pathname,
+      params: $page.params,
+      analytics_id
+    })
+  }
 
   onMount(() => {
     root = document.documentElement;
@@ -904,8 +913,9 @@
   <DialogTitle id="info-title">{$_('text.settings')}</DialogTitle>
   <Content>
     <div class="settings-list">
-      <div style="position: absolute; right: 20px; top: 20px; font-size: .5rem;">
-        VERSION: {version}
+      <div style="position: absolute; right: 20px; top: 20px; font-size: .5rem; max-width: 120px; line-height: 1.4em;">
+        <p>VERSION: {version}</p>
+        <p>ANALYTICS ID: {analytics_id || '-'}</p>
       </div>
       <ul class="level-1">
         {#each Object.entries($page.data.config).sort() as setting}
