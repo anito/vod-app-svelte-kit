@@ -1,17 +1,26 @@
 <img src="./images/hero.jpg" alt="banner hero immercive studio">
 <img src="./images/hero_2.jpg" alt="banner hero immercive studio">
 
-# Video On Demand Manager (SvelteKit)
+# Video On Demand Manager
 
 *This repo is a Proof Of Concept*
 
-In order to better understand and to study this awesome javascript framework, this project is just a proof of concept.
-This means it deals with most of the main concepts which form the base of SvelteKit.
+The main focus of this web application is on session handling and data exchange with the [Backend API](https://github.com/anito/vod-backend).
+It aims to deal with most of the main concepts of SvelteKit.
 
 ### In general this application allows you to: ###
-Manage videos on a per user basis.
-Create time frames limiting access to booked video content.
-Create and send tokens (sign-in link) to simplify the login process using build-in Email Manager and a basic Mail-Template creation tool.
+
+Manage / watch videos on a per user basis.
+
+In a real worl application managment and client logic/UI would certainly be split into two separate apps. This app dows all in one presenting an extended UI to Administrators and Superusers:
+
+Regular users can watch videos within a configured timeframe and read their internal emails.
+
+Administrators or Superusers may manage video library, create booking timeslots, create email templates, send emails to users (mainly in order to provide easy access by providing a token) or generate/revoke access tokens (JWTs).
+
+### What the app can not do: ###
+
+Users can not (yet) apply for a video to book. This is because the idea of this app originated from the times where occupational therapist and such where forced to find a way to provide their training and exercises to clients while offices needed to close their doors during the lock down.
 
 [Landing Page](https://vod-app.doojoo.de)
 
