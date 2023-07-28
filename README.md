@@ -26,7 +26,7 @@ Users can not (yet) apply for a video to book. This is because the idea of this 
 
 [Landing Page](https://vod-app.doojoo.de)
 
-[Access Sample Administrators Mailbox](https://vod-app.doojoo.de/login?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNTQ5NjNmMS05YmU0LTQyZmItOGQzYi0zZjQwNmEyM2FlNjAiLCJleHAiOjE5NTYyMjU4OTJ9.zt3NtwvgehRS_QTmt8RtsbE6Wpfkp-MGbebQRV9R4BE&redirect=/users/354963f1-9be4-42fb-8d3b-3f406a23ae60%3Ftab%3Dmail%26active%3Dinboxes%26mail_id%3D6c543ac8-a992-4d98-ae6a-58c72694b9ad)
+[Access Sample Administrators Mailbox](https://vod-app.doojoo.de/login?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNTQ5NjNmMS05YmU0LTQyZmItOGQzYi0zZjQwNmEyM2FlNjAiLCJleHAiOjE5NTYyMjU4OTJ9.zt3NtwvgehRS_QTmt8RtsbE6Wpfkp-MGbebQRV9R4BE&redirect=/users/354963f1-9be4-42fb-8d3b-3f406a23ae60%3Ftab%3Dmail%26active%3Dinboxes%26mail_id%3D3d660d30-d76c-4a86-8b75-1098124459e9)
 
 This application was originally made using [Sapper (development abandoned)](https://github.com/anito/vod-app).
 
