@@ -1,22 +1,25 @@
 import { onCLS, onFCP, onFID, onLCP, onTTFB } from 'web-vitals';
+import type { Metric } from 'web-vitals';
 
 const vitalsUrl = 'https://vitals.vercel-analytics.com/v1/vitals';
 
 function getConnectionSpeed() {
+  let navigatorConn: { effectiveType: string };
   return 'connection' in navigator &&
-    navigator['connection'] &&
-    // @ts-ignore
-    'effectiveType' in navigator['connection']
-    ? // @ts-ignore
-      navigator['connection']['effectiveType']
+    (navigatorConn = navigator.connection as { effectiveType: string }) &&
+    navigatorConn.effectiveType
+    ? navigatorConn['effectiveType']
     : '';
 }
 
-/**
- * @param {import("web-vitals").Metric} metric
- * @param {{ params: { [s: string]: any; } | ArrayLike<any>; path: string; analyticsId: string; debug: boolean; }} options
- */
-async function sendToAnalytics(metric, options) {
+type Options = {
+  params: string[];
+  analyticsId: string;
+  path: string;
+  debug: boolean;
+};
+
+async function sendToAnalytics(metric: Metric, options: Options) {
   const page = Object.entries(options.params).reduce(
     (acc, [key, value]) => acc.replace(value, `[${key}]`),
     options.path
@@ -29,14 +32,13 @@ async function sendToAnalytics(metric, options) {
     href: location.href,
     event_name: metric.name,
     value: metric.value.toString(),
-    speed: getConnectionSpeed()
+    speed: getConnectionSpeed() as unknown as string
   };
 
   if (options.debug) {
     console.log('[Web Vitals]', metric.name, JSON.stringify(body, null, 2));
   }
 
-  // @ts-ignore
   const blob = new Blob([new URLSearchParams(body).toString()], {
     // This content type is necessary for `sendBeacon`
     type: 'application/x-www-form-urlencoded'
@@ -62,7 +64,7 @@ async function sendToAnalytics(metric, options) {
 /**
  * @param {any} options
  */
-export function webVitals(options) {
+export function webVitals(options: Options) {
   try {
     onFID((metric) => sendToAnalytics(metric, options));
     onTTFB((metric) => sendToAnalytics(metric, options));
