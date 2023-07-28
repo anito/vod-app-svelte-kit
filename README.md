@@ -3,7 +3,7 @@
 
 # Video On Demand Manager
 
-*This repo is a Proof Of Concept*
+*This Repo is a Proof Of Concept*
 
 The main focus of this web application is on [session handling](https://github.com/pixelmund/svelte-kit-cookie-session) and data exchange with the [Backend API](https://github.com/anito/vod-backend).
 It aims to deal with most of the main concepts of SvelteKit.
