@@ -150,7 +150,6 @@ export interface Framework<FrameworkType = Record<string, any>> {
   icontype: string;
   host: string;
   href: string;
-  target: string;
   disabled?: boolean;
 }
 
