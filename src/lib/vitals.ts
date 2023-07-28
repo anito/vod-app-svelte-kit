@@ -13,10 +13,10 @@ function getConnectionSpeed() {
 }
 
 type Options = {
-  params: string[];
+  params: Record<string, string>;
   analyticsId: string;
   path: string;
-  debug: boolean;
+  debug?: boolean;
 };
 
 async function sendToAnalytics(metric: Metric, options: Options) {
@@ -61,9 +61,6 @@ async function sendToAnalytics(metric: Metric, options: Options) {
     });
 }
 
-/**
- * @param {any} options
- */
 export function webVitals(options: Options) {
   try {
     onFID((metric) => sendToAnalytics(metric, options));

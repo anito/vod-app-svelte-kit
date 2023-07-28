@@ -71,7 +71,7 @@
 
   const snackbarLifetime = 4000;
   const redirectDelay = 300;
-  const analytics_id = import.meta.env.VERCEL_ANALYTICS_ID;
+  const analyticsId = import.meta.env.VERCEL_ANALYTICS_ID;
 
   let root: Element;
   let outerElement: HTMLDivElement;
@@ -254,11 +254,11 @@
   $: $mounted && (loaderBackgroundColor = colorSchema.mode === DARK ? '#000000' : '#ffffff');
   $: currentStore = $currentMediaStore;
 
-  $: if (browser && analytics_id && $page.data.config.Site['web-vitals']) {
+  $: if (browser && analyticsId && $page.data.config.Site['web-vitals']) {
     webVitals({
       path: $page.url.pathname,
       params: $page.params,
-      analytics_id
+      analyticsId
     });
   }
 
@@ -956,7 +956,7 @@
       </ul>
       <div style="position: absolute; top: 0; right: 0; padding: 15px; font-size: .5em; line-height: 1.4em;">
         <p>VERSION: {version}</p>
-        <p>ANALYTICS ID: {analytics_id || '-'}</p>
+        <p>ANALYTICS ID: {analyticsId || '-'}</p>
       </div>
     </div>
   </Content>
