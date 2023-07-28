@@ -1,6 +1,6 @@
 import { onCLS, onFCP, onFID, onLCP, onTTFB } from 'web-vitals';
 
-const vitalsUrl = 'https://api.vercel.com/v1/vitals';
+const vitalsUrl = 'https://vitals.vercel-analytics.com/v1/vitals';
 
 function getConnectionSpeed() {
   return 'connection' in navigator &&
@@ -16,7 +16,7 @@ function getConnectionSpeed() {
  * @param {import("web-vitals").Metric} metric
  * @param {{ params: { [s: string]: any; } | ArrayLike<any>; path: string; analyticsId: string; debug: boolean; }} options
  */
-function sendToAnalytics(metric, options) {
+async function sendToAnalytics(metric, options) {
   const page = Object.entries(options.params).reduce(
     (acc, [key, value]) => acc.replace(value, `[${key}]`),
     options.path
@@ -41,14 +41,19 @@ function sendToAnalytics(metric, options) {
     // This content type is necessary for `sendBeacon`
     type: 'application/x-www-form-urlencoded'
   });
+
+  console.log('Blob:', blob);
+
   if (navigator.sendBeacon) {
     navigator.sendBeacon(vitalsUrl, blob);
   } else
-    fetch(vitalsUrl, {
+    await fetch(vitalsUrl, {
       body: blob,
       method: 'POST',
       credentials: 'omit',
       keepalive: true
+    }).then((res) => {
+      console.log(res);
     });
 }
 
