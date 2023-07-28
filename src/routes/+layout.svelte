@@ -77,7 +77,6 @@
   let actionLink: string;
   let actionLabel: string;
   let timeoutId: number | undefined;
-  let pollId;
   let loggedInButtonTextSecondLine: string;
   let emphasize: string;
   let snackbar: Snackbar;

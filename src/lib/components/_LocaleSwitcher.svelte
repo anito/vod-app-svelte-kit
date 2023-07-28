@@ -1,4 +1,5 @@
-<script>
+<script lang="ts">
+  import { invalidate } from '$app/navigation';
   import { createEventDispatcher } from 'svelte';
   import Menu, { SelectionGroup, SelectionGroupIcon } from '@smui/menu';
   import { Anchor } from '@smui/menu-surface';
@@ -7,29 +8,19 @@
   import { _, locale, locales } from 'svelte-i18n';
 
   let localeMenuAnchor;
-  /**
-   * @type {Menu}
-   */
-  let localeMenu;
-  /**
-   * @type {string | null | undefined}
-   */
-  let currentLocale;
+  let localeMenu: Menu;
 
   $: currentLocale = $locale;
 
   const dispatch = createEventDispatcher();
 
-  /**
-   *
-   * @param {string} value
-   */
-  async function setLocale(value) {
+  async function setLocale(value: string) {
     localeMenu?.setOpen(false);
     if (value === currentLocale) return;
 
     $locale = value;
-    await post('/session', { locale: $locale }).then(() => {
+    await post('/session', { locale: $locale }).then(async (res) => {
+      await invalidate('app:session');
       dispatch('changed:locale', { locale: LOCALESTORE.get(value)?.localized });
     });
   }

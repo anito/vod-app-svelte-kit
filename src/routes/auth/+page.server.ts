@@ -1,5 +1,3 @@
-import type { Actions } from './$types';
-
 export const actions = {
   login: async ({ request, locals, fetch, url }) => {
     const data = await request.formData();
@@ -16,4 +14,4 @@ export const actions = {
     const res = await fetch('/auth/logout', { method: 'POST' }).then(async (res) => res.json());
     return res;
   }
-} satisfies Actions;
+};

@@ -1,7 +1,6 @@
 import { images, users, videos, videosAll } from '$lib/stores';
-import type { LayoutLoadEvent } from './$types';
 
-export async function load({ data }: LayoutLoadEvent) {
+export async function load({ data }) {
   data.users && users.update(data.users.data);
   data.user && users.add([data.user]);
   data.videos && videos.update(data.videos.data);

@@ -1,7 +1,6 @@
 import { json } from '@sveltejs/kit';
-import type { RequestEvent } from './$types';
 
-export const GET = async ({ locals: { usersRepo, session }, url, cookies }: RequestEvent) => {
+export const GET = async ({ locals: { usersRepo, session }, url, cookies }) => {
   const { user } = session.data;
   const token = user?.jwt;
   const page: number = parseInt(url.searchParams.get('page') || '1');
@@ -24,7 +23,7 @@ export const GET = async ({ locals: { usersRepo, session }, url, cookies }: Requ
   return json(users);
 };
 
-export const POST = async ({ locals: { usersRepo, session }, request, cookies }: RequestEvent) => {
+export const POST = async ({ locals: { usersRepo, session }, request, cookies }) => {
   const { user } = session.data;
   const token = user?.jwt;
   const options = await request.json(); // { match, limit, auto }

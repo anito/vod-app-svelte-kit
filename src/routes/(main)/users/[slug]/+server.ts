@@ -1,8 +1,7 @@
 import * as api from '$lib/api';
 import { json } from '@sveltejs/kit';
-import type { RequestEvent } from './$types';
 
-export async function GET({ params, locals }: RequestEvent) {
+export async function GET({ params, locals }) {
   const id = params.slug;
   const { locale, user } = locals.session.data;
   const token = user?.jwt;
@@ -12,7 +11,7 @@ export async function GET({ params, locals }: RequestEvent) {
   });
 }
 
-export async function PUT({ request, params, locals }: RequestEvent) {
+export async function PUT({ request, params, locals }) {
   const data = await request.json();
   const id = params.slug;
   const { locale, user } = locals.session.data;
@@ -23,7 +22,7 @@ export async function PUT({ request, params, locals }: RequestEvent) {
   });
 }
 
-export async function DELETE({ params, locals }: RequestEvent) {
+export async function DELETE({ params, locals }) {
   const id = params.slug;
   const { locale, user } = locals.session.data;
   const token = user?.jwt;

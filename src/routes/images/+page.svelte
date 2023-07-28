@@ -10,9 +10,8 @@
   import { Heading } from '$lib/components';
   import { fabs, session, images, currentVideo } from '$lib/stores';
   import { _ } from 'svelte-i18n';
-  import type { PageData } from './$types';
 
-  export let data: PageData;
+  export let data;
 
   $: images.update(data.images);
 

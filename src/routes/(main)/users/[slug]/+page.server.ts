@@ -1,4 +1,3 @@
-import type { Actions } from './$types';
 import { locale } from 'svelte-i18n';
 import { get } from 'svelte/store';
 
@@ -36,4 +35,4 @@ export const actions = {
       .then(async (res) => await res.json())
       .catch((reason) => console.error('[ACTIONS]', reason));
   }
-} satisfies Actions;
+};

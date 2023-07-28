@@ -1,7 +1,6 @@
 import { json } from '@sveltejs/kit';
-import type { RequestEvent } from './$types';
 
-export const GET = async ({ locals: { imagesRepo, session }, url, cookies }: RequestEvent) => {
+export const GET = async ({ locals: { imagesRepo, session }, url, cookies }) => {
   const { user } = session.data;
   const token = user?.jwt;
   const page: number = parseInt(url.searchParams.get('page') || '1');
@@ -24,7 +23,7 @@ export const GET = async ({ locals: { imagesRepo, session }, url, cookies }: Req
   return json(images);
 };
 
-export const POST = async ({ locals: { imagesRepo, session }, request }: RequestEvent) => {
+export const POST = async ({ locals: { imagesRepo, session }, request }) => {
   const { user } = session.data;
   const token = user?.jwt;
   const options = await request.json(); // { match, limit }

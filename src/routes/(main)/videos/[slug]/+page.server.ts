@@ -1,7 +1,6 @@
 import { redirect } from '@sveltejs/kit';
-import type { PageServerLoadEvent } from './$types';
 
-export async function load({ locals }: PageServerLoadEvent) {
+export async function load({ locals }) {
   if (!locals.session.data.user) {
     throw redirect(301, `/`);
   }

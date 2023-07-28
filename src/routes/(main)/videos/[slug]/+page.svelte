@@ -1,7 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { beforeNavigate } from '$app/navigation';
-  import { browser } from '$app/environment';
   import { fly } from 'svelte/transition';
   import { getContext, onMount } from 'svelte';
   import { session, videos, users } from '$lib/stores';
@@ -9,10 +8,9 @@
   import VideoPlayer, { format } from '$lib/components/Video';
   import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, emit } from '$lib/utils';
   import { _ } from 'svelte-i18n';
-  import type { PageData } from './$types';
   import type { User, Video } from '$lib/classes/repos/types';
 
-  export let data: PageData;
+  export let data;
 
   const { info }: any = getContext('logger');
   const curtain = true;

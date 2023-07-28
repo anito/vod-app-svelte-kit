@@ -1,6 +1,4 @@
-import type { PageLoadEvent } from './$types';
-
-export async function load({ fetch, url, data }: PageLoadEvent) {
+export async function load({ fetch, url, data }) {
   /**
    * Handles token login / hotswap
    */

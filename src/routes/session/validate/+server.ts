@@ -1,7 +1,6 @@
 import { json } from '@sveltejs/kit';
-import type { RequestEvent } from './$types';
 
-export async function POST({ locals, request, fetch }: RequestEvent) {
+export async function POST({ locals, request, fetch }) {
   const { _expires, init } = await request.json();
   /**
    * With init flag true a fresh config will be loaded from the API Server (handled by server hook)

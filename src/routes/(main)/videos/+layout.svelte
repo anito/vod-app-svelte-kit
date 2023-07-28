@@ -5,6 +5,7 @@
   import { fly } from 'svelte/transition';
   import Layout from './layout.svelte';
   import List from '@smui/list';
+  import IconButton, { Icon } from '@smui/icon-button';
   import {
     Legal,
     PageBar,
@@ -19,10 +20,8 @@
   import { session, videos } from '$lib/stores';
   import emptyPoster from '/src/assets/images/empty-poster.jpg';
   import { _ } from 'svelte-i18n';
-  import type { LayoutData } from './$types';
-  import IconButton, { Icon } from '@smui/icon-button';
 
-  export let data: LayoutData;
+  export let data;
 
   const minSearchChars = 3;
   const modelSearchKeys = 'id,title,description';

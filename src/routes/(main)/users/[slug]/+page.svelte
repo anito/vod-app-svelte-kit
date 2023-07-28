@@ -18,10 +18,9 @@
     DEFAULT_TAB
   } from '$lib/utils';
   import { _ } from 'svelte-i18n';
-  import type { PageData } from './$types';
   import type { User } from '$lib/classes/repos/types';
 
-  export let data: PageData;
+  export let data;
 
   let selectedMode = EDIT;
   let userExpires;

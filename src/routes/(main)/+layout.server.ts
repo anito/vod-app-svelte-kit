@@ -1,8 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import { createRedirectSlug, USER } from '$lib/utils';
-import type { LayoutServerLoadEvent } from './$types';
 
-export async function load({ depends, locals, cookies, url }: LayoutServerLoadEvent) {
+export async function load({ depends, locals, cookies, url }) {
   const { session, usersRepo, videosRepo, videosAllRepo, imagesRepo } = locals;
   if (!session.data.user) {
     const logoutredirect = locals.config.Session.logoutredirect || '/';

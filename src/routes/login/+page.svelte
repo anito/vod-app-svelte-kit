@@ -8,9 +8,8 @@
   import { fly } from 'svelte/transition';
   import { processRedirect, emit } from '$lib/utils';
   import { _ } from 'svelte-i18n';
-  import type { PageData } from './$types';
 
-  export let data: PageData;
+  export let data;
 
   let promise: Promise<any>;
 

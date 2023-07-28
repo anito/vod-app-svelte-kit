@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
   import { Canvas } from '@threlte/core';
   import { addClass } from '$lib/utils';
 

@@ -26,7 +26,6 @@
   import List from '@smui/list';
   import Dialog, { Title as DialogTitle, Content, Actions, InitialFocus } from '@smui/dialog';
   import { _ } from 'svelte-i18n';
-  import type { LayoutData } from './$types';
   import type { User } from '$lib/classes/repos/types';
   import type { Issue } from '$lib/types';
   import type Snackbar from '@smui/snackbar';
@@ -42,7 +41,7 @@
   const { searchUsers }: any = getContext('search');
 
   const segment = getSegment();
-  export let data: LayoutData;
+  export let data;
 
   let selectedUser: User | undefined;
   let username: string | undefined;
@@ -462,7 +461,7 @@
     </div>
   </Content>
   <Actions>
-    <Button action="approved" default use={[InitialFocus]}>
+    <Button action="approved" use={[InitialFocus]}>
       <Label>{$_('text.close')}</Label>
     </Button>
   </Actions>
@@ -494,7 +493,7 @@
       <Button action="none">
         <Label>{$_('text.cancel')}</Label>
       </Button>
-      <Button action="approved" variant="unelevated" default use={[InitialFocus]}>
+      <Button action="approved" variant="unelevated" use={[InitialFocus]}>
         <Label>{$_('text.resolve-conflicts')}</Label>
       </Button>
     </Actions>
@@ -505,7 +504,7 @@
       </div>
     </Content>
     <Actions>
-      <Button action="none" variant="unelevated" default use={[InitialFocus]}>
+      <Button action="none" variant="unelevated" use={[InitialFocus]}>
         <Label>{$_('text.close')}</Label>
       </Button>
     </Actions>
@@ -530,7 +529,7 @@
     <Button action="none">
       <Label>{$_('text.cancel')}</Label>
     </Button>
-    <Button action="approved" variant="unelevated" default use={[InitialFocus]}>
+    <Button action="approved" variant="unelevated" use={[InitialFocus]}>
       <Label>{active ? $_('text.deactivate-user') : $_('text.activate-user')}</Label>
     </Button>
   </Actions>
@@ -560,7 +559,7 @@
     <Button action="none">
       <Label>{$_('text.cancel')}</Label>
     </Button>
-    <Button action="approved" variant="unelevated" default use={[InitialFocus]}>
+    <Button action="approved" variant="unelevated" use={[InitialFocus]}>
       <Label>{$_('text.generate-token')}</Label>
     </Button>
   </Actions>
@@ -581,7 +580,7 @@
     <Button action="none">
       <Label>{$_('text.cancel')}</Label>
     </Button>
-    <Button action="approved" variant="unelevated" default use={[InitialFocus]}>
+    <Button action="approved" variant="unelevated" use={[InitialFocus]}>
       <Label>{$_('text.delete-token-and-deactivate-account')}</Label>
     </Button>
   </Actions>
@@ -681,7 +680,7 @@
     <Button action="none">
       <Label>{$_('text.close')}</Label>
     </Button>
-    <Button action="approved" variant="unelevated" default use={[InitialFocus]}>
+    <Button action="approved" variant="unelevated" use={[InitialFocus]}>
       <Label>{$_('text.got-it')}</Label>
     </Button>
   </Actions>

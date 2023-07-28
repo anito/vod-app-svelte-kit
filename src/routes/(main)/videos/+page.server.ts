@@ -1,5 +1,3 @@
-import type { Actions } from './$types';
-
 export const actions = {
   more_videos: async ({ locals, cookies }) => {
     const pagination = JSON.parse(cookies.get('pagination') || '{}');
@@ -35,4 +33,4 @@ export const actions = {
     cookies.set('pagination', JSON.stringify(newPagination), { path: '/' });
     return images;
   }
-} satisfies Actions;
+};

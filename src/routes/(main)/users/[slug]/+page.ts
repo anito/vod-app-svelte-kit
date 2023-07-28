@@ -1,10 +1,9 @@
 import { get } from 'svelte/store';
 import { users } from '$lib/stores';
 import { ADMIN, SUPERUSER } from '$lib/utils';
-import type { PageLoadEvent } from './$types';
 import type { User } from '$lib/classes/repos/types';
 
-export async function load({ params, fetch, parent, setHeaders }: PageLoadEvent) {
+export async function load({ params, fetch, parent, setHeaders }) {
   const parentData = await parent();
   const role = parentData.session.role;
   const hasPrivileges = role === SUPERUSER || role === ADMIN;

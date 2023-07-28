@@ -2,7 +2,6 @@ import * as api from '$lib/api';
 import { error, json } from '@sveltejs/kit';
 import { parseLifetime, randomItem } from '$lib/utils';
 import type { User } from '$lib/classes/repos/types';
-import type { RequestEvent } from './$types';
 import type { LoginResponseData } from '$lib/types';
 
 const parseData = (data: LoginResponseData) => {
@@ -30,7 +29,7 @@ const setSession = async (locals: App.Locals, data: LoginResponseData) => {
   });
 };
 
-export async function GET({ locals, url }: RequestEvent) {
+export async function GET({ locals, url }) {
   const token = url.searchParams.get('token');
   const type = url.searchParams.get('type') || 'login';
   const locale = locals.session.data.locale;
@@ -45,7 +44,7 @@ export async function GET({ locals, url }: RequestEvent) {
   throw error(401, 'This method is only allowed for token logins');
 }
 
-export async function POST({ locals, request, url }: RequestEvent) {
+export async function POST({ locals, request, url }) {
   const data = await request.json();
   const type = url.searchParams.get('type') || 'login';
   const locale = locals.session.data.locale;

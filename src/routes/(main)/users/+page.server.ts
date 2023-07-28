@@ -1,5 +1,3 @@
-import type { Actions } from './$types';
-
 export const actions = {
   more: async ({ locals, cookies }) => {
     let pagination = JSON.parse(cookies.get('pagination') || '{}');
@@ -12,4 +10,4 @@ export const actions = {
     cookies.set('pagination', JSON.stringify(newPagination), { path: '/' });
     return users;
   }
-} satisfies Actions;
+};

@@ -1,6 +1,4 @@
-import type { PageServerLoadEvent } from '../$types';
-
-export async function load({ locals }: PageServerLoadEvent) {
+export async function load({ locals }) {
   return {
     session: locals.session.data
   };

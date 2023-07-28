@@ -1,6 +1,4 @@
-import type { LayoutServerLoadEvent } from './$types';
-
-export async function load({ depends, locals }: LayoutServerLoadEvent) {
+export async function load({ depends, locals }) {
   depends('app:session');
 
   return {
