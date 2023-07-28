@@ -650,23 +650,17 @@
   function webVitalHandler({ detail }: CustomEvent) {
     info(
       2,
-      '%c [Web Vitals] Body   %c %s',
-      'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
-      'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
+      '[Web Vitals] Body',
       detail.body
     );
     info(
       2,
-      '%c [Web Vitals] Metric   %c %s',
-      'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
-      'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
+      '[Web Vitals] Metric',
       detail.metric
     );
     info(
       2,
-      '%c [Web Vitals] Options   %c %s',
-      'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
-      'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
+      '[Web Vitals] Options',
       detail.option
     );
   }
