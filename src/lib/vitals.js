@@ -1,6 +1,6 @@
 import { onCLS, onFCP, onFID, onLCP, onTTFB } from 'web-vitals';
 
-const vitalsUrl = 'https://vitals.vercel-analytics.com/v1/vitals';
+const vitalsUrl = 'https://api.vercel.com/v1/vitals';
 
 function getConnectionSpeed() {
   return 'connection' in navigator &&
