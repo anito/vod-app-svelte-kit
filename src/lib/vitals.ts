@@ -19,10 +19,6 @@ type Body = {
   speed: string;
 };
 
-export let options: Options;
-export let metric: Metric;
-export let body: Body;
-
 const vitalsUrl = 'https://vitals.vercel-analytics.com/v1/vitals';
 
 function getConnectionSpeed() {
@@ -40,7 +36,7 @@ async function sendToAnalytics(metric: Metric, options: Options) {
     options.path
   );
 
-  body = {
+  const body = {
     dsn: options.analyticsId,
     id: metric.id,
     page,

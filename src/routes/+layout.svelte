@@ -14,7 +14,7 @@
   import { enhance } from '$app/forms';
   import { getContext, onMount, setContext, tick } from 'svelte';
   import isMobile from 'ismobilejs';
-  import { webVitals, body, metric, options } from '$lib/vitals';
+  import { webVitals } from '$lib/vitals';
   import { Icons } from '$lib/components';
   import Button, { Icon } from '@smui/button';
   import IconButton from '@smui/icon-button';
@@ -661,7 +661,7 @@
     info(
       2,
       '[Web Vitals] Options',
-      detail.option
+      detail.options
     );
   }
 
