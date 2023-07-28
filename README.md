@@ -20,7 +20,7 @@ Administrators or Superusers may manage video library, create booking timeslots,
 
 ### What the app can not do: ###
 
-Users can not (yet) apply for a video to book. This is because the idea of this app originated from the times where occupational therapist and such where forced to find a way to provide their training and exercises to clients while offices needed to close their doors during the lock down.
+Users can not (yet) apply for a video to book. This is because the idea of this app originated from the times where occupational therapist and such where forced to find a way to provide their training and exercises to clients while offices needed to close their doors for its clients during the lock down.
 
 [Landing Page](https://vod-app.doojoo.de)
 
