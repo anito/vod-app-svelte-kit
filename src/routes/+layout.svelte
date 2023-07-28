@@ -14,7 +14,7 @@
   import { enhance } from '$app/forms';
   import { getContext, onMount, setContext, tick } from 'svelte';
   import isMobile from 'ismobilejs';
-  import { webVitals } from '$lib/vitals';
+  import { webVitals, body, metric, options } from '$lib/vitals';
   import { Icons } from '$lib/components';
   import Button, { Icon } from '@smui/button';
   import IconButton from '@smui/icon-button';
@@ -254,7 +254,7 @@
   $: $mounted && (loaderBackgroundColor = colorSchema.mode === DARK ? '#000000' : '#ffffff');
   $: currentStore = $currentMediaStore;
 
-  $: if (browser && analyticsId && $page.data.config.Site['web-vitals']) {
+  $: if (browser && analyticsId && $page.data.config.Misc['web-vitals']) {
     webVitals({
       path: $page.url.pathname,
       params: $page.params,
@@ -316,6 +316,7 @@
     window.addEventListener('media:delete', mediaDeleteHandler);
     window.addEventListener('media:deleteMany', mediaDeleteManyHandler);
     window.addEventListener('dropzone:init', dropzoneInitializedHandler);
+    window.addEventListener('vercel:web-vital', webVitalHandler);
     document.addEventListener('visibilitychange', visibilityChangeHandler);
   }
 
@@ -353,6 +354,7 @@
     window.removeEventListener('media:delete', mediaDeleteHandler);
     window.removeEventListener('media:deleteMany', mediaDeleteManyHandler);
     window.removeEventListener('dropzone:init', dropzoneInitializedHandler);
+    window.removeEventListener('vercel:web-vital', webVitalHandler);
     document.removeEventListener('visibilitychange', visibilityChangeHandler);
   }
 
@@ -643,6 +645,30 @@
     const locale = detail.locale;
     configSnackbar($_('text.language_is_now', { values: { locale } }));
     snackbar?.forceOpen();
+  }
+
+  function webVitalHandler({ detail }: CustomEvent) {
+    info(
+      2,
+      '%c [Web Vitals] Body   %c %s',
+      'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
+      'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
+      detail.body
+    );
+    info(
+      2,
+      '%c [Web Vitals] Metric   %c %s',
+      'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
+      'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
+      detail.metric
+    );
+    info(
+      2,
+      '%c [Web Vitals] Options   %c %s',
+      'background: #8593a9; color: #ffffff; padding:4px 6px 3px 0;',
+      'background: #dfe2e6; color: #000000; padding:4px 6px 3px 0;',
+      detail.option
+    );
   }
 
   function isEditable({ section, key }: { section: any; key: string }) {
@@ -954,7 +980,9 @@
           </li>
         {/each}
       </ul>
-      <div style="position: absolute; top: 0; right: 0; padding: 15px; font-size: .5em; line-height: 1.4em;">
+      <div
+        style="position: absolute; top: 0; right: 0; padding: 15px; font-size: .5em; line-height: 1.4em;"
+      >
         <p>VERSION: {version}</p>
         <p>ANALYTICS ID: {analyticsId || '-'}</p>
       </div>

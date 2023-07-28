@@ -26,6 +26,7 @@ declare global {
     'video:save': CustomEvent;
     'video:add': CustomEvent;
     'video:poster:changed': CustomEvent;
+    'vercel:web-vital': CustomEvent;
     'media:delete': CustomEvent;
     'media:deleteMany': CustomEvent;
   }

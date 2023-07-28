@@ -1,5 +1,27 @@
 import { onCLS, onFCP, onFID, onLCP, onTTFB } from 'web-vitals';
 import type { Metric } from 'web-vitals';
+import { emit } from './utils';
+
+type Options = {
+  params: Record<string, string>;
+  analyticsId: string;
+  path: string;
+  debug?: boolean;
+};
+
+type Body = {
+  dsn: string;
+  id: string;
+  page: string;
+  href: string;
+  event_name: string;
+  value: string;
+  speed: string;
+};
+
+export let options: Options;
+export let metric: Metric;
+export let body: Body;
 
 const vitalsUrl = 'https://vitals.vercel-analytics.com/v1/vitals';
 
@@ -12,20 +34,13 @@ function getConnectionSpeed() {
     : '';
 }
 
-type Options = {
-  params: Record<string, string>;
-  analyticsId: string;
-  path: string;
-  debug?: boolean;
-};
-
 async function sendToAnalytics(metric: Metric, options: Options) {
   const page = Object.entries(options.params).reduce(
     (acc, [key, value]) => acc.replace(value, `[${key}]`),
     options.path
   );
 
-  const body = {
+  body = {
     dsn: options.analyticsId,
     id: metric.id,
     page,
@@ -44,9 +59,7 @@ async function sendToAnalytics(metric: Metric, options: Options) {
     type: 'application/x-www-form-urlencoded'
   });
 
-  console.log('Options:', options);
-  console.log('Metrics:', metric);
-  console.log('Body:', body);
+  emit('vercel:web-vital', { options, body, metric });
 
   if (navigator.sendBeacon) {
     navigator.sendBeacon(vitalsUrl, blob);
