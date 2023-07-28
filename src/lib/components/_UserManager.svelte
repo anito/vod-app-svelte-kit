@@ -552,6 +552,7 @@
                       disabled={!hasPrivileges}
                       label={$_('text.user-role')}
                       class="select-width"
+                      hiddenInput
                       input$name="group_id"
                       bind:value={group_id}
                     >
