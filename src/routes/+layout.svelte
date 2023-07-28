@@ -178,7 +178,7 @@
     searchVideosAll: (data: any, limit: number = 10) =>
       searchBy('/repos/videos/all', { match: data, limit })
   });
-  
+
   const mediaMode: Writable<string> = writable();
   setContext('theme', {
     mediaMode
@@ -251,8 +251,7 @@
   $: searchParamsString = $page.url.searchParams.toString();
   $: search = searchParamsString && `?${searchParamsString}`;
   $: settingsDialog?.setOpen($page.url.searchParams.get('modal') === 'settings');
-  $: $mounted &&
-    (loaderBackgroundColor = colorSchema.mode === DARK ? '#000000' : '#ffffff');
+  $: $mounted && (loaderBackgroundColor = colorSchema.mode === DARK ? '#000000' : '#ffffff');
   $: currentStore = $currentMediaStore;
 
   $: if (browser && analytics_id && $page.data.config.Site['web-vitals']) {
@@ -260,7 +259,7 @@
       path: $page.url.pathname,
       params: $page.params,
       analytics_id
-    })
+    });
   }
 
   onMount(() => {
@@ -273,7 +272,6 @@
     initClasses();
     printCopyright();
 
-    
     isPreferredDarkMode = !window.matchMedia('(prefers-color-scheme: light)').matches;
     setColorSchema(isPreferredDarkMode ? DARK : LIGHT);
     $mounted = true;
@@ -332,14 +330,14 @@
   function setColorSchema(mode: string) {
     const getSchemaIcon = (m: string) => (m === LIGHT ? 'dark_mode' : 'light_mode');
     const getSchemaLabel = (m: string) => (m === LIGHT ? $_('text.dark_mode') : $_('light_mode'));
-    
+
     $mediaMode = mode;
     root?.classList.toggle(DARK, mode === DARK);
 
     colorSchema = {
-        mode,
-        icon: getSchemaIcon(mode),
-        label: getSchemaLabel(mode)
+      mode,
+      icon: getSchemaIcon(mode),
+      label: getSchemaLabel(mode)
     };
   }
 
@@ -797,7 +795,8 @@
             <NavItem>
               <span style="width: 45px;" class="flex">
                 <Button
-                  on:click$preventDefault={() => setColorSchema(colorSchema?.mode === DARK ? LIGHT : DARK)}
+                  on:click$preventDefault={() =>
+                    setColorSchema(colorSchema?.mode === DARK ? LIGHT : DARK)}
                   class="link-button"
                   style="min-width: 45px; justify-content: center;"
                   ripple={false}
@@ -914,10 +913,6 @@
   <DialogTitle id="info-title">{$_('text.settings')}</DialogTitle>
   <Content>
     <div class="settings-list">
-      <div style="position: absolute; right: 20px; top: 20px; font-size: .5rem; max-width: 120px; line-height: 1.4em;">
-        <p>VERSION: {version}</p>
-        <p>ANALYTICS ID: {analytics_id || '-'}</p>
-      </div>
       <ul class="level-1">
         {#each Object.entries($page.data.config).sort() as setting}
           <li>
@@ -959,6 +954,10 @@
           </li>
         {/each}
       </ul>
+      <div style="position: absolute; top: 0; right: 0; padding: 15px; font-size: .5em; line-height: 1.4em;">
+        <p>VERSION: {version}</p>
+        <p>ANALYTICS ID: {analytics_id || '-'}</p>
+      </div>
     </div>
   </Content>
   <DialogActions>

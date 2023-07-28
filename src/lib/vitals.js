@@ -42,6 +42,7 @@ async function sendToAnalytics(metric, options) {
     type: 'application/x-www-form-urlencoded'
   });
 
+  console.log('Options:', options);
   console.log('Blob:', blob);
 
   if (navigator.sendBeacon) {
