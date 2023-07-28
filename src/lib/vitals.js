@@ -43,7 +43,8 @@ async function sendToAnalytics(metric, options) {
   });
 
   console.log('Options:', options);
-  console.log('Blob:', blob);
+  console.log('Metrics:', metric);
+  console.log('Body:', body);
 
   if (navigator.sendBeacon) {
     navigator.sendBeacon(vitalsUrl, blob);
