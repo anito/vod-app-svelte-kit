@@ -6,7 +6,7 @@ import { parseLifetime } from '$lib/utils';
 function createStore() {
   const INTERVAL = 1;
   let time;
-  let intervalId: string | number | NodeJS.Timer | undefined;
+  let intervalId: number | undefined;
 
   return derived(
     /**

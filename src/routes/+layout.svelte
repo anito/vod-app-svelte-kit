@@ -254,7 +254,8 @@
   $: $mounted &&
     (loaderBackgroundColor = colorSchema.mode === DARK ? '#000000' : '#ffffff');
   $: currentStore = $currentMediaStore;
-  $: if (browser && analytics_id) {
+
+  $: if (browser && analytics_id && $page.data.config.Site['web-vitals']) {
     webVitals({
       path: $page.url.pathname,
       params: $page.params,
