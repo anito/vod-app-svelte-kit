@@ -55,7 +55,7 @@ async function sendToAnalytics(metric: Metric, options: Options) {
     type: 'application/x-www-form-urlencoded'
   });
 
-  emit('vercel:web-vital', { options, body, metric });
+  emit('vercel:web-vital', { body, metric });
 
   if (navigator.sendBeacon) {
     navigator.sendBeacon(vitalsUrl, blob);

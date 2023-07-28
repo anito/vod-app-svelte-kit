@@ -650,18 +650,13 @@
   function webVitalHandler({ detail }: CustomEvent) {
     info(
       2,
-      '[Web Vitals] Body',
+      '[Web Vitals - Body]',
       detail.body
     );
     info(
       2,
-      '[Web Vitals] Metric',
+      '[Web Vitals - Metric]',
       detail.metric
-    );
-    info(
-      2,
-      '[Web Vitals] Options',
-      detail.options
     );
   }
 
