@@ -25,9 +25,9 @@ export const DEFAULT_CONFIG = {
   },
   Site: {
     logo: '',
-    name: 'Immersive Studio',
-    description: 'Immersive Life Dev',
-    salutations: ['Hi']
+    name: 'VoD Manager',
+    description: '',
+    salutations: []
   },
   Console: {
     infoLevel: '0',
