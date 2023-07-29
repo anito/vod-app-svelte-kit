@@ -24,30 +24,17 @@ export const DEFAULT_CONFIG = {
     logoutredirect: '/login'
   },
   Site: {
-    logo: 'https://files.doojoo.de/f/01e377c2785e4db4a69e/?dl=1',
+    logo: '',
     name: 'Immersive Studio',
     description: 'Immersive Life Dev',
-    salutations: [
-      'Bonjour',
-      'Salute',
-      'Ciao',
-      'Holla',
-      'Hi',
-      'Welcome',
-      'Welcom',
-      'Willkommen',
-      'Bem-vindo',
-      'Velkommen',
-      'Bonvenon',
-      'Karibu',
-      'Benvenuto',
-      'Benvingut',
-      'Tervetuloa'
-    ]
+    salutations: ['Hi']
   },
   Console: {
     infoLevel: '0',
     log: false
+  },
+  Misc: {
+    'web-vitals': false
   }
 };
 export const VIDEO = 'videos';
