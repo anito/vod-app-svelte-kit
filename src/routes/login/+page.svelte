@@ -39,9 +39,9 @@
   $: loggedin = !!$session.user;
 
   // listeners are ready
-  async function init() {
+  function init() {
     if (data.hotswap) {
-      setTimeout(async () => await goto(data.hotswap), 200);
+      setTimeout(async () => await goto(data.hotswap), 500);
       return;
     }
     if (data.fromToken) {
@@ -58,13 +58,12 @@
     }, 1000);
   }
 
-  async function fromToken() {
+  function fromToken() {
     if (data.success) {
       emit('session:success', { data: data.data });
     } else {
       emit('session:error', { ...data.data, redirect: '/login' });
     }
-    return true;
   }
 </script>
 
