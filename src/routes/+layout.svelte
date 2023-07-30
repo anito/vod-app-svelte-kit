@@ -837,15 +837,8 @@
             <NavItem title={$_('text.more-dots')} class="hide-if-mobile">
               <MoreMenu labelSize="1em">
                 <FrameworkSwitcher
-                  defaultIndex={1}
+                  defaultIndex={0}
                   db={[
-                    {
-                      name: 'Sapper',
-                      icon: 'sapper-icon',
-                      icontype: 'svg',
-                      href: 'https://github.com/anito/vod-app',
-                      host: dev ? 'http://localhost:3001' : 'https://vod-app.vercel.app/',
-                    },
                     {
                       name: 'SvelteKit',
                       icon: 'svelte-kit-icon',
