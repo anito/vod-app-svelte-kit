@@ -9,10 +9,8 @@
   import { _ } from 'svelte-i18n';
 
   let mounted = false;
-  let name = $_('text.user');
 
-  $: hotswap = $page.url.searchParams.get('hotswap') || '/login';
-  $: name = $session.user?.name || name;
+  $: redirectPath = $page.url.searchParams.get('hotswap') || '/login';
   $: !$session.user && mounted && redirect();
 
   onMount(async () => {
@@ -21,7 +19,7 @@
   });
 
   function redirect(delay = 1000) {
-    setTimeout(async () => await goto(hotswap), delay);
+    setTimeout(async () => await goto(redirectPath), delay);
   }
 </script>
 
