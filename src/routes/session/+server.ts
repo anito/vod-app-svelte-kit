@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 
-export async function POST({ locals, request }) {
+export const POST = async ({ locals, request }) => {
   const response = await request.json();
   return await locals.session
     .set({
@@ -8,4 +8,4 @@ export async function POST({ locals, request }) {
       ...response
     })
     .then((res) => json(res));
-}
+};

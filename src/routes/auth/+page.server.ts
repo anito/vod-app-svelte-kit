@@ -1,5 +1,5 @@
 export const actions = {
-  login: async ({ request, locals, fetch, url }) => {
+  login: async ({ request, fetch }) => {
     const data = await request.formData();
     const email = data.get('email');
     const password = data.get('password');

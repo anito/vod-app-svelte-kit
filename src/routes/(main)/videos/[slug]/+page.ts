@@ -2,7 +2,7 @@ import { get } from 'svelte/store';
 import { videos } from '$lib/stores';
 import type { Video } from '$lib/classes/repos/types';
 
-export async function load({ fetch, params, depends }) {
+export const load = async ({ fetch, params, depends }) => {
   depends('app:video');
   const id = params.slug;
   const video = get(videos).find((video: Video) => video.id === id);
@@ -17,4 +17,4 @@ export async function load({ fetch, params, depends }) {
     });
   }
   return {};
-}
+};

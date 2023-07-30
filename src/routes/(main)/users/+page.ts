@@ -3,7 +3,7 @@ import { get } from 'svelte/store';
 import { users } from '$lib/stores';
 import { ADMIN, createTabSearch, DEFAULT_TAB, SUPERUSER } from '$lib/utils';
 
-export async function load({ parent }) {
+export const load = async ({ parent }) => {
   const { session, config } = await parent();
   const usersInStore = get(users);
   const firstUser = usersInStore.length ? usersInStore[0] : session.user;
@@ -14,4 +14,4 @@ export async function load({ parent }) {
     throw redirect(301, `/users/${firstUser?.id + search}`);
   }
   return {};
-}
+};

@@ -1,6 +1,6 @@
-export async function load({ fetch, url, data }) {
+export const load = async ({ fetch, url, data }) => {
   /**
-   * Handles token login / hotswap
+   * Handles token / hotswap login
    */
   const token = url.searchParams.get('token');
   if (token) {
@@ -20,4 +20,4 @@ export async function load({ fetch, url, data }) {
   }
 
   return {};
-}
+};

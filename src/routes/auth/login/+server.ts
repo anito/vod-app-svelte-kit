@@ -29,7 +29,7 @@ const setSession = async (locals: App.Locals, data: LoginResponseData) => {
   });
 };
 
-export async function GET({ locals, url }) {
+export const GET = async ({ locals, url }) => {
   const token = url.searchParams.get('token');
   const type = url.searchParams.get('type') || 'login';
   const locale = locals.session.data.locale;
@@ -42,9 +42,9 @@ export async function GET({ locals, url }) {
     });
   }
   throw error(401, 'This method is only allowed for token logins');
-}
+};
 
-export async function POST({ locals, request, url }) {
+export const POST = async ({ locals, request, url }) => {
   const data = await request.json();
   const type = url.searchParams.get('type') || 'login';
   const locale = locals.session.data.locale;
@@ -55,4 +55,4 @@ export async function POST({ locals, request, url }) {
       if (res.success) await setSession(locals, res.data);
       return json(res);
     });
-}
+};

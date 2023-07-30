@@ -3,7 +3,7 @@ import { users } from '$lib/stores';
 import { ADMIN, SUPERUSER } from '$lib/utils';
 import type { User } from '$lib/classes/repos/types';
 
-export async function load({ params, fetch, parent, setHeaders }) {
+export const load = async ({ params, fetch, parent, setHeaders }) => {
   const parentData = await parent();
   const role = parentData.session.role;
   const hasPrivileges = role === SUPERUSER || role === ADMIN;
@@ -27,4 +27,4 @@ export async function load({ params, fetch, parent, setHeaders }) {
     }
   }
   return { user: null };
-}
+};

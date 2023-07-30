@@ -1,5 +1,5 @@
-export async function load({ locals }) {
+export const load = async ({ locals }) => {
   return {
     session: locals.session.data
   };
-}
+};

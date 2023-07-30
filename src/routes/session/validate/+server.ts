@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 
-export async function POST({ locals, request, fetch }) {
+export const POST = async ({ locals, request, fetch }) => {
   const { _expires, init } = await request.json();
   /**
    * With init flag true a fresh config will be loaded from the API Server (handled by server hook)
@@ -14,4 +14,4 @@ export async function POST({ locals, request, fetch }) {
   }
   await locals.session.update(() => ({ _expires }));
   return json({ success: true, _expires, uid: user.id });
-}
+};

@@ -18,7 +18,7 @@ function getInitialLocale() {
   return locale;
 }
 
-export async function load({ data }) {
+export const load = async ({ data }) => {
   const { session, config } = data;
   const initialLocale = session.locale || getInitialLocale();
   init({
@@ -36,4 +36,4 @@ export async function load({ data }) {
     config,
     fromToken: false
   };
-}
+};

@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import { createRedirectSlug, USER } from '$lib/utils';
 
-export async function load({ depends, locals, cookies, url }) {
+export const load = async ({ depends, locals, cookies, url }) => {
   const { session, usersRepo, videosRepo, videosAllRepo, imagesRepo } = locals;
   if (!session.data.user) {
     const logoutredirect = locals.config.Session.logoutredirect || '/';
@@ -33,4 +33,4 @@ export async function load({ depends, locals, cookies, url }) {
     videosAll,
     pagination
   };
-}
+};

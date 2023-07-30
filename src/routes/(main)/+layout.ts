@@ -1,6 +1,6 @@
 import { images, users, videos, videosAll } from '$lib/stores';
 
-export async function load({ data }) {
+export const load = async ({ data }) => {
   data.users && users.update(data.users.data);
   data.user && users.add([data.user]);
   data.videos && videos.update(data.videos.data);
@@ -14,4 +14,4 @@ export async function load({ data }) {
   return {
     pagination: data.pagination
   };
-}
+};

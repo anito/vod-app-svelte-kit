@@ -1,4 +1,4 @@
-export async function load({ depends, locals }) {
+export const load = async ({ depends, locals }) => {
   depends('app:session');
 
   return {
@@ -6,4 +6,4 @@ export async function load({ depends, locals }) {
     ua: locals.userAgent,
     config: locals.config
   };
-}
+};

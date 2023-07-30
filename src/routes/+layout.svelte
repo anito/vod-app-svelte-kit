@@ -602,7 +602,7 @@
   async function sessionValidateHandler({ detail }: CustomEvent) {
     const lifetime = $page.data.config.Session?.lifetime;
     const _expires = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
-    const init = !!detail?.init;
+    const init = 'init' in detail;
     return await post('/session/validate', { _expires, init }).then(async (res) => {
       if (res.success === true) {
         sessionHelper.update({ _expires });
