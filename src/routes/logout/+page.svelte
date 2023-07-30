@@ -10,7 +10,7 @@
 
   let mounted = false;
 
-  $: redirectPath = $page.url.searchParams.get('hotswap') || '/login';
+  $: redirectPath = $page.url.searchParams.get('hotswap') || $page.data.config?.logoutredirect;
   $: !$session.user && mounted && redirect();
 
   onMount(async () => {
