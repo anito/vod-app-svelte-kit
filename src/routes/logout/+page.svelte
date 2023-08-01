@@ -6,14 +6,18 @@
   import { Heading } from '$lib/components';
   import { _ } from 'svelte-i18n';
 
-  $: redirectPath = $page.url.searchParams.get('hotswap') || $page.data.config.Session?.logoutredirect;
+  export let data;
+
+  $: redirectPath = data.success
+    ? $page.url.searchParams.get('hotswap') || $page.data.config.Session?.logoutredirect
+    : '/';
 
   onMount(async () => {
     redirect();
   });
 
-  function redirect(delay = 1000) {
-    setTimeout(async () => await goto(redirectPath), delay);
+  function redirect() {
+    setTimeout(async () => await goto(redirectPath), 1000);
   }
 </script>
 

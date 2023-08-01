@@ -31,9 +31,8 @@
     parseLifetime,
     printDiff,
     buildSearchParams,
-
-    get
-
+    get,
+    createRedirectSlug
   } from '$lib/utils';
   import {
     currentMediaStore,
@@ -66,7 +65,7 @@
   import Dialog, { Title as DialogTitle, Content, Actions as DialogActions } from '@smui/dialog';
   import { DARK, IMAGE, LIGHT, VIDEO } from '$lib/utils/const';
   import { inject } from '@vercel/analytics';
-  import type { NavigationTarget } from '@sveltejs/kit';
+  import type { ActionResult, NavigationTarget } from '@sveltejs/kit';
   import type { Dropzone } from '$lib/components/Dropzone/type';
   import type { User } from '$lib/classes/repos/types';
 
@@ -144,7 +143,8 @@
 
   setContext('snackbar', {
     getSnackbar: () => snackbar,
-    configSnackbar
+    configSnackbar,
+    showSnackbar
   });
 
   setContext('segment', {
@@ -402,9 +402,7 @@
     }
 
     if (show) {
-      let message = res.message || res.data.message;
-      configSnackbar(message);
-      snackbar?.forceOpen();
+      showSnackbar(res.message || res.data.message);
     }
   }
 
@@ -442,9 +440,7 @@
     }
 
     if (show) {
-      let message = res.message || res.data.message;
-      configSnackbar(message);
-      snackbar?.forceOpen();
+      showSnackbar(res.message || res.data.message);
     }
   }
 
@@ -500,8 +496,7 @@
               type: getNameByEndpoint(endpoint)
             }
           });
-      configSnackbar(message);
-      snackbar?.forceOpen();
+      showSnackbar(message);
     }
   }
 
@@ -566,6 +561,11 @@
 
   function handleSnackbarClosed() {}
 
+  function showSnackbar(msg: string) {
+    configSnackbar(msg);
+    snackbar?.forceOpen();
+  }
+
   async function sessionSuccessHandler({ detail }: CustomEvent) {
     const { data, callback } = detail;
     const { user, renewed, message }: { user: User; renewed: boolean; message: string } = {
@@ -579,12 +579,11 @@
     });
 
     renewed && localStorage.setItem('renewed', 'true');
-    configSnackbar(
+    showSnackbar(
       $_('text.external-login-welcome-message', {
         values: { name: user.name }
       })
     );
-    snackbar?.forceOpen();
 
     callback?.();
   }
@@ -636,8 +635,7 @@
   async function killSession() {
     return await get('/auth/logout').then((res) => {
       snackbarMessage = res?.message || res.data?.message;
-      configSnackbar(snackbarMessage);
-      snackbar?.forceOpen();
+
       return res;
     });
   }
@@ -646,9 +644,33 @@
     emit('session:validate');
 
     const locale = detail.locale;
-    configSnackbar($_('text.language_is_now', { values: { locale } }));
-    snackbar?.forceOpen();
+    showSnackbar($_('text.language_is_now', { values: { locale } }));
   }
+
+  const formSubmitHandler = ({ action, cancel }: { action: URL; cancel: any }) => {
+    const actionParam = new URLSearchParams(action.searchParams)
+      .keys()
+      .next()
+      .value?.replace(/\//, '');
+    if (!actionParam) cancel();
+    return async ({ result }: { result: ActionResult }) => {
+      if (actionParam === 'reload') {
+        if (result.type === 'success') {
+          invalidate('app:session');
+        }
+      }
+      if (actionParam === 'logout') {
+        loggedInButtonTextSecondLine = $_('text.one-moment');
+        if (result.type === 'success') {
+          await goto(
+            `${$page.data.config.Session.logoutredirect}?${createRedirectSlug($page.url)}`
+          );
+          invalidate('app:session');
+          showSnackbar(result.data?.message);
+        }
+      }
+    };
+  };
 
   function webVitalHandler({ detail }: CustomEvent) {
     info(2, '[Web Vitals - Body]', detail.body);
@@ -693,30 +715,7 @@
   <Modal header={{ name: 'text.upload-type' }} key="default-modal">
     <Modal header={{ name: 'text.editor' }} key="editor-modal">
       <div bind:this={outerElement} class="transition opacity-0">
-        <form
-          use:enhance={({ action, cancel }) => {
-            const actionParam = new URLSearchParams(action.searchParams)
-              .keys()
-              .next()
-              .value?.replace(/\//, '');
-            if (!actionParam) cancel();
-            return async ({ result }) => {
-              if (actionParam === 'reload') {
-                if (result.type === 'success') {
-                  invalidate('app:session');
-                }
-              }
-              if (actionParam === 'logout') {
-                loggedInButtonTextSecondLine = $_('text.one-moment');
-                if ((result.type = 'success')) {
-                  emit('session:stop');
-                }
-              }
-            };
-          }}
-          method="POST"
-          class="main-menu login-form"
-        >
+        <form use:enhance={formSubmitHandler} method="POST" class="main-menu login-form">
           <Nav segment={$segment} {page} {logo}>
             {#if $session.user}
               <NavItem href="/videos" title="Videothek" segment="videos">
@@ -849,7 +848,7 @@
                       href: 'https://github.com/anito/vod-app-svelte-kit',
                       host: dev
                         ? 'https://localhost:3000'
-                        : 'https://vod-app-svelte-kit.vercel.app/',
+                        : 'https://vod-app-svelte-kit.vercel.app/'
                     }
                   ]}
                 />

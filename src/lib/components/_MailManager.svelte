@@ -748,7 +748,7 @@
     <Button class="max-w-33" action="save-as" variant="outlined">
       <Label>{$_('text.save-as-new-template')}</Label>
     </Button>
-    <Button class="max-w-33" action="discard" variant="unelevated" default use={[InitialFocus]}>
+    <Button class="max-w-33" action="discard" variant="unelevated" use={[InitialFocus]}>
       <Label>{$_('text.discard-changes')}</Label>
     </Button>
   </Actions>
