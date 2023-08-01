@@ -11,7 +11,7 @@ export const actions = {
     return res;
   },
   logout: async ({ fetch }) => {
-    const res = await fetch('/auth/logout', { method: 'POST' }).then(async (res) => res.json());
+    const res = await fetch('/auth/logout').then(async (res) => res.json());
     return res;
   }
 };

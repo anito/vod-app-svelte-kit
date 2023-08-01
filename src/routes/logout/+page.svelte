@@ -3,19 +3,13 @@
   import { goto } from '$app/navigation';
   import { fly } from 'svelte/transition';
   import { onMount } from 'svelte';
-  import { emit } from '$lib/utils';
-  import { session } from '$lib/stores';
   import { Heading } from '$lib/components';
   import { _ } from 'svelte-i18n';
 
-  let mounted = false;
-
-  $: redirectPath = $page.url.searchParams.get('hotswap') || $page.data.config?.logoutredirect;
-  $: !$session.user && mounted && redirect();
+  $: redirectPath = $page.url.searchParams.get('hotswap') || $page.data.config.Session?.logoutredirect;
 
   onMount(async () => {
-    mounted = true;
-    emit('session:stop');
+    redirect();
   });
 
   function redirect(delay = 1000) {

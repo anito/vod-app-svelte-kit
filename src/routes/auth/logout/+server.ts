@@ -1,7 +1,7 @@
 import * as api from '$lib/api';
 import { json } from '@sveltejs/kit';
 
-export async function POST({ locals }) {
+export const GET = async ({ locals }) => {
   const locale = locals.session.data.locale;
   await locals.session.destroy();
   // re-save locale to session
@@ -12,4 +12,4 @@ export async function POST({ locals }) {
       ...res
     });
   });
-}
+};

@@ -30,7 +30,10 @@
     afterOrBeforeNavigation,
     parseLifetime,
     printDiff,
-    buildSearchParams
+    buildSearchParams,
+
+    get
+
   } from '$lib/utils';
   import {
     currentMediaStore,
@@ -625,13 +628,13 @@
   }
 
   async function sessionStopHandler({ detail }: CustomEvent) {
-    await killSession(detail?.options);
+    await killSession();
     await invalidateAll();
     detail?.callback?.();
   }
 
-  async function killSession(options = {}) {
-    return await post('/auth/logout', { ...options }).then((res) => {
+  async function killSession() {
+    return await get('/auth/logout').then((res) => {
       snackbarMessage = res?.message || res.data?.message;
       configSnackbar(snackbarMessage);
       snackbar?.forceOpen();
