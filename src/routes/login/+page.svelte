@@ -2,7 +2,7 @@
   import './_tabs.scss';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { getContext } from 'svelte';
+  import { getContext, onMount } from 'svelte';
   import { LoginForm } from '$lib/components';
   import { flash, session } from '$lib/stores';
   import { fly } from 'svelte/transition';
@@ -40,12 +40,12 @@
 
   // listeners are ready
   function init() {
-    if (data.hotswap) {
-      setTimeout(async () => await goto(data.hotswap), 500);
-      return;
-    }
     if (data.fromToken) {
-      fromToken();
+      if (data.success) {
+        emit('session:success', { data: data.data });
+      } else {
+        emit('session:error', { ...data.data, redirect: '/login' });
+      }
     }
     promise = new Promise((resolve) => setTimeout(() => resolve(1), 500));
   }
@@ -56,14 +56,6 @@
       const location = processRedirect($page.url, $session);
       await goto(location);
     }, 1000);
-  }
-
-  function fromToken() {
-    if (data.success) {
-      emit('session:success', { data: data.data });
-    } else {
-      emit('session:error', { ...data.data, redirect: '/login' });
-    }
   }
 </script>
 

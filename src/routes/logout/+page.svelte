@@ -9,7 +9,7 @@
   export let data;
 
   $: redirectPath = data.success
-    ? $page.url.searchParams.get('hotswap') || $page.data.config.Session?.logoutredirect
+    ? $page.data.config.Session?.logoutredirect
     : '/';
 
   onMount(async () => {

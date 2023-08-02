@@ -1,4 +1,4 @@
-export const load = async ({ fetch, url, data }) => {
+export const load = async ({ fetch }) => {
   return await fetch('auth/logout').then((res) => {
     return res.json();
   });
