@@ -65,7 +65,7 @@
   import Dialog, { Title as DialogTitle, Content, Actions as DialogActions } from '@smui/dialog';
   import { DARK, IMAGE, LIGHT, VIDEO } from '$lib/utils/const';
   import { inject } from '@vercel/analytics';
-  import type { ActionResult, NavigationTarget } from '@sveltejs/kit';
+  import type { ActionResult, NavigationTarget, SubmitFunction } from '@sveltejs/kit';
   import type { Dropzone } from '$lib/components/Dropzone/type';
   import type { User } from '$lib/classes/repos/types';
 
@@ -633,11 +633,7 @@
   }
 
   async function killSession() {
-    return await get('/auth/logout').then((res) => {
-      snackbarMessage = res?.message || res.data?.message;
-
-      return res;
-    });
+    return await get('/auth/logout');
   }
 
   function changedLocaleHandler({ detail }: CustomEvent) {
@@ -654,14 +650,12 @@
       .value?.replace(/\//, '');
     if (!actionParam) cancel();
     return async ({ result }: { result: ActionResult }) => {
-      if (actionParam === 'reload') {
-        if (result.type === 'success') {
+      if (result.type === 'success') {
+        if (actionParam === 'reload') {
           invalidate('app:session');
         }
-      }
-      if (actionParam === 'logout') {
-        loggedInButtonTextSecondLine = $_('text.one-moment');
-        if (result.type === 'success') {
+        if (actionParam === 'logout') {
+          loggedInButtonTextSecondLine = $_('text.one-moment');
           await goto(
             `${$page.data.config.Session.logoutredirect}?${createRedirectSlug($page.url)}`
           );
