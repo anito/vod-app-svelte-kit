@@ -1,4 +1,4 @@
-export const load = async ({ locals, url, fetch }) => {
+export const load = async ({ locals }) => {
   return {
     session: locals.session.data
   };
