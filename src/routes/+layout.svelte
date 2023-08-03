@@ -245,7 +245,7 @@
   $: printDiff($page.data, { store: 'page' });
   $: logo = svg(svg_manifest.logo_vod);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
-  $: root && ((user) => root.classList.toggle('loggedin', user))(!!$session.user);
+  $: root && ((loggedin) => root.classList.toggle('loggedin', loggedin))(!!$session.user);
   $: root && ((isPrivileged) => root.classList.toggle('admin', isPrivileged))(hasPrivileges);
   $: root && root.classList.toggle('home', $segment === 'home');
   $: if ($session.user) {
