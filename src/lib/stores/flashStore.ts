@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 
-interface defaults {
+interface Defaults {
   timeout?: number;
   type?: string;
   message?: string;
@@ -11,7 +11,7 @@ function createStore() {
     timeout: 0,
     type: 'success',
     message: ''
-  } as defaults;
+  } as Defaults;
   const { subscribe, update, set } = writable(defaults, () => {});
 
   let { timeout } = defaults;
@@ -19,12 +19,12 @@ function createStore() {
 
   return {
     subscribe,
-    update: (value: defaults) =>
+    update: (value: Defaults) =>
       update(() => {
         ({ timeout } = { ...defaults, ...value });
         clearTimeout(timeoutId);
         if (timeout) {
-          timeoutId = setTimeout((val) => set(val), timeout, { ...defaults });
+          timeoutId = setTimeout((val: Defaults) => set(val), timeout, { ...defaults });
         }
         return { ...defaults, ...value };
       }),

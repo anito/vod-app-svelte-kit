@@ -19,7 +19,10 @@
   };
   const textTransitionParams = { ...transitionParams, x: -80 };
   const { mounted }: any = getContext('mounted');
-  const userPromise = () =>
+
+  $: $mounted && init();
+  $: loggedin = !!$session.user;
+  $: userPromise = () =>
     new Promise((resolve, reject) => {
       if ($session.user)
         resolve({
@@ -34,9 +37,6 @@
           type: 'success'
         });
     }).catch() as Promise<{ message: string; type: string }>;
-
-  $: $mounted && init();
-  $: loggedin = !!$session.user;
 
   // listeners are ready
   function init() {
