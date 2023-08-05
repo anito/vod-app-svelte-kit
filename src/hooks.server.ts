@@ -6,12 +6,21 @@ import { UsersRepo, VideosRepo, ImagesRepo, VideosAllRepo } from '$lib/classes';
 import type { HandleFetch, HandleServerError } from '@sveltejs/kit';
 import type { Config } from '$lib/types';
 
-async function getConfig(): Promise<any> {
+const getConfig = async () => {
   const res = await api.get(`settings`);
   if (res?.success) {
     return { ...DEFAULT_CONFIG, ...res.data };
   }
-}
+};
+
+const maybeKillSession = async (locals: App.Locals) => {
+  const isExpired = new Date() > new Date(locals.session.data._expires);
+  if (isExpired) {
+    const locale = locals.session.data.locale;
+    await locals.session.destroy();
+    if (locale) await locals.session.set({ locale });
+  }
+};
 
 let config: Config | null = null;
 
@@ -31,6 +40,9 @@ export const handle = handleSession(
     ) {
       config = null;
     }
+
+    await maybeKillSession(event.locals);
+
     event.locals = {
       ...event.locals, // session
       config: config || (config = await getConfig()),
