@@ -2,6 +2,7 @@ import { dev } from '$app/environment';
 import * as api from '$lib/api';
 import { DEFAULT_CONFIG } from '$lib/utils/const';
 import { handleSession } from 'svelte-kit-cookie-session';
+import { parseLifetime } from '$lib/utils';
 import { UsersRepo, VideosRepo, ImagesRepo, VideosAllRepo } from '$lib/classes';
 import type { HandleFetch, HandleServerError } from '@sveltejs/kit';
 import type { Config } from '$lib/types';
@@ -13,12 +14,17 @@ const getConfig = async () => {
   }
 };
 
-const maybeKillSession = async (locals: App.Locals) => {
+const killOrExtend = async (locals: App.Locals) => {
   const isExpired = new Date() > new Date(locals.session.data._expires);
   if (isExpired) {
     const locale = locals.session.data.locale;
     await locals.session.destroy();
     if (locale) await locals.session.set({ locale });
+  } else {
+    if (config && locals.session.data.user) {
+      const _expires = new Date(Date.now() + parseLifetime(config.Session.lifetime)).toISOString();
+      await locals.session.update(() => ({ _expires }));
+    }
   }
 };
 
@@ -41,11 +47,12 @@ export const handle = handleSession(
       config = null;
     }
 
-    await maybeKillSession(event.locals);
+    config = config || (await getConfig());
+    await killOrExtend(event.locals);
 
     event.locals = {
       ...event.locals, // session
-      config: config || (config = await getConfig()),
+      config,
       usersRepo: UsersRepo.getInstance(),
       videosRepo: VideosRepo.getInstance(),
       videosAllRepo: VideosAllRepo.getInstance(),

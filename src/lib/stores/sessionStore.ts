@@ -1,6 +1,5 @@
 import { derived } from 'svelte/store';
 import { page } from '$app/stores';
-import { sessionHelper } from '$lib/stores';
 import type { Group } from '$lib/types';
 import type { User } from '$lib/classes/repos/types';
 
@@ -9,9 +8,9 @@ let groups: Group[] = [];
 
 function createStore() {
   return derived(
-    [page, sessionHelper],
-    ([$page, $sessionHelper], set) => {
-      const session = { ...$page.data.session, ...$sessionHelper };
+    [page],
+    ([$page], set) => {
+      const session = { ...$page.data.session };
       set(session);
     },
     {

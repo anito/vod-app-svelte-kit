@@ -1,7 +1,7 @@
 <script>
+  import { invalidate } from '$app/navigation';
   import Breadcrumb from './_Breadcrumb.svelte';
   import SessionTicker from './_SessionTicker.svelte';
-  import { emit } from '$lib/utils';
 </script>
 
 <div class="pagebar">
@@ -13,7 +13,7 @@
       signalOnly
       leadTime={1}
       signalType="primary"
-      on:MDCChip:interaction={() => emit('session:validate')}
+      on:MDCChip:interaction={() => invalidate('app:session')}
     />
   </div>
 </div>

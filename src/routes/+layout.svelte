@@ -22,13 +22,11 @@
   import Snackbar, { Actions as SnackbarActions } from '@smui/snackbar';
   import { Label } from '@smui/common';
   import {
-    post,
     emit,
     svg,
     ADMIN,
     SUPERUSER,
     afterOrBeforeNavigation,
-    parseLifetime,
     printDiff,
     buildSearchParams,
     get,
@@ -47,8 +45,7 @@
     users,
     streams,
     selection,
-    videosAll,
-    sessionHelper
+    videosAll
   } from '$lib/stores';
   import { Modal, SvgIcon, DoubleBounce } from '$lib/components';
   import {
@@ -65,7 +62,7 @@
   import Dialog, { Title as DialogTitle, Content, Actions as DialogActions } from '@smui/dialog';
   import { DARK, IMAGE, LIGHT, VIDEO } from '$lib/utils/const';
   import { inject } from '@vercel/analytics';
-  import type { ActionResult, NavigationTarget, SubmitFunction } from '@sveltejs/kit';
+  import type { ActionResult, NavigationTarget } from '@sveltejs/kit';
   import type { Dropzone } from '$lib/components/Dropzone/type';
   import type { User } from '$lib/classes/repos/types';
 
@@ -222,7 +219,7 @@
         excludes
       );
     } else {
-      emit('session:validate');
+      await invalidate('app:session');
     }
   };
 
@@ -271,7 +268,7 @@
 
     initListener();
     initMediaListener();
-    checkSession();
+    fadeIn();
     initClasses();
     printCopyright();
 
@@ -285,20 +282,6 @@
     };
   });
 
-  async function checkSession() {
-    /**
-     * The init flag tells the server to fetch a fresh config,
-     * which normally only happens when starting the app
-     */
-    emit('session:validate', {
-      callback: () => {
-        fadeIn();
-        invalidate('app:session');
-      },
-      init: true
-    });
-  }
-
   function fadeIn() {
     setTimeout(() => {
       loaderBackgroundOpacity = 0.45;
@@ -308,7 +291,6 @@
   }
 
   function initListener() {
-    window.addEventListener('session:validate', sessionValidateHandler);
     window.addEventListener('session:success', sessionSuccessHandler);
     window.addEventListener('session:error', sessionErrorHandler);
     window.addEventListener('session:stop', sessionStopHandler);
@@ -346,7 +328,6 @@
   }
 
   function removeListener() {
-    window.removeEventListener('session:validate', sessionValidateHandler);
     window.removeEventListener('session:success', sessionSuccessHandler);
     window.removeEventListener('session:error', sessionErrorHandler);
     window.removeEventListener('session:stop', sessionStopHandler);
@@ -589,32 +570,11 @@
   }
 
   async function visibilityChangeHandler() {
-    const callback = async ({ success }: { success: boolean }) => {
-      if (success) {
-        await invalidate('app:session');
-        await invalidate('app:main');
-        await invalidate('app:video');
-      }
-    };
     if (document.visibilityState === 'visible') {
-      emit('session:validate', { callback });
+      await invalidate('app:session');
+      await invalidate('app:main');
+      await invalidate('app:video');
     }
-  }
-
-  async function sessionValidateHandler({ detail }: CustomEvent) {
-    const lifetime = $page.data.config.Session?.lifetime;
-    const _expires = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
-    const init = !!detail?.init;
-    return await post('/session/validate', { _expires, init }).then(async (res) => {
-      if (res.success === true) {
-        sessionHelper.update({ _expires });
-      } else if (res.success === false) {
-        if ($session.user) {
-          emit('session:stop');
-        }
-      }
-      detail?.callback?.(res);
-    });
   }
 
   function sessionErrorHandler({ detail }: CustomEvent) {
@@ -636,8 +596,8 @@
     return await get('/auth/logout');
   }
 
-  function changedLocaleHandler({ detail }: CustomEvent) {
-    emit('session:validate');
+  async function changedLocaleHandler({ detail }: CustomEvent) {
+    await invalidate('app:session');
 
     const locale = detail.locale;
     showSnackbar($_('text.language_is_now', { values: { locale } }));

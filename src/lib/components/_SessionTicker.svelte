@@ -22,19 +22,8 @@
   $: chipClassName = $ticker / (60 * 1000) <= leadTime ? signalType : '';
   $: signal = chipClassName === signalType;
   $: isVisible = !signalOnly || signal;
+  $: $session._expires && forceVisible();
   $: show = isVisible || forced;
-
-  onMount(() => {
-    if (fadeoutTimeMs) {
-      window.addEventListener('session:validate', forceVisible);
-      forceVisible();
-    }
-
-    return () => {
-      clearTimeout(timeoutId);
-      window.removeEventListener('session:validate', forceVisible);
-    };
-  });
 
   function parse(ms: number) {
     let tt, sec, min, hrs;
