@@ -7,7 +7,7 @@
   import { enhance } from '$app/forms';
   import { onMount } from 'svelte';
   import { emit } from '$lib/utils';
-  import { flash } from '$lib/stores';
+  import { flash, session } from '$lib/stores';
   import Button from '@smui/button';
   import TabBar from '@smui/tab-bar';
   import Tab, { Icon as TabIcon } from '@smui/tab';
@@ -32,17 +32,17 @@
   const defaultTab = 'Presets';
 
   const tabMap = new Map([
-    ['Default', { rows: THREE, text: $_('text.formular'), icon: 'notes' }],
-    ['Presets', { rows: TWO, text: $_('text.presets'), icon: 'people_alt' }],
-    ['Social', { rows: TWO, text: $_('text.social'), icon: 'mood' }]
+    ['Default', { rows: THREE, text: 'text.formular', icon: 'notes' }],
+    ['Presets', { rows: TWO, text: 'text.presets', icon: 'people_alt' }],
+    ['Social', { rows: TWO, text: 'text.social', icon: 'mood' }]
   ]);
   const tabs = {
     names: () =>  [...tabMap.keys()],
-    rows: (key: string) => tabMap.get(key)?.rows,
-    text: (key: string) => tabMap.get(key)?.text,
-    icon: (key: string) => tabMap.get(key)?.icon
+    rows: (key: string) => tabMap.get(key)?.rows || ONE,
+    text: (key: string) => tabMap.get(key)?.text || '',
+    icon: (key: string) => tabMap.get(key)?.icon || ''
   };
-  const tabNames = tabs.names();
+  const tabNames = tabs?.names();
 
   let root: Element;
   let invalidTokenUserDialog: Dialog;
@@ -51,6 +51,7 @@
   let password = '';
   let email = '';
 
+  $: console.log($session.locale)
   $: rows = activeTab && tabs.rows(activeTab);
   $: activeTab && browser && localStorage.setItem('activeSignIn', activeTab);
 
@@ -116,7 +117,7 @@
     <TabBar tabs={tabNames} let:tab bind:active={activeTab}>
       <Tab {tab}>
         <TabIcon class="material-icons">{tabs.icon(tab)}</TabIcon>
-        <Label>{tabs.text(tab)}</Label>
+        <Label>{$_(tabs.text(tab))}</Label>
       </Tab>
     </TabBar>
   </div>
