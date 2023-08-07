@@ -1,8 +1,7 @@
-<script>
+<script lang="ts">
   import { GridItem, LayoutGrid } from '$lib/components';
 
-  /**  @type {string} */
-  export let segment;
+  export let segment: string;
   export let stretch = false;
 </script>
 

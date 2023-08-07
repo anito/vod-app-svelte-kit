@@ -679,7 +679,7 @@
     <Button action="none">
       <Label>{$_('text.cancel')}</Label>
     </Button>
-    <Button action="approved" default use={[InitialFocus]} variant="unelevated">
+    <Button action="approved" use={[InitialFocus]} variant="unelevated">
       <Label>{$_('text.remove-class')}</Label>
     </Button>
   </Actions>

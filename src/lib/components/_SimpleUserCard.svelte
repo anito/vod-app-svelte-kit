@@ -8,9 +8,9 @@
   import type { Issue, Badge } from '$lib/types';
   import type { User } from '$lib/classes/repos/types';
 
-  export let selectionUserId: string;
+  export let selectionUserId: string | undefined;
   export let user: User | undefined;
-  export let id: string;
+  export let id: string | undefined;
 
   const graphicBorderSize = 1;
 
@@ -21,12 +21,16 @@
       if (id) return _infos.get(id)?.issues;
     })(user) || [];
   $: hasPrivileges = user?.role === ADMIN || user?.role === SUPERUSER;
-  $: badge = hasPrivileges && {
-    icon: (hasPrivileges && 'admin_panel_settings') || '',
-    color: user?.role === SUPERUSER ? 'rgb(26, 4, 4)' : user?.role === ADMIN ? 'rgb(206, 4, 4)' : '',
-    position: 'TOP_RIGHT',
-    size: 'small'
-  } as Badge || false;
+  $: badge =
+    (hasPrivileges &&
+      ({
+        icon: (hasPrivileges && 'admin_panel_settings') || '',
+        color:
+          user?.role === SUPERUSER ? 'rgb(26, 4, 4)' : user?.role === ADMIN ? 'rgb(206, 4, 4)' : '',
+        position: 'TOP_RIGHT',
+        size: 'small'
+      } as Badge)) ||
+    false;
   $: href = user && dynamicUrl(user.id, $page.url);
 
   function focusHandler() {}

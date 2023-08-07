@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   export let segment = '';
   export let fullscreen = false;
   export let sidebar = false;

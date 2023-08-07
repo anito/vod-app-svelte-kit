@@ -39,6 +39,10 @@ export const handle = handleSession(
   async ({ event, resolve }) => {
     dev && (process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0');
 
+    if (event.url.pathname.startsWith('/users')) {
+      console.log('has user in path ->', event.url.pathname);
+    }
+
     // Force config to reload
     if (
       event.url.pathname.startsWith('/config') &&

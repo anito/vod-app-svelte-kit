@@ -107,15 +107,13 @@
   }
 
   async function getPosterUrl(id: string) {
-    if (id) {
-      // options.square: 0 => intelligent resize (keep ratio) | 1 => force resize | 2 => no resize (original)
-      const res = await getMediaImage(id, user?.jwt, {
-        width: 40,
-        height: 40,
-        square: 1
-      });
-      if (res) return res;
-    }
+    // options.square: 0 => intelligent resize (keep ratio) | 1 => force resize | 2 => no resize (original)
+    const res = await getMediaImage(id, user?.jwt, {
+      width: 40,
+      height: 40,
+      square: 1
+    });
+    if (res) return res;
   }
 
   function fromTitle() {

@@ -1,14 +1,11 @@
-<script>
+<script lang="ts">
   import './_chip.scss';
   import { localeFormat } from '$lib/utils';
   import { users } from '$lib/stores';
   import Chip, { Set, LeadingIcon, Text } from '@smui/chips';
   import { _, locale } from 'svelte-i18n';
 
-  /**
-   * @type {string | null}
-   */
-  export let selectionUserId;
+  export let selectionUserId: string | undefined;
 
   let expiresChipLabel = '';
   let chipIcon = '';

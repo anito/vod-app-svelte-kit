@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { invalidate } from '$app/navigation';
   import Breadcrumb from './_Breadcrumb.svelte';
   import SessionTicker from './_SessionTicker.svelte';

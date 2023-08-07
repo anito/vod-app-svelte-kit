@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { T } from '@threlte/core';
   import Terrain from '$lib/components/_Terrain.svelte';
 </script>

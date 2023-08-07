@@ -1,6 +1,7 @@
-<script>
+<script lang="ts">
   export let size = "40px";
   export let duration = "3s";
+  
   $: styles = [`width: ${size}`, `height: ${size}`].join(";");
 </script>
 

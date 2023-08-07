@@ -1,9 +1,8 @@
-<script>
+<script lang="ts">
   import { getContext } from 'svelte';
   import Layout from './layout.svelte';
 
-  const { getSegment } = getContext('segment');
-  /** @type {SvelteStore<string>} */
+  const { getSegment }: any = getContext('segment');
   const segment = getSegment();
 </script>
 

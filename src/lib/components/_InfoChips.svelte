@@ -1,14 +1,11 @@
-<script>
+<script lang="ts">
   import './_chip.scss';
   import { emit } from '$lib/utils';
   import { infos } from '$lib/stores';
   import Chip, { Set, LeadingIcon, Text } from '@smui/chips';
   import { _ } from 'svelte-i18n';
 
-  /**
-   * @type {string | null}
-   */
-  export let selectionUserId;
+  export let selectionUserId = '';
   export { className as class };
   export let staggered = false;
 
@@ -16,13 +13,10 @@
 
   let className = '';
 
-  $: chips = ($infos?.has(selectionUserId) && $infos.get(selectionUserId)?.issues) || [];
+  $: chips = $infos.get(selectionUserId)?.issues || [];
   $: promise = Promise.resolve(chips);
 
-  /**
-   * @param {string} flag
-   */
-  function getIcon(flag) {
+  function getIcon(flag: string) {
     let icon;
     switch (flag) {
       case 'info':

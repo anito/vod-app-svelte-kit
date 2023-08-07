@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { T } from '@threlte/core';
   import Filmgrain from '$lib/components/_Filmgrain.svelte';
 </script>

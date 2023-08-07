@@ -1,35 +1,22 @@
-<script>
+<script lang="ts">
   import { fade } from 'svelte/transition';
   import { FlexContainer } from '.';
   import { _ } from 'svelte-i18n';
+  import type { Mail } from '$lib/types';
 
-  /** @type {import('$lib/types').Mail | null | undefined} */
-  export let selection;
+  export let selection: Mail | null | undefined;
 
-  /**
-   * @type {string}
-   */
-  let message;
-  /**
-   * @type {Promise<any>}
-   */
-  let wait;
+  let message: string;
+  let wait: Promise<any>;
 
   $: id = selection?.id; // don't rerender on read/unread
   $: wait = showMessage(id); // parameter id only used for reactivity
 
-  /**
-   * @param {any} id
-   */
-  function showMessage(id) {
-    return new Promise((resolve) => resolve(selection?.message)).then((res) => (message = res));
+  function showMessage(id: string | undefined) {
+    return new Promise((resolve) => resolve(selection?.message)).then((res) => (message = res as string));
   }
 
-  /**
-   *
-   * @param {HTMLIFrameElement} iframe
-   */
-  function renderMail(iframe) {
+  function renderMail(iframe: HTMLIFrameElement) {
     iframe.contentDocument?.open();
     iframe.contentDocument?.write(message);
     iframe.contentDocument?.close();

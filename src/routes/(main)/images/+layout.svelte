@@ -1,14 +1,12 @@
-<script>
+<script lang="ts">
   import Layout from './layout.svelte';
   import { Info, Legal } from '$lib/components';
-  import { page } from '$app/stores';
   import { session } from '$lib/stores';
   import { goto } from '$app/navigation';
   import { ADMIN, SUPERUSER } from '$lib/utils';
   import { getContext } from 'svelte';
 
-  const { getSegment } = getContext('segment');
-  /** @type {SvelteStore<string>} */
+  const { getSegment }: any = getContext('segment');
   const segment = getSegment();
 
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;

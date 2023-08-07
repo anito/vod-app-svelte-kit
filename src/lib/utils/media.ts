@@ -32,7 +32,7 @@ async function uri(id: any, token: any, type: string, { ...options }) {
 async function getMedia(
   type: string,
   id: string,
-  token: string,
+  token: string | undefined,
   params: { width?: number; height?: number; square?: number; video?: boolean }
 ) {
   if (token) {
@@ -65,7 +65,7 @@ export function getMediaAvatar(id: any, jwt: string, options = {}) {
   return getMedia('AVATAR', id, jwt, settings);
 }
 
-export function getMediaImage(id: any, jwt: string, options = {}) {
+export function getMediaImage(id: any, jwt: string | undefined, options = {}) {
   const defaults = {
     width: 512,
     height: 512,

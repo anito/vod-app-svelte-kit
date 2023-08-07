@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   export let size = 'medium';
   export let before = false;
   export let after = false;

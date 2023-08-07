@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import Menu from '@smui/menu';
   import { Anchor } from '@smui/menu-surface';
   import List from '@smui/list';
@@ -9,17 +9,11 @@
   export let labelSize = '1em';
   export let iconSize = '20px';
 
-  /** @type {Menu} */
-  let menu;
+  let menu: Menu;
   let menuAnchor;
   let className = '';
 
-  /**
-   *
-   * @param {Event} event
-   */
-  function handleClick(event) {
-    event.preventDefault();
+  function handleClick(event: CustomEvent) {
     menu?.setOpen(!menu.isOpen?.());
   }
 </script>
@@ -32,7 +26,7 @@
 >
   <IconButton
     class="material-icons on-surface items-stretch"
-    on:click={handleClick}
+    on:click$preventDefault={handleClick}
     aria-label={$_('text.more-options')}
     title={$_('text.more-options')}>more_vert</IconButton
   >

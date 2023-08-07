@@ -1,12 +1,10 @@
 <script lang="ts">
-    import type { Section } from '$lib/types';
+  import type { Section } from '$lib/types';
   import { afterUpdate } from 'svelte';
   import SvgIcon from './_SvgIcon.svelte';
 
-  
-
   export let sections: Section[] = [];
-  export let active_section: string | null = null;
+  export let active_section: string | null = null;
   export let show_contents: boolean;
   export let prevent_sidebar_scroll = false;
 
@@ -24,7 +22,7 @@
 
       const min = 200;
       const max = window.innerHeight - 200;
-      const parentNode = ul.parentNode as Element
+      const parentNode = ul.parentNode as Element;
 
       if (top > max) {
         parentNode?.scrollBy({

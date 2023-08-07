@@ -1,18 +1,12 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import List from '@smui/list';
-  import MenuSurface, { Corner } from '@smui/menu-surface';
-  import IconButton, { Icon } from '@smui/icon-button';
+  import MenuSurface from '@smui/menu-surface';
+  import IconButton from '@smui/icon-button';
 
-  /**
-   * @type {Corner}
-   */
   export let anchorCorner = 1;
 
-  /**
-   * @type {MenuSurface}
-   */
-  let menu;
+  let menu: MenuSurface;
 
   onMount(() => {});
 </script>

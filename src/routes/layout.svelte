@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { GridItem, LayoutGrid } from '$lib/components';
 </script>
 
