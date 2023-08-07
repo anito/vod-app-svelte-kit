@@ -1,4 +1,5 @@
-import { ADMIN, SUPERUSER, INBOX, DIFFSTORES } from './const';
+import { ADMIN, SUPERUSER, INBOX, DIFFSTORES, SENT } from './const';
+import { inboxes, sents } from '$lib/stores';
 import type { Session } from '$lib/types';
 
 export function sortByStartDate(
@@ -114,7 +115,6 @@ export let convert = (() => {
 
 export const emit = function (eventType: string, detail?: any, target?: Window | Element) {
   eventType = typeof eventType === 'string' ? eventType : detail?.eventType;
-  console.log(eventType);
   target = target || typeof window !== 'undefined' ? window : undefined;
   if (target) {
     target.dispatchEvent(new CustomEvent(eventType, { detail }));
@@ -204,6 +204,11 @@ export function searchParams(url: URL) {
     params[key] = val === 'true' ? true : val === 'false' ? false : val;
   }
   return params;
+}
+
+export function getStoreByEndpoint(endpoint: string) {
+  if (endpoint === INBOX) return inboxes;
+  if (endpoint === SENT) return sents;
 }
 
 export function printDiff(

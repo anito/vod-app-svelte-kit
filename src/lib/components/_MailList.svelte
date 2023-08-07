@@ -1,13 +1,13 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { getContext, onMount, SvelteComponent, tick, type ComponentType } from 'svelte';
+  import { fly } from 'svelte/transition';
+  import { getContext, onMount, tick } from 'svelte';
   import { usersFoundation } from '$lib/stores';
   import { ASC, DESC, INBOX, SENT } from '$lib/utils';
   import { FlexContainer, SimpleMailCard, SvgIcon } from '$lib/components';
   import List from '@smui/list';
   import { _ } from 'svelte-i18n';
-  import type { SmuiElementMap } from '@smui/common';
   import type { Mail } from '$lib/types';
   import type { UserFoundation } from '$lib/classes/repos/types';
 
@@ -24,15 +24,21 @@
 
   const currentStore = getMailStore();
 
-  let list: List<keyof SmuiElementMap, ComponentType<SvelteComponent>>;
+  let loading = true;
+  let list: List;
   let focusItemAtIndex: (arg0: number) => void;
   let items: string | any[];
 
   $: mailStore = $currentStore;
   $: userId = $page.params.slug;
+  $: userId && (loading = true);
   $: sortBit = sort === DESC ? -1 : sort === ASC ? 1 : 0;
   $: activeItem = $page.url.searchParams.get('active');
   $: selectionMailId = $page.url.searchParams.get('mail_id');
+  $: waitForData.then((res) => {
+    loading = false;
+    return res;
+  });
 
   onMount(() => {});
 
@@ -107,15 +113,20 @@
 
 {#if $mailStore}
   {#await waitForData}
-    <div class="loader flex justify-center">
+    <div in:fly={{y: -50}} out:fly={{y: -50}} class="loader flex justify-center">
       <SvgIcon name="animated-loader-3" size={50} fillColor="var(--primary)" class="mr-2" />
     </div>
-  {:then}
+  {:catch reason}
+    <FlexContainer style="grid-area: one;">
+      {reason}
+    </FlexContainer>
+  {/await}
+  {#if !loading}
     <List
       bind:this={list}
       bind:selectedIndex={selectionIndex}
       on:SMUIList:mount={receiveListMethods}
-      class="mails-list list-{activeItem}"
+      class="mail-list list-{activeItem}"
       twoLine
       avatarList
       singleSelection
@@ -132,12 +143,17 @@
         />
       {/each}
     </List>
-  {:catch reason}
-    <FlexContainer style="grid-area: one;">
-      {reason}
-    </FlexContainer>
-  {/await}
+  {/if}
 {/if}
 
-<style>
+<style lang="scss">
+  .loader {
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    right: 0;
+    transform: translateY(0);
+    transition: transform 0.3s ease-in;
+    background-color: var(--mdc-theme-surface, #ffffff);
+  }
 </style>

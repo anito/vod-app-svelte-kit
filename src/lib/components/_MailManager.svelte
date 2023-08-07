@@ -30,7 +30,6 @@
     Text,
     Graphic,
     Separator,
-    PrimaryText,
     SecondaryText,
     Meta
   } from '@smui/list';
@@ -41,8 +40,8 @@
     Actions,
     InitialFocus
   } from '@smui/dialog';
-  import { INBOX, SENT, ADMIN, SUPERUSER, DESC, ASC } from '$lib/utils';
-  import type { Mail, Badge } from '$lib/types';
+  import { INBOX, SENT, ADMIN, SUPERUSER, DESC, ASC, getStoreByEndpoint } from '$lib/utils';
+  import type { Mail, Badge, Sent } from '$lib/types';
   import type Snackbar from '@smui/snackbar';
   import { browser } from '$app/environment';
 
@@ -129,7 +128,7 @@
   $: totalSents = $sents.length;
   $: totalInboxes = $inboxes.length;
   $: unreadInboxes = $inboxes.filter((mail) => !mail._read).length;
-  $: activeItem = $page.url.searchParams.get('active');
+  $: activeItem = $page.url.searchParams.get('active') || INBOX;
   $: setActiveListItem(activeItem);
   $: activeTemplate = matchesTemplate(activeListItem);
   $: dynamicTemplateData = selectedUser && getTemplateData(activeTemplate);
@@ -145,46 +144,41 @@
   };
   $: currentStore.update(() => getStoreByEndpoint(activeItem));
   /**
-   * by changing this (to any arbitrary string different from $page.params.slug)
-   * we're able to control whether mails should be reloaded
+   * Changing the 'currentSlug' (to any arbitrary string different from $page.params.slug)
+   * will be forcing the mail to reload
    */
-  $: currentSlug = (currentSlug !== $page.params.slug && $page.params.slug) || currentSlug;
+  $: currentSlug = currentSlug !== $page.params.slug ? $page.params.slug : currentSlug;
   $: isValidTemplate = selectedUser && validateData(currentTemplate?.slug);
   $: waitForData =
     currentSlug &&
     getSIUX()
       .then((res: { success: any; data: never[] }) => {
+        console.log('loading');
         if (res?.success) {
           usersFoundation.update(res.data);
           $usersFoundation; // subscribe to take effect
         }
       })
       .then(async () => {
-        // fetching INBOXES
+        // fetching INBOX
         const mailbox = mailboxes[0];
-        const result = await getMail(mailbox);
-        const store = getStoreByEndpoint(mailbox);
-        if (result) {
-          store?.update(result);
-        } else {
-          store?.set([]);
-        }
+        const data = await getMail(mailbox);
+        return [{ mailbox, data }];
       })
-      .then(async () => {
-        // fetching SENTS
+      .then(async (res: [{ mailbox: string; data: Mail[] }]) => {
+        // fetching SENT MAIL
         const mailbox = mailboxes[1];
-        const result = await getMail(mailbox);
-        const store = getStoreByEndpoint(mailbox);
-        if (result) {
-          store?.update(result);
-        } else {
-          store?.set([]);
-        }
+        const data = await getMail(mailbox);
+        return [...res, { mailbox, data }];
       })
-      .then(async () => {
+      .then((res: {mailbox: string; data: any}[]) => {
         // show loading spinner
-        return new Promise(async (resolve, reject) => {
-          setTimeout(() => resolve(1), 500);
+        res.forEach((val) => {
+          const store = getStoreByEndpoint(val.mailbox);
+          if (store) store.update(val.data);
+        });
+        return new Promise((resolve) => {
+          setTimeout(() => resolve(res), 500);
         });
       });
 
@@ -206,11 +200,6 @@
       root.classList.remove('mailmanager--open');
     };
   });
-
-  function getStoreByEndpoint(endpoint: string | null) {
-    if (endpoint === INBOX) return inboxes;
-    if (endpoint === SENT) return sents;
-  }
 
   async function getMail(name: string | undefined) {
     const endpoint = validateMailboxName(name);
@@ -250,7 +239,7 @@
       .then((res) => {
         if (res?.success) {
           configSnackbar($_('text.message-sent-success'));
-          refreshMailData();
+          invalidateMailData();
         } else {
           configSnackbar($_('text.message-sent-failed'));
         }
@@ -284,7 +273,7 @@
     return await goto(createTemplatePath(active));
   }
 
-  function setActiveListItem(value: string | null) {
+  function setActiveListItem(value: string) {
     if (activeListItem != matchesTemplate(value) && canSave) {
       pendingActiveTemplate = value;
       unsavedChangesDialog?.setOpen(true);
@@ -323,9 +312,9 @@
       });
   }
 
-  function refreshMailData() {
+  function invalidateMailData() {
     currentSlug = '';
-    invalidate('app:session');
+    // invalidate('app:session');
   }
 
   function toggleSortByDate() {
@@ -678,7 +667,7 @@
                   />
                 {:else}
                   <MailToolbar
-                    on:mail:reload={refreshMailData}
+                    on:mail:reload={invalidateMailData}
                     on:mail:toggleRead={toggleRead}
                     on:mail:delete={deleteMail}
                     on:mail:sort={toggleSortByDate}
@@ -820,6 +809,7 @@
   .grid-mail-list {
     grid-area: one;
     overflow: auto;
+    position: relative;
   }
   .grid-mail-viewer {
     grid-area: two;
