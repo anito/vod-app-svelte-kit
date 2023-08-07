@@ -15,7 +15,8 @@
     createTabSearch,
     EDIT,
     ADD,
-    DEFAULT_TAB
+    DEFAULT_TAB,
+    buildSearchParams
   } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import type { User } from '$lib/classes/repos/types';
@@ -124,7 +125,16 @@
       </Button>
     </Group>
     <div class="flex mr-2" class:hidden>
-      <Button on:click={() => emit('info:token-redirect')} {disabled} variant="unelevated">
+      <Button
+        on:click={async () =>
+          await goto(
+            `${$page.url.pathname}${buildSearchParams($page.url.searchParams, {
+              append: [['dialog', 'token-redirect']]
+            })}`
+          )}
+        {disabled}
+        variant="unelevated"
+      >
         <UserGraphic
           borderSize={1}
           borderColor="--surface"

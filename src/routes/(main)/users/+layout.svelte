@@ -255,6 +255,8 @@
       /^(https?|ftp|torrent|image|irc):\/\/(-\.)?([^\s\/?\.#-&]+\.?)+(\/[^\s]*)?$/i.test(magicLink)
     ) {
       goto(`/login?token=${token}`);
+    } else {
+      navigateWithoutKeys(['dialog']);
     }
   }
 
@@ -263,9 +265,7 @@
   }
 
   function navigateWithoutKeys(remove: string[]) {
-    goto(
-      `${$page.url.pathname}${buildSearchParams($page.url.searchParams, { remove })}`
-    );
+    goto(`${$page.url.pathname}${buildSearchParams($page.url.searchParams, { remove })}`);
   }
 
   let openUploader = () => {
