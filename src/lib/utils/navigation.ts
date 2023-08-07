@@ -10,7 +10,7 @@ export const getFragment = () => window.location.hash.slice(1);
 export const afterOrBeforeNavigation = (
   afterOrBeforeNavigate: {
     (callback: (navigation: AfterNavigate | BeforeNavigate) => void): void;
-    (arg0: ({ from, to }: { from: any; to: any }) => void): void;
+    (arg0: ({ from, to }: { from: NavigationTarget | null; to: NavigationTarget | null }) => void): void;
   },
   {
     from_searches,
