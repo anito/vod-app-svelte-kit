@@ -44,6 +44,7 @@
   import { INBOX, SENT, ADMIN, SUPERUSER, DESC, ASC } from '$lib/utils';
   import type { Mail, Badge } from '$lib/types';
   import type Snackbar from '@smui/snackbar';
+  import { browser } from '$app/environment';
 
   const sortAZProtected = (a: Record<string, any>, b: Record<string, any>) => {
     let ap = (a['protected'] && a['name'].toLowerCase()) || 'z';
@@ -180,13 +181,10 @@
           store?.set([]);
         }
       })
-      .then(() => {
+      .then(async () => {
         // show loading spinner
-        return new Promise((resolve, reject) => {
-          setTimeout(async () => {
-            await invalidate('app:session')
-            resolve(1);
-          }, 500);
+        return new Promise(async (resolve, reject) => {
+          setTimeout(() => resolve(1), 500);
         });
       });
 
@@ -327,6 +325,7 @@
 
   function refreshMailData() {
     currentSlug = '';
+    invalidate('app:session');
   }
 
   function toggleSortByDate() {
