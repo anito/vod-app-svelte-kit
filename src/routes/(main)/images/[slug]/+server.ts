@@ -11,7 +11,7 @@ export const GET = async ({ params, locals }) => {
   });
 };
 
-export async function PUT({ request, params, locals }) {
+export const PUT = async ({ request, params, locals }) => {
   const data = await request.json();
   const id = params.slug;
   const { locale, user } = locals.session.data;
@@ -22,7 +22,7 @@ export async function PUT({ request, params, locals }) {
     .then(async (res) => {
       return json(res);
     });
-}
+};
 
 export const DELETE = async ({ params, locals }) => {
   const id = params.slug;
