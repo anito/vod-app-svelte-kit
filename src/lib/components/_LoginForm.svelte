@@ -37,12 +37,12 @@
     ['Social', { rows: TWO, text: 'text.social', icon: 'mood' }]
   ]);
   const tabs = {
-    names: () =>  [...tabMap.keys()],
+    keys: () =>  [...tabMap.keys()],
     rows: (key: string) => tabMap.get(key)?.rows || ONE,
     text: (key: string) => tabMap.get(key)?.text || '',
     icon: (key: string) => tabMap.get(key)?.icon || ''
   };
-  const tabNames = tabs?.names();
+  const tabNames = tabs.keys();
 
   let root: Element;
   let invalidTokenUserDialog: Dialog;
@@ -51,7 +51,6 @@
   let password = '';
   let email = '';
 
-  $: console.log($session.locale)
   $: rows = activeTab && tabs.rows(activeTab);
   $: activeTab && browser && localStorage.setItem('activeSignIn', activeTab);
 
@@ -133,7 +132,7 @@
           <Textfield
             variant="outlined"
             bind:value={email}
-            bind:input$name={email}
+            input$name='email'
             label="Email"
           >
             <Icon class="material-icons" slot="leadingIcon">mail</Icon>
@@ -144,7 +143,7 @@
             variant="outlined"
             type="password"
             bind:value={password}
-            bind:input$name={password}
+            input$name='password'
             label={$_('text.password')}
           >
             <Icon class="material-icons" slot="leadingIcon">login</Icon>
