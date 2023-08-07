@@ -1,6 +1,8 @@
 <script lang="ts">
   import './_chip.scss';
-  import { emit } from '$lib/utils';
+  import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
+  import { buildSearchParams, emit } from '$lib/utils';
   import { infos } from '$lib/stores';
   import Chip, { Set, LeadingIcon, Text } from '@smui/chips';
   import { _ } from 'svelte-i18n';
@@ -40,7 +42,12 @@
           color="primary"
           {chip}
           class={chip.flag}
-          on:click={() => emit(chip.eventType, { ...chip, userId: selectionUserId })}
+          on:click={() =>
+            goto(
+              `${$page.url.pathname}${buildSearchParams($page.url.searchParams, {
+                append: [['dialog', chip.dialogType]]
+              })}`
+            )}
         >
           <LeadingIcon class="material-icons">{getIcon(chip.flag)}</LeadingIcon>
           <Text>{$_(chip.label)}</Text>

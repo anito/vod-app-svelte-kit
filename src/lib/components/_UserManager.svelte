@@ -11,7 +11,18 @@
   import { getContext, onMount } from 'svelte';
   import { fly } from 'svelte/transition';
   import { session, users } from '$lib/stores';
-  import { emit, ADMIN, SUPERUSER, post, parseLifetime, EDIT, PASS, DEL, ADD } from '$lib/utils';
+  import {
+    emit,
+    ADMIN,
+    SUPERUSER,
+    post,
+    parseLifetime,
+    EDIT,
+    PASS,
+    DEL,
+    ADD,
+    buildSearchParams
+  } from '$lib/utils';
   import Textfield from '@smui/textfield';
   import TextfieldIcon from '@smui/textfield/icon';
   import HelperText from '@smui/textfield/helper-text';
@@ -79,7 +90,7 @@
   let selectedMode: string = DEFAULT_MODE;
 
   $: token = $session.user?.jwt;
-  $: groups = $session.groups || [];
+  $: groups = $session?.groups || [];
   $: selectedUser = ((id) => {
     const user = $users.find((usr) => usr?.id === id) as User | undefined;
     if (user && mode !== ADD) {
@@ -199,7 +210,7 @@
 
     if (success) {
       // reflect the change in the session cookie
-      if ($session.user.id === data.id) {
+      if ($session.user?.id === data.id) {
         await post('/session', {
           ...$session,
           user: { ...$session.user, avatar: data.avatar }
@@ -223,7 +234,7 @@
 
         if (success) {
           // reflect the change in the session cookie
-          if ($session.user.id === selectedUser?.id) {
+          if ($session.user?.id === selectedUser?.id) {
             await post('/session', {
               ...$session,
               user: { ...$session.user, avatar: data.avatar }
@@ -258,6 +269,7 @@
 
           configSnackbar(message);
           snackbar?.forceOpen();
+          invalidate('app:session');
         }
       });
   }
@@ -367,9 +379,9 @@
                   groups,
                   _expires
                 });
-                await invalidate('app:session');
               }
             }
+            await invalidate('app:session');
             break;
           }
           case 'del': {
@@ -490,6 +502,7 @@
                               <Switch
                                 class="user-activation"
                                 bind:checked={active}
+                                on:SMUISwitch:change={activateUser}
                                 on:SMUISwitch:change={activateUser}
                               />
                               <span slot="label" class="switch-label">{activeLabel}</span>
@@ -663,7 +676,12 @@
                         variant="raised"
                         disabled={isProtected}
                         on:click={() =>
-                          !isProtected && emit('info:token:generate', { open: !!jwt })}
+                          !isProtected &&
+                          goto(
+                            `${$page.url.pathname}${buildSearchParams($page.url.searchParams, {
+                              append: [['dialog', 'token-generate']]
+                            })}`
+                          )}
                       >
                         <Icon class="material-icons">link</Icon>
                         <Label class="token-button-label">
@@ -673,7 +691,13 @@
                       <Button
                         disabled={isProtected || !jwt}
                         variant="raised"
-                        on:click={() => !isProtected && emit('info:token:remove', { open: true })}
+                        on:click={() =>
+                          !isProtected &&
+                          goto(
+                            `${$page.url.pathname}${buildSearchParams($page.url.searchParams, {
+                              append: [['dialog', 'token-remove']]
+                            })}`
+                          )}
                       >
                         <Icon class="material-icons">link_off</Icon>
                         <Label class="token-button-label">{$_('text.remove-token')}</Label>
@@ -695,7 +719,13 @@
                           <Button
                             disabled={isProtected || hidden}
                             class="action-magic-link"
-                            on:click={() => !isProtected && emit('info:token:redirect')}
+                            on:click={() =>
+                              !isProtected &&
+                              goto(
+                                `${$page.url.pathname}${buildSearchParams($page.url.searchParams, {
+                                  append: [['dialog', 'token-redirect']]
+                                })}`
+                              )}
                             variant="outlined"
                           >
                             <Icon class="material-icons">link</Icon>
@@ -770,7 +800,12 @@
                     <a
                       href="."
                       class="item"
-                      on:click|preventDefault={() => emit('info:open:help-dialog')}
+                      on:click|preventDefault={() =>
+                        goto(
+                          `${$page.url.pathname}${buildSearchParams($page.url.searchParams, {
+                            append: [['dialog', 'info-help']]
+                          })}`
+                        )}
                     >
                       {$_('summary.howDoesItWork.text')}
                     </a>

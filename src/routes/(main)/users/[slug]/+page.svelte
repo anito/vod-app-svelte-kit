@@ -124,7 +124,7 @@
       </Button>
     </Group>
     <div class="flex mr-2" class:hidden>
-      <Button on:click={() => emit('info:token:redirect')} {disabled} variant="unelevated">
+      <Button on:click={() => emit('info:token-redirect')} {disabled} variant="unelevated">
         <UserGraphic
           borderSize={1}
           borderColor="--surface"

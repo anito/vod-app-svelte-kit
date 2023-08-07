@@ -62,8 +62,8 @@ export function processRedirect(url: URL, session: Session) {
 }
 
 export function parseRedirect(search: URLSearchParams) {
-  const removableKeys = ['token', 'redirect', 'sessionend'];
-  return buildSearchParams(search, { removableKeys });
+  const remove = ['token', 'redirect', 'sessionend'];
+  return buildSearchParams(search, { remove });
 }
 
 export function windowSize() {
@@ -114,6 +114,7 @@ export let convert = (() => {
 
 export const emit = function (eventType: string, detail?: any, target?: Window | Element) {
   eventType = typeof eventType === 'string' ? eventType : detail?.eventType;
+  console.log(eventType);
   target = target || typeof window !== 'undefined' ? window : undefined;
   if (target) {
     target.dispatchEvent(new CustomEvent(eventType, { detail }));
@@ -157,12 +158,7 @@ export function placeholderDotComAvatar(name = '?') {
 
 export function svg(fn: any, colors: string | string[] = []) {
   colors = !Array.isArray(colors) ? [colors] : colors;
-  return (
-    'data:image/svg+xml;utf8,' +
-    encodeURIComponent(
-      fn(...colors)
-    )
-  );
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(fn(...colors));
 }
 
 export function filterByModelKeys(search: string, stack: any = [], keys: string = '') {
@@ -250,11 +246,11 @@ export function printDiff(
   }
 }
 
-export function dynamicUrl(id: any, url: URL) {
+export function dynamicUrl(id: string | undefined, url: URL) {
   const pathname = url?.pathname;
   const dynamicPathname = pathname.replace(/\/[0-9a-zA-Z_-]+$/, `/${id}`);
   const searchParams = buildSearchParams(url?.searchParams, {
-    removableKeys: ['mail_id']
+    remove: ['mail_id']
   });
   return `${dynamicPathname}${searchParams}`;
 }
@@ -262,18 +258,18 @@ export function dynamicUrl(id: any, url: URL) {
 export function buildSearchParams(
   searchParams: string | URLSearchParams | string[][] | Record<string, string> | undefined,
   options: {
-    removableKeys?: string[];
-    addableKeys?: string[][];
+    remove?: string[];
+    append?: string[][];
   } = {}
 ) {
-  const { removableKeys, addableKeys } = { ...options };
+  const { remove, append } = { ...options };
   const searchParam = new URLSearchParams(searchParams);
-  addableKeys?.forEach((key) => {
+  append?.forEach((key) => {
     if (key.length === 2) {
       searchParam?.set(key[0], key[1]);
     }
   });
-  removableKeys?.forEach((key) => {
+  remove?.forEach((key) => {
     searchParam?.has(key) && searchParam.delete(key);
   });
   const search = searchParam?.toString();

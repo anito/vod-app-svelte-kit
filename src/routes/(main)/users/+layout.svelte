@@ -19,7 +19,7 @@
     UserGraphic,
     VideoEditorList
   } from '$lib/components';
-  import { emit, filterByModelKeys, USER } from '$lib/utils';
+  import { buildSearchParams, emit, filterByModelKeys, USER } from '$lib/utils';
   import Button, { Icon as ButtonIcon } from '@smui/button';
   import Fab, { Icon as FabIcon, Label } from '@smui/fab';
   import Icon from '@smui/textfield/icon';
@@ -95,6 +95,15 @@
     })(selectionUserId) || [];
   $: userIssues = userInfos.filter((info: { type: string }) => info.type === 'issue');
 
+  // searchkey dependent Dialogs
+  // ${buildSearchParams($page.url.searchParams, { append: [['modal', 'settings']] })
+  $: infoDialog?.setOpen($page.url.searchParams.get('dialog') === 'info-help');
+  $: activateUserDialog?.setOpen($page.url.searchParams.get('dialog') === 'user-activate');
+  $: removeTokenDialog?.setOpen($page.url.searchParams.get('dialog') === 'token-remove');
+  $: redirectDialog?.setOpen($page.url.searchParams.get('dialog') === 'token-redirect');
+  $: generateTokenDialog?.setOpen($page.url.searchParams.get('dialog') === 'token-generate');
+  $: resolveAllDialog?.setOpen($page.url.searchParams.get('dialog') === 'resolve-all');
+
   onMount(() => {
     snackbar = getSnackbar();
 
@@ -105,20 +114,18 @@
       renewedTokenDialog?.setOpen(true);
     }
 
-    window.addEventListener('info:open:resolve-all-dialog', resolveAllHandler);
-    window.addEventListener('info:open:help-dialog', infoDialogHandler);
-    window.addEventListener('info:user:activate', activateUserHandler);
-    window.addEventListener('info:token:remove', removeTokenHandler);
-    window.addEventListener('info:token:generate', generateTokenHandler);
-    window.addEventListener('info:token:redirect', tokenRedirectHandler);
+    window.addEventListener('info:help-dialog', infoDialogHandler);
+    window.addEventListener('info:token-remove', removeTokenDialogHandler);
+    window.addEventListener('info:user-activate', activateUserDialogHandler);
+    window.addEventListener('info:token-redirect', tokenRedirectDialogHandler);
+    window.addEventListener('info:resolve-all-dialog', resolveAllDialogHandler);
 
     return () => {
-      window.removeEventListener('info:open:resolve-all-dialog', resolveAllHandler);
-      window.removeEventListener('info:open:help-dialog', infoDialogHandler);
-      window.removeEventListener('info:user:activate', activateUserHandler);
-      window.removeEventListener('info:token:remove', removeTokenHandler);
-      window.removeEventListener('info:token:generate', generateTokenHandler);
-      window.removeEventListener('info:token:redirect', tokenRedirectHandler);
+      window.removeEventListener('info:help-dialog', infoDialogHandler);
+      window.removeEventListener('info:token-remove', removeTokenDialogHandler);
+      window.removeEventListener('info:user-activate', activateUserDialogHandler);
+      window.removeEventListener('info:token-redirect', tokenRedirectDialogHandler);
+      window.removeEventListener('info:resolve-all-dialog', resolveAllDialogHandler);
     };
   });
 
@@ -187,23 +194,19 @@
     }
   }
 
-  function resolveAllHandler() {
+  function resolveAllDialogHandler() {
     resolveAllDialog?.setOpen(true);
   }
 
-  function activateUserHandler({ detail }: CustomEvent) {
+  function activateUserDialogHandler({ detail }: CustomEvent) {
     (detail.silent && activateUser({ active: true })) || activateUserDialog?.setOpen(true);
   }
 
-  function generateTokenHandler({ detail }: CustomEvent) {
-    (detail.silent && generateToken(false)) || generateTokenDialog?.setOpen(true);
-  }
-
-  function removeTokenHandler() {
+  function removeTokenDialogHandler() {
     removeTokenDialog?.setOpen(true);
   }
 
-  function tokenRedirectHandler() {
+  function tokenRedirectDialogHandler() {
     redirectDialog?.setOpen(true);
   }
 
@@ -215,30 +218,35 @@
     if (detail.action === 'approved') {
       resolveAll();
     }
+    navigateWithoutKeys(['dialog']);
   }
 
   function activateUserDialogCloseHandler({ detail }: CustomEvent) {
     if (detail.action === 'approved') {
       activateUser({ active: true });
     }
+    navigateWithoutKeys(['dialog']);
   }
 
   function generateTokenDialogCloseHandler({ detail }: CustomEvent) {
     if (detail.action === 'approved') {
       generateToken(false);
     }
+    navigateWithoutKeys(['dialog']);
   }
 
   function removeTokenDialogCloseHandler({ detail }: CustomEvent) {
     if (detail.action === 'approved') {
       removeToken();
     }
+    navigateWithoutKeys(['dialog']);
   }
 
   function renewTokenDialogCloseHandler({ detail }: CustomEvent) {
     if (detail.action === 'approved') {
       localStorage.removeItem('renewed');
     }
+    navigateWithoutKeys(['dialog']);
   }
 
   function tokenRedirectDialogCloseHandler({ detail }: CustomEvent) {
@@ -252,6 +260,12 @@
 
   function chipInteractionHandler({ detail }: CustomEvent) {
     console.log(detail);
+  }
+
+  function navigateWithoutKeys(remove: string[]) {
+    goto(
+      `${$page.url.pathname}${buildSearchParams($page.url.searchParams, { remove })}`
+    );
   }
 
   let openUploader = () => {
@@ -415,6 +429,7 @@
   aria-labelledby="info-title"
   aria-describedby="info-content"
   surface$style="width: var(--dialog-w); max-width: var(--dialog-max-w);"
+  on:SMUIDialog:closed={() => navigateWithoutKeys(['dialog'])}
 >
   <DialogTitle id="info-title">{$_('text.what-is-a-token')}</DialogTitle>
   <Content id="info-content">

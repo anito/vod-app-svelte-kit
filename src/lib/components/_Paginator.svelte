@@ -5,6 +5,7 @@
 
 <script lang="ts">
   import { enhance } from '$app/forms';
+  import { invalidate } from '$app/navigation';
   import { writable } from 'svelte/store';
   import { createEventDispatcher, tick } from 'svelte';
   import Button, { Label, Icon } from '@smui/button';
@@ -34,15 +35,19 @@
 
   const dispatch = createEventDispatcher();
 
-  let paginator: any
+  let paginator: any;
 
-  $: (pagination || store) && (paginator = sync());
+  $: (pagination || store) && (paginator = sync());
   $: page_data = paginator && pageData();
 
   function pageData() {
     paginator = { ...paginator, has_next_page: !($store?.length === paginator.count) };
     const { count, page_count, current_page, has_next_page, limit } = paginator;
-    const next_count = has_next_page ? (page_count - current_page) === 1 ? (count % limit) || limit : limit : 0;
+    const next_count = has_next_page
+      ? page_count - current_page === 1
+        ? count % limit || limit
+        : limit
+      : 0;
     const loaded_count = $store?.length;
     const remaining_count = Math.max(0, count - limit * current_page);
     return {
@@ -96,9 +101,9 @@
   }
 
   async function formHandler() {
-    return ({ result }: { result: ActionResult }) => {
+    return async ({ result }: { result: ActionResult }) => {
       if (result.type === 'success') {
-        const { data, pagination }: any = {...result.data};
+        const { data, pagination }: any = { ...result.data };
         if (!pagination) {
           PAGINATORS.delete(id);
         } else {
@@ -108,6 +113,7 @@
           setTimeout(() => scrollIntoView(), 200);
           dispatch('paginator:loaded', id);
         }
+        await invalidate('app:session');
       }
     };
   }
@@ -117,12 +123,7 @@
   <form {action} method="POST" use:enhance={formHandler}>
     {#if paginator?.has_next_page}
       {#if type === 'label'}
-        <Button
-          variant="unelevated"
-          color="primary"
-          class="button-shaped-round load-more"
-          {style}
-        >
+        <Button variant="unelevated" color="primary" class="button-shaped-round load-more" {style}>
           <Label
             class="label"
             style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"

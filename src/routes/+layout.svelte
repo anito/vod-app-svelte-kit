@@ -826,7 +826,7 @@
                 <Item class="justify-start">
                   <Button
                     href={`${$page.url.pathname}${buildSearchParams($page.url.searchParams, {
-                      addableKeys: [['modal', 'settings']]
+                      append: [['modal', 'settings']]
                     })}`}
                     class="link-button"
                     ripple={false}
@@ -868,7 +868,7 @@
   on:SMUIDialog:closed={async () =>
     await goto(
       `${$page.url.pathname}${buildSearchParams($page.url.searchParams, {
-        removableKeys: ['modal', 'edit']
+        remove: ['modal', 'edit']
       })}`
     )}
 >
@@ -902,7 +902,7 @@
                             href={`${$page.url.pathname}${buildSearchParams(
                               $page.url.searchParams,
                               {
-                                addableKeys: [['edit', `${setting[0]}:${item[0]}`]]
+                                append: [['edit', `${setting[0]}:${item[0]}`]]
                               }
                             )}`}>edit</a
                           >

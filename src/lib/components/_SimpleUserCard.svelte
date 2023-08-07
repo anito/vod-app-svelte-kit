@@ -31,14 +31,12 @@
         size: 'small'
       } as Badge)) ||
     false;
-  $: href = user && dynamicUrl(user.id, $page.url);
-
-  function focusHandler() {}
+  $: href = dynamicUrl(user?.id, $page.url);
 </script>
 
 {#if user}
   <Item {id} class="usercard-item" selected={selectionUserId == user?.id}>
-    <a on:focus={() => focusHandler()} {href} class="flex flex-1 item-inner">
+    <a {href} class="flex flex-1 item-inner">
       <span class="grafic-box usercard-box" style:--graphic-border-size={'1px'}>
         <UserGraphic size={40} {user} {badge} borderColor="#c5c5c5" />
       </span>

@@ -6,8 +6,9 @@ declare global {
   }
   interface WindowEventMap {
     'dropzone:init': CustomEvent;
-    'info:user:activate': CustomEvent;
-    'info:token:generate': CustomEvent;
+    'info:user-activate': CustomEvent;
+    'info:token-generate': CustomEvent;
+    'info:token-redirect': CustomEvent;
     'player:loadstart': CustomEvent;
     'player:emptied': CustomEvent;
     'player:canplay': CustomEvent;
@@ -85,6 +86,7 @@ export declare type EventType = keyof GlobalEventHandlersEventMap;
 export interface Issue<IssuesType = Record<string, any>> {
   id: string;
   eventType: string;
+  dialogType: string;
   label: string;
   flag: string;
   type: string;
@@ -158,6 +160,7 @@ export interface Session<SessionType = Record<string, any>> {
   fromToken?: boolean;
   user?: User;
   role?: string;
+  groups?: Group[];
   message?: string;
   success?: boolean;
   renewed?: boolean;

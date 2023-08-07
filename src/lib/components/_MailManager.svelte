@@ -5,7 +5,7 @@
   import { onMount, getContext, setContext } from 'svelte';
   import { writable } from 'svelte/store';
   import { page } from '$app/stores';
-  import { goto } from '$app/navigation';
+  import { goto, invalidate } from '$app/navigation';
   import { fabs, sents, inboxes, session, templates, users, usersFoundation } from '$lib/stores';
   import {
     MailViewer,
@@ -183,7 +183,9 @@
       .then(() => {
         // show loading spinner
         return new Promise((resolve, reject) => {
-          setTimeout(() => resolve(1), 500);
+          setTimeout(async () => {
+            resolve(await invalidate('app:session'));
+          }, 500);
         });
       });
 
