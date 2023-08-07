@@ -184,7 +184,8 @@
         // show loading spinner
         return new Promise((resolve, reject) => {
           setTimeout(async () => {
-            resolve(await invalidate('app:session'));
+            await invalidate('app:session')
+            resolve(1);
           }, 500);
         });
       });
