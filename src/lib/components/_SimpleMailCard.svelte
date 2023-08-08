@@ -1,41 +1,55 @@
 <script lang="ts">
   import './_meta.scss';
   import { localeFormat, isToday, INBOX, SENT } from '$lib/utils';
-  import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+  import { onMount, onDestroy, createEventDispatcher, tick } from 'svelte';
   import UserGraphic from './_UserGraphic.svelte';
+  import { usersFoundation } from '$lib/stores';
   import { Item, Text, PrimaryText, SecondaryText } from '@smui/list';
   import { locale } from 'svelte-i18n';
   import { page } from '$app/stores';
   import type { Mail } from '$lib/types';
-  import type { User } from '$lib/classes/repos/types';
+  import type { User, UserFoundation } from '$lib/classes/repos/types';
 
-  export let mail: Mail | undefined;
+  export let mail: Mail;
   export let type: string | null;
   export { className as class };
   export let selected = false;
+  export let selection: Mail | null | undefined;
+  export let userId: string;
 
   const dispatch = createEventDispatcher();
 
-  let userItems: User[] = [];
+  let userItems:
+    | string
+    | string[]
+    | (
+        | UserFoundation
+        | {
+            email: string;
+          }
+      )[] = [];
   let created = '';
   let className = '';
   let anchorElement: HTMLAnchorElement;
-  export let selection: Mail | null | undefined;
 
-  $: unread = !mail?._read;
   $: dateFormat =
     $locale?.indexOf('de') != -1
-      ? isToday(mail?.created || new Date(1970))
+      ? isToday(parsedMail?.created || new Date(1970))
         ? 'HH:mm'
         : 'dd.MM yy HH:mm'
-      : isToday(mail?.created || new Date(1970))
+      : isToday(parsedMail?.created || new Date(1970))
       ? 'hh:mm a'
       : 'yy-MM-dd hh:mm a';
 
-  $: created = localeFormat(new Date(mail?.created || 1970), dateFormat);
+  $: created = localeFormat(new Date(parsedMail?.created || 1970), dateFormat);
+  $: parsedMail = parseMail();
+  $: userDisplayName = (user: any) => user.name || user.email;
+  $: unread = mail?._read === false;
 
   onMount(() => {
-    userItems = type === INBOX ? mail?._from : type === SENT ? mail?._to : [];
+    if (parsedMail) {
+      userItems = type === INBOX ? parsedMail._from : type === SENT ? parsedMail._to : [];
+    }
     selected && anchorElement.focus();
   });
 
@@ -45,34 +59,76 @@
     dispatch('mail:destroyed');
   });
 
-  function focusHandler() {
+  async function focusHandler() {
     selection = mail;
     if (type === INBOX) {
-      unread && dispatch('mail:toggleRead', { selection });
+      unread && dispatch('mail:toggleRead', { id: selection.id, read: true });
     }
+    await tick();
+    anchorElement.focus();
   }
 
   function keydownHandler(event: KeyboardEvent) {
-    const isBackspace = event.key === 'Backspace';
-    if (isBackspace) {
-      dispatch('mail:delete', { selection });
+    console.log(event);
+    if (event.key === 'Backspace') {
+      dispatch('mail:delete', { id: selection?.id });
     }
   }
 
   function href() {
-    $page.url.searchParams.set('mail_id', mail?.id);
+    if (parsedMail) $page.url.searchParams.set('mail_id', parsedMail.id);
     return $page.url.href;
   }
+
+  function parseMail() {
+    if (type === INBOX) return parseInbox(mail);
+    if (type === SENT) return parseSent(mail);
+  }
+
+  function parseInbox(mail: Mail) {
+    const json = JSON.parse(mail.message);
+    return {
+      id: mail.id,
+      _from: parseUsernames([mail._from]),
+      _to: [userId],
+      subject: json.subject,
+      _read: mail._read,
+      created: mail.created
+    };
+  }
+
+  function parseSent(mail: Mail) {
+    let json = JSON.parse(mail.message);
+    let _to = mail._to.split(';');
+    return {
+      id: mail.id,
+      _from: mail._from,
+      _to: parseUsernames(_to),
+      subject: json.subject,
+      created: mail.created,
+      _read: true
+    };
+  }
+
+  const parseUsernames = (senders: string[]) => {
+    let user;
+    let items: ({ email: string } | UserFoundation)[] = [];
+    for (let sender of senders) {
+      user = $usersFoundation?.find((user: UserFoundation) => user.email === sender);
+      items.push(user ? { ...user } : { email: sender });
+    }
+    return items;
+  };
 </script>
 
 <Item
   on:focus={() => focusHandler()}
-  class="{className} {mail?._read ? 'read' : 'unread'}"
+  class="{className} {parsedMail?._read ? 'read' : 'unread'}"
   {selected}
   ><a
-    on:focus={() => focusHandler()}
+    on:focus={focusHandler}
     bind:this={anchorElement}
-    on:keydown={(e) => keydownHandler(e)}
+    on:keydown={keydownHandler}
     href={href()}
     class="flex flex-1 item-inner"
   >
@@ -84,11 +140,11 @@
     <Text style="flex: 1; align-self: auto;">
       <PrimaryText style="display: flex;">
         {#each userItems as user}
-          <span class="mr-3 mail-list" class:unread>{user.name || user.email}</span>
+          <span class="mr-3 mail-list" class:unread>{userDisplayName(user)}</span>
         {/each}
       </PrimaryText>
       <SecondaryText style="display: flex; align-items: baseline; justify-content: center;">
-        <span class="subject">{mail?.subject || '--'}</span><span class="date-created"
+        <span class="subject">{parsedMail?.subject || '--'}</span><span class="date-created"
           >{created}</span
         >
       </SecondaryText>

@@ -6,7 +6,7 @@
   import type { Badge } from '$lib/types';
   import type { User } from '$lib/classes/repos/types';
 
-  export let user: User | undefined;
+  export let user: any;
   export let dense = false;
   export let inactive = false;
   export let size = 24;
@@ -67,7 +67,7 @@
   $: style = ((style) => style.trim().replace(/ +(?= )/g, ''))(
     `${style} ${sizeVar} ${overlayVars}`
   );
-  $: titleAttr = user ? `${user?.name} (${user?.role})` : '';
+  $: titleAttr = user ? `${user.name} (${user.role})` : '';
   $: (async (usr) => await getSource(usr).then((res) => (src = res)))(user);
 
   const getSource = async (user: User | undefined) => {

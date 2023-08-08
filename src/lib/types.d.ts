@@ -118,11 +118,11 @@ export interface Group<GroupType = Record<string, any>> {
 }
 
 export interface Mail<MailType = Record<string, any>> {
-  id: string | any;
+  id: string;
   message: string;
   subject: string;
-  _from: string | any;
-  _to: string | any;
+  _from: string;
+  _to: string;
   _read: boolean;
   created: Date;
 }
@@ -167,10 +167,6 @@ export interface Session<SessionType = Record<string, any>> {
   locale?: string;
   salutation?: string;
   _expires?: Date | any;
-}
-
-export interface Sent<SentType = Record<string, any>> {
-  id: string;
 }
 
 export interface Inbox<InboxType = Record<string, any>> {

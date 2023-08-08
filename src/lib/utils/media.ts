@@ -55,7 +55,7 @@ async function getMedia(
   }
 }
 
-export function getMediaAvatar(id: any, jwt: string, options = {}) {
+export function getMediaAvatar(id: any, jwt: string | undefined, options = {}) {
   const defaults = {
     width: 100,
     height: 100,

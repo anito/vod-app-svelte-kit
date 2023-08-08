@@ -10,11 +10,10 @@
   let wait: Promise<any>;
 
   $: id = selection?.id; // don't rerender on read/unread
-  $: wait = showMessage(id); // parameter id only used for reactivity
-
-  function showMessage(id: string | undefined) {
-    return new Promise((resolve) => resolve(selection?.message)).then((res) => (message = res as string));
-  }
+  $: wait = ((_: string | undefined) =>
+    new Promise((resolve) => selection && resolve(JSON.parse(selection.message).message)).then(
+      (res) => (message = res as string)
+    ) as Promise<any>)(id);
 
   function renderMail(iframe: HTMLIFrameElement) {
     iframe.contentDocument?.open();

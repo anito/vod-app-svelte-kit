@@ -5,7 +5,7 @@
   import { onMount, getContext, setContext } from 'svelte';
   import { writable } from 'svelte/store';
   import { page } from '$app/stores';
-  import { goto, invalidate } from '$app/navigation';
+  import { goto } from '$app/navigation';
   import { fabs, sents, inboxes, session, templates, users, usersFoundation } from '$lib/stores';
   import {
     MailViewer,
@@ -25,14 +25,7 @@
   import Drawer, { AppContent, Content, Header, Subtitle } from '@smui/drawer';
   import Button, { Group, Icon } from '@smui/button';
   import IconButton from '@smui/icon-button';
-  import List, {
-    Item,
-    Text,
-    Graphic,
-    Separator,
-    SecondaryText,
-    Meta
-  } from '@smui/list';
+  import List, { Item, Text, Graphic, Separator, SecondaryText, Meta } from '@smui/list';
   import Fab, { Label, Icon as FabIcon } from '@smui/fab';
   import Dialog, {
     Title as DialogTitle,
@@ -41,9 +34,8 @@
     InitialFocus
   } from '@smui/dialog';
   import { INBOX, SENT, ADMIN, SUPERUSER, DESC, ASC, getStoreByEndpoint } from '$lib/utils';
-  import type { Mail, Badge, Sent } from '$lib/types';
+  import type { Mail, Badge } from '$lib/types';
   import type Snackbar from '@smui/snackbar';
-  import { browser } from '$app/environment';
 
   const sortAZProtected = (a: Record<string, any>, b: Record<string, any>) => {
     let ap = (a['protected'] && a['name'].toLowerCase()) || 'z';
@@ -101,6 +93,8 @@
   let totalInboxes = 0;
   let totalSents = 0;
   let currentSlug = $page.params.slug;
+  let loading: boolean;
+  let mailData: Promise<any>;
 
   export let selectionUserId: string;
 
@@ -135,7 +129,8 @@
   $: currentTemplate = $templates.find((tmpl) => tmpl.slug === activeTemplate);
   $: currentTemplate && hasPrivileges ? setFab('send-mail') : setFab('');
   $: dynamicTemplatePath = (slug: any) => {
-    selectedUser;
+    selectionUserId;
+    $page.url.search;
     return createTemplatePath(slug);
   };
   $: data = dynamicTemplateData && {
@@ -149,38 +144,39 @@
    */
   $: currentSlug = currentSlug !== $page.params.slug ? $page.params.slug : currentSlug;
   $: isValidTemplate = selectedUser && validateData(currentTemplate?.slug);
-  $: waitForData =
-    currentSlug &&
-    getSIUX()
-      .then((res: { success: any; data: never[] }) => {
-        if (res?.success) {
-          usersFoundation.update(res.data);
-          $usersFoundation; // subscribe to take effect
-        }
-      })
-      .then(async () => {
-        // fetching INBOX
-        const mailbox = mailboxes[0];
+  $: mailData = getSIUX()
+    .then((res: { success: any; data: never[] }) => {
+      currentSlug;
+      loading = true;
+      if (res?.success) {
+        usersFoundation.update(res.data);
+        $usersFoundation; // subscribe to take effect
+      }
+    })
+    .then(async () => {
+      // fetching mailboxes
+      const ret: { mailbox: string; data: any }[] = [];
+      for (let mailbox of mailboxes) {
         const data = await getMail(mailbox);
-        return [{ mailbox, data }];
-      })
-      .then(async (res: [{ mailbox: string; data: Mail[] }]) => {
-        // fetching SENT MAIL
-        const mailbox = mailboxes[1];
-        const data = await getMail(mailbox);
-        return [...res, { mailbox, data }];
-      })
-      .then((res: {mailbox: string; data: any}[]) => {
-        // Update Mail stores
-        res.forEach((val) => {
-          const store = getStoreByEndpoint(val.mailbox);
-          if (store) store.update(val.data);
-        });
-        // show loading spinner
-        return new Promise((resolve) => {
-          setTimeout(() => resolve(res), 500);
-        });
-      });
+        ret.push({ mailbox, data });
+      }
+      return ret;
+    })
+    .then((res: { mailbox: string; data: any }[]) => {
+      // give loading spinner a chance
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          for (let r of res) {
+            const store = getStoreByEndpoint(r.mailbox);
+            if (store) store.update(r.data);
+          }
+          resolve(res);
+        }, 500);
+      }) as Promise<any>;
+    }).then((res: any) => {
+      loading = false;
+      return res;
+    });
 
   onMount(() => {
     root = document.documentElement;
@@ -283,23 +279,26 @@
   }
 
   async function toggleRead({ detail }: CustomEvent) {
-    const selection = detail.selection;
-    const _read = !selection._read;
+    const id = detail.id;
+    const mail = $inboxes.find((item) => item.id === id);
+    const _read = typeof detail.read === 'boolean' ? detail.read : !mail?._read;
+
     await api
-      .put(`${INBOX}/${selection.id}`, {
+      .put(`${INBOX}/${id}`, {
         data: { _read },
         token: $session.user?.jwt
       })
       .then((res) => {
         if (res?.success) {
-          const inbox = $inboxes.find((item) => item.id === selection.id);
+          const inbox = $inboxes.find((item) => item.id === id);
           if (inbox) inboxes.put({ ...inbox, _read });
+          // if (inbox) selection = inbox;
         }
       });
   }
 
   async function deleteMail({ detail }: CustomEvent) {
-    const id = detail.selection?.id;
+    const id = detail.id;
     if (!id) return;
     await api
       .del(`${activeListItem}/${id}?locale=${$session.locale}`, { token: $session.user?.jwt })
@@ -314,7 +313,6 @@
 
   function invalidateMailData() {
     currentSlug = '';
-    // invalidate('app:session');
   }
 
   function toggleSortByDate() {
@@ -562,12 +560,16 @@
                 <Graphic class="material-icons" aria-hidden="true">inbox</Graphic>
                 <Text>{$_('text.inbox')}</Text>
                 <BadgeGroup right>
-                  {#if totalInboxes}
-                    <MailBadge class="medium">{totalInboxes}</MailBadge>
-                  {/if}
-                  {#if totalInboxes && unreadInboxes > 0}
-                    <MailBadge class="medium flash">{unreadInboxes}</MailBadge>
-                  {/if}
+                  {#await mailData}
+                    <MailBadge size="medium">...</MailBadge>
+                  {:then}
+                    {#if totalInboxes}
+                      <MailBadge size="medium">{totalInboxes}</MailBadge>
+                    {/if}
+                    {#if totalInboxes && unreadInboxes > 0}
+                      <MailBadge size="medium" class="flash">{unreadInboxes}</MailBadge>
+                    {/if}
+                  {/await}
                 </BadgeGroup>
               </Item>
               <Item
@@ -577,9 +579,15 @@
               >
                 <Graphic class="material-icons" aria-hidden="true">send</Graphic>
                 <Text>{$_('text.sent')}</Text>
-                {#if totalSents}
-                  <MailBadge class="medium" right>{totalSents}</MailBadge>
-                {/if}
+                <BadgeGroup right>
+                  {#await mailData}
+                    <MailBadge size="medium">...</MailBadge>
+                  {:then}
+                    {#if totalSents}
+                      <MailBadge size="medium">{totalSents}</MailBadge>
+                    {/if}
+                  {/await}
+                </BadgeGroup>
               </Item>
 
               {#if hasPrivileges}
@@ -700,7 +708,8 @@
                     on:mail:toggleRead={toggleRead}
                     bind:selection
                     bind:selectionIndex
-                    {waitForData}
+                    waitForData={mailData}
+                    {loading}
                     {sort}
                   />
                 </div>
