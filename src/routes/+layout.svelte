@@ -30,7 +30,10 @@
     printDiff,
     buildSearchParams,
     get,
-    createRedirectSlug
+    createRedirectSlug,
+
+    post
+
   } from '$lib/utils';
   import {
     currentMediaStore,
@@ -269,6 +272,8 @@
     initListener();
     initMediaListener();
     fadeIn();
+    // Set locale early for proper server response 
+    saveLocale();
     initClasses();
     printCopyright();
 
@@ -288,6 +293,13 @@
       loaderColor = 'var(--flash)';
       outerElement?.classList.remove('opacity-0');
     });
+  }
+
+  /**
+   * Persist locale in cookie
+  */
+  async function saveLocale() {
+    await post('/session', { locale: $locale })
   }
 
   function initListener() {
