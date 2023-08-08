@@ -2,7 +2,7 @@ import { browser, dev } from '$app/environment';
 import { error } from '@sveltejs/kit';
 import { getBlob } from './utils';
 
-export const base = dev ? `https://vod.mbp` : `https://vod.webpremiere.de`;
+export const base = dev ? 'https://vod.mbp' : 'https://vod.webpremiere.de';
 export const version = 'v1';
 
 async function send(atts: {
@@ -57,6 +57,7 @@ async function send(atts: {
       }
     })
     .catch((err) => {
+      console.log(err);
       throw error(500, 'API Server Error');
     });
 }

@@ -153,7 +153,6 @@
     currentSlug &&
     getSIUX()
       .then((res: { success: any; data: never[] }) => {
-        console.log('loading');
         if (res?.success) {
           usersFoundation.update(res.data);
           $usersFoundation; // subscribe to take effect
@@ -172,11 +171,12 @@
         return [...res, { mailbox, data }];
       })
       .then((res: {mailbox: string; data: any}[]) => {
-        // show loading spinner
+        // Update Mail stores
         res.forEach((val) => {
           const store = getStoreByEndpoint(val.mailbox);
           if (store) store.update(val.data);
         });
+        // show loading spinner
         return new Promise((resolve) => {
           setTimeout(() => resolve(res), 500);
         });
@@ -748,7 +748,7 @@
   <Fab
     class="floating-fab"
     color="primary"
-    on:click={() => sendMail()}
+    on:click={sendMail}
     extended
     disabled={!isValidTemplate}
   >
