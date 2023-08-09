@@ -353,7 +353,7 @@
     "use-remove-token-button": "Verwenden Sie den Button <i class=\"button\">{button}</i>, um das Konto zu deaktivieren. Alternativ können Sie auch <i>Deactivate User</i> anklicken. In beiden Fällen ist eine Anmeldung nicht mehr möglich.",
     "what-is-the-token-used-for": "Der Token wird zur Authentifizierung verwendet. D.h. das übliche fehlerbehaftete Eintippen von Benutzernamen/Passwort entfällt und es kann sofort losgelegt werden. Der Token beinhaltet verschlüsselte Parameter wie Gültigkeitsdauer und Benutzername. Kann am Server eine Zuordnung stattfinden, wird der entsprechende Benutzer angemeldet.",
     "should-contact-admin": "<p>Bitte kontaktieren Sie uns, falls Sie Ihren Token oder Ihre Zugangsdaten verloren haben.</p><p>Wir kümmern uns darum.</p>",
-    "you-have-unsaved-changes": "Sie haben Änderungen an der Email Vorlage vorgenommen.\nSollen die Änderungen jetzt gesichert werden?"
+    "you-have-unsaved-changes": "Ihre Vorlage enthält ungesicherte Änderungen."
   },
   "languages": {
     "en": "English",

@@ -353,7 +353,7 @@
     "use-remove-token-button": "Use the <i class = \"button\">{button}</i> button to lock the account. \nAlternatively, you can also click on <i> Deactivate User </i>. \nIn both cases, registration is no longer possible.",
     "what-is-the-token-used-for": "The token is used for user authentication. \nThis means that the usual erroneous typing of the user name / password is no longer necessary and you can start immediately. \nThe token contains encrypted parameters such as the period of validity or user name. \nIf an assignment can take place server-side, the corresponding user will be logged in.",
     "should-contact-admin": "<p>Please contact us if you have lost your token or your credentials.</p>\n<p>We'll take care of it.</p>",
-    "you-have-unsaved-changes": "You have made changes to the email template.\n\nDo you want to save the changes now?"
+    "you-have-unsaved-changes": "Your Template has unsaved changes."
   },
   "languages": {
     "en": "English",
