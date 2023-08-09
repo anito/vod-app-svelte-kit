@@ -34,11 +34,10 @@ export function formatter(d: number) {
 }
 
 export function createRedirectSlug(url: URL, searchMap = new Map()) {
-  let searchParams: URLSearchParams;
-  let path;
+  const searchParams: URLSearchParams = url.searchParams;
   const ignored = ['login', 'redirect'];
+  let path;
 
-  searchParams = url.searchParams;
   searchMap.forEach((val, name) => {
     !searchParams.has(name) && searchParams.append(name, val);
   });
@@ -252,7 +251,7 @@ export function printDiff(
 }
 
 export function dynamicUrl(id: string | undefined, url: URL) {
-  const pathname = url?.pathname;
+  const pathname = url.pathname;
   const dynamicPathname = pathname.replace(/\/[0-9a-zA-Z_-]+$/, `/${id}`);
   const searchParams = buildSearchParams(url?.searchParams, {
     remove: ['mail_id']

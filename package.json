@@ -96,7 +96,7 @@
     "html-minifier": "^4.0.0",
     "postprocessing": "^6.32.2",
     "sass": "^1.51.0",
-    "svelte-kit-cookie-session": "^3.4.1",
+    "svelte-kit-cookie-session": "^4.0.0",
     "three": "^0.154.0",
     "tweakpane": "^3.1.10",
     "web-vitals": "^3.4.0"

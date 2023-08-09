@@ -1,14 +1,15 @@
 <script lang="ts">
   import './_meta.scss';
+  import { browser } from '$app/environment';
+  import { page } from '$app/stores';
   import { localeFormat, isToday, INBOX, SENT } from '$lib/utils';
-  import { onMount, onDestroy, createEventDispatcher, tick } from 'svelte';
+  import { onMount, onDestroy, createEventDispatcher, tick, getContext } from 'svelte';
   import UserGraphic from './_UserGraphic.svelte';
   import { usersFoundation } from '$lib/stores';
   import { Item, Text, PrimaryText, SecondaryText } from '@smui/list';
   import { locale } from 'svelte-i18n';
-  import { page } from '$app/stores';
   import type { Mail } from '$lib/types';
-  import type { User, UserFoundation } from '$lib/classes/repos/types';
+  import type { UserFoundation } from '$lib/classes/repos/types';
 
   export let mail: Mail;
   export let type: string | null;
@@ -31,6 +32,7 @@
   let created = '';
   let className = '';
   let anchorElement: HTMLAnchorElement;
+  let willBeDeleted = false;
 
   $: dateFormat =
     $locale?.indexOf('de') != -1
@@ -45,32 +47,31 @@
   $: parsedMail = parseMail();
   $: userDisplayName = (user: any) => user.name || user.email;
   $: unread = mail?._read === false;
+  $: browser && selected && focusHandler();
 
   onMount(() => {
     if (parsedMail) {
       userItems = type === INBOX ? parsedMail._from : type === SENT ? parsedMail._to : [];
     }
-    selected && anchorElement.focus();
   });
 
   onDestroy(() => {
-    selection = null;
-    userItems = [];
-    dispatch('mail:destroyed');
+    if (willBeDeleted) dispatch('mail:destroyed', { id: mail.id, type });
   });
 
   async function focusHandler() {
-    selection = mail;
-    if (type === INBOX) {
-      unread && dispatch('mail:toggleRead', { id: selection.id, read: true });
-    }
     await tick();
+    selection = mail;
+
+    if (type === INBOX) {
+      unread && dispatch('mail:toggleRead', { id: mail.id, read: true });
+    }
     anchorElement.focus();
   }
 
   function keydownHandler(event: KeyboardEvent) {
-    console.log(event);
     if (event.key === 'Backspace') {
+      willBeDeleted = true;
       dispatch('mail:delete', { id: selection?.id });
     }
   }
@@ -121,12 +122,8 @@
   };
 </script>
 
-<Item
-  on:focus={() => focusHandler()}
-  class="{className} {parsedMail?._read ? 'read' : 'unread'}"
-  {selected}
+<Item on:focus={focusHandler} class="{className} {mail?._read ? 'read' : 'unread'}" {selected}
   ><a
-    on:focus={focusHandler}
     bind:this={anchorElement}
     on:keydown={keydownHandler}
     href={href()}

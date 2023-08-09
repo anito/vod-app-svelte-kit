@@ -1,17 +1,17 @@
-import type { Sent } from '$lib/types';
 import { writable } from 'svelte/store';
+import type { Mail } from '$lib/types';
 
 function createStore() {
-  const { subscribe, update, set } = writable([] as Sent[]);
+  const { subscribe, update, set } = writable([] as Mail[]);
 
-  let findIndexById = (id: string, items: Sent[]) => {
+  let findIndexById = (id: string, items: Mail[]) => {
     return items.findIndex((itm: { id: string }) => itm.id == id);
   };
 
   return {
     subscribe,
-    update: (val: Sent<Record<string, any>>[]) => update(() => val),
-    put: (val: Sent<Record<string, any>>) =>
+    update: (val: Mail<Record<string, any>>[]) => update(() => val),
+    put: (val: Mail<Record<string, any>>) =>
       update((items) => {
         const index = findIndexById(val.id, items);
         return [...items.slice(0, index), { ...items[index], ...val }, ...items.slice(index + 1)];

@@ -7,11 +7,12 @@ import { UsersRepo, VideosRepo, ImagesRepo, VideosAllRepo } from '$lib/classes';
 import type { HandleFetch, HandleServerError } from '@sveltejs/kit';
 import type { Config } from '$lib/types';
 
-const getConfig = async () => {
+const getConfig: () => Promise<Config> = async () => {
   const res = await api.get(`settings`);
   if (res?.success) {
     return { ...DEFAULT_CONFIG, ...res.data };
   }
+  return DEFAULT_CONFIG;
 };
 
 const killOrExtend = async (locals: App.Locals) => {
@@ -28,13 +29,15 @@ const killOrExtend = async (locals: App.Locals) => {
   }
 };
 
-let config: Config | null = null;
+let config: Config | null = await getConfig();
 
 export const handle = handleSession(
   {
-    secret: 'ALKDSFH§%&24LKFDJSD/&$§&ÖLDKFJSDL§&%$&=&=SLKAF',
-    key: 'VOD__SESSION',
-    rolling: true
+    secret: 'kqAGZ*h?A?0wk#@]pGePo4AMedc#iG75',
+    key: 'VOD__APP__SESSION',
+    rolling: true,
+    expires: 60 * 60 * 24, //parseInt(config.Session.lifetime),
+    expires_in: 'seconds'
   },
   async ({ event, resolve }) => {
     dev && (process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0');

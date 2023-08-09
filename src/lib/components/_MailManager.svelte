@@ -80,7 +80,7 @@
 
   let snackbar: Snackbar;
   let drawerOpen: boolean;
-  let selection: Mail;
+  let selection: Mail | null;
   let unreadInboxes = 0;
   let canSave: boolean;
   let working: { [x: string]: any } | undefined;
@@ -94,14 +94,19 @@
   let totalSents = 0;
   let currentSlug = $page.params.slug;
   let loading: boolean;
-  let mailData: Promise<any>;
+  let mailData: Promise<Mail[]>;
 
   export let selectionUserId: string;
 
   setContext('mail-store', {
-    getMailStore: () => currentStore
+    getActiveMailStore: () => currentStore,
+    getMailStore: (userId: string, mailbox: string) => {
+      const store = getStoreByEndpoint(mailbox);
+
+    }
   });
 
+  $: if(!$page.url.searchParams.get('mail_id')) selection = null;
   $: selectedUser = ((id) => $users.find((usr) => usr.id === id))(selectionUserId) as any;
   $: hasSelectedUserPrivileges = selectedUser?.role === ADMIN || selectedUser?.role === SUPERUSER;
   $: badge = {
@@ -119,9 +124,9 @@
   $: selectionUserId && (selectionIndex = -1);
   $: username = selectedUser?.name || $_('text.empty-user-selection');
   $: email = selectedUser?.email || '';
-  $: totalSents = $sents.length;
-  $: totalInboxes = $inboxes.length;
-  $: unreadInboxes = $inboxes.filter((mail) => !mail._read).length;
+  $: totalSents = $sents?.length;
+  $: totalInboxes = $inboxes?.length;
+  $: unreadInboxes = $inboxes?.filter((mail) => !mail._read).length;
   $: activeItem = $page.url.searchParams.get('active') || INBOX;
   $: setActiveListItem(activeItem);
   $: activeTemplate = matchesTemplate(activeListItem);
@@ -138,6 +143,7 @@
     ...dynamicTemplateData.validate(currentTemplate)
   };
   $: currentStore.update(() => getStoreByEndpoint(activeItem));
+  $: currentMails = $currentStore;
   /**
    * Changing the 'currentSlug' (to any arbitrary string different from $page.params.slug)
    * will be forcing the mail to reload
@@ -163,7 +169,7 @@
       return ret;
     })
     .then((res: { mailbox: string; data: any }[]) => {
-      // give loading spinner a chance
+      // give loading spinner a moment
       return new Promise((resolve) => {
         setTimeout(() => {
           for (let r of res) {
@@ -682,6 +688,7 @@
                     bind:selection
                     type={activeListItem}
                     {sort}
+                    {loading}
                   />
                 {/if}
               </div>
@@ -706,9 +713,9 @@
                   <MailList
                     on:mail:delete={deleteMail}
                     on:mail:toggleRead={toggleRead}
+                    on:mail:reload={invalidateMailData}
                     bind:selection
                     bind:selectionIndex
-                    waitForData={mailData}
                     {loading}
                     {sort}
                   />

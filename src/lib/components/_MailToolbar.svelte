@@ -3,16 +3,17 @@
   import { inboxes } from '$lib/stores';
   import { Group } from '@smui/button';
   import IconButton from '@smui/icon-button';
-  import { INBOX } from '$lib/utils';
+  import { ASC, INBOX } from '$lib/utils';
   import type { Mail } from '$lib/types';
 
   export let selection: Mail | null | undefined = null;
   export let type: string | null;
   export let sort: string;
+  export let loading = false;
 
   const dispatch = createEventDispatcher();
-  const {getMailStore}: any = getContext('mail-store');
-  const currentStore = getMailStore();
+  const {getActiveMailStore}: any = getContext('mail-store');
+  const currentStore = getActiveMailStore();
 
 
   $: mailStore = $currentStore;
@@ -22,14 +23,14 @@
 <div class="toolbar flex justify-between">
   <Group variant="outlined">
     <IconButton
-      class="material-icons"
+      class="material-icons {loading ? 'animate-spin' : ''}"
       on:click={() => dispatch('mail:reload', { selection })}
       color="primary"
     >
       sync
     </IconButton>
-    <IconButton class="material-icons" on:click={() => dispatch('mail:sort')} disabled={!type}>
-      {sort === 'DESC' ? 'sort' : sort === 'ASC' ? 'sort' : 'sort'}
+    <IconButton class="material-icons transition-all {sort === ASC ? 'rotate-180' : ''}" on:click={() => dispatch('mail:sort')} disabled={!type}>
+      sort
     </IconButton>
   </Group>
   <Group variant="outlined">

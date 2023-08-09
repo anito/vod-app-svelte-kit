@@ -21,7 +21,7 @@ export const DateTimeFormatOptions = {
 export const DEFAULT_CONFIG = {
   Session: {
     lifetime: '3600',
-    logoutredirect: '/login'
+    logoutredirect: '/'
   },
   Site: {
     logo: '',
