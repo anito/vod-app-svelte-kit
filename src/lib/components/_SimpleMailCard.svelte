@@ -3,7 +3,7 @@
   import { browser } from '$app/environment';
   import { page } from '$app/stores';
   import { localeFormat, isToday, INBOX, SENT } from '$lib/utils';
-  import { onMount, onDestroy, createEventDispatcher, tick, getContext } from 'svelte';
+  import { onMount, onDestroy, createEventDispatcher, tick } from 'svelte';
   import UserGraphic from './_UserGraphic.svelte';
   import { usersFoundation } from '$lib/stores';
   import { Item, Text, PrimaryText, SecondaryText } from '@smui/list';
@@ -12,23 +12,28 @@
   import type { UserFoundation } from '$lib/classes/repos/types';
 
   export let mail: Mail;
-  export let type: string | null;
+  export let type: string | null;
   export { className as class };
   export let selected = false;
   export let selection: Mail | null | undefined;
   export let userId: string;
 
+  type ParsedMail = {
+    id: string;
+    _from: FromTo[];
+    _to: FromTo[];
+    subject: string;
+    _read: boolean;
+    created: Date;
+  };
+
+  type FromTo = UserFoundation | string | { email: string };
+
   const dispatch = createEventDispatcher();
 
-  let userItems:
-    | string
-    | string[]
-    | (
-        | UserFoundation
-        | {
-            email: string;
-          }
-      )[] = [];
+  let parsedMail: ParsedMail;
+  let userItems: FromTo[];
+  // let userItems: () => FromTo[];
   let created = '';
   let className = '';
   let anchorElement: HTMLAnchorElement;
@@ -43,17 +48,12 @@
       ? 'hh:mm a'
       : 'yy-MM-dd hh:mm a';
 
-  $: created = localeFormat(new Date(parsedMail?.created || 1970), dateFormat);
-  $: parsedMail = parseMail();
+  $: parsedMail = parseMail(mail, type);
+  $: userItems = type === INBOX ? parsedMail._from : type === SENT ? parsedMail._to : [];
   $: userDisplayName = (user: any) => user.name || user.email;
+  $: created = localeFormat(new Date(parsedMail.created || 1970), dateFormat);
   $: unread = mail?._read === false;
   $: browser && selected && focusHandler();
-
-  onMount(() => {
-    if (parsedMail) {
-      userItems = type === INBOX ? parsedMail._from : type === SENT ? parsedMail._to : [];
-    }
-  });
 
   onDestroy(() => {
     if (willBeDeleted) dispatch('mail:destroyed', { id: mail.id, type });
@@ -77,43 +77,25 @@
   }
 
   function href() {
-    if (parsedMail) $page.url.searchParams.set('mail_id', parsedMail.id);
+    $page.url.searchParams.set('mail_id', mail.id);
     return $page.url.href;
   }
 
-  function parseMail() {
-    if (type === INBOX) return parseInbox(mail);
-    if (type === SENT) return parseSent(mail);
-  }
-
-  function parseInbox(mail: Mail) {
-    const json = JSON.parse(mail.message);
+  function parseMail(mail: Mail, type: string | null) {
+    const { subject } = JSON.parse(mail.message);
     return {
       id: mail.id,
-      _from: parseUsernames([mail._from]),
-      _to: [userId],
-      subject: json.subject,
+      _from: type === SENT ? [mail._from] : parseUsernames([mail._from]),
+      _to: type === SENT ? parseUsernames(mail._to.split(';')) : [userId],
+      subject: subject,
       _read: mail._read,
       created: mail.created
     };
   }
 
-  function parseSent(mail: Mail) {
-    let json = JSON.parse(mail.message);
-    let _to = mail._to.split(';');
-    return {
-      id: mail.id,
-      _from: mail._from,
-      _to: parseUsernames(_to),
-      subject: json.subject,
-      created: mail.created,
-      _read: true
-    };
-  }
-
   const parseUsernames = (senders: string[]) => {
     let user;
-    let items: ({ email: string } | UserFoundation)[] = [];
+    let items: (UserFoundation | { email: string })[] = [];
     for (let sender of senders) {
       user = $usersFoundation?.find((user: UserFoundation) => user.email === sender);
       items.push(user ? { ...user } : { email: sender });
@@ -141,7 +123,7 @@
         {/each}
       </PrimaryText>
       <SecondaryText style="display: flex; align-items: baseline; justify-content: center;">
-        <span class="subject">{parsedMail?.subject || '--'}</span><span class="date-created"
+        <span class="subject">{parsedMail.subject || '--'}</span><span class="date-created"
           >{created}</span
         >
       </SecondaryText>

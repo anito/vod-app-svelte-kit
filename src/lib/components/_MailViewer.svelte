@@ -26,14 +26,9 @@
     {$_('text.empty-email-selection')}
   </FlexContainer>
 {:then}
-  {#if message}
-    <iframe
-      in:fade={{ delay: 100, duration: 400 }}
-      title="Sent Mail"
-      style="width:100%; height: 100%;"
-      use:renderMail
-    />
-  {/if}
+  <div in:fade={{ delay: 100, duration: 400 }} style="height: 100%;">
+    <iframe title="Sent Mail" style="width:100%; height: 100%;" use:renderMail/>
+  </div>
 {/await}
 
 <style>

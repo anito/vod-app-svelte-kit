@@ -58,7 +58,7 @@
   $: hidden = selectionUserId == $session.user?.id ? true : false;
 
   setContext('siux', {
-    getSIUX: getSimpleUserIndex
+    getUsersIndex: getSimpleUserIndex
   });
 
   onMount(() => {
@@ -82,12 +82,9 @@
   }
 
   async function getSimpleUserIndex() {
-    if ($usersFoundation !== null) return Promise.resolve($usersFoundation);
     return await api
       .get('users/simpleindex', { token: $session.user?.jwt })
-      .then((res) => {
-        return res;
-      })
+      .then((res) => res)
       .catch((reason) => console.log(reason));
   }
 </script>

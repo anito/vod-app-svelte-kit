@@ -66,6 +66,7 @@
     if (href) {
       await goto(href);
       await tick();
+
       items[selectionIndex].selected = true;
       focusItemAtIndex(selectionIndex);
     }

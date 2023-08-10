@@ -67,7 +67,7 @@
     }
   ];
   const { setFab } = getContext('fab') as any;
-  const { getSIUX } = getContext('siux') as any;
+  const { getUsersIndex } = getContext('siux') as any;
   const { getSnackbar, configSnackbar } = getContext('snackbar') as any;
   const defaultActive = INBOX;
   const mailboxes = [INBOX, SENT];
@@ -150,13 +150,12 @@
    */
   $: currentSlug = currentSlug !== $page.params.slug ? $page.params.slug : currentSlug;
   $: isValidTemplate = selectedUser && validateData(currentTemplate?.slug);
-  $: mailData = getSIUX()
+  $: mailData = getUsersIndex()
     .then((res: { success: any; data: never[] }) => {
       currentSlug;
       loading = true;
       if (res?.success) {
         usersFoundation.update(res.data);
-        $usersFoundation; // subscribe to take effect
       }
     })
     .then(async () => {
