@@ -7,6 +7,8 @@ import { UsersRepo, VideosRepo, ImagesRepo, VideosAllRepo } from '$lib/classes';
 import type { HandleFetch, HandleServerError } from '@sveltejs/kit';
 import type { Config } from '$lib/types';
 
+dev && (process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0');
+
 const getConfig: () => Promise<Config> = async () => {
   const res = await api.get(`settings`);
   if (res?.success) {
@@ -40,8 +42,6 @@ export const handle = handleSession(
     expires_in: 'seconds'
   },
   async ({ event, resolve }) => {
-    dev && (process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0');
-
     // Force config to reload
     if (
       event.url.pathname.startsWith('/config') &&
