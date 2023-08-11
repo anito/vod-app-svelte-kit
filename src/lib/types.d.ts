@@ -6,9 +6,10 @@ declare global {
   }
   interface WindowEventMap {
     'dropzone:init': CustomEvent;
-    'info:user-activate': CustomEvent;
-    'info:token-generate': CustomEvent;
-    'info:token-redirect': CustomEvent;
+    'user-activate': CustomEvent;
+    'token-generate': CustomEvent;
+    'token-remove': CustomEvent;
+    'token-redirect': CustomEvent;
     'player:loadstart': CustomEvent;
     'player:emptied': CustomEvent;
     'player:canplay': CustomEvent;

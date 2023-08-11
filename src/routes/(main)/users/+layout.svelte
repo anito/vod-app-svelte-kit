@@ -70,7 +70,7 @@
   $: selectedUser = ((id) => $users?.find((usr) => usr.id === id))(selectionUserId);
   $: ((user) => {
     username = user?.name;
-    active = user?.active || false;
+    active = !!user?.active;
     tokenId = user?.token_id || null;
     token = user?.jwt || '';
     tokenExpires = user?.expires;
@@ -114,18 +114,16 @@
       renewedTokenDialog?.setOpen(true);
     }
 
-    window.addEventListener('info:help-dialog', infoDialogHandler);
-    window.addEventListener('info:token-remove', removeTokenDialogHandler);
-    window.addEventListener('info:user-activate', activateUserDialogHandler);
+    window.addEventListener('token-generate', generateTokenHandler);
+    window.addEventListener('token-remove', removeTokenHandler);
+    window.addEventListener('user-activate', toggleUserHandler);
     window.addEventListener('info:token-redirect', tokenRedirectDialogHandler);
-    window.addEventListener('info:resolve-all-dialog', resolveAllDialogHandler);
 
     return () => {
-      window.removeEventListener('info:help-dialog', infoDialogHandler);
-      window.removeEventListener('info:token-remove', removeTokenDialogHandler);
-      window.removeEventListener('info:user-activate', activateUserDialogHandler);
+      window.removeEventListener('token-generate', generateTokenHandler);
+      window.removeEventListener('token-remove', removeTokenHandler);
+      window.removeEventListener('user-activate', toggleUserHandler);
       window.removeEventListener('info:token-redirect', tokenRedirectDialogHandler);
-      window.removeEventListener('info:resolve-all-dialog', resolveAllDialogHandler);
     };
   });
 
@@ -136,9 +134,9 @@
     emit('user:add');
   }
 
-  async function generateToken(constrained?: boolean) {
+  async function generateToken() {
     const res = await api.post(`tokens?locale=${$page.data.session.locale}`, {
-      data: { user_id: selectedUser?.id, constrained },
+      data: { user_id: selectedUser?.id },
       token: $session.user?.jwt
     });
 
@@ -168,8 +166,16 @@
       });
   }
 
-  async function activateUser(state = {}) {
-    let data = 'active' in state ? state : { active: !active };
+  function generateTokenHandler({ detail }: CustomEvent) {
+    generateToken();
+  }
+
+  function removeTokenHandler({ detail }: CustomEvent) {
+    removeToken();
+  }
+
+  async function toggleUser() {
+    const data = { active: !selectedUser?.active };
     await api
       .put(`users/${selectionUserId}?locale=${$session.locale}`, {
         data,
@@ -180,38 +186,26 @@
 
         if (res?.success) {
           users.put({ ...selectedUser, ...data });
-        } else {
-          active = !active;
         }
         configSnackbar(message);
         snackbar?.forceOpen();
       });
   }
 
+  function toggleUserHandler({ detail }: CustomEvent) {
+    toggleUser();
+  }
+
   function resolveAll() {
     for (const info of userInfos) {
-      emit(info.eventType, { silent: true });
+      if (info.type === 'issue') {
+        setTimeout(() => emit(info.dialogType), 500);
+      }
     }
-  }
-
-  function resolveAllDialogHandler() {
-    resolveAllDialog?.setOpen(true);
-  }
-
-  function activateUserDialogHandler({ detail }: CustomEvent) {
-    (detail.silent && activateUser({ active: true })) || activateUserDialog?.setOpen(true);
-  }
-
-  function removeTokenDialogHandler() {
-    removeTokenDialog?.setOpen(true);
   }
 
   function tokenRedirectDialogHandler() {
     redirectDialog?.setOpen(true);
-  }
-
-  function infoDialogHandler() {
-    infoDialog?.setOpen(true);
   }
 
   function resolveAllDialogCloseHandler({ detail }: CustomEvent) {
@@ -223,14 +217,14 @@
 
   function activateUserDialogCloseHandler({ detail }: CustomEvent) {
     if (detail.action === 'approved') {
-      activateUser({ active: true });
+      toggleUser();
     }
     navigateWithoutKeys(['dialog']);
   }
 
   function generateTokenDialogCloseHandler({ detail }: CustomEvent) {
     if (detail.action === 'approved') {
-      generateToken(false);
+      generateToken();
     }
     navigateWithoutKeys(['dialog']);
   }
