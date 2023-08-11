@@ -1,5 +1,4 @@
 <script lang="ts">
-  import * as api from '$lib/api';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { onMount, getContext, tick } from 'svelte';
@@ -9,16 +8,14 @@
   import { ImageCard, MediaUploader, Info, Paginator, FlexContainer } from '$lib/components';
   import { fabs, images, session } from '$lib/stores';
   import { _ } from 'svelte-i18n';
-  import type Snackbar from '@smui/snackbar';
   import type { Dropzone } from '.';
   import type { Image } from '$lib/classes/repos/types';
 
-  let snackbar: Snackbar;
   let imagesList;
 
   const { getDropzone }: any = getContext('dropzone');
   const { open: uploader$open, close: uploader$close }: any = getContext('default-modal');
-  const { getSnackbar, configSnackbar }: any = getContext('snackbar');
+  const { showSnackbar }: any = getContext('snackbar');
   const { setFab }: any = getContext('fab');
 
   const openUploader = () => {
@@ -66,15 +63,13 @@
   $: pagination = $page.data.pagination?.images;
 
   onMount(() => {
-    snackbar = getSnackbar();
     setFab('add-image');
   });
 
   function uploadSuccessHandler({ detail }: CustomEvent) {
     const { data, message, success }: any = { ...detail.responseText };
 
-    configSnackbar(message);
-    snackbar?.forceOpen();
+    showSnackbar(message);
 
     if (success) {
       images.add(data);

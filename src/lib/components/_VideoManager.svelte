@@ -32,7 +32,7 @@
   const { getDropzone }: any = getContext('dropzone');
   const { open: editor$open }: any = getContext('editor-modal');
   const { open: uploader$open, close: uploader$close }: any = getContext('default-modal');
-  const { getSnackbar, configSnackbar }: any = getContext('snackbar');
+  const { showSnackbar }: any = getContext('snackbar');
   const { setFab }: any = getContext('fab');
   const transitionParams = {
     delay: 0,
@@ -41,14 +41,12 @@
   const flyTransitionParams = { ...transitionParams, x: -80 };
   const maxFiles = 1;
 
-  let snackbar: Snackbar;
   let uploadedData: any;
   let ul: HTMLUListElement;
 
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
 
   onMount(() => {
-    snackbar = getSnackbar();
 
     if (hasPrivileges) {
       setFab('add-video');
@@ -108,8 +106,7 @@
   function uploadSuccessHandler({ detail }: CustomEvent) {
     const { data, message, success }: any = detail.responseText;
 
-    configSnackbar(message);
-    snackbar?.forceOpen();
+    showSnackbar(message);
 
     if (success) {
       uploadedData = data;

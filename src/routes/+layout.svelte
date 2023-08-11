@@ -31,9 +31,7 @@
     buildSearchParams,
     get,
     createRedirectSlug,
-
     post
-
   } from '$lib/utils';
   import {
     currentMediaStore,
@@ -94,6 +92,7 @@
   let isMounted = false;
   let isPreferredDarkMode;
   let dropzone: Dropzone;
+  let nextMessage: { message: string; link?: string } | null;
 
   setContext('progress', {
     getProgress: () =>
@@ -143,7 +142,6 @@
 
   setContext('snackbar', {
     getSnackbar: () => snackbar,
-    configSnackbar,
     showSnackbar
   });
 
@@ -192,7 +190,7 @@
     ['Console', ['infoLevel']],
     ['Session', ['foo', 'bar']]
   ]);
-  const { getSnackbar }: any = getContext('snackbar');
+  const { getSnackbar } = getContext('snackbar') as { getSnackbar: () => Snackbar };
 
   ticker.subscribe((val) => {
     info(
@@ -272,7 +270,7 @@
     initListener();
     initMediaListener();
     fadeIn();
-    // Set locale early for proper server response 
+    // Set locale early for proper server response
     saveLocale();
     initClasses();
     printCopyright();
@@ -297,9 +295,9 @@
 
   /**
    * Persist locale in cookie
-  */
+   */
   async function saveLocale() {
-    await post('/session', { locale: $locale })
+    await post('/session', { locale: $locale });
   }
 
   function initListener() {
@@ -526,10 +524,7 @@
     }
   }
 
-  function configSnackbar(msg: string | undefined, link?: undefined) {
-    try {
-      snackbar?.close();
-    } catch (e) {}
+  function configSnackbar(msg: string | undefined, link?: string) {
     configureAction(msg, link);
   }
 
@@ -552,11 +547,22 @@
     }
   }
 
-  function handleSnackbarClosed() {}
+  function handleSnackbarClosed() {
+    if(nextMessage) {
+      configSnackbar(nextMessage.message, nextMessage.link);
+      nextMessage = null;
+    }
+  }
 
-  function showSnackbar(msg: string) {
-    configSnackbar(msg);
-    snackbar?.forceOpen();
+  function showSnackbar(message: string, link?: string) {
+    if (message) {
+      if (!snackbar.isOpen()) {
+        configSnackbar(message, link);
+      } else {
+        nextMessage = { message, link };
+      }
+    }
+    snackbar.open();
   }
 
   async function sessionSuccessHandler({ detail }: CustomEvent) {

@@ -50,7 +50,7 @@
 
   const { setFab }: any = getContext('fab');
   const { open, close }: any = getContext('default-modal');
-  const { getSnackbar, configSnackbar }: any = getContext('snackbar');
+  const { showSnackbar }: any = getContext('snackbar');
 
   const modi = [EDIT, PASS, DEL];
   const privilegedActions = modi;
@@ -72,7 +72,6 @@
   let invalidEmail = false;
   let password = '';
   let repeatedPassword = '';
-  let snackbar: Snackbar;
   let message;
   let avatarMenu: Menu;
   let avatarMenuAnchor;
@@ -162,7 +161,6 @@
   onMount(() => {
     root = document.documentElement;
     root.classList.add('usermanager--open');
-    snackbar = getSnackbar();
 
     return () => {
       root.classList.remove(
@@ -220,8 +218,7 @@
       await invalidate('app:main');
     }
     close();
-    configSnackbar(message);
-    snackbar?.forceOpen();
+    showSnackbar(message);
   }
 
   async function deleteAvatar() {
@@ -244,9 +241,7 @@
           await invalidate('app:main');
         }
       });
-
-    configSnackbar(msg);
-    snackbar?.forceOpen();
+    showSnackbar(msg);
   }
 
   async function activateUser() {
@@ -267,8 +262,7 @@
             reset();
           }
 
-          configSnackbar(message);
-          snackbar?.forceOpen();
+          showSnackbar(message);
           invalidate('app:session');
         }
       });
@@ -291,9 +285,7 @@
             // Sample Users are protected
             reset();
           }
-
-          configSnackbar(message);
-          snackbar?.forceOpen();
+          showSnackbar(message);
         }
       });
   }
@@ -393,8 +385,7 @@
           }
         }
         reset();
-        configSnackbar(message$1 || message$2);
-        snackbar?.forceOpen();
+        showSnackbar(message$1 || message$2);
       }
     }
   }

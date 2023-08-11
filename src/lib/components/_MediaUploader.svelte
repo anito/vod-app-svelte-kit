@@ -18,12 +18,11 @@
   };
   export let events: Record<string, any> = {};
 
-  const { getSnackbar, configSnackbar }: any = getContext('snackbar');
+  const { showSnackbar }: any = getContext('snackbar');
 
   let className = '';
   let count = 0;
   let uploader: HTMLDivElement;
-  let snackbar: Snackbar;
 
   $: fileType = type === 'avatar' ? 'image' : type;
   $: acceptedFiles = `${fileType}/*`;
@@ -31,7 +30,6 @@
   $: options = { acceptedFiles, ...options, path };
 
   onMount(() => {
-    snackbar = getSnackbar();
 
     Object.entries(events).map(([eventKey, eventFunc]) => {
       uploader.addEventListener(eventKey, eventFunc);
@@ -69,8 +67,7 @@
     } else if (typeof responseText === 'string') {
       message = responseText;
     }
-    configSnackbar(message);
-    snackbar?.forceOpen();
+    showSnackbar(message);
   }
 </script>
 

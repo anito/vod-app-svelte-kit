@@ -44,8 +44,8 @@
   export let selectionUserId: string;
 
   const isUnmanagableNoneUserList = false;
-  const { getSnackbar, configSnackbar }: any = getContext('snackbar');
-  const { open, close }: any = getContext('editor-modal');
+  const { showSnackbar }: any = getContext('snackbar');
+  const { open }: any = getContext('editor-modal');
   const { setFab }: any = getContext('fab');
   const { searchVideos, searchVideosAll }: any = getContext('search');
   const timespanSelections = [
@@ -69,7 +69,6 @@
   let removeDialog: Dialog;
   let timespanSelected: number | string;
   let firstDayOfWeek = 'monday';
-  let snackbar: Snackbar;
   let message: string;
   let selectedIndex: number;
   let selectedNoneUserIndex: number;
@@ -169,8 +168,6 @@
   onMount(() => {
     root = document.documentElement;
     root.classList.add('timemanager--open');
-
-    snackbar = getSnackbar();
 
     if (hasPrivileges) {
       setFab('add-video');
@@ -317,8 +314,7 @@
     users.put(res.data);
 
     message = msg || res.message || res.data.message;
-    configSnackbar(message);
-    snackbar?.forceOpen();
+    showSnackbar(message);
   }
 
   function handleError(res: any) {
@@ -326,13 +322,11 @@
     const code = res.data?.code || res.status;
 
     if (400 <= code && code < 500) {
-      configSnackbar(message);
-      snackbar?.forceOpen();
+      showSnackbar(message);
     } else {
       flash.update({ type: 'error', message, timeout: 3500 });
       const url = `login?${createRedirectSlug($page.url)}`;
-      configSnackbar(message, url);
-      snackbar?.forceOpen();
+      showSnackbar(message, url);
     }
   }
 

@@ -68,7 +68,7 @@
   ];
   const { setFab } = getContext('fab') as any;
   const { getUsersIndex } = getContext('siux') as any;
-  const { getSnackbar, configSnackbar } = getContext('snackbar') as any;
+  const { showSnackbar } = getContext('snackbar') as any;
   const defaultActive = INBOX;
   const mailboxes = [INBOX, SENT];
   const currentStore: any = writable();
@@ -78,7 +78,6 @@
   let sort = 'DESC';
   let drawer;
 
-  let snackbar: Snackbar;
   let drawerOpen: boolean;
   let selection: Mail | null;
   let unreadInboxes = 0;
@@ -186,7 +185,6 @@
   onMount(() => {
     root = document.documentElement;
     root.classList.add('mailmanager--open');
-    snackbar = getSnackbar();
     getTemplates();
 
     if (hasPrivileges) {
@@ -238,14 +236,15 @@
         token: $session.user?.jwt
       })
       .then((res) => {
+        let message: string;
         if (res?.success) {
-          configSnackbar($_('text.message-sent-success'));
+          message = $_('text.message-sent-success');
           invalidateMailData();
         } else {
-          configSnackbar($_('text.message-sent-failed'));
+          message = $_('text.message-sent-failed');
         }
+        showSnackbar(message);
       });
-    snackbar?.forceOpen();
   }
 
   function validateUser() {
@@ -311,8 +310,7 @@
         if (res?.success) {
           $currentStore?.del(id);
         }
-        configSnackbar(res.message);
-        snackbar?.forceOpen();
+        showSnackbar(res.message);
       });
   }
 
@@ -353,12 +351,11 @@
       data: { ...newTemplate },
       token: $session.user?.jwt
     });
-    configSnackbar(res.message);
     if (res?.success) {
       templates.add({ ...newTemplate, id: res.data.id, items: res.data.items, protected: false });
       gotoActiveBox(templateStringFromSlug(slug));
     }
-    snackbar?.forceOpen();
+    showSnackbar(res.message);
   }
 
   async function saveTemplate() {
@@ -377,12 +374,11 @@
         token: $session.user?.jwt
       }
     );
-    configSnackbar(res.message);
     if (res?.success) {
       if (currentTemplate) templates.put({ ...currentTemplate });
       mailTemplate.createWorkingCopy?.();
     }
-    snackbar?.forceOpen();
+    showSnackbar(res.message);
   }
 
   async function duplicateTemplate() {
@@ -401,23 +397,21 @@
       data: { ...newTemplate },
       token: $session.user?.jwt
     });
-    configSnackbar(res.message);
     if (res?.success) {
       templates.add({ ...newTemplate, id: res.data.id, items: res.data.items });
       gotoActiveBox(templateStringFromSlug(slug));
     }
-    snackbar?.forceOpen();
+    showSnackbar(res.message);
   }
 
   async function removeTemplate() {
     const res = await api.del(`templates/${currentTemplate?.id}?locale=${$session.locale}`, {
       token: $session.user?.jwt
     });
-    configSnackbar(res.message);
     if (res?.success) {
       if (currentTemplate?.id) templates.del(currentTemplate?.id);
     }
-    snackbar?.forceOpen();
+    showSnackbar(res.message);
   }
 
   function getTemplateData(slug?: any) {
@@ -458,6 +452,7 @@
     let template = $templates.find((tmpl) => tmpl.id === id);
 
     if (!template) return;
+    let message: string;
 
     const res = await api.put(`templates/${id}?locale=${$session.locale}`, {
       data: { name },
@@ -465,11 +460,11 @@
     });
     if (res?.success) {
       templates.put({ ...template, name });
-      configSnackbar($_('text.template-renamed'));
+      message = $_('text.template-renamed');
     } else {
-      configSnackbar($_('text.template-could-not-be-renamed'));
+      message = $_('text.template-could-not-be-renamed');
     }
-    snackbar?.forceOpen();
+    showSnackbar(message);
     return res.success;
   }
 

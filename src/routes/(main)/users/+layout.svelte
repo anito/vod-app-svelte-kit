@@ -36,7 +36,7 @@
   const { getDropzone }: any = getContext('dropzone');
   const { open: editor$open }: any = getContext('editor-modal');
   const { open: default$open, close: default$close }: any = getContext('default-modal');
-  const { getSnackbar, configSnackbar }: any = getContext('snackbar');
+  const { showSnackbar }: any = getContext('snackbar');
   const { getSegment }: any = getContext('segment');
   const { searchUsers }: any = getContext('search');
 
@@ -51,7 +51,6 @@
   let tokenId: string | null;
   let magicLink: string;
   let search = '';
-  let snackbar: Snackbar;
   let message;
   let infoDialog: Dialog;
   let generateTokenDialog: Dialog;
@@ -105,8 +104,6 @@
   $: resolveAllDialog?.setOpen($page.url.searchParams.get('dialog') === 'resolve-all');
 
   onMount(() => {
-    snackbar = getSnackbar();
-
     if (selectionUserId) scrollSelectedIntoView();
 
     let renewed;
@@ -150,8 +147,7 @@
         message = res.data.message || 'Error';
       } catch (e) {}
     }
-    configSnackbar(message);
-    snackbar?.forceOpen();
+    showSnackbar(message);
   }
 
   async function removeToken() {
@@ -161,8 +157,7 @@
         if (res?.success) {
           users.put({ ...selectedUser, ...res.data });
         }
-        configSnackbar(res.message);
-        snackbar?.forceOpen();
+        showSnackbar(res.message);
       });
   }
 
@@ -187,8 +182,7 @@
         if (res?.success) {
           users.put({ ...selectedUser, ...data });
         }
-        configSnackbar(message);
-        snackbar?.forceOpen();
+        showSnackbar(message);
       });
   }
 
@@ -313,8 +307,7 @@
   function uploadSuccessHandler({ detail }: CustomEvent) {
     const { data, message, success }: any = { ...detail.responseText };
 
-    configSnackbar(message);
-    snackbar?.forceOpen();
+    showSnackbar(message);
 
     if (success) {
       uploadedData = data;

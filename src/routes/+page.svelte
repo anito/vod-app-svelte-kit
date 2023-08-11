@@ -19,7 +19,7 @@
   import type Snackbar from '@smui/snackbar';
   import type { ActionResult } from '@sveltejs/kit';
 
-  const { getSnackbar, configSnackbar }: any = getContext('snackbar');
+  const { showSnackbar }: any = getContext('snackbar');
   const void0 = void 0;
   const template = 'from-user';
 
@@ -28,7 +28,6 @@
   let message = '';
   let invalidEmail = true;
   let selected: string | null | undefined;
-  let snackbar: Snackbar;
 
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: options = [
@@ -62,9 +61,7 @@
    */
   $: token = hasPrivileges && $session.user?.jwt;
 
-  onMount(() => {
-    snackbar = getSnackbar();
-  });
+  onMount(() => void 0);
 
   const sendMail = () => {
     return ({ result }: { result: ActionResult }) => {
@@ -80,8 +77,7 @@
       } else {
         message = $_('text.message-sent-failed');
       }
-      configSnackbar(message);
-      snackbar?.forceOpen();
+      showSnackbar(message);
     };
   };
 
