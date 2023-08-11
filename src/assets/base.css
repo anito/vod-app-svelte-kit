@@ -456,8 +456,8 @@ html a.no-underline {
   background: var(--primary);
   box-shadow: 0 0 0 1px var(--on-primary);
   transition: transform 0.2s cubic-bezier(0.25, 0.1, 0.25, 1),
-    background 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
-  -webkit-appearance: none;
+    background-position 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+  appearance: none;
 }
 .button-close:before,
 .button-close:after {
@@ -471,7 +471,7 @@ html a.no-underline {
   background: var(--on-primary);
   transform-origin: center;
   transition: height 0.2s cubic-bezier(0.25, 0.1, 0.25, 1),
-    background 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+    background-position 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 .button-close:before {
   -webkit-transform: translate(0, -50%) rotate(45deg);
@@ -627,6 +627,9 @@ figcaption,
 /*	theme colors --------------------------- */
 .flash {
   color: var(--flash);
+}
+.success {
+  color: var(--primary);
 }
 .black {
   color: black;

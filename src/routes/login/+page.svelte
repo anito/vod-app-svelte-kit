@@ -5,38 +5,51 @@
   import { getContext, onMount } from 'svelte';
   import { LoginForm } from '$lib/components';
   import { flash, session } from '$lib/stores';
-  import { fly } from 'svelte/transition';
+  import { fade, fly } from 'svelte/transition';
   import { processRedirect, emit } from '$lib/utils';
   import { _ } from 'svelte-i18n';
+  import { backOut, quartOut, quintOut, expoOut } from 'svelte/easing';
 
   export let data;
 
-  let promise: Promise<any>;
+  let initialized: Promise<any>;
 
   const transitionParams = {
     delay: 100,
-    duration: 600
+    duration: 600,
+    easing: expoOut
   };
-  const textTransitionParams = { ...transitionParams, x: -80 };
+  const dist = 40
+  const horizontally = (amount: number, options?: any) => ({ ...transitionParams, ...options, x: amount });
+  const vertically = (amount: number, options?: any) => ({ ...transitionParams, ...options, y: amount });
+  const left = (amount: number = dist, options?: any) => horizontally(-amount, options);
+  const right = (amount: number = dist, options?: any) => horizontally(amount, options);
+  const top = (amount: number = dist, options?: any) => vertically(-amount, options);
+  const bottom = (amount: number = dist, options?: any) => vertically(amount, options);
+
   const { mounted }: any = getContext('mounted');
+
+  type Message = {
+    text: string;
+    type: string;
+  };
+
+  onMount(() => void 0);
 
   $: $mounted && init();
   $: loggedin = !!$session.user;
-  $: userPromise = () =>
-    new Promise((resolve, reject) => {
-      if ($session.user)
-        resolve({
-          message: `${$session.salutation}, ${$session.user.name}`,
-          type: 'success'
-        });
-      else
-        reject({
-          message: $page.url.searchParams.has('token')
-            ? $_('text.one-moment')
-            : $_('text.login-text'),
-          type: 'success'
-        });
-    }).catch() as Promise<{ message: string; type: string }>;
+  $: user = new Promise((resolve, reject) => {
+    if ($session.user)
+      resolve({
+        text: `${$session.salutation}, ${$session.user.name}`,
+        type: 'success'
+      });
+    else
+      reject({
+        text: $page.url.searchParams.has('token') ? $_('text.one-moment') : $_('text.login-text'),
+        type: 'success'
+      });
+  }) as Promise<Message>;
 
   // listeners are ready
   function init() {
@@ -47,7 +60,7 @@
         emit('session:error', { ...data.data, redirect: '/login' });
       }
     }
-    promise = new Promise((resolve) => setTimeout(() => resolve(1), 500));
+    initialized = new Promise((resolve) => setTimeout(() => resolve(1), 500));
   }
 
   // Redirect after successful login
@@ -63,51 +76,39 @@
   <title>{$page.data.config.Site?.name} | Login</title>
 </svelte:head>
 
-{#await promise then resolved}
-  {#if resolved}
-    <div
-      in:fly={{ x: -200, duration: 800 }}
-      out:fly={{ x: 200 }}
-      class="flex flex-1 justify-center"
-    >
-      <div class="wrapper">
-        <div style="margin-top: calc(100vh / 6);">
-          <div class="flyer flex">
-            {#if $flash.message}
+{#await initialized then}
+  <div in:fly={right()} class="flex flex-1 justify-center">
+    <div class="wrapper">
+      <div style="margin-top: calc(100vh / 6);">
+        <div class="flyer flex">
+          {#if $flash.message}
+            <div class="flex justify-center items-center message {$flash.type}" in:fly={left()}>
+              <h5 class="m-2 mdc-typography--headline5 headline">
+                {$flash.message}
+              </h5>
+            </div>
+          {:else}
+            {#await user then message}
               <div
-                class="flex justify-center items-center message {$flash.type}"
-                in:fly={textTransitionParams}
+                class="flex justify-center items-center message {message.type}"
+                in:fly={left(40)}
+                on:introend={introendHandler}
               >
-                <h5 class="m-2 mdc-typography--headline5 headline">
-                  {$flash.message}
-                </h5>
+                <h5 class="m-2 mdc-typography--headline5 headline">{message.text}</h5>
               </div>
-            {:else}
-              {#await userPromise() then promise}
-                <div
-                  class="flex justify-center items-center message {promise.type}"
-                  in:fly={textTransitionParams}
-                  on:introend={introendHandler}
-                >
-                  <h5 class="m-2 mdc-typography--headline5 headline">{promise.message}</h5>
-                </div>
-              {:catch reason}
-                <div
-                  class="flex justify-center items-center message {reason.type}"
-                  in:fly={textTransitionParams}
-                >
-                  <h5 class="m-2 mdc-typography--headline5 headline">{reason.message}</h5>
-                </div>
-              {/await}
-            {/if}
-          </div>
-          <div class="login-form loggedin" class:loggedin>
-            <LoginForm />
-          </div>
+            {:catch reason}
+              <div class="flex justify-center items-center message {reason.type}" in:fly={left()}>
+                <h5 class="m-2 mdc-typography--headline5 headline">{reason.text}</h5>
+              </div>
+            {/await}
+          {/if}
+        </div>
+        <div class="login-form loggedin" class:loggedin>
+          <LoginForm />
         </div>
       </div>
     </div>
-  {/if}
+  </div>
 {/await}
 
 <style>
@@ -127,7 +128,6 @@
   }
   .message {
     margin: 0 auto;
-    color: var(--primary);
   }
   .message .headline {
     max-width: 400px;
@@ -135,18 +135,6 @@
     text-overflow: ellipsis;
     text-align: center;
     white-space: nowrap;
-  }
-  :global(.error).message {
-    color: var(--error) !important;
-  }
-  :global(.info).message {
-    color: var(--info) !important;
-  }
-  :global(.warning).message {
-    color: var(--warning) !important;
-  }
-  :global(.success).message {
-    color: var(--success) !important;
   }
   @media (min-width: 768px) {
     .wrapper {
