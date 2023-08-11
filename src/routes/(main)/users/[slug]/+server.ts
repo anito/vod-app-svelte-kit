@@ -1,4 +1,5 @@
 import * as api from '$lib/api';
+import type { User } from '$lib/classes/repos/types.js';
 import { json } from '@sveltejs/kit';
 
 export const GET = async ({ params, locals }) => {
@@ -14,7 +15,7 @@ export const GET = async ({ params, locals }) => {
 export const PUT = async ({ request, params, locals }) => {
   const data = await request.json();
   const id = params.slug;
-  const { locale, user } = locals.session.data;
+  const { locale, user }: { locale: string; user: User | undefined } = locals.session.data;
   const token = user?.jwt;
 
   return await api.put(`users/${id}?token=${token}&locale=${locale}`, { data }).then((res) => {
