@@ -32,7 +32,10 @@ export const afterOrBeforeNavigation = (
     from_pathnames: [],
     to_pathnames: []
   },
-  callback: (arg0: { from: NavigationTarget | null; to: NavigationTarget | null }) => void
+  callback: (
+    arg0: { from: NavigationTarget | null; to: NavigationTarget | null },
+    arg1: Map<unknown, unknown>
+  ) => void
 ) => {
   const FROM_SEARCH_KEY = 'from_searches';
   const TO_SEARCH_KEY = 'to_searches';
@@ -74,7 +77,7 @@ export const afterOrBeforeNavigation = (
   });
 
   afterOrBeforeNavigate(({ from, to }) => {
-    let excludes = () => {
+    let checkExcludes = () => {
       let ret = new Map([]);
       omitter.forEach((fn, key) => {
         let found;
@@ -95,14 +98,18 @@ export const afterOrBeforeNavigation = (
       });
       return ret;
     };
-    if (!excludes().size) navigationCallback(callback, { from, to });
+    const excludes = checkExcludes();
+    if (!checkExcludes().size) navigationCallback(callback, { from, to }, excludes);
   });
 };
 
 const navigationCallback = async (
-  callback: (arg0: { from: NavigationTarget | null; to: NavigationTarget | null }) => void = () =>
-    void 0,
-  navigation: { from: NavigationTarget | null; to: NavigationTarget | null }
+  callback: (
+    arg0: { from: NavigationTarget | null; to: NavigationTarget | null },
+    arg1: Map<unknown, unknown>
+  ) => void = () => void 0,
+  navigation: { from: NavigationTarget | null; to: NavigationTarget | null },
+  excludes: Map<unknown, unknown>
 ) => {
-  callback(navigation);
+  callback(navigation, excludes);
 };

@@ -209,13 +209,14 @@
   const segment = getSegment();
 
   /**
-   * Update the session cookie with a new _expires Date on every navigation
+   * Updates the session cookie with a new _expires Date on every navigation
    * 
    * How it works:
-   * Define here where something shoud happen on navigation (after or before)
-   * Second param takes excludes in form of pathnames or searches in the form of:
+   * Define here what shoud happen on navigation (after or before)
+   * First param takes sveltekit's afterNavigate or beforeNavigate lifecicle function
+   * Second param takes a exclude object in form of pathnames or searches in the form of:
    * {
-   *  from_searches: Array;
+   *  from_searches: [[]]
    *  to_searches: Array;
    *  from_pathnames: Array;
    *  to_pathnames: Array;
@@ -228,7 +229,7 @@
       from_pathnames: ['/logout'],
       to_pathnames: ['/auth?/logout', '/auth?/login', '/login', '/logout']
     },
-    async (nav) => await invalidate('app:session')
+    async (nav, excludes) => await invalidate('app:session')
   );
 
   beforeNavigate(({ cancel }) => {
