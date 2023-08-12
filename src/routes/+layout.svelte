@@ -92,7 +92,7 @@
   let isMounted = false;
   let isPreferredDarkMode;
   let dropzone: Dropzone;
-  let nextMessage: { message: string; link?: string } | null;
+  let messageQueue: { message: string; link?: string }[] = [];
 
   setContext('progress', {
     getProgress: () =>
@@ -548,9 +548,9 @@
   }
 
   function handleSnackbarClosed() {
-    if(nextMessage) {
-      configSnackbar(nextMessage.message, nextMessage.link);
-      nextMessage = null;
+    if (messageQueue.length) {
+      const item = messageQueue.shift();
+      if (item) configSnackbar(item.message, item.link);
     }
   }
 
@@ -559,7 +559,7 @@
       if (!snackbar.isOpen()) {
         configSnackbar(message, link);
       } else {
-        nextMessage = { message, link };
+        messageQueue.push({ message, link });
       }
     }
     snackbar.open();
@@ -574,7 +574,7 @@
     flash.update({
       message,
       type: 'success',
-      timeout: 1500
+      timeout: 2000
     });
 
     renewed && localStorage.setItem('renewed', 'true');
