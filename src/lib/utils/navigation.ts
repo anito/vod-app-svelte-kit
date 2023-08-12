@@ -3,14 +3,18 @@ import type { AfterNavigate, BeforeNavigate, NavigationTarget } from '@sveltejs/
 export const getFragment = () => window.location.hash.slice(1);
 
 /**
+ * @param lifecycleFunction
+ * @param excludes - 
  * Configure url attributes for (from/to) search attributes and/or (from/to) pathnames.
  * Choose one from the two navigation lifecycle functions: afterNavigate or beforeNavigate.
- * The callback will receive the attribute hit during navigation
+ * @param callback - will be executed if none of the exclude conditions are met
  */
 export const afterOrBeforeNavigation = (
   afterOrBeforeNavigate: {
     (callback: (navigation: AfterNavigate | BeforeNavigate) => void): void;
-    (arg0: ({ from, to }: { from: NavigationTarget | null; to: NavigationTarget | null }) => void): void;
+    (
+      arg0: ({ from, to }: { from: NavigationTarget | null; to: NavigationTarget | null }) => void
+    ): void;
   },
   {
     from_searches,
@@ -28,10 +32,7 @@ export const afterOrBeforeNavigation = (
     from_pathnames: [],
     to_pathnames: []
   },
-  callback: (
-    res: any,
-    targets: { from: NavigationTarget | null; to: NavigationTarget | null }
-  ) => void = () => {}
+  callback: (arg0: { from: NavigationTarget | null; to: NavigationTarget | null }) => void
 ) => {
   const FROM_SEARCH_KEY = 'from_searches';
   const TO_SEARCH_KEY = 'to_searches';
@@ -73,7 +74,7 @@ export const afterOrBeforeNavigation = (
   });
 
   afterOrBeforeNavigate(({ from, to }) => {
-    let check = () => {
+    let excludes = () => {
       let ret = new Map([]);
       omitter.forEach((fn, key) => {
         let found;
@@ -94,7 +95,14 @@ export const afterOrBeforeNavigation = (
       });
       return ret;
     };
-    const res = check();
-    if (typeof callback === 'function') callback(res, { from, to });
+    if (!excludes().size) navigationCallback(callback, { from, to });
   });
+};
+
+const navigationCallback = async (
+  callback: (arg0: { from: NavigationTarget | null; to: NavigationTarget | null }) => void = () =>
+    void 0,
+  navigation: { from: NavigationTarget | null; to: NavigationTarget | null }
+) => {
+  callback(navigation);
 };

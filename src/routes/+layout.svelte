@@ -208,22 +208,19 @@
   const { getSegment }: any = getContext('segment');
   const segment = getSegment();
 
-  const afterNavigationCallback = async (
-    excludes: globalThis.Map<any, any>,
-    { from, to }: { from: NavigationTarget | null; to: NavigationTarget | null }
-  ) => {
-    if (excludes.size) {
-      info(
-        2,
-        '%c Extend session prevented',
-        'background: #ffd54f; color: #000000; padding:4px 6px 3px 0;',
-        excludes
-      );
-    } else {
-      await invalidate('app:session');
-    }
-  };
-
+  /**
+   * Update the session cookie with a new _expires Date on every navigation
+   * 
+   * How it works:
+   * Define here where something shoud happen on navigation (after or before)
+   * Second param takes excludes in form of pathnames or searches in the form of:
+   * {
+   *  from_searches: Array;
+   *  to_searches: Array;
+   *  from_pathnames: Array;
+   *  to_pathnames: Array;
+   * }
+  */
   afterOrBeforeNavigation(
     afterNavigate,
     {
@@ -231,7 +228,7 @@
       from_pathnames: ['/logout'],
       to_pathnames: ['/auth?/logout', '/auth?/login', '/login', '/logout']
     },
-    afterNavigationCallback
+    async (nav) => await invalidate('app:session')
   );
 
   beforeNavigate(({ cancel }) => {
