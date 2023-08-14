@@ -4,7 +4,7 @@ import { createRedirectSlug, USER } from '$lib/utils';
 export const load = async ({ depends, locals, cookies, url }) => {
   const { session, usersRepo, videosRepo, videosAllRepo, imagesRepo } = locals;
   if (!session.data.user) {
-    const logoutredirect = locals.config.Session.logoutredirect || '/';
+    const logoutredirect = locals.config?.Session.logoutredirect || '/';
     throw redirect(301, `${logoutredirect}?${createRedirectSlug(url)}`);
   }
   const { role = USER, user: sessionUser } = session.data;

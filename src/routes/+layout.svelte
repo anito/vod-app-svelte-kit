@@ -568,7 +568,10 @@
     const { user, renewed, message }: { user: User; renewed: boolean; message: string } = {
       ...data
     };
-    await invalidateAll();
+    console.log(detail)
+    await invalidate('app:session');
+    await invalidate('app:main');
+    await invalidate('app:video');
     flash.update({
       message,
       type: 'success',
