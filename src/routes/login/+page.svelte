@@ -38,7 +38,7 @@
 
   $: $mounted && init();
   $: loggedin = !!$session.user;
-  $: user = new Promise((resolve, reject) => {
+  $: userStatus = new Promise((resolve, reject) => {
     if ($session.user)
       resolve({
         text: `${$session.salutation}, ${$session.user.name}`,
@@ -63,7 +63,7 @@
     initialized = new Promise((resolve) => setTimeout(() => resolve(1), 500));
   }
 
-  // Redirect after successful login
+  // Redirects after successful login
   function introendHandler() {
     setTimeout(async () => {
       const location = processRedirect($page.url, $session);
@@ -88,7 +88,7 @@
               </h5>
             </div>
           {:else}
-            {#await user then message}
+            {#await userStatus then message}
               <div
                 class="flex justify-center items-center message {message.type}"
                 in:fly={left(40)}

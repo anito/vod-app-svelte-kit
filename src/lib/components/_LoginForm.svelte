@@ -120,20 +120,20 @@
       </Tab>
     </TabBar>
   </div>
-  <div class="login-grid {rows}">
-    {#if activeTab === tabNames[0]}
-      <form
-        use:enhance={loginHandler}
-        method="POST"
-        class="login-form flex justify-center"
-        action="/auth?/login"
-      >
-        <span class="one flex flex-col">
+  {#if activeTab === tabNames[0]}
+    <form
+      use:enhance={loginHandler}
+      method="POST"
+      class="login-form flex justify-center flex"
+      action="/auth?/login"
+    >
+      <div class="login-grid {rows}">
+        <span class="one">
           <Textfield variant="outlined" bind:value={email} input$name="email" label="Email">
             <Icon class="material-icons" slot="leadingIcon">mail</Icon>
           </Textfield>
         </span>
-        <span class="two flex flex-col">
+        <span class="two">
           <Textfield
             variant="outlined"
             type="password"
@@ -150,60 +150,48 @@
             class="login-button"
             type="submit"
             variant="raised"
-            style="flex: 0 0 221px;"
+            style="flex: 0 0 100%;"
           >
             <Label>Login</Label>
           </Button>
         </span>
-      </form>
-    {/if}
-    {#if activeTab === tabNames[1]}
-      <form use:enhance={loginHandler} action="/auth?/login" method="POST">
-        <span class="one flex flex-col">
-          <div class="one flex justify-center">
-            <Button
-              color={undefined}
-              class="login-button"
-              type="submit"
-              variant="raised"
-              style="flex: 0 0 221px;"
-            >
-              <Icon class="material-icons">supervisor_account</Icon>
-              <Label>Sample Admin</Label>
-            </Button>
-          </div>
+      </div>
+    </form>
+  {/if}
+  {#if activeTab === tabNames[1]}
+    <div class="login-grid {rows}">
+      <div class="one flex justify-center">
+        <form use:enhance={loginHandler} action="/auth?/login" method="POST">
+          <Button type="submit" variant="raised" style="width: 221px;">
+            <Icon class="material-icons">supervisor_account</Icon>
+            <Label>Sample Admin</Label>
+          </Button>
           <input type="hidden" name="email" value={ADMIN_EMAIL} />
           <input type="hidden" name="password" value={ADMIN_PASS} />
-        </span>
-      </form>
-      <form use:enhance={loginHandler} action="/auth?/login" method="POST">
-        <span class="two flex flex-col">
-          <div class="two flex justify-center">
-            <Button
-              color={undefined}
-              class="login-button flex-1"
-              type="submit"
-              variant="raised"
-              style="flex: 0 0 221px;"
-            >
-              <Icon class="material-icons">person</Icon>
-              <Label>Sample User</Label>
-            </Button>
-          </div>
+        </form>
+      </div>
+      <div class="two flex justify-center">
+        <form use:enhance={loginHandler} action="/auth?/login" method="POST">
+          <Button type="submit" variant="raised" style="width: 221px;">
+            <Icon class="material-icons">person</Icon>
+            <Label>Sample User</Label>
+          </Button>
           <input type="hidden" name="email" value={USER_EMAIL} />
           <input type="hidden" name="password" value={USER_PASS} />
-        </span>
-      </form>
-    {/if}
-    {#if activeTab === tabNames[2]}
+        </form>
+      </div>
+    </div>
+  {/if}
+  {#if activeTab === tabNames[2]}
+    <div class="login-grid {rows}">
       <div class="one flex relative justify-center">
         <FacebookLoginButton {appId} />
       </div>
       <div class="two flex relative justify-center">
         <GoogleLoginButton {client_id} />
       </div>
-    {/if}
-  </div>
+    </div>
+  {/if}
 </div>
 <Dialog
   bind:this={invalidTokenUserDialog}
