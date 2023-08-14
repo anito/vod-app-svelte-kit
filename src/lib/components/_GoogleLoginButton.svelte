@@ -47,7 +47,6 @@
       } else {
         emit('session:error', { ...data, redirect: '/login' });
       }
-      globalGoogle.accounts.id.prompt(); // display the One Tap dialog
     });
   }
 
