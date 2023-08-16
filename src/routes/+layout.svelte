@@ -208,26 +208,12 @@
   const { getSegment }: any = getContext('segment');
   const segment = getSegment();
 
-  /**
-   * Updates the session cookie with a new _expires Date on every navigation
-   * 
-   * How it works:
-   * Define here what shoud happen on navigation (after or before)
-   * First param takes sveltekit's afterNavigate or beforeNavigate lifecicle function
-   * Second param takes a exclude object in form of pathnames or searches in the form of:
-   * {
-   *  from_searches: [[]]
-   *  to_searches: Array;
-   *  from_pathnames: Array;
-   *  to_pathnames: Array;
-   * }
-  */
   afterOrBeforeNavigation(
     afterNavigate,
     {
       to_searches: [],
       from_pathnames: ['/logout'],
-      to_pathnames: ['/auth?/logout', '/auth?/login', '/login', '/logout']
+      to_pathnames: ['/login', '/logout']
     },
     async (nav, excludes) => await invalidate('app:session')
   );
@@ -568,7 +554,7 @@
     const { user, renewed, message }: { user: User; renewed: boolean; message: string } = {
       ...data
     };
-    console.log(detail)
+    console.log(detail);
     await invalidate('app:session');
     await invalidate('app:main');
     await invalidate('app:video');

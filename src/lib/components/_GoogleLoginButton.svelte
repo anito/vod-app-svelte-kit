@@ -43,7 +43,6 @@
       const { success, data }: any = { ...res };
       if (success) {
         googleUser.set(data.user);
-        console.log(data)
         emit('session:success', { data });
       } else {
         emit('session:error', { ...data, redirect: '/login' });
