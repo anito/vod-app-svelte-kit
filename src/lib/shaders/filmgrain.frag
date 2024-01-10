@@ -11,14 +11,13 @@ float random(vec2 p)
   return fract(cos(dot(p,K1))*121345.6789);
 }
 
-void main(void){
-  // vec4 color=vec4(1.,0.,.6353,.5);// color here: r, g, b, a.
-  vec4 color=vec4(.5,.5,.5,.3);// color here: r, g, b, a.
+void main(){
+  vec4 color=vec4(.3,.35,.4,.0025);// color here: r, g, b, a.
   // Note the alpha doesn't work as you might expect. I recommend leaving it
-  color.r*=random(vUv*(cos(amount)+18.123));
-  color.g*=random(vUv*(cos(amount)+14.913));
-  color.b*=random(vUv*(cos(amount)+11.19));
-  color.a*=random(vUv*(cos(amount)+6.6));
+  color.r*=random(vUv*(amount+12.123));
+  color.g*=random(vUv*(amount+11.913));
+  color.b*=random(vUv*(amount+8.19));
+  color.a*=random(vUv*(amount*.0001));
   // *= vec4() * 0.2; // old intensity
   gl_FragColor=color;
 }

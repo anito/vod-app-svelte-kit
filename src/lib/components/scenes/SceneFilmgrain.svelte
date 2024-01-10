@@ -5,7 +5,5 @@
 
 <T.PerspectiveCamera
   aspect={window.innerWidth / window.innerHeight}
-  fov={75}
 />
 
-<Filmgrain />
