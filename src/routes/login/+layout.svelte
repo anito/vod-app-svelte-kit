@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import Layout from './layout.svelte';
+  import Layout from './_layout.svelte';
   import { Legal } from '$lib/components';
   import { windowSize } from '$lib/utils';
 

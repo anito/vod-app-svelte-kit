@@ -6,7 +6,7 @@
   import logo from 'assets/images/logo-type.svg';
   import hero from 'assets/images/logo-hero-vod.svg';
   import { session } from '$lib/stores';
-  import Layout from './layout.svelte';
+  import Layout from './_layout.svelte';
   import { Blurb, Hero } from '$lib/components';
   import Textfield from '@smui/textfield';
   import Select, { Option } from '@smui/select';

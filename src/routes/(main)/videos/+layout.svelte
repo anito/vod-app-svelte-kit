@@ -3,7 +3,7 @@
   import { page } from '$app/stores';
   import { getContext } from 'svelte';
   import { fly } from 'svelte/transition';
-  import Layout from './layout.svelte';
+  import Layout from './_layout.svelte';
   import List from '@smui/list';
   import IconButton, { Icon } from '@smui/icon-button';
   import {

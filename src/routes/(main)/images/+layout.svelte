@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Layout from './layout.svelte';
+  import Layout from './_layout.svelte';
   import { Info, Legal } from '$lib/components';
   import { session } from '$lib/stores';
   import { goto } from '$app/navigation';

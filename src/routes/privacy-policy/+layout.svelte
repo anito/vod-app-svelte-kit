@@ -1,6 +1,6 @@
 <script lang="ts">
   import { getContext } from 'svelte';
-  import Layout from './layout.svelte';
+  import Layout from './_layout.svelte';
 
   const { getSegment }: any = getContext('segment');
   const segment = getSegment();

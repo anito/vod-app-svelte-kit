@@ -5,7 +5,7 @@
   import { onMount, getContext, setContext } from 'svelte';
   import { fly } from 'svelte/transition';
   import { fabs, infos, session, users, usersFoundation } from '$lib/stores';
-  import Layout from './layout.svelte';
+  import Layout from './_layout.svelte';
   import {
     Container,
     InfoChips,

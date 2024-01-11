@@ -1,8 +1,8 @@
 <script lang="ts">
   import { Camera, ShaderMaterial } from 'three';
   import { EffectComposer, ShaderPass, RenderPass } from 'postprocessing';
-  import { useFrame, useRender, useThrelte } from '@threlte/core';
-  import { CopyShader } from './CopyShader';
+  import { useTask, useThrelte } from '@threlte/core';
+  // import { CopyShader } from 'three/examples/jsm/shaders/CopyShader';
   import vertexShader from '$lib/shaders/filmgrain.vert?raw';
   import fragmentShader from '$lib/shaders/filmgrain.frag?raw';
 
@@ -31,19 +31,17 @@
     );
     shaderPass.renderToScreen = true;
 
-    const copyPass = new ShaderPass(new ShaderMaterial(CopyShader));
+    // const copyPass = new ShaderPass(new ShaderMaterial(CopyShader));
 
     composer.addPass(renderPass);
     composer.addPass(shaderPass);
-    composer.addPass(copyPass);
+    // composer.addPass(copyPass);
   };
 
-  useFrame(({ renderer }, delta) => {
+  useTask((delta) => {
     amount += 0.01;
     uniforms.amount.value += amount;
-  });
 
-  useRender(({ renderer }, delta) => {
     composer.render(delta);
   });
 
