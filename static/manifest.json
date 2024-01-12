@@ -1,0 +1,15 @@
+{
+  "background_color": "#ffffff",
+  "theme_color": "#333333",
+  "name": "VOD Manager",
+  "short_name": "VOD",
+  "display": "minimal-ui",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "logo-128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    }
+  ]
+}
