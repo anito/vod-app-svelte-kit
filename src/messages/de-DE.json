@@ -370,5 +370,7 @@
   "test": {
     "empty-mail-selection": "Keine Email ausgewählt"
   },
-  "light_mode": "Lichter an"
+  "light_mode": "Lichter an",
+  "Day": "Tag",
+  "Days": "Tage"
 }

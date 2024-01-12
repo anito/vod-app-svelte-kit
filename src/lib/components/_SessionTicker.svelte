@@ -1,6 +1,5 @@
 <script lang="ts">
   import './_chip.scss';
-  import { onMount } from 'svelte';
   import Chip, { Set, LeadingIcon, Text } from '@smui/chips';
   import { session, ticker } from '$lib/stores';
   import { _ } from 'svelte-i18n';
@@ -26,7 +25,7 @@
   $: show = isVisible || forced;
 
   function parse(ms: number) {
-    let tt, sec, min, hrs;
+    let tt, sec, min, hrs, dys;
     if (isNaN(ms)) {
       return (--fails && last) || '--:--:--';
     }
@@ -34,8 +33,11 @@
     tt = ms / 1000;
     sec = Math.floor(tt % 60).minimumIntegerDigits(2);
     min = Math.floor((tt / 60) % 60).minimumIntegerDigits(2);
-    hrs = Math.floor(tt / 3600).minimumIntegerDigits(2);
-    return (last = `${hrs}:${min}:${sec}`);
+    hrs = Math.floor((tt / (60 * 60)) % 24).minimumIntegerDigits(2);
+    dys = Math.floor((tt / (60 * 60 * 24))).minimumIntegerDigits(2);
+
+    const days = (days: number) => days ? days === 1 ? `${days} ${$_('Day')} ` : `${days} ${$_('Days')} ` : ''
+    return (last = `${days(parseFloat(dys))}${hrs}:${min}:${sec}`);
   }
 
   function forceVisible() {

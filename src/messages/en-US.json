@@ -370,5 +370,7 @@
     "empty-mail-selection": "No email selected"
   },
   "message": {},
-  "light_mode": "Lights On"
+  "light_mode": "Lights On",
+  "Day": "Day",
+  "Days": "Days"
 }
