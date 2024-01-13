@@ -1,14 +1,49 @@
 {
-  "background_color": "#ffffff",
-  "theme_color": "#333333",
+  "background_color": "#fff",
+  "theme_color": "#333",
   "name": "VOD Manager",
-  "short_name": "VOD",
+  "short_name": "VOD Manager",
   "display": "minimal-ui",
-  "start_url": "/",
+  "start_url": ".",
   "icons": [
     {
-      "src": "logo-128.png",
+      "src": "icons/icon-16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-128.png",
       "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ]
