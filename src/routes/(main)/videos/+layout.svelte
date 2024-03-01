@@ -14,9 +14,15 @@
     Paginator,
     FlexContainer,
     SearchTextField,
-    VideoEditorList
+    VideoEditorList,
   } from '$lib/components';
-  import { dynamicUrl, filterByModelKeys, emit, ADMIN, SUPERUSER } from '$lib/utils';
+  import {
+    dynamicUrl,
+    filterByModelKeys,
+    emit,
+    ADMIN,
+    SUPERUSER,
+  } from '$lib/utils';
   import { session, videos } from '$lib/stores';
   import emptyPoster from '/src/assets/images/empty-poster.jpg';
   import { _ } from 'svelte-i18n';
@@ -38,27 +44,31 @@
   $: isDeepSearch = search.length >= minSearchChars;
   $: if (isDeepSearch) {
     (async (s) => {
-      const { success, data } = await searchVideos({ keys: modelSearchKeys, search: s });
+      const { success, data } = await searchVideos({
+        keys: modelSearchKeys,
+        search: s,
+      });
       if (success) {
         emit('video:add', { data });
       }
     })(search);
   }
-  $: filteredVideos = ((videos) => filterByModelKeys(search, videos, modelSearchKeys))($videos);
+  $: filteredVideos = ((videos) =>
+    filterByModelKeys(search, videos, modelSearchKeys))($videos);
   $: filteredVideos.sortBy('title');
 
   function openEditor(id: string) {
     open(VideoEditorList, {
       props: {
-        data: [{ id }]
+        data: [{ id }],
       },
       options: {
         transitionWindow: fly,
         transitionWindowProps: {
           y: -200,
-          duration: 500
-        }
-      }
+          duration: 500,
+        },
+      },
     });
   }
 </script>
@@ -74,11 +84,19 @@
         <SearchTextField
           bind:search
           label={$_('text.search-videos')}
-          infoLabel={$_('text.type-min-char-count', { values: { count: minSearchChars } })}
+          infoLabel={$_('text.type-min-char-count', {
+            values: { count: minSearchChars },
+          })}
         />
       </div>
       {#if filteredVideos.length}
-        <List class="video-list" twoLine avatarList singleSelection bind:selectedIndex>
+        <List
+          class="video-list"
+          twoLine
+          avatarList
+          singleSelection
+          bind:selectedIndex
+        >
           {#each filteredVideos as video (video.id)}
             <SimpleVideoCard
               class="video"
@@ -87,7 +105,10 @@
               anchorFn={dynamicUrl}
               {video}
             >
-              {#if hasPrivileges}<IconButton class="small" on:click={() => openEditor(video.id)}>
+              {#if hasPrivileges}<IconButton
+                  class="small"
+                  on:click={() => openEditor(video.id)}
+                >
                   <Icon class="material-icons">movie_edit</Icon>
                 </IconButton>{/if}</SimpleVideoCard
             >

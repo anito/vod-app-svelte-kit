@@ -25,7 +25,9 @@ const killOrExtend = async (locals: App.Locals) => {
     if (locale) await locals.session.set({ locale });
   } else {
     if (config && locals.session.data.user) {
-      const _expires = new Date(Date.now() + parseLifetime(config.Session.lifetime)).toISOString();
+      const _expires = new Date(
+        Date.now() + parseLifetime(config.Session.lifetime)
+      ).toISOString();
       await locals.session.update(() => ({ _expires }));
     }
   }
@@ -39,7 +41,7 @@ export const handle = handleSession(
     key: 'VOD__APP__SESSION',
     rolling: true,
     expires: 60 * 60 * 24, //parseInt(config.Session.lifetime),
-    expires_in: 'seconds'
+    expires_in: 'seconds',
   },
   async ({ event, resolve }) => {
     // Force config to reload
@@ -61,7 +63,7 @@ export const handle = handleSession(
       videosAllRepo: VideosAllRepo.getInstance(),
       imagesRepo: ImagesRepo.getInstance(),
       userAgent: event.request.headers.get('user-agent'),
-      pagination: JSON.parse(event.cookies.get('pagination') || '{}')
+      pagination: JSON.parse(event.cookies.get('pagination') || '{}'),
     };
 
     return await resolve(event);

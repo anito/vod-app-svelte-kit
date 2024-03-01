@@ -3,7 +3,12 @@
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { onMount, setContext } from 'svelte';
-  import { UserManager, TimeManager, MailManager, UserGraphic } from '$lib/components';
+  import {
+    UserManager,
+    TimeManager,
+    MailManager,
+    UserGraphic,
+  } from '$lib/components';
   import Button, { Group, Label, Icon } from '@smui/button';
   import { users, usersFoundation, session } from '$lib/stores';
   import {
@@ -16,7 +21,7 @@
     EDIT,
     ADD,
     DEFAULT_TAB,
-    buildSearchParams
+    buildSearchParams,
   } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import type { User } from '$lib/classes/repos/types';
@@ -34,13 +39,15 @@
   $: if (data.user) users.add([data.user]);
   $: selectionUserId = $page.params.slug;
   $: selectedUser = ((id) =>
-    $users.find((usr) => usr.id === id) || (!!$users.length && $users[0]) || undefined)(
-    selectionUserId
-  );
+    $users.find((usr) => usr.id === id) ||
+    (!!$users.length && $users[0]) ||
+    undefined)(selectionUserId);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: isCurrentSuperUser = selectedUser?.role === SUPERUSER;
   $: username = selectedUser?.name || '';
-  $: tab = ((tab) => TABS.find((itm) => itm === tab))($page.url.searchParams.get('tab'));
+  $: tab = ((tab) => TABS.find((itm) => itm === tab))(
+    $page.url.searchParams.get('tab')
+  );
   $: ((user) => {
     if (!user || isCurrentSuperUser) {
       userExpires = null;
@@ -49,22 +56,26 @@
       magicLink = '';
     } else {
       userExpires = user.expires;
-      hasExpired = (!isNaN(userExpires) && userExpires * 1000 < +new Date().getTime()) || false;
+      hasExpired =
+        (!isNaN(userExpires) && userExpires * 1000 < +new Date().getTime()) ||
+        false;
       jwt = user.jwt;
       magicLink = jwt && `${$page.url.origin}/login?token=${jwt}`;
     }
   })(selectedUser);
-  $: disabled = !magicLink || !hasPrivileges || isCurrentSuperUser ? true : false;
+  $: disabled =
+    !magicLink || !hasPrivileges || isCurrentSuperUser ? true : false;
   $: hidden = selectionUserId == $session.user?.id ? true : false;
 
   setContext('siux', {
-    getUsersIndex: getSimpleUserIndex
+    getUsersIndex: getSimpleUserIndex,
   });
 
   onMount(() => {
     window.addEventListener('user:add', addUserHandler);
     if (!tab) {
-      const hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
+      const hasPrivileges =
+        $session.role === ADMIN || $session.role === SUPERUSER;
       const tab = hasPrivileges
         ? $page.data.config.Site.defaultadmintab
         : $page.data.config.Site.defaultusertab;
@@ -126,7 +137,7 @@
         on:click={async () =>
           await goto(
             `${$page.url.pathname}${buildSearchParams($page.url.searchParams, {
-              append: [['dialog', 'token-redirect']]
+              append: [['dialog', 'token-redirect']],
             })}`
           )}
         {disabled}

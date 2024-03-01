@@ -6,7 +6,7 @@ import { buildSearchParams } from '$lib/utils';
 const MediaTypes = new Map([
   ['VIDEO', { base: 'v' }],
   ['IMAGE', { base: 'i' }],
-  ['AVATAR', { base: 'a' }]
+  ['AVATAR', { base: 'a' }],
 ]);
 
 async function uri(id: any, token: any, type: string, { ...options }) {
@@ -41,7 +41,9 @@ async function getMedia(
     let _urls;
     const stringified = JSON.stringify(params).replace(/["'\s]/g, '');
 
-    url = cached = ((_urls = get(urls)) && _urls.has(id) && _urls.get(id)[stringified]) || false;
+    url = cached =
+      ((_urls = get(urls)) && _urls.has(id) && _urls.get(id)[stringified]) ||
+      false;
 
     if (!cached) {
       url = await uri(id, token, type, params).then((res) => {
@@ -59,7 +61,7 @@ export function getMediaAvatar(id: any, jwt: string | undefined, options = {}) {
   const defaults = {
     width: 100,
     height: 100,
-    square: 1
+    square: 1,
   };
   let settings = { ...defaults, ...options };
   return getMedia('AVATAR', id, jwt, settings);
@@ -69,13 +71,13 @@ export function getMediaImage(id: any, jwt: string | undefined, options = {}) {
   const defaults = {
     width: 512,
     height: 512,
-    square: 0
+    square: 0,
   };
   let settings = { ...defaults, ...options };
   return getMedia('IMAGE', id, jwt, settings);
 }
 
-export async function getMediaVideo(id: any, jwt: string) {
+export async function getMediaVideo(id: any, jwt: string | undefined) {
   return getMedia('VIDEO', id, jwt, { video: true });
 }
 

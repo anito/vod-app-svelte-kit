@@ -7,24 +7,32 @@ export function isExpired(endDate: number | Date) {
   if (!(endDate instanceof Date)) endDate = fromUnixTime(endDate);
   return compareAsc(new Date(), endDate) !== -1 ? true : false;
 }
-export function toLocalDate(date: string | number | Date, locale = 'de-DE', options = {}) {
+export function toLocalDate(
+  date: string | number | Date,
+  locale = 'de-DE',
+  options = {}
+) {
   let defaults = {
     year: false,
     month: false, // 2-digit
     day: false,
     hour: false,
-    minute: false
+    minute: false,
   };
   options = { ...defaults, ...options };
   return new Date(date).toLocaleDateString('de-DE', options);
 }
-export function toLocalTime(date: string | number | Date, locale = 'de-DE', options = {}) {
+export function toLocalTime(
+  date: string | number | Date,
+  locale = 'de-DE',
+  options = {}
+) {
   let defaults = {
     year: false,
     month: false, // 2-digit
     day: false,
     hour: false,
-    minute: false
+    minute: false,
   };
   options = { ...defaults, ...options };
   return new Date(date).toLocaleDateString('de-DE', options);

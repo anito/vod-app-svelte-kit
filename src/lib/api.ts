@@ -22,13 +22,13 @@ async function send(atts: {
   const opts = {
     method,
     headers: {
-      Accept: 'application/json'
+      Accept: 'application/json',
     } as {
       Accept: string;
       'Content-Type': string;
       Authorization?: string;
     },
-    credentials: 'include'
+    credentials: 'include',
   } as {
     method: string;
     body: string;

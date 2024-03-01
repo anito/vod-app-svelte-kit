@@ -5,13 +5,13 @@ export const actions = {
     const password = data.get('password');
 
     const body = JSON.stringify({ email, password });
-    const res = await fetch('/auth/login', { method: 'POST', body }).then(async (res) =>
-      res.json()
+    const res = await fetch('/auth/login', { method: 'POST', body }).then(
+      async (res) => res.json()
     );
     return res;
   },
   logout: async ({ fetch }) => {
     const res = await fetch('/auth/logout').then(async (res) => res.json());
     return res;
-  }
+  },
 };

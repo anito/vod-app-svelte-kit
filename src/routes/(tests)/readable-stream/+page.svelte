@@ -19,7 +19,8 @@
    * <button on:click={() => myStreamPromise = myStart().stream()}>start</button>
    */
   const autostart = false;
-  const url = dev ? 'https://anito.mbp' : 'https://anito.de';
+  const subdir = 'loadable-files';
+  const url = (dev ? 'https://anito.mbp' : 'https://anito.de').concat('/', subdir);
 
   let imageStream: Promise<any> | undefined;
   let imageData: any;

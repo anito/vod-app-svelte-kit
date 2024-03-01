@@ -6,6 +6,7 @@
   import { _ } from 'svelte-i18n';
   import type { Video } from '$lib/classes/repos/types';
   import type { Player } from './utils';
+  import type { SvelteMediaTimeRange } from 'svelte/elements';
 
   export let src: string | null;
   export let type: string | undefined;
@@ -32,7 +33,7 @@
   let loadeddata = false;
   let waiting = false;
   let buffered: TimeRanges;
-  let buffer: TimeRanges;
+  let buffer: SvelteMediaTimeRange[];
   let scrubbing: boolean;
   let timeoutId: number | undefined;
   let ui: HTMLDivElement;

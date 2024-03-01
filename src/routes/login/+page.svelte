@@ -17,15 +17,27 @@
   const transitionParams = {
     delay: 100,
     duration: 600,
-    easing: expoOut
+    easing: expoOut,
   };
-  const dist = 40
-  const horizontally = (amount: number, options?: any) => ({ ...transitionParams, ...options, x: amount });
-  const vertically = (amount: number, options?: any) => ({ ...transitionParams, ...options, y: amount });
-  const left = (amount: number = dist, options?: any) => horizontally(-amount, options);
-  const right = (amount: number = dist, options?: any) => horizontally(amount, options);
-  const top = (amount: number = dist, options?: any) => vertically(-amount, options);
-  const bottom = (amount: number = dist, options?: any) => vertically(amount, options);
+  const dist = 40;
+  const horizontally = (amount: number, options?: any) => ({
+    ...transitionParams,
+    ...options,
+    x: amount,
+  });
+  const vertically = (amount: number, options?: any) => ({
+    ...transitionParams,
+    ...options,
+    y: amount,
+  });
+  const left = (amount: number = dist, options?: any) =>
+    horizontally(-amount, options);
+  const right = (amount: number = dist, options?: any) =>
+    horizontally(amount, options);
+  const top = (amount: number = dist, options?: any) =>
+    vertically(-amount, options);
+  const bottom = (amount: number = dist, options?: any) =>
+    vertically(amount, options);
 
   const { mounted }: any = getContext('mounted');
 
@@ -42,12 +54,14 @@
     if ($session.user)
       resolve({
         text: `${$session.salutation}, ${$session.user.name}`,
-        type: 'success'
+        type: 'success',
       });
     else
       reject({
-        text: $page.url.searchParams.has('token') ? $_('text.one-moment') : $_('text.login-text'),
-        type: 'success'
+        text: $page.url.searchParams.has('token')
+          ? $_('text.one-moment')
+          : $_('text.login-text'),
+        type: 'success',
       });
   }) as Promise<Message>;
 
@@ -82,7 +96,10 @@
       <div style="margin-top: calc(100vh / 6);">
         <div class="flyer flex">
           {#if $flash.message}
-            <div class="flex justify-center items-center message {$flash.type}" in:fly={left()}>
+            <div
+              class="flex justify-center items-center message {$flash.type}"
+              in:fly={left()}
+            >
               <h5 class="m-2 mdc-typography--headline5 headline">
                 {$flash.message}
               </h5>
@@ -94,11 +111,18 @@
                 in:fly={left(40)}
                 on:introend={introendHandler}
               >
-                <h5 class="m-2 mdc-typography--headline5 headline">{message.text}</h5>
+                <h5 class="m-2 mdc-typography--headline5 headline">
+                  {message.text}
+                </h5>
               </div>
             {:catch reason}
-              <div class="flex justify-center items-center message {reason.type}" in:fly={left()}>
-                <h5 class="m-2 mdc-typography--headline5 headline">{reason.text}</h5>
+              <div
+                class="flex justify-center items-center message {reason.type}"
+                in:fly={left()}
+              >
+                <h5 class="m-2 mdc-typography--headline5 headline">
+                  {reason.text}
+                </h5>
               </div>
             {/await}
           {/if}

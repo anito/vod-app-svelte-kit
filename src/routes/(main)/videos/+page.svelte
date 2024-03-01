@@ -13,7 +13,7 @@
     Paginator,
     Heading,
     SearchTextField,
-    SvgIcon
+    SvgIcon,
   } from '$lib/components';
   import { _ } from 'svelte-i18n';
 
@@ -28,20 +28,29 @@
   const { getNameByEndpoint }: any = getContext('media');
   const { searchVideos }: any = getContext('search');
 
-  $: tab = ((tab) => TABS.find((itm) => itm === tab))($page.url.searchParams.get('tab')) || TABS[0];
+  $: tab =
+    ((tab) => TABS.find((itm) => itm === tab))(
+      $page.url.searchParams.get('tab')
+    ) || TABS[0];
   $: tab && resetCardSelect();
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
-  $: deleteLabel = $_('text.delete').concat($selection.length ? ` (${$selection.length})` : '');
+  $: deleteLabel = $_('text.delete').concat(
+    $selection.length ? ` (${$selection.length})` : ''
+  );
   $: isDeepSearch = search.length >= minSearchChars;
   $: if (isDeepSearch) {
     (async (s) => {
-      const { success, data } = await searchVideos({ keys: modelSearchKeys, search: s });
+      const { success, data } = await searchVideos({
+        keys: modelSearchKeys,
+        search: s,
+      });
       if (success) {
         emit('video:add', { data });
       }
     })(search);
   }
-  $: filteredVideos = ((videos) => filterByModelKeys(search, videos, modelSearchKeys))($videos);
+  $: filteredVideos = ((videos) =>
+    filterByModelKeys(search, videos, modelSearchKeys))($videos);
   $: filteredVideos.sortBy('title');
 
   onMount(() => {
@@ -70,8 +79,15 @@
 </svelte:head>
 
 {#if hasPrivileges}
-  <div class:select class="media-grid {tab} flex-1 has-privileges" style="margin-top: 10px;">
-    <div class="flex grid-item toolbar mt-2" style="justify-content: space-between;">
+  <div
+    class:select
+    class="media-grid {tab} flex-1 has-privileges"
+    style="margin-top: 10px;"
+  >
+    <div
+      class="flex grid-item toolbar mt-2"
+      style="justify-content: space-between;"
+    >
       <Group variant="unelevated">
         <Button
           class="focus:outline-none focus:shadow-outline"
@@ -97,7 +113,9 @@
           height="60px"
           bind:search
           label={$_('text.search-videos')}
-          infoLabel={$_('text.type-min-char-count', { values: { count: minSearchChars } })}
+          infoLabel={$_('text.type-min-char-count', {
+            values: { count: minSearchChars },
+          })}
         />
       {/if}
       <Group variant="unelevated">
@@ -207,18 +225,22 @@
       emit('media:deleteMany', {
         endpoint: tab,
         show: true,
-        oncompleted: () => selection.reset()
+        oncompleted: () => selection.reset(),
       });
     }
   }}
 >
   <Title id="info-title"
     >{$_('text.deleting-media', {
-      values: { count: $selection.length, type: getNameByEndpoint(tab) }
+      values: { count: $selection.length, type: getNameByEndpoint(tab) },
     })}</Title
   >
   <Content>
-    <div class="">{$_('text.confirm-deletion', { values: { type: getNameByEndpoint(tab) } })}</div>
+    <div class="">
+      {$_('text.confirm-deletion', {
+        values: { type: getNameByEndpoint(tab) },
+      })}
+    </div>
   </Content>
   <Actions>
     <Button>

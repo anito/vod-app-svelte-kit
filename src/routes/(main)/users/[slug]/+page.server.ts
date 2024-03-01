@@ -5,7 +5,7 @@ export const actions = {
       res.forEach((value, key) => (formData[key] = value));
       return await fetch(`/users`, {
         method: 'POST',
-        body: JSON.stringify({ ...formData, active: false })
+        body: JSON.stringify({ ...formData, active: false }),
       })
         .then(async (res) => await res.json())
         .catch((reason) => console.error('[ACTIONS]', reason));
@@ -18,7 +18,7 @@ export const actions = {
       res.forEach((value, key) => (formData[key] = value));
       return await fetch(`/users/${id}`, {
         method: 'PUT',
-        body: JSON.stringify({ ...formData })
+        body: JSON.stringify({ ...formData }),
       })
         .then(async (res) => await res.json())
         .catch((reason) => console.error('[ACTIONS]', reason));
@@ -27,9 +27,9 @@ export const actions = {
   del: async ({ params, fetch }) => {
     const id = params.slug;
     return await fetch(`/users/${id}`, {
-      method: 'DELETE'
+      method: 'DELETE',
     })
       .then(async (res) => await res.json())
       .catch((reason) => console.error('[ACTIONS]', reason));
-  }
+  },
 };

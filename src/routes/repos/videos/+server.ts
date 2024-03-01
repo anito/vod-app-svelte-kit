@@ -1,6 +1,10 @@
 import { json } from '@sveltejs/kit';
 
-export const GET = async ({ locals: { videosRepo, session }, url, cookies }) => {
+export const GET = async ({
+  locals: { videosRepo, session },
+  url,
+  cookies,
+}) => {
   const { user } = session.data;
   const token = user?.jwt;
   const page: number = parseInt(url.searchParams.get('page') || '1');
@@ -23,7 +27,11 @@ export const GET = async ({ locals: { videosRepo, session }, url, cookies }) => 
   return json(videos);
 };
 
-export const POST = async ({ locals: { videosRepo, session }, request, cookies }) => {
+export const POST = async ({
+  locals: { videosRepo, session },
+  request,
+  cookies,
+}) => {
   const { user } = session.data;
   const token = user?.jwt;
   const options = await request.json(); // { match, limit, auto }

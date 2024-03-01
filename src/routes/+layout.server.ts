@@ -4,6 +4,6 @@ export const load = async ({ depends, locals }) => {
   return {
     session: locals.session.data,
     ua: locals.userAgent,
-    config: locals.config
+    config: locals.config,
   };
 };

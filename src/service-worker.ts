@@ -10,7 +10,7 @@ import { build, files, version } from '$service-worker';
 const CACHE = `cache-${version}`;
 const ASSETS = [
   ...build, // the app
-  ...files // everthing else in static
+  ...files, // everthing else in static
 ];
 
 sw.addEventListener('install', (event) => {

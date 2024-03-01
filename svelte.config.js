@@ -1,28 +1,18 @@
 import adapter from '@sveltejs/adapter-vercel';
-import preprocess from 'svelte-preprocess';
-import { readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-
-const file = fileURLToPath(new URL('package.json', import.meta.url));
-const json = readFileSync(file, 'utf8');
-const pkg = JSON.parse(json);
+import preprocess from "svelte-preprocess";
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
   kit: {
     adapter: adapter(),
     alias: {
-      assets: 'src/assets'
+      assets: "src/assets",
     },
     csrf: {
-      checkOrigin: false
+      checkOrigin: false,
     },
-    version: {
-      name: pkg.version,
-      pollInterval: 0
-    }
   },
-  preprocess: preprocess()
+  preprocess: preprocess(),
 };
 
 export default config;

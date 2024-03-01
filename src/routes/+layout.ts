@@ -1,5 +1,10 @@
 import { DEFAULT_LOCALE, LOCALESTORE } from '$lib/utils';
-import { register, waitLocale, init, getLocaleFromNavigator } from 'svelte-i18n';
+import {
+  register,
+  waitLocale,
+  init,
+  getLocaleFromNavigator,
+} from 'svelte-i18n';
 import UAParser from 'ua-parser-js';
 
 LOCALESTORE.forEach((val, key) => {
@@ -23,7 +28,7 @@ export const load = async ({ data }) => {
   const initialLocale = session.locale || getInitialLocale();
   init({
     fallbackLocale,
-    initialLocale
+    initialLocale,
   });
 
   const parser = new UAParser(data.ua);
@@ -34,6 +39,6 @@ export const load = async ({ data }) => {
     session,
     ua,
     config,
-    fromToken: false
+    fromToken: false,
   };
 };

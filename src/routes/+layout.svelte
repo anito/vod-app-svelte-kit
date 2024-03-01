@@ -8,7 +8,13 @@
   import '$lib/components/_list.scss';
   import '$lib/components/_card.scss';
   import { browser, dev, version } from '$app/environment';
-  import { afterNavigate, beforeNavigate, goto, invalidate, invalidateAll } from '$app/navigation';
+  import {
+    afterNavigate,
+    beforeNavigate,
+    goto,
+    invalidate,
+    invalidateAll,
+  } from '$app/navigation';
   import { derived, writable, type Writable } from 'svelte/store';
   import { navigating, page } from '$app/stores';
   import { enhance } from '$app/forms';
@@ -31,7 +37,7 @@
     buildSearchParams,
     get,
     createRedirectSlug,
-    post
+    post,
   } from '$lib/utils';
   import {
     currentMediaStore,
@@ -46,7 +52,7 @@
     users,
     streams,
     selection,
-    videosAll
+    videosAll,
   } from '$lib/stores';
   import { Modal, SvgIcon, DoubleBounce } from '$lib/components';
   import {
@@ -56,11 +62,15 @@
     MoreMenu,
     Nav,
     NavItem,
-    UserGraphic
+    UserGraphic,
   } from '$lib/components';
   import { svg_manifest } from '$lib/svg_manifest';
   import { _, locale } from 'svelte-i18n';
-  import Dialog, { Title as DialogTitle, Content, Actions as DialogActions } from '@smui/dialog';
+  import Dialog, {
+    Title as DialogTitle,
+    Content,
+    Actions as DialogActions,
+  } from '@smui/dialog';
   import { DARK, IMAGE, LIGHT, VIDEO } from '$lib/utils/const';
   import { inject } from '@vercel/analytics';
   import type { ActionResult, NavigationTarget } from '@sveltejs/kit';
@@ -103,17 +113,27 @@
             let percent = (received * 100) / total;
             let maxmin = Math.min(100, Math.max(0, map + percent));
             total &&
-              console.log('=', Number(maxmin.toFixed(2)).minimumIntegerDigits(3), total, received);
+              console.log(
+                '=',
+                Number(maxmin.toFixed(2)).minimumIntegerDigits(3),
+                total,
+                received
+              );
             return maxmin;
           } else {
             let maxmin = Math.min(100, Math.max(0, map));
             total &&
-              console.log('!', Number(maxmin.toFixed(2)).minimumIntegerDigits(3), total, received);
+              console.log(
+                '!',
+                Number(maxmin.toFixed(2)).minimumIntegerDigits(3),
+                total,
+                received
+              );
             return maxmin;
           }
         }, 0);
         set(res);
-      })
+      }),
   });
 
   setContext('logger', {
@@ -128,21 +148,21 @@
       args = Array.from(args);
       const level = args.splice(0, 1)[0];
       if (level <= Number(infoLevel)) console.log(...args);
-    }
+    },
   });
 
   setContext('dropzone', {
-    getDropzone: () => dropzone
+    getDropzone: () => dropzone,
   });
 
   setContext('fab', {
     setFab: (name: any) => fabs.update(name),
-    restoreFab: () => fabs.restore()
+    restoreFab: () => fabs.restore(),
   });
 
   setContext('snackbar', {
     getSnackbar: () => snackbar,
-    showSnackbar
+    showSnackbar,
   });
 
   setContext('segment', {
@@ -156,19 +176,19 @@
             set('home');
           }
         }
-      })
+      }),
   });
 
   const mounted = writable(isMounted);
   setContext('mounted', {
-    mounted
+    mounted,
   });
 
   setContext('media', {
     getNameByEndpoint: (endpoint: string | null) => {
       if (endpoint === IMAGE) return $_('text.images');
       if (endpoint === VIDEO) return $_('text.videos');
-    }
+    },
   });
 
   setContext('search', {
@@ -177,20 +197,22 @@
     searchVideos: (data: any, limit: number = 10) =>
       searchBy('/repos/videos', { match: data, limit }),
     searchVideosAll: (data: any, limit: number = 10) =>
-      searchBy('/repos/videos/all', { match: data, limit })
+      searchBy('/repos/videos/all', { match: data, limit }),
   });
 
   const mediaMode: Writable<string> = writable();
   setContext('theme', {
-    mediaMode
+    mediaMode,
   });
 
   const { info }: any = getContext('logger');
   const editableSettings = new Map([
     ['Console', ['infoLevel']],
-    ['Session', ['foo', 'bar']]
+    ['Session', ['foo', 'bar']],
   ]);
-  const { getSnackbar } = getContext('snackbar') as { getSnackbar: () => Snackbar };
+  const { getSnackbar } = getContext('snackbar') as {
+    getSnackbar: () => Snackbar;
+  };
 
   ticker.subscribe((val) => {
     info(
@@ -213,7 +235,7 @@
     {
       to_searches: [],
       from_pathnames: ['/logout'],
-      to_pathnames: ['/login', '/logout']
+      to_pathnames: ['/login', '/logout'],
     },
     async (nav, excludes) => await invalidate('app:session')
   );
@@ -227,23 +249,32 @@
   $: printDiff($page.data, { store: 'page' });
   $: logo = svg(svg_manifest.logo_vod);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
-  $: root && ((loggedin) => root.classList.toggle('loggedin', loggedin))(!!$session.user);
-  $: root && ((isPrivileged) => root.classList.toggle('admin', isPrivileged))(hasPrivileges);
+  $: root &&
+    ((loggedin) => root.classList.toggle('loggedin', loggedin))(
+      !!$session.user
+    );
+  $: root &&
+    ((isPrivileged) => root.classList.toggle('admin', isPrivileged))(
+      hasPrivileges
+    );
   $: root && root.classList.toggle('home', $segment === 'home');
   $: if ($session.user) {
     loggedInButtonTextSecondLine = `${$session.salutation}, ${$session.user.name}`;
   }
   $: searchParamsString = $page.url.searchParams.toString();
   $: search = searchParamsString && `?${searchParamsString}`;
-  $: settingsDialog?.setOpen($page.url.searchParams.get('modal') === 'settings');
-  $: $mounted && (loaderBackgroundColor = colorSchema.mode === DARK ? '#000000' : '#ffffff');
+  $: settingsDialog?.setOpen(
+    $page.url.searchParams.get('modal') === 'settings'
+  );
+  $: $mounted &&
+    (loaderBackgroundColor = colorSchema.mode === DARK ? '#000000' : '#ffffff');
   $: currentStore = $currentMediaStore;
 
   $: if (browser && analyticsId && $page.data.config.Misc['web-vitals']) {
     webVitals({
       path: $page.url.pathname,
       params: $page.params,
-      analyticsId
+      analyticsId,
     });
   }
 
@@ -259,7 +290,8 @@
     initClasses();
     printCopyright();
 
-    isPreferredDarkMode = !window.matchMedia('(prefers-color-scheme: light)').matches;
+    isPreferredDarkMode = !window.matchMedia('(prefers-color-scheme: light)')
+      .matches;
     setColorSchema(isPreferredDarkMode ? DARK : LIGHT);
     $mounted = true;
 
@@ -308,8 +340,10 @@
   }
 
   function setColorSchema(mode: string) {
-    const getSchemaIcon = (m: string) => (m === LIGHT ? 'dark_mode' : 'light_mode');
-    const getSchemaLabel = (m: string) => (m === LIGHT ? $_('text.dark_mode') : $_('light_mode'));
+    const getSchemaIcon = (m: string) =>
+      m === LIGHT ? 'dark_mode' : 'light_mode';
+    const getSchemaLabel = (m: string) =>
+      m === LIGHT ? $_('text.dark_mode') : $_('light_mode');
 
     $mediaMode = mode;
     root?.classList.toggle(DARK, mode === DARK);
@@ -317,7 +351,7 @@
     colorSchema = {
       mode,
       icon: getSchemaIcon(mode),
-      label: getSchemaLabel(mode)
+      label: getSchemaLabel(mode),
     };
   }
 
@@ -354,7 +388,7 @@
     const { data, show, onsuccess, onerror, relational } = detail;
     const res = await fetch(`/videos/${data.id}`, {
       method: 'PUT',
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     }).then(async (res) => {
       if (res.ok) return await res.json();
     });
@@ -391,12 +425,22 @@
 
   async function mediaDeleteHandler({ detail }: CustomEvent) {
     const { id, type, show, onsuccess, onerror } = detail;
-    const res = await fetch(`/${type}/${id}`, { method: 'DELETE' }).then(async (res) => {
-      if (res.ok) return await res.json();
-    });
+    const res = await fetch(`/${type}/${id}`, { method: 'DELETE' }).then(
+      async (res) => {
+        if (res.ok) return await res.json();
+      }
+    );
     const stores = new Map();
-    stores.set('images', { store: images, relatedStore: videos, relatedEndpoint: '/repos/videos' });
-    stores.set('videos', { store: videos, relatedStore: images, relatedEndpoint: '/repos/images' });
+    stores.set('images', {
+      store: images,
+      relatedStore: videos,
+      relatedEndpoint: '/repos/videos',
+    });
+    stores.set('videos', {
+      store: videos,
+      relatedStore: images,
+      relatedEndpoint: '/repos/images',
+    });
     const { store, relatedStore, relatedEndpoint } = stores.get(type);
 
     if (res?.success) {
@@ -420,9 +464,10 @@
   }
 
   async function searchBy(endpoint: string, data: any) {
-    return await fetch(`${endpoint}`, { method: 'POST', body: JSON.stringify(data) }).then(
-      async (res) => await res.json()
-    );
+    return await fetch(`${endpoint}`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }).then(async (res) => await res.json());
   }
 
   const { getNameByEndpoint }: any = getContext('media');
@@ -431,7 +476,7 @@
     const {
       endpoint,
       show,
-      oncompleted
+      oncompleted,
     }: { endpoint: string; show: boolean; oncompleted: () => void } = detail;
 
     deletingMediaDialog?.setOpen(true);
@@ -440,11 +485,11 @@
     ids.forEach(async (id: string) => {
       media = $currentStore.find((media: any) => media.id === id);
       if (media) {
-        const res = await fetch(`/${endpoint}/${media.id}`, { method: 'DELETE' }).then(
-          async (res) => {
-            if (res.ok) return await res.json();
-          }
-        );
+        const res = await fetch(`/${endpoint}/${media.id}`, {
+          method: 'DELETE',
+        }).then(async (res) => {
+          if (res.ok) return await res.json();
+        });
         await tick();
         if (res?.success) {
           urls.del(id);
@@ -462,14 +507,14 @@
         ? $_('text.errors-occured', {
             values: {
               count: errors.length,
-              type: getNameByEndpoint(endpoint)
-            }
+              type: getNameByEndpoint(endpoint),
+            },
           })
         : $_('text.all-media-deleted', {
             values: {
               count: ids.length,
-              type: getNameByEndpoint(endpoint)
-            }
+              type: getNameByEndpoint(endpoint),
+            },
           });
       showSnackbar(message);
     }
@@ -479,7 +524,7 @@
     const { data, onsuccess, onerror } = detail;
     const res = await fetch(`/users/${data.id}`, {
       method: 'PUT',
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     }).then(async (res) => {
       if (res.ok) return await res.json();
     });
@@ -495,7 +540,7 @@
   async function userDeleteHandler({ detail }: CustomEvent) {
     const { id, onsuccess, onerror } = detail;
     const res = await fetch(`/users/${id}`, {
-      method: 'DELETE'
+      method: 'DELETE',
     }).then(async (res) => {
       if (res.ok) return await res.json();
     });
@@ -512,7 +557,10 @@
     configureAction(msg, link);
   }
 
-  function configureAction(msg = '', link?: string | { actionLabel: string; actionLink: string }) {
+  function configureAction(
+    msg = '',
+    link?: string | { actionLabel: string; actionLink: string }
+  ) {
     actionLabel = '';
     actionLink = '';
     snackbarMessage = msg;
@@ -527,7 +575,10 @@
   function handleSnackbarOpened() {
     if (!actionLabel && actionLink) {
       clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => actionLink && goto(actionLink), redirectDelay);
+      timeoutId = setTimeout(
+        () => actionLink && goto(actionLink),
+        redirectDelay
+      );
     }
   }
 
@@ -551,8 +602,12 @@
 
   async function sessionSuccessHandler({ detail }: CustomEvent) {
     const { data, callback } = detail;
-    const { user, renewed, message }: { user: User; renewed: boolean; message: string } = {
-      ...data
+    const {
+      user,
+      renewed,
+      message,
+    }: { user: User; renewed: boolean; message: string } = {
+      ...data,
     };
     console.log(detail);
     await invalidate('app:session');
@@ -561,13 +616,13 @@
     flash.update({
       message,
       type: 'success',
-      timeout: 2000
+      timeout: 2000,
     });
 
     renewed && localStorage.setItem('renewed', 'true');
     showSnackbar(
       $_('text.external-login-welcome-message', {
-        values: { name: user.name }
+        values: { name: user.name },
       })
     );
 
@@ -608,7 +663,13 @@
     showSnackbar($_('text.language_is_now', { values: { locale } }));
   }
 
-  const formSubmitHandler = ({ action, cancel }: { action: URL; cancel: any }) => {
+  const formSubmitHandler = ({
+    action,
+    cancel,
+  }: {
+    action: URL;
+    cancel: any;
+  }) => {
     const actionParam = new URLSearchParams(action.searchParams)
       .keys()
       .next()
@@ -665,7 +726,11 @@
 </script>
 
 <svelte:head>
-  <link id="media-mode" rel="stylesheet" href={`/smui${$mediaMode === DARK ? '-dark' : ''}.css`} />
+  <link
+    id="media-mode"
+    rel="stylesheet"
+    href={`/smui${$mediaMode === DARK ? '-dark' : ''}.css`}
+  />
 </svelte:head>
 
 <Icons />
@@ -674,22 +739,32 @@
   <Modal header={{ name: 'text.upload-type' }} key="default-modal">
     <Modal header={{ name: 'text.editor' }} key="editor-modal">
       <div bind:this={outerElement} class="transition opacity-0">
-        <form use:enhance={formSubmitHandler} method="POST" class="main-menu login-form">
+        <form
+          use:enhance={formSubmitHandler}
+          method="POST"
+          class="main-menu login-form"
+        >
           <Nav segment={$segment} {page} {logo}>
             {#if $session.user}
               <NavItem href="/videos" title="Videothek" segment="videos">
-                <Icon class="material-icons" style="vertical-align: middle;">video_library</Icon>
+                <Icon class="material-icons" style="vertical-align: middle;"
+                  >video_library</Icon
+                >
                 <Label>{$_('text.library')}</Label>
               </NavItem>
             {/if}
 
             {#if hasPrivileges}
               <NavItem
-                href={$page.url.pathname.startsWith('/users') ? $page.url.href : `/users`}
+                href={$page.url.pathname.startsWith('/users')
+                  ? $page.url.href
+                  : `/users`}
                 title="Administration"
                 segment="users"
               >
-                <Icon class="material-icons" style="vertical-align: middle;">settings</Icon>
+                <Icon class="material-icons" style="vertical-align: middle;"
+                  >settings</Icon
+                >
                 <Label>Admin</Label>
               </NavItem>
             {/if}
@@ -724,13 +799,18 @@
               >
                 <Button variant="raised" class="sign-in-out" style="font">
                   <Label class="label">{$_('nav.login')}</Label>
-                  <Icon class="material-icons" style="vertical-align: middle;">login</Icon>
+                  <Icon class="material-icons" style="vertical-align: middle;"
+                    >login</Icon
+                  >
                 </Button>
               </NavItem>
             {/if}
 
             {#if $session.user}
-              <NavItem title="Avatar" href="/users/{$session.user?.id}?tab=profile">
+              <NavItem
+                title="Avatar"
+                href="/users/{$session.user?.id}?tab=profile"
+              >
                 <UserGraphic
                   size={40}
                   borderSize={2}
@@ -740,7 +820,7 @@
                   badge={{
                     icon: 'settings',
                     color: '--primary',
-                    position: 'BOTTOM_RIGHT'
+                    position: 'BOTTOM_RIGHT',
                   }}
                 />
               </NavItem>
@@ -790,7 +870,9 @@
                 class="hide-if-desktop"
                 segment="logout"
               >
-                <Icon class="material-icons" style="vertical-align: middle;">login</Icon>
+                <Icon class="material-icons" style="vertical-align: middle;"
+                  >login</Icon
+                >
                 <Label>Login</Label>
               </NavItem>
             {/if}
@@ -807,14 +889,21 @@
                       href: 'https://github.com/anito/vod-app-svelte-kit',
                       host: dev
                         ? 'https://localhost:3000'
-                        : 'https://vod-app-svelte-kit.vercel.app/'
-                    }
+                        : 'https://vod-app-svelte-kit.vercel.app/',
+                    },
                   ]}
                 />
                 <Separator />
                 <Item class="justify-start">
-                  <Button href={$framework.href} target="_blank" class="link-button" ripple={false}>
-                    <span style="display: flex; flex: 1 0 100%; align-items: center">
+                  <Button
+                    href={$framework.href}
+                    target="_blank"
+                    class="link-button"
+                    ripple={false}
+                  >
+                    <span
+                      style="display: flex; flex: 1 0 100%; align-items: center"
+                    >
                       <SvgIcon name="github" class="mr-2" />
                       <Label>GitHub</Label>
                     </span>
@@ -822,7 +911,11 @@
                 </Item>
                 <Separator />
                 <Item class="justify-start">
-                  <Button formaction="/config?/reload=true" class="link-button" ripple={false}>
+                  <Button
+                    formaction="/config?/reload=true"
+                    class="link-button"
+                    ripple={false}
+                  >
                     <SvgIcon name="sync" class="mr-2" />
                     <Label>Reload Config</Label>
                   </Button>
@@ -830,9 +923,12 @@
                 <Separator />
                 <Item class="justify-start">
                   <Button
-                    href={`${$page.url.pathname}${buildSearchParams($page.url.searchParams, {
-                      append: [['modal', 'settings']]
-                    })}`}
+                    href={`${$page.url.pathname}${buildSearchParams(
+                      $page.url.searchParams,
+                      {
+                        append: [['modal', 'settings']],
+                      }
+                    )}`}
                     class="link-button"
                     ripple={false}
                   >
@@ -849,7 +945,11 @@
     </Modal>
   </Modal>
 {/if}
-<LoadingModal backgroundColor={loaderBackgroundColor} opacity={loaderBackgroundOpacity} wait={1000}>
+<LoadingModal
+  backgroundColor={loaderBackgroundColor}
+  opacity={loaderBackgroundOpacity}
+  wait={1000}
+>
   <DoubleBounce color={loaderColor} unit="px" size="200" />
 </LoadingModal>
 <Dialog
@@ -862,7 +962,9 @@
   <DialogTitle id="info-title">{$_('text.deleting-media')}</DialogTitle>
   <Content>
     <div class="">
-      {$_('text.permanently-deleting-media', { values: { title: media?.title || '' } })}
+      {$_('text.permanently-deleting-media', {
+        values: { title: media?.title || '' },
+      })}
     </div>
   </Content>
 </Dialog>
@@ -873,7 +975,7 @@
   on:SMUIDialog:closed={async () =>
     await goto(
       `${$page.url.pathname}${buildSearchParams($page.url.searchParams, {
-        remove: ['modal', 'edit']
+        remove: ['modal', 'edit'],
       })}`
     )}
 >
@@ -888,12 +990,20 @@
               <ul class="level-2">
                 {#if setting[1] instanceof Object}
                   {#each Object.entries(setting[1]) as item}
-                    <li class:editable-list={isEditable({ section: setting[0], key: item[0] })}>
+                    <li
+                      class:editable-list={isEditable({
+                        section: setting[0],
+                        key: item[0],
+                      })}
+                    >
                       <span class="key">
                         <strong>{item[0]}</strong>
                       </span>
                       <span
-                        class:editable={isEditable({ section: setting[0], key: item[0] })}
+                        class:editable={isEditable({
+                          section: setting[0],
+                          key: item[0],
+                        })}
                         contenteditable="false"
                         class="val editable">{item[1]}</span
                       >
@@ -907,7 +1017,7 @@
                             href={`${$page.url.pathname}${buildSearchParams(
                               $page.url.searchParams,
                               {
-                                append: [['edit', `${setting[0]}:${item[0]}`]]
+                                append: [['edit', `${setting[0]}:${item[0]}`]],
                               }
                             )}`}>edit</a
                           >

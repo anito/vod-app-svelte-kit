@@ -1,6 +1,5 @@
 import { writable } from 'svelte/store';
 import { streams } from '$lib/stores';
-import { Blob as Buffer } from 'buffer';
 import type { Stream } from '$lib/types';
 import { browser } from '$app/environment';
 
@@ -10,7 +9,7 @@ function createStore(id: string) {
     total: 0,
     percent: undefined,
     controller: undefined,
-    reader: undefined
+    reader: undefined,
   };
   let stream = writable(defaults, (set) => {
     return () => {
@@ -59,7 +58,7 @@ function bodyReader(store: {
         received,
         percent,
         chunks,
-        status
+        status,
       };
     });
   };
@@ -100,8 +99,8 @@ function bodyReader(store: {
         },
         cancel(reason) {
           console.log('The ReadableStream was cancelled', reason);
-        }
-      })
+        },
+      }),
   };
 }
 
@@ -117,7 +116,10 @@ const readerMap: Map<
 > = new Map();
 
 export function register(
-  { filename, url }: { filename?: string; url: string } = { filename: '', url: '' }
+  { filename, url }: { filename?: string; url: string } = {
+    filename: '',
+    url: '',
+  }
 ) {
   const path = url.concat(filename ? `/${filename}` : '');
   filename = filename ?? path;
@@ -127,10 +129,11 @@ export function register(
     store: createStore(path),
     reader: undefined,
     controller: undefined,
-    unsubscribe: undefined
+    unsubscribe: undefined,
   };
 
-  const data = readerMap.set(filename, initializer).get(filename) || initializer;
+  const data =
+    readerMap.set(filename, initializer).get(filename) || initializer;
 
   return {
     store: data.store,
@@ -173,7 +176,7 @@ export function register(
         }
       }
       return data.stream;
-    }
+    },
   };
 }
 
@@ -189,11 +192,10 @@ export default function read(
   const process = async (response: Response) => {
     return await response
       .blob()
-      .then((blob) =>
-        browser
-          ? new Blob([blob], { type: contentType })
-          : new Buffer([blob] as any[], { type: contentType })
-      )
+      .then((blob) => {
+        console.log(browser);
+        return new Blob([blob], { type: contentType });
+      })
       .then((blob) => {
         return { blob, filesize: blob.size };
       });
@@ -204,7 +206,7 @@ export default function read(
     fetch: async (token?: string) => {
       const headers = {
         Accept: 'application/json',
-        'Accept-Encoding': 'identity'
+        'Accept-Encoding': 'identity',
       } as {
         Accept: string;
         Authorization?: string;
@@ -215,7 +217,7 @@ export default function read(
       return await fetch(file, {
         method: 'GET',
         credentials: 'include',
-        headers
+        headers,
       })
         .then(async (res) => {
           contentType = res.headers.get('content-type') || 'text/plain';
@@ -224,6 +226,6 @@ export default function read(
         .then((stream) => new Response(stream))
         .then(process)
         .catch((reason) => console.error('[FETCH]', reason));
-    }
+    },
   };
 }

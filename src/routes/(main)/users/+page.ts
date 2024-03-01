@@ -9,7 +9,9 @@ export const load = async ({ parent }) => {
   const firstUser = usersInStore.length ? usersInStore[0] : session.user;
   if (usersInStore.length) {
     const hasPrivileges = session.role === ADMIN || session.role === SUPERUSER;
-    const tab = hasPrivileges ? config?.Site.defaultadmintab : config?.Site.defaultusertab;
+    const tab = hasPrivileges
+      ? config?.Site.defaultadmintab
+      : config?.Site.defaultusertab;
     const search = createTabSearch(tab || DEFAULT_TAB);
     throw redirect(301, `/users/${firstUser?.id + search}`);
   }

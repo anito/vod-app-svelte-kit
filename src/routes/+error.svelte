@@ -18,8 +18,9 @@
   }
 
   .error {
-    --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
-      Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+      Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
+      sans-serif;
     font-family: var(--font-family);
     display: flex;
     align-items: center;

@@ -5,7 +5,7 @@ export const POST = async ({ locals, request }) => {
   return await locals.session
     .set({
       ...locals.session.data,
-      ...response
+      ...response,
     })
     .then((res) => json(res));
 };

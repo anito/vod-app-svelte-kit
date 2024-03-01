@@ -1,6 +1,10 @@
 import { json } from '@sveltejs/kit';
 
-export const GET = async ({ locals: { imagesRepo, session }, url, cookies }) => {
+export const GET = async ({
+  locals: { imagesRepo, session },
+  url,
+  cookies,
+}) => {
   const { user } = session.data;
   const token = user?.jwt;
   const page: number = parseInt(url.searchParams.get('page') || '1');

@@ -35,19 +35,20 @@
     {
       key: 'send-more',
       label: $_('text.request-more-information'),
-      subject: $_('text.request-more-information')
+      subject: $_('text.request-more-information'),
     },
     {
       key: 'message',
       label: $_('text.user-message'),
-      subject: $_('text.new-message-from-user', { values: { name } })
-    }
+      subject: $_('text.new-message-from-user', { values: { name } }),
+    },
   ];
   $: continueWith = $session.user
     ? { title: $_('text.yourCourses'), url: 'videos' }
     : { title: $_('text.login'), url: 'login' };
   $: formValid = selected !== void0;
-  $: canSend = selected === 'message' ? formValid && message.length >= 5 : formValid;
+  $: canSend =
+    selected === 'message' ? formValid && message.length >= 5 : formValid;
   $: (({ _name, _email }) => {
     name = $session.user?.name || _name;
     email = $session.user?.email || _email;
@@ -94,10 +95,10 @@
 </svelte:head>
 
 <Layout>
-  <Canvas class='bg-canvas'>
+  <Canvas class="bg-canvas">
     <TerrainScene />
   </Canvas>
-  <Canvas class='fg-canvas'>
+  <Canvas class="fg-canvas">
     <FilmgrainScene />
   </Canvas>
   <Hero title="Immersive Studio" tagline="" outline={hero} logotype={logo} />
@@ -115,7 +116,9 @@
       <div class="flex-1">
         {#if !selected}
           <p>{$_('blocks.p2.text')}</p>
-          <a href="/{continueWith.url}" class="learn-more">{continueWith.title}</a>
+          <a href="/{continueWith.url}" class="learn-more"
+            >{continueWith.title}</a
+          >
         {:else}
           <p>{$_('blocks.p7.text')}</p>
         {/if}
@@ -175,7 +178,8 @@
                 <span slot="label">
                   <Icon
                     class="material-icons"
-                    style="font-size: 1em; line-height: normal; vertical-align: middle;">email</Icon
+                    style="font-size: 1em; line-height: normal; vertical-align: middle;"
+                    >email</Icon
                   >
                   {$_('text.email')}
                 </span>
@@ -184,7 +188,11 @@
           </div>
         {/if}
         <div class="" style="width: 100%;">
-          <Select class="info-select" bind:value={selected} label={$_('text.are-you-interested')}>
+          <Select
+            class="info-select"
+            bind:value={selected}
+            label={$_('text.are-you-interested')}
+          >
             {#each options as option (option.key)}
               <Option value={option.key}>{option.label}</Option>
             {/each}
@@ -202,7 +210,10 @@
       <p>{$_('blocks.p4.text')}</p>
     </div>
 
-    <div style="grid-area: start; display: flex; flex-direction: column; min-width: 0" slot="how">
+    <div
+      style="grid-area: start; display: flex; flex-direction: column; min-width: 0"
+      slot="how"
+    >
       <p style="margin: 0 0 1em 0; min-width: 0; min-height: 0">
         {$_('blocks.p3.text')}
       </p>

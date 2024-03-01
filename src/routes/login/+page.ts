@@ -9,7 +9,7 @@ export const load = async ({ fetch, url, data }) => {
       .then((res) => {
         return {
           ...res,
-          fromToken: true
+          fromToken: true,
         };
       });
   }

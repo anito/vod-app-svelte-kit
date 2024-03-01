@@ -28,20 +28,24 @@
         type: 'image',
         options: {
           parallelUploads: 12,
-          maxFiles: $currentVideo ? 1 : 12
-        }
+          maxFiles: $currentVideo ? 1 : 12,
+        },
       },
       options: {
         transitionWindow: fly,
         transitionWindowProps: {
           y: -200,
-          duration: 500
-        }
+          duration: 500,
+        },
       },
       events: {
-        onClose: () => {}
+        onClose: () => {},
       },
-      headerProps: { type: $currentVideo ? $_('text.video-poster') : $_('text.video-posters') }
+      headerProps: {
+        type: $currentVideo
+          ? $_('text.video-poster')
+          : $_('text.video-posters'),
+      },
     });
   };
 </script>
@@ -66,7 +70,9 @@
         <Paper color="primary">
           <Title style="color: var(--text-light)">No Images available</Title>
           <Content>
-            <a href="/images" on:click|preventDefault={() => openUploader()}>Upload</a>
+            <a href="/images" on:click|preventDefault={() => openUploader()}
+              >Upload</a
+            >
             some images to your content
           </Content>
         </Paper>
@@ -81,7 +87,12 @@
   {/if}
 </div>
 {#if $fabs === 'add-image'}
-  <Fab class="floating-fab" color="primary" on:click={() => openUploader()} extended>
+  <Fab
+    class="floating-fab"
+    color="primary"
+    on:click={() => openUploader()}
+    extended
+  >
     <Label>{$_('text.new-poster')}</Label>
     <Icon class="material-icons">add</Icon>
   </Fab>

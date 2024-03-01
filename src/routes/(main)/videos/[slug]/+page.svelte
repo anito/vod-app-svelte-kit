@@ -6,7 +6,13 @@
   import { session, videos, users } from '$lib/stores';
   import { FlexContainer } from '$lib/components';
   import VideoPlayer, { format } from '$lib/components/Video';
-  import { ADMIN, SUPERUSER, getMediaImage, getMediaVideo, emit } from '$lib/utils';
+  import {
+    ADMIN,
+    SUPERUSER,
+    getMediaImage,
+    getMediaVideo,
+    emit,
+  } from '$lib/utils';
   import { _ } from 'svelte-i18n';
   import type { User, Video } from '$lib/classes/repos/types';
 
@@ -65,9 +71,12 @@
     .find((u: User) => u.id === user?.id)
     ?.videos.find((v: Video) => v.id === video?.id)?._joinData;
   $: video?.image_id
-    ? getMediaImage(video.image_id, $session.user?.jwt).then((v) => (poster = v))
+    ? getMediaImage(video.image_id, $session.user?.jwt).then(
+        (v) => (poster = v)
+      )
     : (poster = undefined);
-  $: if (video) getMediaVideo(video.id, $session.user?.jwt).then((v) => (src = v));
+  $: if (video)
+    getMediaVideo(video.id, $session.user?.jwt).then((v) => (src = v));
   $: watchPlayhead(playhead, paused);
   $: playing = !paused;
 
@@ -92,7 +101,11 @@
     if (!loadeddata) return;
 
     clearTimeout(timeoutIdSavePlayhead);
-    const { onsuccess, onerror } = { onsuccess: () => {}, onerror: () => {}, ...callback };
+    const { onsuccess, onerror } = {
+      onsuccess: () => {},
+      onerror: () => {},
+      ...callback,
+    };
     if (hasPrivileges) {
       timeoutIdSavePlayhead = setTimeout(
         (data: {
@@ -104,7 +117,7 @@
         {
           data: { id, playhead },
           onsuccess,
-          onerror
+          onerror,
         }
       );
     } else {
@@ -116,10 +129,10 @@
         videos: [
           {
             id,
-            _joinData: { ...joindata, playhead }
+            _joinData: { ...joindata, playhead },
           },
-          ...associated
-        ]
+          ...associated,
+        ],
       };
 
       timeoutIdSavePlayhead = setTimeout(
@@ -129,7 +142,7 @@
         {
           data,
           onsuccess,
-          onerror
+          onerror,
         }
       );
     }
@@ -226,7 +239,10 @@
 </script>
 
 <svelte:head>
-  <title>{$page.data.config.Site?.name} | {video?.title || $_('text.no-title')}</title>
+  <title
+    >{$page.data.config.Site?.name} | {video?.title ||
+      $_('text.no-title')}</title
+  >
 </svelte:head>
 
 {#if withinRoute}
@@ -242,7 +258,10 @@
       class:outroend
     >
       <div class="curtain curtain-primary">
-        <h2 class="mdc-typography--headline6 curtain-title opacity-25" class:opacity-25={!title}>
+        <h2
+          class="mdc-typography--headline6 curtain-title opacity-25"
+          class:opacity-25={!title}
+        >
           {title}
         </h2>
         <h3

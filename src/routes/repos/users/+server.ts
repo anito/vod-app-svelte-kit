@@ -23,7 +23,11 @@ export const GET = async ({ locals: { usersRepo, session }, url, cookies }) => {
   return json(users);
 };
 
-export const POST = async ({ locals: { usersRepo, session }, request, cookies }) => {
+export const POST = async ({
+  locals: { usersRepo, session },
+  request,
+  cookies,
+}) => {
   const { user } = session.data;
   const token = user?.jwt;
   const options = await request.json(); // { match, limit, auto }

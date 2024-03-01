@@ -17,14 +17,19 @@
     SimpleUserCard,
     SvgIcon,
     UserGraphic,
-    VideoEditorList
+    VideoEditorList,
   } from '$lib/components';
   import { buildSearchParams, emit, filterByModelKeys, USER } from '$lib/utils';
   import Button, { Icon as ButtonIcon } from '@smui/button';
   import Fab, { Icon as FabIcon, Label } from '@smui/fab';
   import Icon from '@smui/textfield/icon';
   import List from '@smui/list';
-  import Dialog, { Title as DialogTitle, Content, Actions, InitialFocus } from '@smui/dialog';
+  import Dialog, {
+    Title as DialogTitle,
+    Content,
+    Actions,
+    InitialFocus,
+  } from '@smui/dialog';
   import { _ } from 'svelte-i18n';
   import type { User } from '$lib/classes/repos/types';
   import type { Issue } from '$lib/types';
@@ -35,7 +40,8 @@
   const modelSearchKeys = 'id,name,email';
   const { getDropzone }: any = getContext('dropzone');
   const { open: editor$open }: any = getContext('editor-modal');
-  const { open: default$open, close: default$close }: any = getContext('default-modal');
+  const { open: default$open, close: default$close }: any =
+    getContext('default-modal');
   const { showSnackbar }: any = getContext('snackbar');
   const { getSegment }: any = getContext('segment');
   const { searchUsers }: any = getContext('search');
@@ -66,24 +72,31 @@
 
   $: pagination = data.pagination?.users;
   $: selectionUserId = $page.params.slug || $session.user?.id;
-  $: selectedUser = ((id) => $users?.find((usr) => usr.id === id))(selectionUserId);
+  $: selectedUser = ((id) => $users?.find((usr) => usr.id === id))(
+    selectionUserId
+  );
   $: ((user) => {
     username = user?.name;
     active = !!user?.active;
     tokenId = user?.token_id || null;
     token = user?.jwt || '';
     tokenExpires = user?.expires;
-    hasExpired = (tokenExpires && tokenExpires * 1000 < +new Date().getTime()) || false;
+    hasExpired =
+      (tokenExpires && tokenExpires * 1000 < +new Date().getTime()) || false;
     magicLink = token ? `${$page.url.origin}/login?token=${token}` : '';
   })(selectedUser);
   $: isDeepSearch = search.length >= minSearchChars;
   $: if (isDeepSearch) {
     (async (s) => {
-      const { success, data } = await searchUsers({ keys: 'name,id', search: s }, 10);
+      const { success, data } = await searchUsers(
+        { keys: 'name,id', search: s },
+        10
+      );
       if (success) users.add(data);
     })(search);
   }
-  $: filteredUsers = ((users) => filterByModelKeys(search, users, modelSearchKeys))(
+  $: filteredUsers = ((users) =>
+    filterByModelKeys(search, users, modelSearchKeys))(
     $users?.filter((user) => user.id !== $session.user?.id)
   );
   $: filteredUsers.sortBy('name');
@@ -92,22 +105,37 @@
     ((id) => {
       if (id) return _infos.get(id)?.issues;
     })(selectionUserId) || [];
-  $: userIssues = userInfos.filter((info: { type: string }) => info.type === 'issue');
+  $: userIssues = userInfos.filter(
+    (info: { type: string }) => info.type === 'issue'
+  );
 
   // searchkey dependent Dialogs
   // ${buildSearchParams($page.url.searchParams, { append: [['modal', 'settings']] })
   $: infoDialog?.setOpen($page.url.searchParams.get('dialog') === 'info-help');
-  $: activateUserDialog?.setOpen($page.url.searchParams.get('dialog') === 'user-activate');
-  $: removeTokenDialog?.setOpen($page.url.searchParams.get('dialog') === 'token-remove');
-  $: redirectDialog?.setOpen($page.url.searchParams.get('dialog') === 'token-redirect');
-  $: generateTokenDialog?.setOpen($page.url.searchParams.get('dialog') === 'token-generate');
-  $: resolveAllDialog?.setOpen($page.url.searchParams.get('dialog') === 'resolve-all');
+  $: activateUserDialog?.setOpen(
+    $page.url.searchParams.get('dialog') === 'user-activate'
+  );
+  $: removeTokenDialog?.setOpen(
+    $page.url.searchParams.get('dialog') === 'token-remove'
+  );
+  $: redirectDialog?.setOpen(
+    $page.url.searchParams.get('dialog') === 'token-redirect'
+  );
+  $: generateTokenDialog?.setOpen(
+    $page.url.searchParams.get('dialog') === 'token-generate'
+  );
+  $: resolveAllDialog?.setOpen(
+    $page.url.searchParams.get('dialog') === 'resolve-all'
+  );
 
   onMount(() => {
     if (selectionUserId) scrollSelectedIntoView();
 
     let renewed;
-    if ((renewed = localStorage.getItem('renewed')) && renewed == $session.user?.id) {
+    if (
+      (renewed = localStorage.getItem('renewed')) &&
+      renewed == $session.user?.id
+    ) {
       renewedTokenDialog?.setOpen(true);
     }
 
@@ -120,7 +148,10 @@
       window.removeEventListener('token-generate', generateTokenHandler);
       window.removeEventListener('token-remove', removeTokenHandler);
       window.removeEventListener('user-activate', toggleUserHandler);
-      window.removeEventListener('info:token-redirect', tokenRedirectDialogHandler);
+      window.removeEventListener(
+        'info:token-redirect',
+        tokenRedirectDialogHandler
+      );
     };
   });
 
@@ -134,7 +165,7 @@
   async function generateToken() {
     const res = await api.post(`tokens?locale=${$page.data.session.locale}`, {
       data: { user_id: selectedUser?.id },
-      token: $session.user?.jwt
+      token: $session.user?.jwt,
     });
 
     let message;
@@ -152,7 +183,9 @@
 
   async function removeToken() {
     await api
-      .del(`tokens/${tokenId}?locale=${$session.locale}`, { token: $session.user?.jwt })
+      .del(`tokens/${tokenId}?locale=${$session.locale}`, {
+        token: $session.user?.jwt,
+      })
       .then((res) => {
         if (res?.success) {
           users.put({ ...selectedUser, ...res.data });
@@ -174,7 +207,7 @@
     await api
       .put(`users/${selectionUserId}?locale=${$session.locale}`, {
         data,
-        token: $session.user?.jwt
+        token: $session.user?.jwt,
       })
       .then((res) => {
         message = res.message || res.data.message || res.statusText;
@@ -240,7 +273,9 @@
   function tokenRedirectDialogCloseHandler({ detail }: CustomEvent) {
     if (
       'redirect' === detail.action &&
-      /^(https?|ftp|torrent|image|irc):\/\/(-\.)?([^\s\/?\.#-&]+\.?)+(\/[^\s]*)?$/i.test(magicLink)
+      /^(https?|ftp|torrent|image|irc):\/\/(-\.)?([^\s\/?\.#-&]+\.?)+(\/[^\s]*)?$/i.test(
+        magicLink
+      )
     ) {
       goto(`/login?token=${token}`);
     } else {
@@ -253,7 +288,9 @@
   }
 
   function navigateWithoutKeys(remove: string[]) {
-    goto(`${$page.url.pathname}${buildSearchParams($page.url.searchParams, { remove })}`);
+    goto(
+      `${$page.url.pathname}${buildSearchParams($page.url.searchParams, { remove })}`
+    );
   }
 
   let openUploader = () => {
@@ -268,19 +305,19 @@
           parallelUploads: 1,
           maxFiles: 1,
           timeout: 3600 * 1000, // 60min
-          maxFilesize: 1024 // Megabyte
+          maxFilesize: 1024, // Megabyte
         },
         events: {
           'upload:successmultiple': uploadSuccessHandler,
-          'upload:complete': () => (completed = true)
-        }
+          'upload:complete': () => (completed = true),
+        },
       },
       options: {
         transitionWindow: fly,
         transitionWindowProps: {
           y: -200,
-          duration: 500
-        }
+          duration: 500,
+        },
       },
       events: {
         onOpen: () => {
@@ -298,9 +335,9 @@
           }
           return true;
         },
-        onClosed: openEditor
+        onClosed: openEditor,
       },
-      headerProps: { type: $_('text.videos') }
+      headerProps: { type: $_('text.videos') },
     });
   };
 
@@ -321,8 +358,8 @@
 
     editor$open(VideoEditorList, {
       props: {
-        data: uploadedData
-      }
+        data: uploadedData,
+      },
     });
     uploadedData = null;
   }
@@ -359,7 +396,9 @@
           style="width: 100%;"
           bind:search
           label={$_('text.search-users')}
-          infoLabel={$_('text.type-min-char-count', { values: { count: minSearchChars } })}
+          infoLabel={$_('text.type-min-char-count', {
+            values: { count: minSearchChars },
+          })}
         />
       </div>
       <List
@@ -373,7 +412,8 @@
         <SimpleUserCard
           id={$session.user?.id}
           {selectionUserId}
-          user={$users?.find((user) => user.id === $session.user?.id) || undefined}
+          user={$users?.find((user) => user.id === $session.user?.id) ||
+            undefined}
           ><div class="my-badge">
             <Icon class="material-icons">contact_page</Icon>
           </div>
@@ -431,19 +471,19 @@
       <details>
         <summary>{$_('text.how-do-i-proceed')}</summary>
         {@html $_('messages.usage-of-the-button', {
-          values: { button: $_('text.generate-token') }
+          values: { button: $_('text.generate-token') },
         })}
       </details>
       <details>
         <summary>{$_('messages.misusage')}</summary>
         <p>
           {@html $_('messages.generate-a-new-token', {
-            values: { button: $_('text.generate-token') }
+            values: { button: $_('text.generate-token') },
           })}
         </p>
         <p>
           {@html $_('messages.use-remove-token-button', {
-            values: { button: $_('text.remove-token') }
+            values: { button: $_('text.remove-token') },
           })}
         </p>
       </details>
@@ -480,7 +520,7 @@
     <Content id="info-content">
       <div class="item">
         {@html $_('messages.content-inaccessible', {
-          values: { name: username }
+          values: { name: username },
         })}
       </div>
       <div class="list">
@@ -523,7 +563,7 @@
   <Content id="info-content">
     <div class="item">
       {@html $_('messages.should-user-be-activated', {
-        values: { name: username }
+        values: { name: username },
       })}
     </div>
   </Content>
@@ -532,7 +572,9 @@
       <Label>{$_('text.cancel')}</Label>
     </Button>
     <Button action="approved" variant="unelevated" use={[InitialFocus]}>
-      <Label>{active ? $_('text.deactivate-user') : $_('text.activate-user')}</Label>
+      <Label
+        >{active ? $_('text.deactivate-user') : $_('text.activate-user')}</Label
+      >
     </Button>
   </Actions>
 </Dialog>
@@ -552,7 +594,7 @@
       {/if}
       <p>
         {@html $_('messages.transfer-token-reminder', {
-          values: { name: username }
+          values: { name: username },
         })}
       </p>
     </div>
@@ -603,7 +645,9 @@
       </p>
       <div class="flex mt-3 mb-3">
         {#each userIssues as issue}
-          <span class="self-center mr-2"><strong>{$_(issue.reason)}:</strong></span>
+          <span class="self-center mr-2"
+            ><strong>{$_(issue.reason)}:</strong></span
+          >
           <span>
             <Button
               variant="raised"
@@ -617,10 +661,18 @@
         {/each}
       </div>
       <p>
-        <a href={magicLink}>{@html $_('text.continue-anyways', { values: { name: username } })}</a>
+        <a href={magicLink}
+          >{@html $_('text.continue-anyways', {
+            values: { name: username },
+          })}</a
+        >
       </p>
     {:else}
-      <p>{@html $_('text.you-will-be-logged-out', { values: { name: username } })}</p>
+      <p>
+        {@html $_('text.you-will-be-logged-out', {
+          values: { name: username },
+        })}
+      </p>
     {/if}
     <div class="absolute" style="z-index: 1; top: -11px; right: 3px;">
       <UserGraphic
@@ -635,7 +687,7 @@
         badge={{
           icon: 'swap_horiz',
           position: 'BOTTOM_LEFT',
-          size: 'small'
+          size: 'small',
         }}
       />
     </div>
@@ -696,7 +748,12 @@
   </div>
 {:else if $fabs === 'add-video'}
   <div class="fab">
-    <Fab class="floating-fab" color="primary" on:click={() => openUploader()} extended>
+    <Fab
+      class="floating-fab"
+      color="primary"
+      on:click={() => openUploader()}
+      extended
+    >
       <Label>{$_('text.add-video')}</Label>
       <Icon class="material-icons">add</Icon>
     </Fab>

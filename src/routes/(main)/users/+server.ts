@@ -6,7 +6,9 @@ export const POST = async ({ request, locals }) => {
   const { locale, user } = locals.session.data;
   const token = user?.jwt;
 
-  return await api.post(`users?locale=${locale}`, { data, token }).then(async (res) => {
-    return json(res);
-  });
+  return await api
+    .post(`users?locale=${locale}`, { data, token })
+    .then(async (res) => {
+      return json(res);
+    });
 };

@@ -5,17 +5,20 @@ import type { User } from '$lib/classes/repos/types';
 import type { LoginResponseData } from '$lib/types';
 
 const parseData = (data: LoginResponseData) => {
-  const { id, name, email, avatar, jwt, role, groups }: User = { ...data.user, ...data };
+  const { id, name, email, avatar, jwt, role, groups }: User = {
+    ...data.user,
+    ...data,
+  };
   return {
     user: { id, name, email, jwt, avatar, role },
     role,
-    groups
+    groups,
   };
 };
 
 const setSession = async (locals: App.Locals, data: LoginResponseData) => {
-  const salutations = locals.config.Site?.salutations;
-  const lifetime = Number(locals.config.Session?.lifetime);
+  const salutations = locals.config?.Site?.salutations;
+  const lifetime = Number(locals.config?.Session?.lifetime);
   const _expires = new Date(Date.now() + parseLifetime(lifetime)).toISOString();
   const locale = locals.session.data.locale;
 
@@ -25,7 +28,7 @@ const setSession = async (locals: App.Locals, data: LoginResponseData) => {
     ...parseData(data),
     _expires,
     salutation: randomItem(salutations),
-    locale
+    locale,
   });
 };
 
@@ -35,11 +38,13 @@ export const GET = async ({ locals, url }) => {
   const locale = locals.session.data.locale;
 
   if (token) {
-    return await api.get(`${type}?token=${token}&locale=${locale}`).then(async (res) => {
-      await locals.session.destroy();
-      if (res.success) await setSession(locals, res.data);
-      return json(res);
-    });
+    return await api
+      .get(`${type}?token=${token}&locale=${locale}`)
+      .then(async (res) => {
+        await locals.session.destroy();
+        if (res.success) await setSession(locals, res.data);
+        return json(res);
+      });
   }
   throw error(401, 'This method is only allowed for token logins');
 };

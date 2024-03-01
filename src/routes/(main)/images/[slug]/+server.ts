@@ -6,9 +6,11 @@ export const GET = async ({ params, locals }) => {
   const { locale, user } = locals.session.data;
   const token = user?.jwt;
 
-  return await api.get(`images/${id}?token=${token}&locale=${locale}`).then((res) => {
-    return json(res);
-  });
+  return await api
+    .get(`images/${id}?token=${token}&locale=${locale}`)
+    .then((res) => {
+      return json(res);
+    });
 };
 
 export const PUT = async ({ request, params, locals }) => {
@@ -29,7 +31,9 @@ export const DELETE = async ({ params, locals }) => {
   const { locale, user } = locals.session.data;
   const token = user?.jwt;
 
-  return await api.del(`images/${id}?token=${token}&locale=${locale}`).then(async (res) => {
-    return json(res);
-  });
+  return await api
+    .del(`images/${id}?token=${token}&locale=${locale}`)
+    .then(async (res) => {
+      return json(res);
+    });
 };

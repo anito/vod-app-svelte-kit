@@ -17,7 +17,7 @@ export const load = async ({ params, parent, fetch, setHeaders }) => {
       return await fetch(`/users/${id}`).then(async (res) => {
         setHeaders({
           age: '1000000',
-          'cache-control': '10000000'
+          'cache-control': '10000000',
         });
         const { success, data } = await res.json();
         if (success) {

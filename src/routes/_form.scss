@@ -24,7 +24,7 @@
       @include select-theme.bottom-line-color(
         (
           default: on-secondary,
-          focus: on-secondary
+          focus: on-secondary,
         )
       );
       @include label-color(on-secondary);

@@ -1,3 +1,3 @@
 export const actions = {
-  reload: () => void 0
+  reload: () => void 0,
 };

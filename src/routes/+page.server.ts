@@ -10,8 +10,11 @@ export const actions = {
     const content = formData.get('message');
     const template = formData.get('template');
     return await api
-      .post(`sents/add`, { data: { user: { name, email }, subject, content, template }, token })
+      .post(`sents/add`, {
+        data: { user: { name, email }, subject, content, template },
+        token,
+      })
       .then(async (res) => res)
       .catch((reason) => console.error('[ACTIONS]', reason));
-  }
+  },
 };

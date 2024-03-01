@@ -17,7 +17,10 @@
 
 // Custom Property Colors
 .error-on-background {
-  @include theme.property(color, custom-properties.create(--error-color, rgb(255, 255, 255)));
+  @include theme.property(
+    color,
+    custom-properties.create(--error-color, rgb(255, 255, 255))
+  );
   @include theme.property(
     background-color,
     custom-properties.create(--error-background-color, rgb(255, 0, 0))

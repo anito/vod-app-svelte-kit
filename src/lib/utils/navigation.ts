@@ -1,10 +1,14 @@
-import type { AfterNavigate, BeforeNavigate, NavigationTarget } from '@sveltejs/kit';
+import type {
+  AfterNavigate,
+  BeforeNavigate,
+  NavigationTarget,
+} from '@sveltejs/kit';
 
 export const getFragment = () => window.location.hash.slice(1);
 
 /**
  * @param lifecycleFunction
- * @param excludes - 
+ * @param excludes -
  * Configure url attributes for (from/to) search attributes and/or (from/to) pathnames.
  * Choose one from the two navigation lifecycle functions: afterNavigate or beforeNavigate.
  * @param callback - will be executed if none of the exclude conditions are met
@@ -13,14 +17,20 @@ export const afterOrBeforeNavigation = (
   afterOrBeforeNavigate: {
     (callback: (navigation: AfterNavigate | BeforeNavigate) => void): void;
     (
-      arg0: ({ from, to }: { from: NavigationTarget | null; to: NavigationTarget | null }) => void
+      arg0: ({
+        from,
+        to,
+      }: {
+        from: NavigationTarget | null;
+        to: NavigationTarget | null;
+      }) => void
     ): void;
   },
   {
     from_searches,
     to_searches,
     from_pathnames,
-    to_pathnames
+    to_pathnames,
   }: {
     from_searches?: string[];
     to_searches?: string[];
@@ -30,7 +40,7 @@ export const afterOrBeforeNavigation = (
     from_searches: [],
     to_searches: [],
     from_pathnames: [],
-    to_pathnames: []
+    to_pathnames: [],
   },
   callback: (
     arg0: { from: NavigationTarget | null; to: NavigationTarget | null },
@@ -99,7 +109,8 @@ export const afterOrBeforeNavigation = (
       return ret;
     };
     const excludes = checkExcludes();
-    if (!checkExcludes().size) navigationCallback(callback, { from, to }, excludes);
+    if (!checkExcludes().size)
+      navigationCallback(callback, { from, to }, excludes);
   });
 };
 
