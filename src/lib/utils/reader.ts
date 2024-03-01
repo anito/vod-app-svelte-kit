@@ -192,10 +192,7 @@ export default function read(
   const process = async (response: Response) => {
     return await response
       .blob()
-      .then((blob) => {
-        console.log(browser);
-        return new Blob([blob], { type: contentType });
-      })
+      .then((blob) => new Blob([blob], { type: contentType }))
       .then((blob) => {
         return { blob, filesize: blob.size };
       });
