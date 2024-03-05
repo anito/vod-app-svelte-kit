@@ -15,7 +15,7 @@
 
   const { getProgress }: any = getContext('progress');
   const progress = getProgress();
-  $: progrssbarWidth = $progress;
+  $: progressbarWidth = $progress;
   $: $current = segment;
 
   let open = false;
@@ -54,15 +54,25 @@
 
 <svelte:window on:hashchange={handle_hashchange} on:scroll={handle_scroll} />
 
-<header class:visible={visible || open} style:--progressbar-w="{progrssbarWidth}vw">
+<header
+  class:visible={visible || open}
+  style:--progressbar-w="{progressbarWidth}vw"
+>
   <nav>
-    <a href="/" class="home" title={home_title} style="background-image: url('{logo}')">{home}</a>
+    <a
+      href="/"
+      class="home"
+      title={home_title}
+      style="background-image: url('{logo}')">{home}</a
+    >
 
     {#if open}
       <div
         class="modal-background hide-if-desktop"
         on:keydown={() => {}}
         on:click={() => (open = false)}
+        role="button"
+        tabindex="0"
       />
     {/if}
 
@@ -73,7 +83,11 @@
       on:mouseenter={() => (open = true)}
       on:mouseleave={() => (open = false)}
     >
-      <li class:hide-if-desktop={!showHome} class:active={segment === 'home'} class="nav-item">
+      <li
+        class:hide-if-desktop={!showHome}
+        class:active={segment === 'home'}
+        class="nav-item"
+      >
         <a href="/">{home}</a>
       </li>
       <slot />
@@ -160,7 +174,8 @@
     position: relative;
     pointer-events: none;
     padding: 0 3rem 0 0;
-    background: url(/src/assets/icons/chevron.svg) calc(100% - 1em) 0.05em no-repeat;
+    background: url(/src/assets/icons/chevron.svg) calc(100% - 1em) 0.05em
+      no-repeat;
     background-size: 1em 1em;
   }
   .primary::after {
@@ -178,7 +193,7 @@
   .primary > :global(li.nav-item) {
     pointer-events: all;
   }
-  
+
   .primary > :global(li.nav-item a),
   .primary > :global(li.nav-item .link-button),
   .primary > :global(li.nav-item .label) {

@@ -335,7 +335,6 @@
   }
 
   function dropzoneInitializedHandler({ detail }: CustomEvent) {
-    console.log(detail);
     dropzone = detail;
   }
 
