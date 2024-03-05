@@ -6,7 +6,7 @@ import { parseLifetime } from '$lib/utils';
 function createStore() {
   const INTERVAL = 1;
   let time;
-  let intervalId: number | undefined;
+  let intervalId: ReturnType<typeof setTimeout>;
 
   return derived(
     /**

@@ -46,7 +46,7 @@ export const GET = async ({ locals, url }) => {
         return json(res);
       });
   }
-  throw error(401, 'This method is only allowed for token logins');
+  error(401, 'This method is only allowed for token logins');
 };
 
 export const POST = async ({ locals, request, url }) => {

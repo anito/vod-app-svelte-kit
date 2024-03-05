@@ -13,7 +13,7 @@
 
   let className = '';
   let last: string;
-  let timeoutId: number | undefined;
+  let timeoutId: ReturnType<typeof setTimeout>;
   let fails = Fails;
   let forced = false;
   let fadeoutTimeMs = 2000;
@@ -34,9 +34,14 @@
     sec = Math.floor(tt % 60).minimumIntegerDigits(2);
     min = Math.floor((tt / 60) % 60).minimumIntegerDigits(2);
     hrs = Math.floor((tt / (60 * 60)) % 24).minimumIntegerDigits(2);
-    dys = Math.floor((tt / (60 * 60 * 24))).minimumIntegerDigits(2);
+    dys = Math.floor(tt / (60 * 60 * 24)).minimumIntegerDigits(2);
 
-    const days = (days: number) => days ? days === 1 ? `${days} ${$_('Day')} ` : `${days} ${$_('Days')} ` : ''
+    const days = (days: number) =>
+      days
+        ? days === 1
+          ? `${days} ${$_('Day')} `
+          : `${days} ${$_('Days')} `
+        : '';
     return (last = `${days(parseFloat(dys))}${hrs}:${min}:${sec}`);
   }
 

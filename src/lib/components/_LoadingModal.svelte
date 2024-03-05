@@ -23,8 +23,8 @@
   const pathnames: string[] = [];
 
   let root: HTMLElement;
-  let timeoutId: number | undefined;
-  let timeoutIdCancel: number | undefined;
+  let timeoutId: ReturnType<typeof setTimeout>;
+  let timeoutIdCancel: ReturnType<typeof setTimeout>;
 
   let disabled = false;
   const omitt = new Map([
@@ -36,7 +36,7 @@
             disabled = true;
           }
         });
-      }
+      },
     ],
     [
       PATHS_KEY,
@@ -46,8 +46,8 @@
             disabled = true;
           }
         });
-      }
-    ]
+      },
+    ],
   ]);
 
   beforeNavigate(({ to }) => {
@@ -66,13 +66,16 @@
     timeoutId = setTimeout(() => {
       // If something goes wrong remove the navigation loader after a decent amount of time
       isNavigating && cancelNavigate(8000);
-      root?.classList.toggle('navigating', isNavigating)
+      root?.classList.toggle('navigating', isNavigating);
     }, wait);
   }
 
   function cancelNavigate(delay: number) {
     clearTimeout(timeoutIdCancel);
-    timeoutIdCancel = setTimeout(() => root?.classList.remove('navigating'), delay);
+    timeoutIdCancel = setTimeout(
+      () => root?.classList.remove('navigating'),
+      delay
+    );
   }
 
   onMount(() => {

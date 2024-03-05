@@ -77,9 +77,6 @@
   import type { Dropzone } from '$lib/components/Dropzone/type';
   import type { User } from '$lib/classes/repos/types';
 
-  const data = new FormData();
-  data.keys();
-
   inject({ mode: dev ? 'development' : 'production' });
 
   const snackbarLifetime = 4000;
@@ -91,7 +88,7 @@
   let snackbarMessage = '';
   let actionLink: string;
   let actionLabel: string;
-  let timeoutId: number | undefined;
+  let timeoutId: ReturnType<typeof setTimeout>;
   let loggedInButtonTextSecondLine: string;
   let emphasize: string;
   let snackbar: Snackbar;

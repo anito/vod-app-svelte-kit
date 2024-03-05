@@ -16,22 +16,22 @@
     isSameMonth,
     startOfWeek,
     startOfYear,
-    subMonths
+    subMonths,
   } from 'date-fns';
   import { passiveSupported, roundDown } from './utils';
   import Calendar from './components/Calendar.svelte';
   import TimePicker from './components/TimePicker.svelte';
 
   interface DateTimeFormat {
-    day: '2-digit' | 'numeric' | undefined;
-    year: '2-digit' | 'numeric' | undefined;
-    month: '2-digit' | 'numeric' | undefined;
+    day: '2-digit' | 'numeric' | undefined;
+    year: '2-digit' | 'numeric' | undefined;
+    month: '2-digit' | 'numeric' | undefined;
   }
   const DateTimeFormatOptions: DateTimeFormat = {
     day: '2-digit',
     year: 'numeric',
-    month: '2-digit'
-  }
+    month: '2-digit',
+  };
 
   export let applyBtnText = 'Apply';
   export let btnClass = 'picker-btn';
@@ -91,18 +91,33 @@
   $: months = [...Array(numPages)].map((_, i) => addMonths(today, i));
   $: startDateReadout = () => {
     if (!hasSelection && isBefore(tempEndDate, tempStartDate)) {
-      return new Date(tempEndDate).toLocaleDateString(lang, dateTimeFormatOptions);
+      return new Date(tempEndDate).toLocaleDateString(
+        lang,
+        dateTimeFormatOptions
+      );
     }
 
-    return new Date(tempStartDate).toLocaleDateString(lang, dateTimeFormatOptions);
+    return new Date(tempStartDate).toLocaleDateString(
+      lang,
+      dateTimeFormatOptions
+    );
   };
   $: endDateReadout = () => {
     if (!hasSelection) {
       if (isBefore(tempEndDate, tempStartDate))
-        return new Date(tempStartDate).toLocaleDateString(lang, dateTimeFormatOptions);
-      return new Date(tempEndDate).toLocaleDateString(lang, dateTimeFormatOptions);
+        return new Date(tempStartDate).toLocaleDateString(
+          lang,
+          dateTimeFormatOptions
+        );
+      return new Date(tempEndDate).toLocaleDateString(
+        lang,
+        dateTimeFormatOptions
+      );
     } else {
-      return new Date(tempEndDate).toLocaleDateString(lang, dateTimeFormatOptions);
+      return new Date(tempEndDate).toLocaleDateString(
+        lang,
+        dateTimeFormatOptions
+      );
     }
   };
   $: readout = lang && `${startDateReadout()} - ${endDateReadout()}`;
@@ -110,10 +125,10 @@
   $: lang = localeObject
     ? localeObject.code
     : navigator && navigator.languages
-    ? navigator.languages.length && navigator.languages[0]
-    : navigator && navigator.language
-    ? navigator.language
-    : '';
+      ? navigator.languages.length && navigator.languages[0]
+      : navigator && navigator.language
+        ? navigator.language
+        : '';
   $: canApply = ((tS, s, tE, e) => {
     if (!hasSelection) {
       return false;
@@ -132,12 +147,16 @@
   $: resetTrigger && resetView();
 
   onMount(() => {
-    calendarRef = document.querySelector('.calendar') || new HTMLElement();
+    calendarRef = document.querySelector('.calendar') || new HTMLElement();
     navigator = window.navigator;
 
     if (twoPages) {
       onResize();
-      window.addEventListener('resize', onResize, passiveSupported ? { passive: true } : false);
+      window.addEventListener(
+        'resize',
+        onResize,
+        passiveSupported ? { passive: true } : false
+      );
     }
 
     if (!startDate) return;
@@ -176,7 +195,8 @@
   });
 
   const onResize = () => {
-    numPages = document.body.offsetWidth - 64 <= 2 * calendarRef.offsetWidth ? 1 : 2;
+    numPages =
+      document.body.offsetWidth - 64 <= 2 * calendarRef.offsetWidth ? 1 : 2;
   };
 
   const apply = () => {
@@ -186,7 +206,7 @@
 
     dispatch('apply', {
       startDate: tempStartDate,
-      endDate: tempEndDate
+      endDate: tempEndDate,
     });
   };
 
@@ -211,7 +231,7 @@
 
     dispatch('cancel', {
       startDate,
-      endDate
+      endDate,
     });
   };
 
@@ -248,14 +268,18 @@
       tempStartDate = isBefore(detailWithStartDateTime, minDate)
         ? minDate
         : detailWithStartDateTime;
-      tempEndDate = isAfter(detailWithEndDateTime, maxDate) ? maxDate : detailWithEndDateTime;
+      tempEndDate = isAfter(detailWithEndDateTime, maxDate)
+        ? maxDate
+        : detailWithEndDateTime;
       hasSelection = false;
     } else {
       // In range mode, if there isn't a selection, the user must be selecting an end date
       // Sorting - Swap start and end dates when the end date is before the start date
       if (isBefore(detailWithEndDateTime, tempStartDate)) {
         if (isSameDay(detailWithEndDateTime, tempStartDate)) {
-          tempEndDate = isAfter(tempStartDate, maxDate) ? maxDate : tempStartDate;
+          tempEndDate = isAfter(tempStartDate, maxDate)
+            ? maxDate
+            : tempStartDate;
           tempStartDate = isBefore(detailWithEndDateTime, minDate)
             ? minDate
             : detailWithEndDateTime;
@@ -275,14 +299,16 @@
             : detailWithStartDateTime;
         }
       } else {
-        tempEndDate = isAfter(detailWithEndDateTime, maxDate) ? maxDate : detailWithEndDateTime;
+        tempEndDate = isAfter(detailWithEndDateTime, maxDate)
+          ? maxDate
+          : detailWithEndDateTime;
       }
 
       hasSelection = true;
 
       dispatch('selection', {
         startDate: tempStartDate,
-        endDate: tempEndDate
+        endDate: tempEndDate,
       });
     }
   };
@@ -364,9 +390,6 @@
   class:has-label={label}
   on:submit|preventDefault={apply}
 >
-  {#if label}
-    <label class="readout"> {readout} <input type="hidden" /> </label>
-  {/if}
   <div class="months space-around">
     {#each months as month, index}
       <Calendar

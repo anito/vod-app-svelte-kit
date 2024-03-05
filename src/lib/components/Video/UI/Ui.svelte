@@ -34,7 +34,7 @@
   let width: number = 0;
   let height: number = 0;
   let controls: boolean;
-  let controlsTimeout: number | undefined;
+  let controlsTimeout: ReturnType<typeof setTimeout>;
 
   $: if (duration) {
     percentageTime = (time * 100) / duration;

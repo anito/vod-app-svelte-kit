@@ -27,7 +27,7 @@
   let loadeddata: boolean = false;
   let playhead: number;
   let timeoutIdWatchPlayhead: ReturnType<typeof setTimeout>;
-  let timeoutIdSavePlayhead: ReturnType<typeof setTimeout>;
+  let timeoutIdSavePlayhead: number | undefined;
   let poster: string | undefined;
   let src: string | undefined;
   let introstart: boolean = false;

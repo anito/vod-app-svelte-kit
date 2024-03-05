@@ -21,7 +21,7 @@
     PASS,
     DEL,
     ADD,
-    buildSearchParams
+    buildSearchParams,
   } from '$lib/utils';
   import Textfield from '@smui/textfield';
   import TextfieldIcon from '@smui/textfield/icon';
@@ -41,7 +41,7 @@
     MediaUploader,
     UserGraphic,
     FlexContainer,
-    Heading
+    Heading,
   } from '$lib/components';
   import { _ } from 'svelte-i18n';
   import type Snackbar from '@smui/snackbar';
@@ -61,7 +61,7 @@
     { name: EDIT, i18n: 'text.edit-user', formAction: 'edit' },
     { name: PASS, i18n: 'text.edit-password', formAction: 'edit' },
     { name: DEL, i18n: 'text.delete-user', formAction: 'del' },
-    { name: ADD, i18n: 'text.add-user', formAction: 'add' }
+    { name: ADD, i18n: 'text.add-user', formAction: 'add' },
   ]);
   const DEFAULT_MODE = $page.url.searchParams.get('mode') || EDIT;
 
@@ -79,7 +79,7 @@
   let activeLabel = '';
   let protectedLabel = '';
   let inputElementMagicLink: HTMLInputElement;
-  let copyTimeoutId: number | undefined;
+  let copyTimeoutId: ReturnType<typeof setTimeout>;
   let copyButton: HTMLButtonElement;
   let group_id: string;
   let name = '';
@@ -98,20 +98,35 @@
     return user;
   })(selectionUserId);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
-  $: hasCurrentPrivileges = selectedUser?.role === ADMIN || selectedUser?.role === SUPERUSER;
+  $: hasCurrentPrivileges =
+    selectedUser?.role === ADMIN || selectedUser?.role === SUPERUSER;
   $: isSuperuser = $session.role === SUPERUSER;
   $: isCurrentSuperuser = selectedUser?.role === SUPERUSER;
-  $: isProtected = isCurrentSuperuser ? (!isSuperuser ? true : false) : !hasPrivileges;
+  $: isProtected = isCurrentSuperuser
+    ? !isSuperuser
+      ? true
+      : false
+    : !hasPrivileges;
   $: hidden = selectedUser?.id === $session.user?.id;
   $: notFound =
     mode !== ADD &&
     selectionUserId &&
     undefined === $users?.find((user) => user.id === selectionUserId);
-  $: _name = ((user) => user?.name || '')(mode !== ADD ? selectedUser : undefined);
-  $: _active = ((usr) => usr?.active || false)(mode !== ADD ? selectedUser : undefined);
-  $: _protected = ((usr) => usr?.protected || false)(mode !== ADD ? selectedUser : undefined);
-  $: _email = ((usr) => usr?.email || '')(mode !== ADD ? selectedUser : undefined);
-  $: _group_id = ((usr) => usr?.group_id || '')(mode !== ADD ? selectedUser : undefined);
+  $: _name = ((user) => user?.name || '')(
+    mode !== ADD ? selectedUser : undefined
+  );
+  $: _active = ((usr) => usr?.active || false)(
+    mode !== ADD ? selectedUser : undefined
+  );
+  $: _protected = ((usr) => usr?.protected || false)(
+    mode !== ADD ? selectedUser : undefined
+  );
+  $: _email = ((usr) => usr?.email || '')(
+    mode !== ADD ? selectedUser : undefined
+  );
+  $: _group_id = ((usr) => usr?.group_id || '')(
+    mode !== ADD ? selectedUser : undefined
+  );
   $: invalidPassword = password.length < 8;
   $: invalidRepeatedPassword = password !== repeatedPassword || invalidPassword;
   $: canSave =
@@ -138,11 +153,15 @@
     ))(actions);
   $: ((user) => {
     jwt = user?.jwt || '';
-    activeLabel = (active && $_('text.deactivate-user')) || $_('text.activate-user');
-    protectedLabel = (__protected && $_('text.unprotect-user')) || $_('text.protect-user');
+    activeLabel =
+      (active && $_('text.deactivate-user')) || $_('text.activate-user');
+    protectedLabel =
+      (__protected && $_('text.unprotect-user')) || $_('text.protect-user');
   })(selectedUser);
   $: magicLink = (jwt && `${$page.url.origin}/login?token=${jwt}`) || '';
-  $: formAction = [...actionsLookup].find((action) => action.name === mode)?.formAction;
+  $: formAction = [...actionsLookup].find(
+    (action) => action.name === mode
+  )?.formAction;
   $: if (mode) {
     root?.classList.toggle('user-add-view', mode === ADD);
     root?.classList.toggle('user-edit-view', mode === EDIT);
@@ -182,18 +201,18 @@
         uid: selectedUser?.id,
         options: {
           parallelUploads: 1,
-          maxFiles: 1
+          maxFiles: 1,
         },
-        events: { 'upload:success': uploadSuccessHandler }
+        events: { 'upload:success': uploadSuccessHandler },
       },
       options: {
         transitionWindow: fly,
         transitionWindowProps: {
           y: -200,
-          duration: 500
-        }
+          duration: 500,
+        },
       },
-      headerProps: { type: $_('text.avatar') }
+      headerProps: { type: $_('text.avatar') },
     });
   };
 
@@ -211,7 +230,7 @@
       if ($session.user?.id === data.id) {
         await post('/session', {
           ...$session,
-          user: { ...$session.user, avatar: data.avatar }
+          user: { ...$session.user, avatar: data.avatar },
         });
         await invalidate('app:session');
       }
@@ -224,7 +243,9 @@
   async function deleteAvatar() {
     let msg;
     await api
-      .del(`avatars/${selectedUser?.avatar.id}?locale=${$session.locale}`, { token })
+      .del(`avatars/${selectedUser?.avatar.id}?locale=${$session.locale}`, {
+        token,
+      })
       .then(async (res) => {
         const { data, success, message }: any = { ...res };
         msg = message || res.data?.message;
@@ -234,7 +255,7 @@
           if ($session.user?.id === selectedUser?.id) {
             await post('/session', {
               ...$session,
-              user: { ...$session.user, avatar: data.avatar }
+              user: { ...$session.user, avatar: data.avatar },
             });
             await invalidate('app:session');
           }
@@ -248,7 +269,7 @@
     await api
       .put(`users/${selectionUserId}?locale=${$session.locale}`, {
         data: { active },
-        token
+        token,
       })
       .then((res) => {
         if (res) {
@@ -272,7 +293,7 @@
     await api
       .put(`users/${selectionUserId}`, {
         data: { protected: __protected },
-        token
+        token,
       })
       .then((res) => {
         if (res) {
@@ -291,7 +312,10 @@
   }
 
   function copy(user: User<Record<any, any>>) {
-    ({ name, email, active, group_id, __protected } = { ...user, __protected: !!user.protected });
+    ({ name, email, active, group_id, __protected } = {
+      ...user,
+      __protected: !!user.protected,
+    });
   }
 
   function reset() {
@@ -311,7 +335,9 @@
     if (inputElementMagicLink) {
       let didCopy;
       let inputEl;
-      let label = copyButton.getElementsByClassName('token-button-label').item(0) as HTMLElement;
+      let label = copyButton
+        .getElementsByClassName('token-button-label')
+        .item(0) as HTMLElement;
       inputEl = inputElementMagicLink.getElementsByTagName('input').item(0);
       inputEl?.focus();
       inputEl?.select();
@@ -319,7 +345,10 @@
       if (didCopy) {
         label && (label.innerText = $_('text.copied'));
         clearTimeout(copyTimeoutId);
-        copyTimeoutId = setTimeout(() => (label.innerText = $_('text.copy')), 4000);
+        copyTimeoutId = setTimeout(
+          () => (label.innerText = $_('text.copy')),
+          4000
+        );
       }
     }
   }
@@ -330,7 +359,7 @@
         if (
           !confirm(
             $_('messages.permanently-remove-user', {
-              values: { name: selectedUser?.name }
+              values: { name: selectedUser?.name },
             })
           )
         )
@@ -345,7 +374,11 @@
   async function actionResultHandler({ result }: { result: ActionResult }) {
     if (result.type === 'success') {
       if (result.data) {
-        const { success, message: message$1, data: user }: any = { ...result.data };
+        const {
+          success,
+          message: message$1,
+          data: user,
+        }: any = { ...result.data };
         const { message: message$2 }: any = { ...user };
         switch (formAction) {
           case 'add': {
@@ -362,14 +395,17 @@
             if (success) {
               users.put(user);
               if ($session.user?.id === user.id) {
-                const { id, name, email, avatar, jwt, role, groups }: User = user;
-                const lifetime = parseLifetime($page.data.config?.Session.lifetime);
+                const { id, name, email, avatar, jwt, role, groups }: User =
+                  user;
+                const lifetime = parseLifetime(
+                  $page.data.config?.Session.lifetime
+                );
                 const _expires = new Date(Date.now() + lifetime).toISOString();
                 await post('/session', {
                   user: { id, name, email, jwt, avatar },
                   role,
                   groups,
-                  _expires
+                  _expires,
                 });
               }
             }
@@ -394,7 +430,12 @@
 <div class="main-grid">
   {#if $session.user}
     <div class="grid-item user" style="height: 100%;">
-      <Container density="sm" extended variant="primary" class="overflow-visible">
+      <Container
+        density="sm"
+        extended
+        variant="primary"
+        class="overflow-visible"
+      >
         <div slot="header">
           <span class="flex">
             <Heading mdc h="5" class="ml-2">
@@ -409,7 +450,10 @@
             {/if}
           </span>
         </div>
-        <div class="flex flex-shrink flex-wrap height-100" style="height: 100%;">
+        <div
+          class="flex flex-shrink flex-wrap height-100"
+          style="height: 100%;"
+        >
           {#if notFound}
             <div class="exception user-not-found">
               <div class="flex justify-center items-center flex-1">
@@ -438,9 +482,11 @@
                     badge={hasCurrentPrivileges
                       ? {
                           icon: 'admin_panel_settings',
-                          color: isCurrentSuperuser ? 'rgb(26, 4, 4)' : 'rgb(206, 4, 4)',
+                          color: isCurrentSuperuser
+                            ? 'rgb(26, 4, 4)'
+                            : 'rgb(206, 4, 4)',
                           size: 'large',
-                          position: 'BOTTOM_RIGHT'
+                          position: 'BOTTOM_RIGHT',
                         }
                       : false}
                   />
@@ -458,7 +504,10 @@
                             : $_('text.add-avatar')}</Text
                         >
                       </Item>
-                      <Item disabled={!selectedUser?.avatar} on:click={() => deleteAvatar()}>
+                      <Item
+                        disabled={!selectedUser?.avatar}
+                        on:click={() => deleteAvatar()}
+                      >
                         <Text>{$_('text.remove-avatar')}</Text>
                       </Item>
                     </List>
@@ -466,7 +515,11 @@
                 </div>
               </div>
             {/if}
-            <form use:enhance={formHandler} action={`?/${formAction}`} method="POST">
+            <form
+              use:enhance={formHandler}
+              action={`?/${formAction}`}
+              method="POST"
+            >
               <div class="user-items h-full">
                 {#if mode !== ADD}
                   <div class="flex justify-between flex-wrap">
@@ -479,7 +532,10 @@
                         variant="filled"
                       >
                         {#each userCan as can}
-                          <Option value={can.name} selected={selectedMode === can.name}>
+                          <Option
+                            value={can.name}
+                            selected={selectedMode === can.name}
+                          >
                             {$_(can.i18n)}
                           </Option>
                         {/each}
@@ -496,7 +552,9 @@
                                 on:SMUISwitch:change={activateUser}
                                 on:SMUISwitch:change={activateUser}
                               />
-                              <span slot="label" class="switch-label">{activeLabel}</span>
+                              <span slot="label" class="switch-label"
+                                >{activeLabel}</span
+                              >
                             </FormField>
                           </div>
                           {#if isSuperuser}
@@ -508,7 +566,9 @@
                                     bind:checked={__protected}
                                     on:SMUISwitch:change={changeProtection}
                                   />
-                                  <span slot="label" class="switch-label">{protectedLabel}</span>
+                                  <span slot="label" class="switch-label"
+                                    >{protectedLabel}</span
+                                  >
                                 </FormField>
                               </div>
                             </div>
@@ -520,7 +580,12 @@
                 {/if}
                 {#if mode === ADD || mode === EDIT}
                   <div class="item">
-                    <Textfield bind:value={name} label="Name" type="text" input$name="name">
+                    <Textfield
+                      bind:value={name}
+                      label="Name"
+                      type="text"
+                      input$name="name"
+                    >
                       <TextfieldIcon slot="leadingIcon" class="material-icons"
                         >contact_page</TextfieldIcon
                       >
@@ -543,10 +608,13 @@
                       <TextfieldIcon
                         slot="leadingIcon"
                         class="material-icons"
-                        style="line-height: normal; vertical-align: middle;">email</TextfieldIcon
+                        style="line-height: normal; vertical-align: middle;"
+                        >email</TextfieldIcon
                       >
-                      <HelperText slot="helper" id="helper-text-email" validationMsg
-                        >{$_('text.invalid-email')}</HelperText
+                      <HelperText
+                        slot="helper"
+                        id="helper-text-email"
+                        validationMsg>{$_('text.invalid-email')}</HelperText
                       >
                     </Textfield>
                   </div>
@@ -560,11 +628,16 @@
                       input$name="group_id"
                       bind:value={group_id}
                     >
-                      <SelectIcon slot="leadingIcon" class="material-icons">contact_page</SelectIcon
+                      <SelectIcon slot="leadingIcon" class="material-icons"
+                        >contact_page</SelectIcon
                       >
-                      <Option selected={true}>{$_('text.please-select')}</Option>
+                      <Option selected={true}>{$_('text.please-select')}</Option
+                      >
                       {#each groups as group}
-                        <Option value={group.id} selected={group_id === group.id}>
+                        <Option
+                          value={group.id}
+                          selected={group_id === group.id}
+                        >
                           {$_(group.name)}
                         </Option>
                       {/each}
@@ -611,7 +684,9 @@
                     <div class="button-group">
                       <Group>
                         <Button
-                          disabled={mode === PASS ? invalidRepeatedPassword : !canSave}
+                          disabled={mode === PASS
+                            ? invalidRepeatedPassword
+                            : !canSave}
                           color="primary"
                           variant="unelevated"
                         >
@@ -626,7 +701,9 @@
                           variant="unelevated"
                         >
                           <Label>{$_('text.reset')}</Label>
-                          <Icon class="material-icons">settings_backup_restore</Icon>
+                          <Icon class="material-icons"
+                            >settings_backup_restore</Icon
+                          >
                         </Button>
                       </Group>
                     </div>
@@ -638,7 +715,9 @@
                       <div class="alert-head rounded-t px-4 py-2">
                         {$_('text.caution')}
                       </div>
-                      <div class="alert-body border border-t-0 rounded-b bg-warning-100 px-4 py-3">
+                      <div
+                        class="alert-body border border-t-0 rounded-b bg-warning-100 px-4 py-3"
+                      >
                         <p>{$_('text.you-cant-revert-deletion-of-user')}</p>
                         <Button class="error mt-5" variant="unelevated">
                           <Label>{$_('text.delete-user')}</Label>
@@ -669,9 +748,12 @@
                         on:click={() =>
                           !isProtected &&
                           goto(
-                            `${$page.url.pathname}${buildSearchParams($page.url.searchParams, {
-                              append: [['dialog', 'token-generate']]
-                            })}`
+                            `${$page.url.pathname}${buildSearchParams(
+                              $page.url.searchParams,
+                              {
+                                append: [['dialog', 'token-generate']],
+                              }
+                            )}`
                           )}
                       >
                         <Icon class="material-icons">link</Icon>
@@ -685,13 +767,18 @@
                         on:click={() =>
                           !isProtected &&
                           goto(
-                            `${$page.url.pathname}${buildSearchParams($page.url.searchParams, {
-                              append: [['dialog', 'token-remove']]
-                            })}`
+                            `${$page.url.pathname}${buildSearchParams(
+                              $page.url.searchParams,
+                              {
+                                append: [['dialog', 'token-remove']],
+                              }
+                            )}`
                           )}
                       >
                         <Icon class="material-icons">link_off</Icon>
-                        <Label class="token-button-label">{$_('text.remove-token')}</Label>
+                        <Label class="token-button-label"
+                          >{$_('text.remove-token')}</Label
+                        >
                       </Button>
                     </Group>
                   </div>
@@ -713,9 +800,12 @@
                             on:click={() =>
                               !isProtected &&
                               goto(
-                                `${$page.url.pathname}${buildSearchParams($page.url.searchParams, {
-                                  append: [['dialog', 'token-redirect']]
-                                })}`
+                                `${$page.url.pathname}${buildSearchParams(
+                                  $page.url.searchParams,
+                                  {
+                                    append: [['dialog', 'token-redirect']],
+                                  }
+                                )}`
                               )}
                             variant="outlined"
                           >
@@ -738,7 +828,10 @@
                             disabled={isProtected || !jwt}
                             variant="outlined"
                           >
-                            <input type="text" value={isProtected ? '' : magicLink} />
+                            <input
+                              type="text"
+                              value={isProtected ? '' : magicLink}
+                            />
                           </Button>
                           <Button
                             use={[setCopyButton]}
@@ -762,13 +855,14 @@
                     <div class="item">
                       <h5 class="mb-4">{$_('text.next-steps')}</h5>
                       <details>
-                        <summary>{$_('summary.test-magic-link.header')}</summary>
+                        <summary>{$_('summary.test-magic-link.header')}</summary
+                        >
                         <p>
                           {@html $_('summary.test-magic-link.text', {
                             values: {
                               currentUserName: selectedUser?.name,
-                              sessionUserName: $session.user?.name
-                            }
+                              sessionUserName: $session.user?.name,
+                            },
                           })}
                         </p>
                       </details>
@@ -779,7 +873,8 @@
                         </p>
                       </details>
                       <details>
-                        <summary>{@html $_('summary.copy-link.header')}</summary>
+                        <summary>{@html $_('summary.copy-link.header')}</summary
+                        >
                         <p>{@html $_('summary.copy-link.text')}</p>
                       </details>
                     </div>
@@ -793,9 +888,12 @@
                       class="item"
                       on:click|preventDefault={() =>
                         goto(
-                          `${$page.url.pathname}${buildSearchParams($page.url.searchParams, {
-                            append: [['dialog', 'info-help']]
-                          })}`
+                          `${$page.url.pathname}${buildSearchParams(
+                            $page.url.searchParams,
+                            {
+                              append: [['dialog', 'info-help']],
+                            }
+                          )}`
                         )}
                     >
                       {$_('summary.howDoesItWork.text')}

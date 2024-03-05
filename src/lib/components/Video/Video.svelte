@@ -35,7 +35,7 @@
   let buffered: TimeRanges;
   let buffer: SvelteMediaTimeRange[];
   let scrubbing: boolean;
-  let timeoutId: number | undefined;
+  let timeoutId: ReturnType<typeof setTimeout>;
   let ui: HTMLDivElement;
 
   $: watchForWait(playhead);
@@ -55,7 +55,9 @@
     dispatch('player:saveplayhead', {
       id: video.id,
       playhead,
-      callback: ended && { onsuccess: () => dispatch('player:unload', videoElement) }
+      callback: ended && {
+        onsuccess: () => dispatch('player:unload', videoElement),
+      },
     });
   }
 
@@ -106,7 +108,7 @@
 
   function keydownHandler(e: KeyboardEvent) {
     const target = e.target as Element;
-    let intervalId: number | undefined;
+    let intervalId: ReturnType<typeof setTimeout>;
 
     keyListenerDiv.removeEventListener('keydown', keydownHandler);
     function keyupHandler() {
@@ -120,9 +122,11 @@
     const code = e.code;
     const getCallback = (speed: number) => {
       if (code === 'ArrowLeft')
-        return () => ui?.dispatchEvent(new CustomEvent('ui:show')) && (playhead -= speed);
+        return () =>
+          ui?.dispatchEvent(new CustomEvent('ui:show')) && (playhead -= speed);
       if (code === 'ArrowRight')
-        return () => ui?.dispatchEvent(new CustomEvent('ui:show')) && (playhead += speed);
+        return () =>
+          ui?.dispatchEvent(new CustomEvent('ui:show')) && (playhead += speed);
       return () => void 0;
     };
 
@@ -144,7 +148,8 @@
     if (!(event.buttons & 1)) return; // mouse not down
     if (!loadeddata) return;
 
-    const { left, right } = videoElement && videoElement.getBoundingClientRect();
+    const { left, right } =
+      videoElement && videoElement.getBoundingClientRect();
     if (left === undefined || right === undefined) return;
 
     let x = scrubStart.x;
@@ -248,7 +253,8 @@
   }
 
   function pictureInPictureHandler() {
-    if (document.pictureInPictureElement) document.exitPictureInPicture().catch(() => {});
+    if (document.pictureInPictureElement)
+      document.exitPictureInPicture().catch(() => {});
     else videoElement?.requestPictureInPicture().catch(() => {});
   }
 

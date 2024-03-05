@@ -58,7 +58,7 @@ async function send(atts: {
     })
     .catch((err) => {
       console.log(err);
-      throw error(500, 'API Server Error');
+      error(500, 'API Server Error');
     });
 }
 
