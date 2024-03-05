@@ -59,11 +59,15 @@
       --count;
       dispatch('uploader:removedfile', { file });
     },
-    totaluploadprogress: (totalUploadProgress: number, totalBytes: any, totalBytesSent: any) => {
+    totaluploadprogress: (
+      totalUploadProgress: number,
+      totalBytes: any,
+      totalBytesSent: any
+    ) => {
       dispatch('uploader:totaluploadprogress', {
         totalUploadProgress,
         totalBytes,
-        totalBytesSent
+        totalBytesSent,
       });
       progress = totalUploadProgress / 100;
     },
@@ -82,10 +86,10 @@
     },
     queuecomplete: () => {
       dispatch('uploader:queuecomplete');
-    }
+    },
   };
 
-  const init = function () {
+  const init = function (this: Dropzone) {
     dropzone = this;
     emit('dropzone:init', dropzone);
   };
@@ -106,7 +110,7 @@
     maxFilesize,
     previewTemplate,
     previewsContainer: '.previews-container',
-    init
+    init,
   };
 </script>
 

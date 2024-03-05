@@ -23,7 +23,7 @@
     }
 
     let svDropzone = new Dropzone(`#${id}`, {
-      ...options
+      ...options,
     });
 
     svDropzone.emit('dropzone::init');
@@ -36,10 +36,13 @@
     svDropzone.on('dragleave', () => {
       dropzoneElement?.classList.toggle(hoveringClass);
     });
-    svDropzone.on('error', (file: Blob, errorMessage: any, request: XMLHttpRequest) => {
-      // console.log('Error:', errorMessage, file, request);
-    });
-    Object.entries(dropzoneEvents).map(([eventKey, eventFunc]) => {
+    svDropzone.on(
+      'error',
+      (file: Blob, errorMessage: any, request: XMLHttpRequest) => {
+        // console.log('Error:', errorMessage, file, request);
+      }
+    );
+    Object.entries(dropzoneEvents).map(([eventKey, eventFunc]: any[]) => {
       svDropzone.on(eventKey, eventFunc);
     });
 

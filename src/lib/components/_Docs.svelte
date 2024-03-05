@@ -3,7 +3,7 @@
   import GuideContents from './_GuideContents.svelte'; // TODO rename
   import SvgIcon from './_SvgIcon.svelte';
   import { getFragment } from '../utils/navigation';
-    import type { Section } from '$lib/types';
+  import type { Section } from '$lib/types';
 
   export let owner = 'sveltejs';
   export let project = 'svelte';
@@ -95,7 +95,13 @@
 </div>
 
 <aside bind:this={aside} class="sidebar-container" class:open={show_contents}>
-  <div class="sidebar" on:click={() => (show_contents = false)} on:keydown>
+  <div
+    class="sidebar"
+    on:click={() => (show_contents = false)}
+    on:keydown
+    role="button"
+    tabindex="0"
+  >
     <!-- scroll container -->
     <GuideContents {sections} {active_section} {show_contents} />
   </div>
@@ -116,7 +122,9 @@
     overflow: hidden;
     border: 1px solid #eee;
     box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.1);
-    transition: width 0.2s, height 0.2s;
+    transition:
+      width 0.2s,
+      height 0.2s;
   }
 
   aside button {

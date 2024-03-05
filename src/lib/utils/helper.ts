@@ -120,7 +120,7 @@ export const emit = function (eventType: string, detail?: any, target?: Window |
   }
 };
 
-export function randomItem(arr = []) {
+export function randomItem(arr: string[] = []) {
   const index = Math.floor(Math.random() * arr.length);
   return arr[index];
 }

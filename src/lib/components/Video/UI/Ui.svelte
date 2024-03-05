@@ -23,7 +23,7 @@
     pause:
       'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMTFweCIgaGVpZ2h0PSIxM3B4IiB2aWV3Qm94PSIwIDAgMTEgMTMiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGQ9Ik0xLjcxNTI5MTI1LDEyLjk2MDQxNTggTDMuNTI0MzcxMjUsMTIuOTYwNDE1OCBDNC4yMTQ2ODc1LDEyLjk2MDQxNTggNC41Nzk2Nzg3NSwxMi41OTU0MjQ1IDQuNTc5Njc4NzUsMTEuODk3MTgzMSBMNC41Nzk2Nzg3NSwxLjA5MDI5MTI1IEM0LjU3OTY3ODc1LDAuMzY4MjU1IDQuMjE0Njg3NSwwLjAzNSAzLjUyNDM3MTI1LDAuMDM1IEwxLjcxNTI5MTI1LDAuMDM1IEMxLjAyNDk5MTI1LDAuMDM1IDAuNjYsMC4zOTk5OTEyNSAwLjY2LDEuMDkwMjkxMjUgTDAuNjYsMTEuODk3MTgzMSBDMC42NiwxMi41OTU0MjQ1IDEuMDI0OTkxMjUsMTIuOTYwNDE1OCAxLjcxNTI5MTI1LDEyLjk2MDQxNTggWiBNNy40ODM3MzI1LDEyLjk2MDQxNTggTDkuMjg0ODY2MjUsMTIuOTYwNDE1OCBDOS45ODMxMTI1LDEyLjk2MDQxNTggMTAuMzQwMTczOCwxMi41OTU0MjQ1IDEwLjM0MDE3MzgsMTEuODk3MTgzMSBMMTAuMzQwMTczOCwxLjA5MDI5MTI1IEMxMC4zNDAxNzM4LDAuMzY4MjU1IDkuOTgzMTEyNSwwLjAzNSA5LjI4NDg2NjI1LDAuMDM1IEw3LjQ4MzczMjUsMC4wMzUgQzYuNzg1NDg2MjUsMC4wMzUgNi40MjA0OTUsMC4zOTk5OTEyNSA2LjQyMDQ5NSwxLjA5MDI5MTI1IEw2LjQyMDQ5NSwxMS44OTcxODMxIEM2LjQyMDQ5NSwxMi41OTU0MjQ1IDYuNzg1NDg2MjUsMTIuOTYwNDE1OCA3LjQ4MzczMjUsMTIuOTYwNDE1OCBaIi8+Cjwvc3ZnPg==',
     mute: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjJweCIgaGVpZ2h0PSIxNXB4IiB2aWV3Qm94PSIwIDAgMjIgMTUiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGQ9Ik0xNC43MDQ2LDEuMDE1NTk0NzQgQzE0LjcwNDYsMC40OTkwNDIxMDUgMTQuMzE5MTE1OCwwLjA3NSAxMy43Nzk0MzE2LDAuMDc1IEMxMy40MDE2NTI2LDAuMDc1IDEzLjE0NzIzNjgsMC4yMzY5MDUyNjMgMTIuNzM4NjIxMSwwLjYyMjM4OTQ3NCBMOS41Njk5MjYzMiwzLjYxMzc1MjYzIEM5LjUyMzY3ODk1LDMuNjYwMDE1NzkgOS40Nzc0MTU3OSwzLjY5MDg1MjYzIDkuNDIzNDQ3MzcsMy43MDYyNzg5NSBMOS4xMDczNDIxMSwzLjcyMTY4OTQ3IEwxNC43MDQ2LDkuMzE4OTQ3MzcgTDE0LjcwNDYsMS4wMTU1OTQ3NCBaIE0xNy4xNzk0MTA1LDE0Ljc1NDI4NDIgQzE3LjQxODQxNTgsMTQuOTg1NTY4NCAxNy43OTYxNzg5LDE0Ljk4NTU2ODQgMTguMDE5Njk0NywxNC43NTQyODQyIEMxOC4yNTEwMTA1LDE0LjUxNTI3ODkgMTguMjU4NzQ3NCwxNC4xNDUyMTQ3IDE4LjAxOTY5NDcsMTMuOTEzOTI0MiBMNC44MjA3NTI2MywwLjcxNDkxNTc4OSBDNC41ODk0Njg0MiwwLjQ4MzYxNTc4OSA0LjIwMzk4NDIxLDAuNDgzNjE1Nzg5IDMuOTcyNjg0MjEsMC43MTQ5MTU3ODkgQzMuNzQ5MTA1MjYsMC45Mzg0OTQ3MzcgMy43NDkxMDUyNiwxLjMzMTY4NDIxIDMuOTcyNjg0MjEsMS41NTUyNjMxNiBMMTcuMTc5NDEwNSwxNC43NTQyODQyIFogTTYuODMyOTc4OTUsMTAuMzk4MyBMOS4xMzA0NzM2OCwxMC4zOTgzIEM5LjIwNzU3MzY4LDEwLjM5ODMgOS4yNzY5Njg0MiwxMC40MjE0MzE2IDkuMzIzMjE1NzksMTAuNDY3Njc4OSBMMTIuNzM4NjIxMSwxMy43MTM0NzA1IEMxMy4xMDg2Nzg5LDE0LjA2MDQwNzkgMTMuNDE3MDc4OSwxNC4yMTQ2MDE2IDEzLjc5NDg0MjEsMTQuMjE0NjAxNiBDMTQuMTQ5NDg5NSwxNC4yMTQ2MDE2IDE0LjQzNDc1NzksMTQuMDI5NTY5NSAxNC41NzM1MzE2LDEzLjc1OTcyODkgQzE0LjYwNDM2ODQsMTMuNjkwMzQyMSAxNC42MzUyMDUzLDEzLjYxMzI0NTMgMTQuNjU4MzM2OCwxMy41Mjg0Mzg0IEw1LjU0NTQ1Nzg5LDQuNDE1NTczNjggQzUuMjkxMDQyMTEsNC42OTMxMjEwNSA1LjE1OTk3MzY4LDUuMTE3MTQ3MzcgNS4xNTk5NzM2OCw1LjY2NDUzNjg0IEw1LjE1OTk3MzY4LDguNjQ4MTk0NzQgQzUuMTU5OTczNjgsOS44MDQ2NDczNyA1Ljc0NTkyMTA1LDEwLjM5ODMgNi44MzI5Nzg5NSwxMC4zOTgzIFoiLz4KPC9zdmc+',
-    loud: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjJweCIgaGVpZ2h0PSIxNXB4IiB2aWV3Qm94PSIwIDAgMjIgMTUiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGQ9Ik0xOC43MjI0NDksMTQuODQwMDM5OCBDMTguOTk5MDMwNiwxNS4wMjY4ODE2IDE5LjM2NTMwNjEsMTQuOTUyMTQxOCAxOS41ODIwNDA4LDE0LjY0NTcyODUgQzIwLjk2NDY0MjksMTIuNjk1MDkxOCAyMS43NDkzODc4LDEwLjE2ODk3ODUgMjEuNzQ5Mzg3OCw3LjUwMDg3NjQ5IEMyMS43NDkzODc4LDQuODMyNzc0NDUgMjAuOTQyMTQyOSwyLjMxNDEzNjY5IDE5LjU4MjA0MDgsMC4zNTYwMjQ0NDggQzE5LjM2NTMwNjEsMC4wNDIxMjY0ODg2IDE4Ljk5OTAzMDYsLTAuMDMyNjEzMzA3MyAxOC43MjI0NDksMC4xNjE3MTMyMjMgQzE4LjQzODUyMDQsMC4zNjM0OTM4MzYgMTguMzkzNjczNSwwLjcyOTcwODEyMSAxOC42MTA0MDgyLDEuMDQzNjA2MDggQzE5LjgxMzYyMjQsMi44MTQ4NzY0OSAyMC41NjEwMjA0LDUuMDg2ODcxMzkgMjAuNTYxMDIwNCw3LjUwMDg3NjQ5IEMyMC41NjEwMjA0LDkuOTE0ODgxNTkgMTkuODQzNjIyNCwxMi4yMjQyNDk0IDE4LjYxMDQwODIsMTMuOTU4MTQ1NCBDMTguMzkzNjczNSwxNC4yNzIwNDE4IDE4LjQzODUyMDQsMTQuNjM4MjU5MSAxOC43MjI0NDksMTQuODQwMDM5OCBaIE04LjYzMzAwNTEsMTQuMzYxNzI1IEM5LjE0MTIxNDI5LDE0LjM2MTcyNSA5LjUwNzQyODU3LDEzLjk4ODA0MTMgOS41MDc0Mjg1NywxMy40ODczMDMgTDkuNTA3NDI4NTcsMS41NjY3NjkzNSBDOS41MDc0Mjg1NywxLjA2NjAyOTU1IDkuMTQxMjE0MjksMC42NTQ5NjgzMjUgOC42MTgwNjYzMywwLjY1NDk2ODMyNSBDOC4yNTE4NTIwNCwwLjY1NDk2ODMyNSA4LjAwNTIyNDQ5LDAuODExOTE3MzA1IDcuNjA5MTE3MzUsMS4xODU2MDA5OCBMNC4yOTgyNjUzMSw0LjMwMjE0MTc5IEM0LjI0NTk0ODk4LDQuMzQ2OTczNDMgNC4xODYxNjMyNyw0LjM2OTM5NjkgNC4xMTE0MjM0Nyw0LjM2OTM5NjkgTDEuODc2NzkwODIsNC4zNjkzOTY5IEMwLjgyMjk5NDg5OCw0LjM2OTM5NjkgMC4yNTUsNC45NDQ4NzY0OSAwLjI1NSw2LjA3MzM5NjkgTDAuMjU1LDguOTY1NzE4MzMgQzAuMjU1LDEwLjA4Njc2OTMgMC44MjI5OTQ4OTgsMTAuNjYyMjQ4OSAxLjg3Njc5MDgyLDEwLjY2MjI0ODkgTDQuMTExNDIzNDcsMTAuNjYyMjQ4OSBDNC4xODYxNjMyNywxMC42NjIyNDg5IDQuMjQ1OTQ4OTgsMTAuNjg0NjcyNCA0LjI5ODI2NTMxLDEwLjcyOTUwNCBMNy42MDkxMTczNSwxMy44NzU5MzQ3IEM3Ljk2Nzg0Njk0LDE0LjIxMjI1MTUgOC4yNjY4MDYxMiwxNC4zNjE3MjUgOC42MzMwMDUxLDE0LjM2MTcyNSBaIE0xNS43MTA2NjMzLDEyLjc5OTcyMzUgQzE2LjAwMjA5MTgsMTIuOTk0MDM5NyAxNi4zNjA4NjczLDEyLjkxOTMwMjYgMTYuNTcwMTAyLDEyLjYyMDM1NTEgQzE3LjU1NjU4MTYsMTEuMjQ1MTk3OSAxOC4xMzIwOTE4LDkuNDE0MTQxNzkgMTguMTMyMDkxOCw3LjUwMDg3NjQ5IEMxOC4xMzIwOTE4LDUuNTgwMTQxNzkgMTcuNTcxNTgxNiwzLjc0MTYwMDk4IDE2LjU3MDEwMiwyLjM3MzkyMjQxIEMxNi4zNTMzNjczLDIuMDgyNDQ3OTIgMTYuMDAyMDkxOCwyLjAwNzcwODEyIDE1LjcxMDY2MzMsMi4yMDIwMzQ2NSBDMTUuNDI2NTgxNiwyLjM5NjM0NTg4IDE1LjM4MTczNDcsMi43NjI1NjAxNiAxNS42MDU5Njk0LDMuMDgzOTI3NTEgQzE2LjQyMDU2MTIsNC4yNzk3MTgzMyAxNi45Mjg4Nzc2LDUuODQ5MTkyODIgMTYuOTI4ODc3Niw3LjUwMDg3NjQ5IEMxNi45Mjg4Nzc2LDkuMTUyNTYwMTYgMTYuNDI4MDYxMiwxMC43MzY5ODg3IDE1LjYwNTk2OTQsMTEuOTE3ODI4NSBDMTUuMzg5MjM0NywxMi4yMzkxOTU5IDE1LjQyNjU4MTYsMTIuNjA1NDA3MSAxNS43MTA2NjMzLDEyLjc5OTcyMzUgWiBNMTIuNzI4NTg2NywxMC43ODE4MjA0IEMxMi45ODI2OTksMTAuOTYxMTkyOCAxMy4zNDg5MTMzLDEwLjkwODg3NjUgMTMuNTY1NjQ4LDEwLjYwOTkzMjYgQzE0LjE0ODUyMDQsOS44MjUxODc3MSAxNC40OTk3OTU5LDguNjc0MjQzODQgMTQuNDk5Nzk1OSw3LjUwMDg3NjQ5IEMxNC40OTk3OTU5LDYuMzI3NTA5MTQgMTQuMTQ4NTIwNCw1LjE4NDAzNDY1IDEzLjU2NTY0OCw0LjM5MTgyMDM3IEMxMy4zNDg5MTMzLDQuMDkyODc2NDkgMTIuOTkwMTY4NCw0LjA0MDU2MDE2IDEyLjcyODU4NjcsNC4yMTI0NDc5MiBDMTIuNDA3MjE5NCw0LjQzNjY2NzMgMTIuMzYyMzg3OCw0LjgxNzgyMDM3IDEyLjYwMTU0NTksNS4xMzkxODc3MSBDMTMuMDM1MDE1Myw1LjcyMjEzNjY5IDEzLjI5NjU5NjksNi42MTE0OTg5NCAxMy4yOTY1OTY5LDcuNTAwODc2NDkgQzEzLjI5NjU5NjksOC4zOTAyMzg3MyAxMy4wMjAwNjEyLDkuMjc5NjE2MjggMTIuNTk0MDYxMiw5Ljg3MDAzNDY1IEMxMi4zNjk4NTcxLDEwLjE5MTQwMiAxMi40MDcyMTk0LDEwLjU1NzYxNjMgMTIuNzI4NTg2NywxMC43ODE4MjA0IFoiLz4KPC9zdmc+'
+    loud: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjJweCIgaGVpZ2h0PSIxNXB4IiB2aWV3Qm94PSIwIDAgMjIgMTUiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGQ9Ik0xOC43MjI0NDksMTQuODQwMDM5OCBDMTguOTk5MDMwNiwxNS4wMjY4ODE2IDE5LjM2NTMwNjEsMTQuOTUyMTQxOCAxOS41ODIwNDA4LDE0LjY0NTcyODUgQzIwLjk2NDY0MjksMTIuNjk1MDkxOCAyMS43NDkzODc4LDEwLjE2ODk3ODUgMjEuNzQ5Mzg3OCw3LjUwMDg3NjQ5IEMyMS43NDkzODc4LDQuODMyNzc0NDUgMjAuOTQyMTQyOSwyLjMxNDEzNjY5IDE5LjU4MjA0MDgsMC4zNTYwMjQ0NDggQzE5LjM2NTMwNjEsMC4wNDIxMjY0ODg2IDE4Ljk5OTAzMDYsLTAuMDMyNjEzMzA3MyAxOC43MjI0NDksMC4xNjE3MTMyMjMgQzE4LjQzODUyMDQsMC4zNjM0OTM4MzYgMTguMzkzNjczNSwwLjcyOTcwODEyMSAxOC42MTA0MDgyLDEuMDQzNjA2MDggQzE5LjgxMzYyMjQsMi44MTQ4NzY0OSAyMC41NjEwMjA0LDUuMDg2ODcxMzkgMjAuNTYxMDIwNCw3LjUwMDg3NjQ5IEMyMC41NjEwMjA0LDkuOTE0ODgxNTkgMTkuODQzNjIyNCwxMi4yMjQyNDk0IDE4LjYxMDQwODIsMTMuOTU4MTQ1NCBDMTguMzkzNjczNSwxNC4yNzIwNDE4IDE4LjQzODUyMDQsMTQuNjM4MjU5MSAxOC43MjI0NDksMTQuODQwMDM5OCBaIE04LjYzMzAwNTEsMTQuMzYxNzI1IEM5LjE0MTIxNDI5LDE0LjM2MTcyNSA5LjUwNzQyODU3LDEzLjk4ODA0MTMgOS41MDc0Mjg1NywxMy40ODczMDMgTDkuNTA3NDI4NTcsMS41NjY3NjkzNSBDOS41MDc0Mjg1NywxLjA2NjAyOTU1IDkuMTQxMjE0MjksMC42NTQ5NjgzMjUgOC42MTgwNjYzMywwLjY1NDk2ODMyNSBDOC4yNTE4NTIwNCwwLjY1NDk2ODMyNSA4LjAwNTIyNDQ5LDAuODExOTE3MzA1IDcuNjA5MTE3MzUsMS4xODU2MDA5OCBMNC4yOTgyNjUzMSw0LjMwMjE0MTc5IEM0LjI0NTk0ODk4LDQuMzQ2OTczNDMgNC4xODYxNjMyNyw0LjM2OTM5NjkgNC4xMTE0MjM0Nyw0LjM2OTM5NjkgTDEuODc2NzkwODIsNC4zNjkzOTY5IEMwLjgyMjk5NDg5OCw0LjM2OTM5NjkgMC4yNTUsNC45NDQ4NzY0OSAwLjI1NSw2LjA3MzM5NjkgTDAuMjU1LDguOTY1NzE4MzMgQzAuMjU1LDEwLjA4Njc2OTMgMC44MjI5OTQ4OTgsMTAuNjYyMjQ4OSAxLjg3Njc5MDgyLDEwLjY2MjI0ODkgTDQuMTExNDIzNDcsMTAuNjYyMjQ4OSBDNC4xODYxNjMyNywxMC42NjIyNDg5IDQuMjQ1OTQ4OTgsMTAuNjg0NjcyNCA0LjI5ODI2NTMxLDEwLjcyOTUwNCBMNy42MDkxMTczNSwxMy44NzU5MzQ3IEM3Ljk2Nzg0Njk0LDE0LjIxMjI1MTUgOC4yNjY4MDYxMiwxNC4zNjE3MjUgOC42MzMwMDUxLDE0LjM2MTcyNSBaIE0xNS43MTA2NjMzLDEyLjc5OTcyMzUgQzE2LjAwMjA5MTgsMTIuOTk0MDM5NyAxNi4zNjA4NjczLDEyLjkxOTMwMjYgMTYuNTcwMTAyLDEyLjYyMDM1NTEgQzE3LjU1NjU4MTYsMTEuMjQ1MTk3OSAxOC4xMzIwOTE4LDkuNDE0MTQxNzkgMTguMTMyMDkxOCw3LjUwMDg3NjQ5IEMxOC4xMzIwOTE4LDUuNTgwMTQxNzkgMTcuNTcxNTgxNiwzLjc0MTYwMDk4IDE2LjU3MDEwMiwyLjM3MzkyMjQxIEMxNi4zNTMzNjczLDIuMDgyNDQ3OTIgMTYuMDAyMDkxOCwyLjAwNzcwODEyIDE1LjcxMDY2MzMsMi4yMDIwMzQ2NSBDMTUuNDI2NTgxNiwyLjM5NjM0NTg4IDE1LjM4MTczNDcsMi43NjI1NjAxNiAxNS42MDU5Njk0LDMuMDgzOTI3NTEgQzE2LjQyMDU2MTIsNC4yNzk3MTgzMyAxNi45Mjg4Nzc2LDUuODQ5MTkyODIgMTYuOTI4ODc3Niw3LjUwMDg3NjQ5IEMxNi45Mjg4Nzc2LDkuMTUyNTYwMTYgMTYuNDI4MDYxMiwxMC43MzY5ODg3IDE1LjYwNTk2OTQsMTEuOTE3ODI4NSBDMTUuMzg5MjM0NywxMi4yMzkxOTU5IDE1LjQyNjU4MTYsMTIuNjA1NDA3MSAxNS43MTA2NjMzLDEyLjc5OTcyMzUgWiBNMTIuNzI4NTg2NywxMC43ODE4MjA0IEMxMi45ODI2OTksMTAuOTYxMTkyOCAxMy4zNDg5MTMzLDEwLjkwODg3NjUgMTMuNTY1NjQ4LDEwLjYwOTkzMjYgQzE0LjE0ODUyMDQsOS44MjUxODc3MSAxNC40OTk3OTU5LDguNjc0MjQzODQgMTQuNDk5Nzk1OSw3LjUwMDg3NjQ5IEMxNC40OTk3OTU5LDYuMzI3NTA5MTQgMTQuMTQ4NTIwNCw1LjE4NDAzNDY1IDEzLjU2NTY0OCw0LjM5MTgyMDM3IEMxMy4zNDg5MTMzLDQuMDkyODc2NDkgMTIuOTkwMTY4NCw0LjA0MDU2MDE2IDEyLjcyODU4NjcsNC4yMTI0NDc5MiBDMTIuNDA3MjE5NCw0LjQzNjY2NzMgMTIuMzYyMzg3OCw0LjgxNzgyMDM3IDEyLjYwMTU0NTksNS4xMzkxODc3MSBDMTMuMDM1MDE1Myw1LjcyMjEzNjY5IDEzLjI5NjU5NjksNi42MTE0OTg5NCAxMy4yOTY1OTY5LDcuNTAwODc2NDkgQzEzLjI5NjU5NjksOC4zOTAyMzg3MyAxMy4wMjAwNjEyLDkuMjc5NjE2MjggMTIuNTk0MDYxMiw5Ljg3MDAzNDY1IEMxMi4zNjk4NTcxLDEwLjE5MTQwMiAxMi40MDcyMTk0LDEwLjU1NzYxNjMgMTIuNzI4NTg2NywxMC43ODE4MjA0IFoiLz4KPC9zdmc+',
   };
 
   let listeners = 0;
@@ -39,7 +39,9 @@
   $: if (duration) {
     percentageTime = (time * 100) / duration;
     percentageBuffer =
-      (buffered?.length && (buffered.end(buffered.length - 1) * 100) / duration) || 0;
+      (buffered?.length &&
+        (buffered.end(buffered.length - 1) * 100) / duration) ||
+      0;
   }
 
   onMount(() => {
@@ -57,7 +59,7 @@
     e.stopPropagation();
     e.preventDefault();
     showControls();
-    false
+    false;
   }
 
   function resize() {
@@ -70,8 +72,10 @@
 
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
-    const minutesUnit = () => (minutes === 1 ? $_('text.minute') : $_('text.minutes'));
-    const secondsUnit = () => (seconds === 1 ? $_('text.second') : $_('text.seconds'));
+    const minutesUnit = () =>
+      minutes === 1 ? $_('text.minute') : $_('text.minutes');
+    const secondsUnit = () =>
+      seconds === 1 ? $_('text.second') : $_('text.seconds');
 
     return `${minutes} ${minutesUnit()} ${seconds} ${secondsUnit()}`;
   }
@@ -93,7 +97,7 @@
     dispatch('ui:wheel', {
       deltaX: event.deltaX,
       deltaY: event.deltaY,
-      direction: event.deltaY <= 0 ? 'up' : 'down'
+      direction: event.deltaY <= 0 ? 'up' : 'down',
     });
   }
 
@@ -156,7 +160,13 @@
         stroke="#000"
         viewBox="0 0 24 24"
         ><g
-          ><circle cx="12" cy="12" r="9.5" fill="none" stroke-width="1" stroke-linecap="round"
+          ><circle
+            cx="12"
+            cy="12"
+            r="9.5"
+            fill="none"
+            stroke-width="1"
+            stroke-linecap="round"
             ><animate
               attributeName="stroke-dasharray"
               dur="1.5s"
@@ -215,6 +225,8 @@
       on:mouseleave
       on:mouseenter
       on:keydown
+      role="button"
+      tabindex="0"
     >
       <div
         role="group"
@@ -293,7 +305,9 @@
             height: 13px;
             opacity: 1;
             mask-image: url({paused ? dataimages.play : dataimages.pause});
-            -webkit-mask-image: url({paused ? dataimages.play : dataimages.pause});"
+            -webkit-mask-image: url({paused
+                ? dataimages.play
+                : dataimages.pause});"
             /></button
           ><button
             on:click={() => dispatch('fwd', 15)}
@@ -316,10 +330,14 @@
           style="left: 101px; width: {width - 101 - 86}px"
           on:keydown
           on:click|stopPropagation
+          role="button"
+          tabindex="0"
         >
           <div
             class="time-label"
-            aria-label={$_('text.time-elapsed', { values: { time: display(time) } })}
+            aria-label={$_('text.time-elapsed', {
+              values: { time: display(time) },
+            })}
             style="width: 34px"
           >
             {format(time)}
@@ -330,15 +348,23 @@
           >
             <div class="appearance">
               <div class="fill">
-                <div class="primary" style="left: 0; width: {percentageTime}%" />
+                <div
+                  class="primary"
+                  style="left: 0; width: {percentageTime}%"
+                />
                 <div class="track" style="left: 0px" />
-                <div class="secondary" style="left: 0; width: {percentageBuffer}%" />
+                <div
+                  class="secondary"
+                  style="left: 0; width: {percentageBuffer}%"
+                />
               </div>
               <div
                 class="knob bar"
                 style="left: {percentageTime}%;"
                 on:click={mousedownHandler}
                 on:keydown
+                role="button"
+                tabindex="0"
               />
             </div>
             <input
@@ -352,7 +378,9 @@
           </div>
           <div
             class="time-label"
-            aria-label={$_('text.remaining', { values: { time: display(duration - time) } })}
+            aria-label={$_('text.remaining', {
+              values: { time: display(duration - time) },
+            })}
             style="width: 34px; left: calc(100% - {34}px);"
           >
             {format(duration - time, '-')}
@@ -370,7 +398,9 @@
             width: 22px;
             height: 15px;
             mask-image: url({$mute ? dataimages.mute : dataimages.loud});
-            -webkit-mask-image: url({$mute ? dataimages.mute : dataimages.loud});
+            -webkit-mask-image: url({$mute
+                ? dataimages.mute
+                : dataimages.loud});
           "
             /></button
           ><button
@@ -414,7 +444,10 @@
             />
           </button>
         </div>
-        <div class="volume-slider-container" style="left: 1016px; top: 920px; display: none;">
+        <div
+          class="volume-slider-container"
+          style="left: 1016px; top: 920px; display: none;"
+        >
           <div class="slider default volume" style="height: 16px; width: 60px;">
             <div class="appearance">
               <div class="fill">
@@ -435,55 +468,6 @@
 <style>
   .play-pause-controllable {
     cursor: pointer;
-  }
-  .activity-indicator {
-    position: absolute;
-    mix-blend-mode: plus-lighter;
-  }
-  .activity-indicator > div {
-    position: absolute;
-    left: 6px;
-    width: 2px;
-    height: 4px;
-    border-radius: 1px;
-    background-color: white;
-    animation-name: activity-indicator-pulse;
-    animation-duration: 1s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    transform-origin: 50% 7px;
-  }
-  .activity-indicator > .ne {
-    transform: rotate(45deg);
-    animation-delay: -875ms;
-  }
-  .activity-indicator > .e {
-    transform: rotate(90deg);
-    animation-delay: -750ms;
-  }
-  .activity-indicator > .se {
-    transform: rotate(135deg);
-    animation-delay: -625ms;
-  }
-  .activity-indicator > .s {
-    transform: rotate(180deg);
-    animation-delay: -500ms;
-  }
-  .activity-indicator > .sw {
-    transform: rotate(-135deg);
-    animation-delay: -375ms;
-  }
-  .activity-indicator > .w {
-    transform: rotate(-90deg);
-    animation-delay: -250ms;
-  }
-  .activity-indicator > .nw {
-    transform: rotate(-45deg);
-    animation-delay: -125ms;
-  }
-  button.airplay.on > picture {
-    background-color: -apple-wireless-playback-target-active !important;
-    mix-blend-mode: normal !important;
   }
   @keyframes activity-indicator-pulse {
     from {
@@ -540,23 +524,11 @@
   button.skip-forward > picture {
     background-color: var(--primary-glyph-color);
   }
-  button.on > picture {
-    background-color: white !important;
-  }
   button:active > picture {
     transform: scale(0.89);
   }
-  button.corner {
-    width: 44px !important;
-    height: var(--inline-controls-bar-height) !important;
-  }
-  button.rounded {
-    width: var(--inline-controls-bar-height) !important;
-    height: var(--inline-controls-bar-height) !important;
-  }
   svg.center,
-  button.center,
-  button.small-center {
+  button.center {
     left: 50% !important;
     top: 50% !important;
     transform: translate(-50%, -50%);
@@ -571,18 +543,7 @@
     width: 120px !important;
     height: 120px !important;
   }
-  button.small-center {
-    width: 31px !important;
-    height: 31px !important;
-  }
-  button.center > .background-tint,
-  button.small-center > .background-tint,
-  button.center > .background-tint > div,
-  button.small-center > .background-tint > div {
-    border-radius: 50%;
-  }
-  button.center > picture,
-  button.small-center > picture {
+  button.center > picture {
     position: absolute;
     left: 0;
     top: 0;
@@ -590,8 +551,7 @@
     height: 100% !important;
     transform: scale(0.4);
   }
-  button.center:active > picture,
-  button.small-center:active > picture {
+  button.center:active > picture {
     transform: scale(0.4) scale(calc(8 / 9));
   }
   .buttons-container {
@@ -624,120 +584,35 @@
     left: var(--inline-controls-inside-margin);
     height: var(--inline-controls-bar-height);
   }
-  .media-controls.inline.uses-ltr-user-interface-layout-direction > .controls-bar.top-left,
-  .media-controls.inline:not(.uses-ltr-user-interface-layout-direction) > .controls-bar.top-right {
+  .media-controls.inline.uses-ltr-user-interface-layout-direction
+    > .controls-bar.top-left {
     top: var(--inline-controls-inside-margin);
   }
-  .media-controls.inline.uses-ltr-user-interface-layout-direction > .controls-bar.top-right,
-  .media-controls.inline:not(.uses-ltr-user-interface-layout-direction) > .controls-bar.top-left {
+  .media-controls.inline:not(.uses-ltr-user-interface-layout-direction)
+    > .controls-bar.top-left {
     left: auto;
     right: var(--inline-controls-inside-margin);
     top: var(--inline-controls-inside-margin);
   }
-  .media-controls.inline.audio > .controls-bar {
-    top: auto;
-    left: auto;
-  }
   .media-controls.inline > .controls-bar > * {
     position: absolute;
-  }
-  .media-controls.inline > button.play-pause.corner {
-    left: var(--inline-controls-inside-margin) !important;
-    top: auto;
-    bottom: var(--inline-controls-inside-margin);
-  }
-  .media-controls.inline.audio > button.play-pause.corner {
-    left: auto !important;
-    top: auto;
-    bottom: auto;
   }
   .media-controls.inline > .controls-bar button {
     height: 100% !important;
   }
-  .media-controls.inline button.start.center > picture,
-  .media-controls.inline button.play-pause.center.paused > picture {
-    left: 3px;
-  }
-  .media-controls.inline button.start.small-center > picture,
-  .media-controls.inline button.play-pause.small-center.paused > picture {
-    left: 1px;
-  }
-  .media-controls.inline .time-control,
-  .media-controls.inline .status-label {
+  .media-controls.inline .time-control {
     height: 100%;
     display: flex;
     align-items: center;
   }
-  .media-controls.inline.ios:not(.audio) {
-    background-color: rgba(0, 0, 0, 0.55);
-  }
-  .media-controls.inline.ios:not(.audio):is(:empty, .shows-start-button, .faded) {
-    background-color: transparent;
-  }
-  .media-controls.inline.ios:not(.audio) * {
-    --primary-glyph-color: white;
-    --secondary-glyph-color: rgba(255, 255, 255, 0.75);
-  }
-  .media-controls.inline.ios:not(.audio) > .controls-bar:is(.top-left, .top-right) {
-    height: 19px;
-  }
-  .media-controls.inline.ios:not(.audio) > .controls-bar.center {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-  .media-controls.mac.fullscreen {
-    --controls-bar-width: 468px;
-    width: 100% !important;
-    height: 100% !important;
-  }
-  .media-controls.mac.fullscreen > .controls-bar {
-    left: calc((100% - var(--controls-bar-width)) / 2);
-    bottom: 25px;
-    width: var(--controls-bar-width);
-    height: var(--fullscreen-controls-bar-height);
-  }
-  .media-controls.mac.fullscreen:not(.uses-ltr-user-interface-layout-direction) .volume.slider {
-    transform: scaleX(-1);
-  }
-  .media-controls.mac.fullscreen .buttons-container {
-    height: 44px;
-  }
-  .media-controls.mac.fullscreen .buttons-container.left {
-    top: 16px;
-    height: 16px;
-  }
-  .media-controls.mac.fullscreen .buttons-container.center {
-    left: 50%;
-    top: 3px;
-    transform: translateX(-50%);
-  }
-  .media-controls.mac.fullscreen .buttons-container.right {
-    right: 0;
-  }
   .media-controls.mac.fullscreen .buttons-container.right button {
     top: 18px;
   }
-  .media-controls.mac.fullscreen .time-control {
-    position: absolute;
-    left: 10px;
-    top: 49px;
-    height: 16px;
-    display: flex;
-    align-items: center;
-  }
-  .media-controls.mac.fullscreen > .controls-bar .status-label {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 13px;
-    font-size: 14px;
-    text-align: center;
-  }
   .media-controls.mac.inline .volume-slider-container {
     position: absolute;
-    bottom: calc(var(--inline-controls-bar-height) + var(--inline-controls-inside-margin));
+    bottom: calc(
+      var(--inline-controls-bar-height) + var(--inline-controls-inside-margin)
+    );
     width: 94px;
     height: 31px;
     display: flex;
@@ -745,19 +620,6 @@
     justify-content: center;
     --volume-slider-transform: rotate(-90deg) translate(26px, -30px);
     transform: var(--volume-slider-transform);
-  }
-  .media-controls.mac.inline.audio .volume-slider-container {
-    transform: var(--volume-slider-transform) translateY(-8px);
-  }
-  .media-controls.mac.inline .volume-slider-container > .background-tint {
-    top: 0;
-    left: var(--inline-controls-inside-margin);
-    right: 0;
-    bottom: 0;
-    width: auto;
-  }
-  .media-controls.mac.inline .volume-slider-container > .background-tint > div {
-    border-radius: 8px;
   }
   .media-controls.mac.inline .volume-slider-container > .slider {
     margin-left: 6px;
@@ -808,8 +670,7 @@
   :host(:-webkit-animating-full-screen-transition) .media-controls {
     display: none;
   }
-  .media-controls-container:has(.media-controls.inherits-border-radius),
-  .media-controls.inherits-border-radius {
+  .media-controls-container:has(.media-controls.inherits-border-radius) {
     border-radius: inherit;
   }
   .media-controls > *,
@@ -829,12 +690,7 @@
   .media-controls > .controls-bar {
     position: absolute;
   }
-  .media-controls.fade-in {
-    animation-name: fade-in;
-    animation-duration: 350ms;
-  }
-  .media-controls .time-label,
-  .media-controls .status-label {
+  .media-controls .time-label {
     color: var(--secondary-glyph-color);
     mix-blend-mode: plus-lighter;
   }
@@ -894,55 +750,6 @@
   :host(.media-document.video.iphone) {
     width: 100% !important;
   }
-  :host(.media-document.video.invalid) .placard {
-    background-color: transparent;
-  }
-  .placard {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: black;
-    color: rgb(164, 164, 164);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .placard .container {
-    max-width: 402px;
-    width: 100%;
-  }
-  .placard button {
-    position: relative;
-    margin: auto;
-    margin-bottom: 10px;
-    pointer-events: none;
-  }
-  .placard button > picture {
-    background-color: rgb(164, 164, 164) !important;
-  }
-  .placard .title,
-  .placard .description {
-    padding: 0 10px;
-    text-align: center;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    cursor: default;
-  }
-  .placard .title {
-    font-size: 20px;
-  }
-  .placard .description {
-    font-size: 13px;
-    white-space: initial;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-  }
-  .media-controls:not(.uses-ltr-user-interface-layout-direction) .placard {
-    direction: rtl;
-  }
   .slider {
     position: relative;
   }
@@ -963,19 +770,6 @@
     appearance: none !important;
     outline: none;
   }
-  .slider.allows-relative-scrubbing > input {
-    pointer-events: all;
-    touch-action: none;
-  }
-  .ios .slider > input {
-    user-select: none !important;
-    -webkit-user-select: none !important;
-    -webkit-touch-callout: none !important;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .ios .slider:not(.allows-relative-scrubbing) > input {
-    pointer-events: none;
-  }
   .slider > input::-webkit-slider-thumb {
     width: 9px;
     height: 100%;
@@ -985,32 +779,9 @@
     appearance: none !important;
     pointer-events: all;
   }
-  .slider.disabled > input {
-    display: none;
-  }
-  .ios .slider > input {
-    width: calc(100% + 16px);
-    height: calc(100% + 10px);
-    transform: translate(-8px, -5px);
-  }
-  .ios .slider > input::-webkit-slider-runnable-track {
-    height: 100%;
-  }
-  .ios .slider > input::-webkit-slider-thumb {
-    padding: 0 8px;
-    box-sizing: content-box;
-  }
   .slider.default > .appearance {
     top: 5.5px;
     height: 5px;
-  }
-  .slider.default.allows-relative-scrubbing > .appearance {
-    transition-property: top, height;
-    transition-duration: 0.5s;
-  }
-  .slider.default.allows-relative-scrubbing > .appearance.changing {
-    top: 0.5px;
-    height: 15px;
   }
   .slider.default > .appearance > .fill {
     position: relative;
@@ -1018,41 +789,22 @@
     border-radius: 4.5px;
     overflow: hidden;
   }
-  .slider.default.allows-relative-scrubbing > .appearance > .fill {
-    transition-property: border-radius;
-    transition-duration: 0.5s;
-  }
-  .slider.default.allows-relative-scrubbing > .appearance.changing > .fill {
-    border-radius: 7.5px;
-  }
   .slider.default > .appearance > .fill > * {
     position: absolute;
     top: 0;
     height: 100%;
     mix-blend-mode: plus-lighter;
   }
-  .slider.default.allows-relative-scrubbing > .appearance > .fill > * {
-    mix-blend-mode: initial;
-  }
   .slider.default > .appearance > .fill > .primary {
     left: 0;
     background-color: rgba(255, 255, 255, 0.45);
-  }
-  .slider.default.allows-relative-scrubbing > .appearance > .fill > .primary {
-    background-color: rgb(236, 236, 236);
   }
   .slider.default > .appearance > .fill > .track {
     right: 0;
     background-color: rgba(255, 255, 255, 0.1);
   }
-  .slider.default.allows-relative-scrubbing > .appearance > .fill > .track {
-    background-color: rgb(102, 102, 102);
-  }
   .slider.default > .appearance > .fill > .secondary {
     background-color: rgba(255, 255, 255, 0.08);
-  }
-  .slider.default.allows-relative-scrubbing > .appearance > .fill > .secondary {
-    background-color: rgb(128, 128, 128);
   }
   .slider.default > .appearance > .knob {
     position: absolute;
@@ -1071,95 +823,25 @@
     height: 17px;
     border-radius: 4px;
   }
-  .slider.default > .appearance > .knob.none {
-    top: -2px;
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background-color: transparent;
-  }
-  .slider.default.disabled > .appearance > .fill > :is(.primary, .secondary),
-  .slider.default.disabled > .appearance > .knob {
-    display: none;
-  }
-  .status-label {
-    position: absolute;
-    text-align: left;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-    font-size: 12px;
-  }
-  video::-webkit-media-text-track-container {
-    overflow: hidden;
-    padding-bottom: 0;
-    z-index: 0;
-    text-align: center;
-    color: rgba(255, 255, 255, 1);
-    letter-spacing: normal;
-    word-spacing: normal;
-    text-transform: none;
-    text-indent: 0;
-    text-decoration: none;
-    pointer-events: none;
-    -webkit-user-select: none;
-    flex: 1 1 auto;
-    -webkit-line-box-contain: block inline-box replaced;
-  }
-  video[controls]::-webkit-media-text-track-container.visible-controls-bar {
-    height: calc(100% - var(--inline-controls-bar-height) - var(--inline-controls-inside-margin));
-  }
-  video::cue {
-    background-color: rgba(0, 0, 0, 0.8);
-  }
-  video::-webkit-media-text-track-display {
-    position: absolute;
-    overflow: hidden;
-    white-space: pre-wrap;
-    box-sizing: border-box;
-    font: 22px sans-serif;
-  }
-  video::-webkit-media-text-track-display-backdrop {
-    display: inline-block;
-  }
-  video::cue(:future) {
-    color: gray;
-  }
-  video::-webkit-media-text-track-container b {
-    font-weight: bold;
-  }
-  video::-webkit-media-text-track-container u {
-    text-decoration: underline;
-  }
-  video::-webkit-media-text-track-container i {
-    font-style: italic;
-  }
-  video::-webkit-media-text-track-container .hidden {
-    display: none;
-  }
   .time-label {
     position: absolute;
-    font-family: -apple-system-monospaced-numbers, -apple-system, 'Segoe UI', Roboto, Oxygen, Ubuntu,
-      Cantarell, 'Open Sans', 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji';
+    font-family:
+      -apple-system-monospaced-numbers,
+      -apple-system,
+      'Segoe UI',
+      Roboto,
+      Oxygen,
+      Ubuntu,
+      Cantarell,
+      'Open Sans',
+      'Helvetica Neue',
+      Arial,
+      'Noto Sans',
+      sans-serif,
+      'Apple Color Emoji';
     font-size: 12px;
     text-align: right;
     font-feature-settings: 'case';
-  }
-  button.watchos-activity-indicator > picture {
-    --width: 27px;
-    --number-of-frames: 23;
-    width: var(--width) !important;
-    height: 29.5px !important;
-    mask-size: calc(var(--number-of-frames) * 100%) 100%;
-    --spins: watchos-activity-indicator-intro frames(8) calc(8s / 15),
-      watchos-activity-indicator-loop frames(15) 1s calc(8s / 15) infinite;
-    --fades-out: watchos-activity-indicator-fades-out 500ms;
-  }
-  button.watchos-activity-indicator.spins > picture {
-    animation: var(--spins);
-  }
-  button.watchos-activity-indicator.spins.fades-out > picture {
-    animation: var(--spins), var(--fades-out);
   }
   @keyframes watchos-activity-indicator-intro {
     from {
@@ -1184,29 +866,5 @@
     to {
       opacity: 0;
     }
-  }
-  .media-controls.watchos:before {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.2);
-    content: '';
-  }
-  .media-controls.watchos button {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100% !important;
-    height: 100% !important;
-  }
-  .media-controls.watchos button > picture {
-    mix-blend-mode: normal;
-    background-color: white;
-    transition-duration: 0;
-  }
-  .media-controls.watchos button:active > picture {
-    transform: none;
   }
 </style>

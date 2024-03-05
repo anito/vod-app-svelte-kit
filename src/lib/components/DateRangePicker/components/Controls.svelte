@@ -8,11 +8,17 @@
     isBefore,
     isSameMonth,
     isSameYear,
-    subMonths
+    subMonths,
+    type Locale,
   } from 'date-fns';
-  import { buildMonthDropdown, buildYearDropdown, localeFormat } from '../utils';
+  import en from 'date-fns/locale/en-US/index.js';
+  import {
+    buildMonthDropdown,
+    buildYearDropdown,
+    localeFormat,
+  } from '../utils';
 
-  export let locale: string = 'en';
+  export let locale: Locale = en;
   export let btnClass: string;
   export let month: Date;
   export let monthFormat: string;
@@ -91,14 +97,21 @@
         bind:value={selectedMonth}
         class={selectClass}
         on:change={(e) => {
-          let incrementAmount = differenceInCalendarMonths(selectedMonth.value, month);
+          let incrementAmount = differenceInCalendarMonths(
+            selectedMonth.value,
+            month
+          );
           dispatch('pageChange', {
-            incrementAmount
+            incrementAmount,
           });
         }}
       >
         {#each months as mo}
-          <option disabled={isOptionDisabled(mo.value)} selected={isSelectedMonth(mo)} value={mo}>
+          <option
+            disabled={isOptionDisabled(mo.value)}
+            selected={isSelectedMonth(mo)}
+            value={mo}
+          >
             {mo.text}
           </option>
         {/each}
@@ -113,11 +126,16 @@
         class={selectClass}
         on:change={() =>
           dispatch('pageChange', {
-            incrementAmount: differenceInCalendarYears(selectedYear.value, month) * 12
+            incrementAmount:
+              differenceInCalendarYears(selectedYear.value, month) * 12,
           })}
       >
         {#each years as yr}
-          <option disabled={isOptionDisabled(yr.value)} selected={isSelectedYear(yr)} value={yr}>
+          <option
+            disabled={isOptionDisabled(yr.value)}
+            selected={isSelectedYear(yr)}
+            value={yr}
+          >
             {yr.text}
           </option>
         {/each}

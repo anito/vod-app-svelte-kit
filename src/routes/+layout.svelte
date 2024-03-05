@@ -77,6 +77,9 @@
   import type { Dropzone } from '$lib/components/Dropzone/type';
   import type { User } from '$lib/classes/repos/types';
 
+  const data = new FormData();
+  data.keys();
+
   inject({ mode: dev ? 'development' : 'production' });
 
   const snackbarLifetime = 4000;
@@ -332,6 +335,7 @@
   }
 
   function dropzoneInitializedHandler({ detail }: CustomEvent) {
+    console.log(detail);
     dropzone = detail;
   }
 

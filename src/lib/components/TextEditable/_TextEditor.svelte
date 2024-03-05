@@ -54,7 +54,7 @@
       id,
       value,
       onFailCallback: () => cancelEditable(),
-      onSuccessCallback: () => (dataValue = value)
+      onSuccessCallback: () => (dataValue = value),
     });
   }
 
@@ -102,6 +102,7 @@
     class:className
     tabindex="-1"
     data-value={dataValue}
+    role="button"
   >
     <slot />
   </span>
@@ -113,12 +114,17 @@
           on:click$preventDefault={cancelEditable}
           class="material-icons control meta">cancel</Meta
         >
-        <Meta on:keydown on:click$preventDefault={saveEditable} class="material-icons control meta"
-          >save</Meta
+        <Meta
+          on:keydown
+          on:click$preventDefault={saveEditable}
+          class="material-icons control meta">save</Meta
         >
       </span>
     {:else}
-      <Meta on:click$preventDefault={createEditable} class="material-icons control meta">edit</Meta>
+      <Meta
+        on:click$preventDefault={createEditable}
+        class="material-icons control meta">edit</Meta
+      >
     {/if}
   {:else}
     <Meta class="material-icons meta" aria-hidden="true">lock</Meta>

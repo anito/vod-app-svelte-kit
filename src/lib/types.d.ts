@@ -1,3 +1,4 @@
+import type Dropzone from 'dropzone';
 import type { User } from './classes/repos/types';
 
 declare global {
@@ -49,18 +50,20 @@ declare global {
      * Converts seconds to a formatted string in the form of"HH:MM:SS""
      * @returns string - The formatted string
      */
-    toHHMMSS();
+    toHHMMSS(): string;
   }
 
-  interface Array {
+  interface Array<T> {
     /**
      * Remove any multiple occurances from an array
+     * @returns string[] - The formatted string
      */
-    unique();
+    unique(): string[];
     /**
      * Sorting of Array Object Items by Object.key
+     * @returns string[] - The formatted string
      */
-    sortBy(key);
+    sortBy(key: any): string[];
   }
 
   interface String {
@@ -68,12 +71,12 @@ declare global {
      * Remove all full-word occurances of the specifyed string from a string
      * @param val The text to remove the given value from
      */
-    remove(val: string);
+    remove(val: string): string;
     /**
      * Add all full-word occurances of val from a text
      * @param val The text to remove the given value from
      */
-    add(val: string);
+    add(val: string): string;
   }
 }
 
@@ -166,7 +169,7 @@ export interface Session<SessionType = Record<string, any>> {
   renewed?: boolean;
   code?: number;
   locale?: string;
-  salutation?: string;
+  salutation?: string[];
   _expires?: Date | any;
 }
 
@@ -184,7 +187,7 @@ export interface SiteConfig<SiteConfigType = Record<string, any>> {
   defaultadmintab: string;
   defaultusertab: string;
   salutation: string;
-  salutations: Array;
+  salutations: string[];
   name: string;
   description: string;
   logo: string;
@@ -205,7 +208,7 @@ export interface Error<ErrorType = Record<string, any>> {
   message: string;
 }
 
-export interface UploaderOptions<UploaderOptionsType = Recors<string, any>> {
+export interface UploaderOptions<UploaderOptionsType = Record<string, any>> {
   path: string;
   uploadMultiple: boolean;
   parallelUploads: number;
