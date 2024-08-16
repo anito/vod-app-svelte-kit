@@ -2,5 +2,6 @@
 
 .menu-surface-image-list {
   @include mdc-image-list-standard-columns(2);
+
   min-width: 200px;
 }

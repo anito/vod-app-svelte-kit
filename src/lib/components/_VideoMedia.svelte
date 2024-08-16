@@ -9,6 +9,7 @@
   import dummyPoster from '/src/assets/images/empty-poster.jpg';
   import { _ } from 'svelte-i18n';
   import type { Video } from '$lib/classes/repos/types';
+  import type { ActionArray } from '@smui/common/internal';
 
   export let video: Video;
   export let emptyPoster: string = dummyPoster;
@@ -147,10 +148,9 @@
     );
   }
 
-  function setFocus(node: HTMLElement) {
-    const inputEl = node.querySelector('input');
-    inputEl?.focus();
-    inputEl?.select();
+  function setFocus(node: any) {
+    node.focus();
+    node.select();
   }
 
   function dispatchEnter(event: CustomEvent) {
@@ -172,7 +172,7 @@
           <Textfield
             class="mb-3"
             variant="outlined"
-            use={[setFocus]}
+            input$use={[setFocus]}
             label="Title"
             bind:value={title}
             on:keydown={dispatchEnter}

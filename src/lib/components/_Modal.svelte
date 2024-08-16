@@ -3,7 +3,6 @@
   import { fade } from 'svelte/transition';
   import { Container, Heading } from '$lib/components';
   import { _ } from 'svelte-i18n';
-    import Actions from '@smui/card/src/Actions.svelte';
 
   type Events = {
       beforeClose: () => boolean;
@@ -175,7 +174,7 @@
               {typeof header === 'string' ? header : translateHeader()}
             </Heading>
           </div>
-          <div class="content" style={cssContent}>
+          <div style={cssContent}>
             <svelte:component this={HostedComponent} {...props} />
           </div>
         </Container>

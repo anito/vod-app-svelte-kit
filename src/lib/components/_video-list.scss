@@ -1,9 +1,9 @@
-@use '@material/theme/color-palette';
+@use "@material/theme/color-palette";
 
-@import '@material/typography/index';
-@import '@material/chips/index';
-@import '@material/chips/deprecated/index';
-@import '@material/list/index';
+@import "@material/typography/index";
+@import "@material/chips/index";
+@import "@material/chips/deprecated/index";
+@import "@material/list/index";
 
 $active: color-palette.$light-green-500;
 $on-active: color-palette.$light-green-50;

@@ -1,5 +1,5 @@
-@import '@material/button/mixins';
-@import '@material/shape/variables';
+@import "@material/button/mixins";
+@import "@material/shape/variables";
 
 .mdc-button {
   &.fb-button {
@@ -10,6 +10,7 @@
     @include mdc-button-ink-color(var(--ink-color));
     @include mdc-button-label-overflow-ellipsis();
     @include mdc-button-density(0);
+
     width: 221px;
     max-width: 400px;
     font-size: 0.9em;
