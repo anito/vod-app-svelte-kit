@@ -746,7 +746,7 @@
     <Button class="max-w-33" action="cancel">
       <Label>{$_('text.cancel')}</Label>
     </Button>
-    <Button class="max-w-33" action="save-as" variant="outlined">
+    <Button class="max-w-33" action="save-as" variant="outlined" disabled>
       <Label>{$_('text.save-as-new-template')}</Label>
     </Button>
     <Button class="max-w-33" action="discard" variant="unelevated" use={[InitialFocus]}>

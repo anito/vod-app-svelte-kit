@@ -2,7 +2,7 @@ import { browser, dev } from '$app/environment';
 import { error } from '@sveltejs/kit';
 import { getBlob } from './utils';
 
-export const base = dev ? 'https://vod.mbp' : 'https://vod.webpremiere.de';
+export const base = dev ? 'https://vod.mbp/api' : 'https://vod.webpremiere.de/api';
 export const version = 'v1';
 
 async function send(atts: {

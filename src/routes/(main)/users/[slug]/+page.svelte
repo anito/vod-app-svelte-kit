@@ -1,38 +1,34 @@
 <script lang="ts">
-  import * as api from '$lib/api';
-  import { page } from '$app/stores';
-  import { goto } from '$app/navigation';
-  import { onMount, setContext } from 'svelte';
+  import * as api from "$lib/api";
+  import { page } from "$app/stores";
+  import { goto } from "$app/navigation";
+  import { onMount, setContext } from "svelte";
   import {
     UserManager,
     TimeManager,
     MailManager,
     UserGraphic,
-  } from '$lib/components';
-  import Button, { Group, Label, Icon } from '@smui/button';
-  import { users, usersFoundation, session } from '$lib/stores';
+  } from "$lib/components";
+  import Button, { Group, Label, Icon } from "@smui/button";
+  import { users, session } from "$lib/stores";
   import {
-    emit,
     INBOX,
     ADMIN,
     SUPERUSER,
     TABS,
     createTabSearch,
-    EDIT,
-    ADD,
     DEFAULT_TAB,
     buildSearchParams,
-  } from '$lib/utils';
-  import { _ } from 'svelte-i18n';
-  import type { User } from '$lib/classes/repos/types';
+  } from "$lib/utils";
+  import { _ } from "svelte-i18n";
+  import type { User } from "$lib/classes/repos/types";
 
   export let data;
 
-  let selectedMode = EDIT;
   let userExpires;
   let hasExpired;
   let jwt;
-  let magicLink: string = '';
+  let magicLink: string = "";
   let selectedUser: User | undefined;
   let username: string;
 
@@ -44,16 +40,16 @@
     undefined)(selectionUserId);
   $: hasPrivileges = $session.role === ADMIN || $session.role === SUPERUSER;
   $: isCurrentSuperUser = selectedUser?.role === SUPERUSER;
-  $: username = selectedUser?.name || '';
+  $: username = selectedUser?.name || "";
   $: tab = ((tab) => TABS.find((itm) => itm === tab))(
-    $page.url.searchParams.get('tab')
+    $page.url.searchParams.get("tab")
   );
   $: ((user) => {
     if (!user || isCurrentSuperUser) {
       userExpires = null;
       hasExpired = true;
-      jwt = '';
-      magicLink = '';
+      jwt = "";
+      magicLink = "";
     } else {
       userExpires = user.expires;
       hasExpired =
@@ -67,12 +63,12 @@
     !magicLink || !hasPrivileges || isCurrentSuperUser ? true : false;
   $: hidden = selectionUserId == $session.user?.id ? true : false;
 
-  setContext('siux', {
+  setContext("siux", {
     getUsersIndex: getSimpleUserIndex,
   });
 
   onMount(() => {
-    window.addEventListener('user:add', addUserHandler);
+    window.addEventListener("user:add", addUserHandler);
     if (!tab) {
       const hasPrivileges =
         $session.role === ADMIN || $session.role === SUPERUSER;
@@ -83,25 +79,25 @@
       setTimeout(() => goto($page.url.pathname + search), 200);
     }
     return () => {
-      window.removeEventListener('user:add', addUserHandler);
+      window.removeEventListener("user:add", addUserHandler);
     };
   });
 
   async function addUserHandler() {
-    const searchParams = new URLSearchParams({ tab: 'profile', mode: 'add' });
+    const searchParams = new URLSearchParams({ tab: "profile", mode: "add" });
     await goto(`${$page.url.pathname}?${searchParams.toString()}`);
   }
 
   async function getSimpleUserIndex() {
     return await api
-      .get('users/simpleindex', { token: $session.user?.jwt })
+      .get("users/simpleindex", { token: $session.user?.jwt })
       .then((res) => res)
       .catch((reason) => console.log(reason));
   }
 </script>
 
 <svelte:head>
-  <title>{$page.data.config.Site?.name} | {$_('text.user')} {username}</title>
+  <title>{$page.data.config.Site?.name} | {$_("text.user")} {username}</title>
 </svelte:head>
 
 <div class="flex flex-1 user-grid inner-grid {tab}">
@@ -110,26 +106,26 @@
       <Button
         class="focus:outline-none focus:shadow-outline"
         href="/users/{selectionUserId}?tab=time"
-        variant={tab === TABS[0] ? 'unelevated' : 'outlined'}
+        variant={tab === TABS[0] ? "unelevated" : "outlined"}
       >
         <Icon class="material-icons">ondemand_video</Icon>
-        <Label>{$_('text.videos')}</Label>
+        <Label>{$_("text.videos")}</Label>
       </Button>
       <Button
         class="focus:outline-none focus:shadow-outline"
         href="/users/{selectionUserId}?tab=profile"
-        variant={tab === TABS[1] ? 'unelevated' : 'outlined'}
+        variant={tab === TABS[1] ? "unelevated" : "outlined"}
       >
         <Icon class="material-icons">account_circle</Icon>
-        <Label>{$_('text.user-profil')}</Label>
+        <Label>{$_("text.user-profil")}</Label>
       </Button>
       <Button
         class="focus:outline-none focus:shadow-outline"
         href="/users/{selectionUserId}?tab=mail&active={INBOX}"
-        variant={tab === TABS[2] ? 'unelevated' : 'outlined'}
+        variant={tab === TABS[2] ? "unelevated" : "outlined"}
       >
         <Icon class="material-icons">mail</Icon>
-        <Label>{$_('text.mail')}</Label>
+        <Label>{$_("text.mail")}</Label>
       </Button>
     </Group>
     <div class="flex mr-2" class:hidden>
@@ -137,7 +133,7 @@
         on:click={async () =>
           await goto(
             `${$page.url.pathname}${buildSearchParams($page.url.searchParams, {
-              append: [['dialog', 'token-redirect']],
+              append: [["dialog", "token-redirect"]],
             })}`
           )}
         {disabled}
@@ -151,7 +147,7 @@
           style="margin-right: 10px;"
           user={selectedUser}
         />
-        <Label>{$_('text.switch-account')}</Label>
+        <Label>{$_("text.switch-account")}</Label>
       </Button>
     </div>
   </div>
@@ -180,28 +176,28 @@
     grid-gap: var(--grid-gap-sm);
     align-items: center;
     grid-template-areas:
-      'toolbar toolbar'
-      'main main';
+      "toolbar toolbar"
+      "main main";
     grid-template-columns: 4fr 4fr;
     align-items: initial;
   }
   :global(.user).user-grid {
     grid-template-areas:
-      'toolbar toolbar'
-      'main main';
+      "toolbar toolbar"
+      "main main";
     grid-template-columns: 1fr 1fr;
   }
   :global(.time).user-grid {
     grid-template-areas:
-      'toolbar toolbar'
-      'main main';
+      "toolbar toolbar"
+      "main main";
     grid-template-columns: 4fr 4fr;
     align-items: initial;
   }
   :global(.mail).user-grid {
     grid-template-areas:
-      'toolbar toolbar'
-      'main main';
+      "toolbar toolbar"
+      "main main";
     grid-template-columns: 4fr 4fr;
     align-items: initial;
   }

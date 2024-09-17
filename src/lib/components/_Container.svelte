@@ -1,24 +1,23 @@
 <script lang="ts">
-  import { addClass } from '$lib/utils';
+  import { addClass } from "$lib/utils";
 
   export let extended = false;
-  export let density = '' as 'sm' | 'md' | ' lg' | '';
-  export let variant = 'primary' as 'primary' | 'secondary';
+  export let density = "" as "sm" | "md" | " lg" | "";
+  export let variant = "primary" as "primary" | "secondary";
   export { className as class };
   export { headerClassName as headerClass };
   export let transparent = false;
-  export let headerHeight = '80px';
-  export let contentBackgroundColor = 'inherit';
-  export let borderShape = 'none' as 'none' | 'small' | 'medium' | 'large';
+  export let headerHeight = "80px";
+  export let contentBackgroundColor = "inherit";
+  export let borderShape = "none" as "none" | "small" | "medium" | "large";
 
-  let className = '';
-  let headerClassName = '';
+  let className = "";
+  let headerClassName = "";
 </script>
 
 <div
   style="display: contents; flex-grow: 1; position: relative; z-index: 0"
   style:--height={headerHeight}
-  style:--content-background-color={contentBackgroundColor}
   style:--border-shape={`var(--mdc-shape-${borderShape})`}
 >
   <div
@@ -27,10 +26,10 @@
     class:extended
     class:transparent
   >
-    <div use:addClass={'container-header'} class={headerClassName}>
+    <div use:addClass={"container-header"} class={headerClassName}>
       <slot name="header">You must provide a header</slot>
     </div>
-    <div class="container-content {className}">
+    <div class="container-content {className}" style:--content-background-color={contentBackgroundColor}>
       <slot />
     </div>
   </div>
@@ -40,6 +39,9 @@
   .wrapper {
     position: relative;
     height: 100%;
+    .inner {
+      --content-background-color: #ddd;
+    }
   }
   .wrapper .container-header > * {
     color: inherit;
@@ -71,7 +73,7 @@
     }
   }
   .wrapper::before {
-    content: '';
+    content: "";
     display: flex;
     margin-top: 0px;
     position: relative;
@@ -125,7 +127,6 @@
     font-size: 3em;
   }
   .wrapper .container-content {
-    overflow: auto;
     background-color: var(--content-background-color);
     height: 100%;
     flex-shrink: 1;

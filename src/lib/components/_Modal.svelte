@@ -80,8 +80,8 @@
     config: Config = {}
   ) => {
     HostedComponent = NewComponent;
-    props = { ...config.props } || empty;
-    headerProps = { ...config.headerProps } || empty;
+    props = { ...config.props };
+    headerProps = { ...config.headerProps };
     state = { ...defaultState, ...config.options };
     events = { ...defaultEvents, ...config.events};
     onOpen = events.onOpen;
@@ -168,7 +168,7 @@
         style={cssWindow}
       >
         {#if state.closeButton}<button on:click={handleClose} class="button-close" />{/if}
-        <Container density="sm" borderShape="medium">
+        <Container density="sm" borderShape="medium" contentBackgroundColor={"var(--background)"}>
           <div slot="header">
             <Heading mdc h="5" style="text-transform: uppercase">
               {typeof header === 'string' ? header : translateHeader()}

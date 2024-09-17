@@ -38,6 +38,10 @@
     @include mdc-button-container-fill-color(error);
     @include mdc-button-ink-color(on-error);
   }
+  &.disabled {
+    pointer-events: none;
+    opacity: .5;
+  }
 }
 
 .paginator .load-more {

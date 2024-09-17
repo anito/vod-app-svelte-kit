@@ -17,7 +17,7 @@
 
   $: (async (id) => {
     if (id) {
-      const res = await getMediaImage(id, $session.user?.jwt, settings).then((v) => v);
+      const res = await getMediaImage(id, $session.user?.jwt, settings).then((res) => res);
       if (res) poster = res;
     }
   })(media?.id);
