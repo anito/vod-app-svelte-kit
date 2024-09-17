@@ -2,7 +2,7 @@ import { browser, dev } from '$app/environment';
 import { error } from '@sveltejs/kit';
 import { getBlob } from './utils';
 
-export const base = dev ? 'https://vod.mbp/api' : 'https://vod.webpremiere.de/api';
+export const base = dev ? 'https://vod.mbp' : 'https://vod.webpremiere.de';
 export const version = 'v1';
 
 async function send(atts: {
@@ -12,7 +12,7 @@ async function send(atts: {
   data?: any;
 }) {
   const { method, path, token, data } = { ...atts };
-  const url = path.startsWith('http') ? path : `${base}/${version}/${path}`;
+  const url = path.startsWith('http') ? path : `${base}/api/${version}/${path}`;
   const useBlob = method === 'GET' && browser && false; // don't use blob for now
 
   if (useBlob) {
