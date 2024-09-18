@@ -5,7 +5,7 @@
   import Button, { Label, Icon } from '@smui/button';
   import LinearProgress from '@smui/linear-progress';
   import { Dropzone } from '$lib/components';
-  import { base, version } from '$lib/api';
+  import { base, api_path } from '$lib/api';
   import { _ } from 'svelte-i18n';
   import type { DropzoneOptions } from '$lib/types';
   import { emit } from '$lib/utils';
@@ -95,7 +95,7 @@
   };
 
   let options: DropzoneOptions = {
-    url: `${base}/${version}/${path}?token=${$session.user?.jwt}&locale=${$session.locale}`,
+    url: `${base}${api_path}/${path}?token=${$session.user?.jwt}&locale=${$session.locale}`,
     timeout,
     paramName: 'Files',
     uploadMultiple,

@@ -3,7 +3,7 @@ import { error } from '@sveltejs/kit';
 import { getBlob } from './utils';
 
 export const base = dev ? 'https://vod.mbp' : 'https://vod.webpremiere.de';
-export const version = 'v1';
+export const api_path = '/api/v1';
 
 async function send(atts: {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -12,7 +12,7 @@ async function send(atts: {
   data?: any;
 }) {
   const { method, path, token, data } = { ...atts };
-  const url = path.startsWith('http') ? path : `${base}/api/${version}/${path}`;
+  const url = path.startsWith('http') ? path : `${base}${api_path}/${path}`;
   const useBlob = method === 'GET' && browser && false; // don't use blob for now
 
   if (useBlob) {
